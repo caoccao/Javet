@@ -9,7 +9,7 @@ Release Notes 3.0.x
 * Added ``toJSON()``, ``proxyDeleteProperty()`` to ``IJavetDirectProxyHandler``
 * Added ``ifTrue()``, ``asInt()`` to ``IV8Value``
 * Added ``IClassProxyPlugin``, ``JavetProxyPluginArray``, ``JavetProxyPluginClass``, ``JavetProxyPluginDefault``, ``JavetProxyPluginList``, ``JavetProxyPluginMap``, ``JavetProxyPluginSet``
-* Added ``V8ValueBuiltInReflect``
+* Added ``V8ValueBuiltInReflect``, ``JavetEntityObject``, ``JavetEntityPropertyDescriptor``
 * Added ``BindingContextStore``, ``ClassDescriptorStore``
 * Added ``createV8ValueError()``, ``throwError()`` to ``V8Runtime``
 * Added ``V8ValueErrorType``, ``V8ErrorTemplate``, ``JavetEntityError``

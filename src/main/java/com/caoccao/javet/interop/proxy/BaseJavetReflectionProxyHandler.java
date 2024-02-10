@@ -20,6 +20,7 @@ import com.caoccao.javet.annotations.*;
 import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetEntityPropertyDescriptor;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
@@ -322,15 +323,15 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     public V8Value getOwnPropertyDescriptor(V8Value target, V8Value property) throws JavetException, E {
         V8Value v8Value = null;
         try {
-            v8Value = internalGet(target, property);
-            if (v8Value != null) {
-                return V8ValueUtils.createV8ValueObject(getV8Runtime(),
-                        getV8Runtime().createV8ValueString(PROXY_PROPERTY_CONFIGURABLE),
-                        getV8Runtime().createV8ValueBoolean(true),
-                        getV8Runtime().createV8ValueString(PROXY_PROPERTY_ENUMERABLE),
-                        getV8Runtime().createV8ValueBoolean(true),
-                        getV8Runtime().createV8ValueString(PROXY_PROPERTY_VALUE),
-                        v8Value);
+            if (property instanceof V8ValueString) {
+                IJavetEntityPropertyDescriptor<V8Value> javetEntityPropertyDescriptor =
+                        classDescriptor.getClassProxyPlugin().getProxyOwnPropertyDescriptor(
+                                targetObject, ((V8ValueString) property).getValue());
+                v8Value = internalGet(target, property);
+                if (v8Value != null) {
+                    javetEntityPropertyDescriptor.setValue(v8Value);
+                    return v8Runtime.toV8Value(javetEntityPropertyDescriptor);
+                }
             }
         } finally {
             JavetResourceUtils.safeClose(v8Value);

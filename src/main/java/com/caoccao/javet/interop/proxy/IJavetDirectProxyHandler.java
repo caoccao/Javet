@@ -19,6 +19,7 @@ package com.caoccao.javet.interop.proxy;
 import com.caoccao.javet.enums.V8ValueSymbolType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetBiFunction;
+import com.caoccao.javet.interfaces.IJavetEntityPropertyDescriptor;
 import com.caoccao.javet.interfaces.IJavetUniFunction;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
@@ -180,11 +181,13 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
                 }
             }
             return V8ValueUtils.createV8ValueObject(getV8Runtime(),
-                    getV8Runtime().createV8ValueString(IJavetProxyHandler.PROXY_PROPERTY_CONFIGURABLE),
+                    getV8Runtime().createV8ValueString(IJavetEntityPropertyDescriptor.PROXY_PROPERTY_CONFIGURABLE),
                     getV8Runtime().createV8ValueBoolean(true),
-                    getV8Runtime().createV8ValueString(IJavetProxyHandler.PROXY_PROPERTY_ENUMERABLE),
+                    getV8Runtime().createV8ValueString(IJavetEntityPropertyDescriptor.PROXY_PROPERTY_ENUMERABLE),
                     getV8Runtime().createV8ValueBoolean(v8Value != null),
-                    getV8Runtime().createV8ValueString(IJavetProxyHandler.PROXY_PROPERTY_VALUE),
+                    getV8Runtime().createV8ValueString(IJavetEntityPropertyDescriptor.PROXY_PROPERTY_WRITABLE),
+                    getV8Runtime().createV8ValueBoolean(true),
+                    getV8Runtime().createV8ValueString(IJavetEntityPropertyDescriptor.PROXY_PROPERTY_VALUE),
                     v8Value);
         } finally {
             JavetResourceUtils.safeClose(v8Value);

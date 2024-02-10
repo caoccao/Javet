@@ -246,7 +246,7 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
     }
 
     @Override
-    public Object[] getOwnKeys(Object targetObject) {
+    public Object[] getProxyOwnKeys(Object targetObject) {
         assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
         return ((Map<?, ?>) targetObject).keySet().toArray();
     }

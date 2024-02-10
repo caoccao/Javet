@@ -230,7 +230,7 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle {
     }
 
     @Override
-    public Object[] getOwnKeys(Object targetObject) {
+    public Object[] getProxyOwnKeys(Object targetObject) {
         assert targetObject instanceof Set : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SET;
         return ((Set<?>) targetObject).toArray();
     }

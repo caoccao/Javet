@@ -95,24 +95,6 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      * @since 2.2.0
      */
     String PROXY_FUNCTION_NAME_SET = "set";
-    /**
-     * The constant PROXY_PROPERTY_CONFIGURABLE.
-     *
-     * @since 3.0.4
-     */
-    String PROXY_PROPERTY_CONFIGURABLE = "configurable";
-    /**
-     * The constant PROXY_PROPERTY_ENUMERABLE.
-     *
-     * @since 3.0.4
-     */
-    String PROXY_PROPERTY_ENUMERABLE = "enumerable";
-    /**
-     * The constant PROXY_PROPERTY_VALUE.
-     *
-     * @since 3.0.4
-     */
-    String PROXY_PROPERTY_VALUE = "value";
 
     /**
      * Reflect.apply().

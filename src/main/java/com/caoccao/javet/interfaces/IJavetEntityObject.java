@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024. caoccao.com Sam Cao
+ * Copyright (c) 2024-2024. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,26 @@ package com.caoccao.javet.interfaces;
 
 import com.caoccao.javet.interop.proxy.IJavetNonProxy;
 
-import java.util.Map;
-
 /**
- * The interface Javet entity map.
+ * The interface Javet entity object.
  *
- * @since 0.9.4
+ * @param <T> the type parameter
+ * @since 3.0.4
  */
-public interface IJavetEntityMap extends Map<String, Object>, IJavetNonProxy {
+public interface IJavetEntityObject<T> extends IJavetNonProxy {
+    /**
+     * Gets value.
+     *
+     * @return the value
+     * @since 3.0.4
+     */
+    T getValue();
+
+    /**
+     * Sets value.
+     *
+     * @param value the value
+     * @since 3.0.4
+     */
+    void setValue(T value);
 }

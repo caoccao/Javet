@@ -16,7 +16,9 @@
 
 package com.caoccao.javet.interop.proxy.plugins;
 
+import com.caoccao.javet.entities.JavetEntityPropertyDescriptor;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetEntityPropertyDescriptor;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.IClassProxyPlugin;
 import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
@@ -107,17 +109,22 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
     }
 
     @Override
-    public Object[] getOwnKeys(Object targetObject) {
-        return new Object[0];
-    }
-
-    @Override
     public <E extends Exception> IClassProxyPluginFunction<E> getProxyGetBySymbol(
             Class<?> targetClass, String symbolName) {
         if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE.equals(symbolName)) {
             return this::symbolToPrimitive;
         }
         return null;
+    }
+
+    @Override
+    public Object[] getProxyOwnKeys(Object targetObject) {
+        return new Object[0];
+    }
+
+    @Override
+    public <T> IJavetEntityPropertyDescriptor<T> getProxyOwnPropertyDescriptor(Object targetObject, Object propertyName) {
+        return new JavetEntityPropertyDescriptor<T>(true, true, true);
     }
 
     @Override

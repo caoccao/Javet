@@ -17,16 +17,14 @@
 package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
-import com.caoccao.javet.entities.JavetEntityError;
-import com.caoccao.javet.entities.JavetEntityFunction;
-import com.caoccao.javet.entities.JavetEntityMap;
-import com.caoccao.javet.entities.JavetEntitySymbol;
+import com.caoccao.javet.entities.*;
 import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.enums.V8ValueErrorType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetConverterException;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetEntityError;
 import com.caoccao.javet.interfaces.IJavetMappable;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.utils.SimpleList;
@@ -181,7 +179,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
     @Test
     public void testError() throws JavetException {
         IJavetConverter converter = new JavetObjectConverter();
-        JavetEntityError javetEntityError;
+        IJavetEntityError javetEntityError;
         try (V8ValueError v8ValueError = v8Runtime.createV8ValueError(V8ValueErrorType.Error, "test")) {
             javetEntityError = converter.toObject(v8ValueError);
             assertEquals("test", javetEntityError.getMessage());

@@ -17,7 +17,7 @@
 package com.caoccao.javet.exceptions;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
-import com.caoccao.javet.entities.JavetEntityError;
+import com.caoccao.javet.interfaces.IJavetEntityError;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueObject;
@@ -79,7 +79,7 @@ public class TestJavetExecutionException extends BaseTestJavetRuntime {
                     javetScriptingError.toString());
             assertEquals(
                     SimpleMap.of("a", 1, "b", 2),
-                    ((JavetEntityError) javetScriptingError.getContext()).getContext());
+                    ((IJavetEntityError) javetScriptingError.getContext()).getContext());
         }
     }
 

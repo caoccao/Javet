@@ -16,9 +16,11 @@
 
 package com.caoccao.javet.interop.proxy.plugins;
 
+import com.caoccao.javet.entities.JavetEntityPropertyDescriptor;
 import com.caoccao.javet.enums.V8ValueErrorType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.V8ErrorTemplate;
+import com.caoccao.javet.interfaces.IJavetEntityPropertyDescriptor;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
@@ -745,9 +747,25 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle {
     }
 
     @Override
-    public Object[] getOwnKeys(Object targetObject) {
+    public Object[] getProxyOwnKeys(Object targetObject) {
         assert targetObject instanceof List : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST;
-        return IntStream.range(0, ((List<?>) targetObject).size()).boxed().toArray();
+        List<?> list = (List<?>) targetObject;
+        List<Object> keys = new ArrayList<>();
+        IntStream.range(0, list.size()).boxed().forEach(keys::add);
+        keys.add(LENGTH);
+        return keys.toArray();
+    }
+
+    @Override
+    public <T> IJavetEntityPropertyDescriptor<T> getProxyOwnPropertyDescriptor(Object targetObject, Object propertyName) {
+        if (propertyName instanceof String) {
+            if (LENGTH.equals(propertyName)) {
+                return new JavetEntityPropertyDescriptor<>(false, false, true);
+            } else {
+                return new JavetEntityPropertyDescriptor<>(true, true, true);
+            }
+        }
+        return new JavetEntityPropertyDescriptor<>(false, false, false);
     }
 
     /**

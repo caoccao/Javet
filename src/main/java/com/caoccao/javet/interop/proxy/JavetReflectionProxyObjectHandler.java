@@ -19,6 +19,7 @@ package com.caoccao.javet.interop.proxy;
 import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.enums.V8ProxyMode;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetEntitySymbol;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.interop.binding.ClassDescriptorStore;
@@ -240,7 +241,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
 
     @Override
     public V8ValueArray ownKeys(V8Value target) throws JavetException {
-        Object[] keys = classDescriptor.getClassProxyPlugin().getOwnKeys(targetObject);
+        Object[] keys = classDescriptor.getClassProxyPlugin().getProxyOwnKeys(targetObject);
         if (ArrayUtils.isEmpty(keys)) {
             keys = classDescriptor.getUniqueKeySet().toArray();
         }
@@ -248,8 +249,10 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             Object key = keys[i];
             if (key instanceof String) {
                 keys[i] = v8Runtime.createV8ValueString((String) key);
-            } else if (!(key instanceof V8ValueString) && !(key instanceof V8ValueSymbol)) {
-                keys[i] = v8Runtime.createV8ValueString(key.toString());
+            } else if (key instanceof IJavetEntitySymbol) {
+                keys[i] = v8Runtime.createV8ValueSymbol(((IJavetEntitySymbol) key).getDescription());
+            } else {
+                keys[i] = v8Runtime.createV8ValueString(String.valueOf(key));
             }
         }
         return V8ValueUtils.createV8ValueArray(v8Runtime, keys);

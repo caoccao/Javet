@@ -23,8 +23,7 @@ import com.caoccao.javet.entities.JavetEntityMap;
 import com.caoccao.javet.entities.JavetEntitySymbol;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interfaces.IJavetEntityFunction;
-import com.caoccao.javet.interfaces.IJavetEntityMap;
+import com.caoccao.javet.interfaces.*;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
@@ -261,7 +260,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
         } else if (v8Value instanceof V8ValueError) {
             // https://v8.dev/features/error-cause
             final V8ValueError v8ValueError = (V8ValueError) v8Value;
-            final JavetEntityError javetEntityError = new JavetEntityError(
+            final IJavetEntityError javetEntityError = new JavetEntityError(
                     v8ValueError.getErrorType(),
                     v8ValueError.getMessage(),
                     v8ValueError.toString(),
@@ -433,11 +432,32 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             } else {
                 v8Value = v8Runtime.getExecutor(sourceCode).execute();
             }
-        } else if (object instanceof JavetEntitySymbol) {
-            final JavetEntitySymbol javetEntitySymbol = (JavetEntitySymbol) object;
+        } else if (object instanceof IJavetEntitySymbol) {
+            final IJavetEntitySymbol javetEntitySymbol = (IJavetEntitySymbol) object;
             v8Value = v8Runtime.createV8ValueSymbol(javetEntitySymbol.getDescription(), true);
-        } else if (object instanceof JavetEntityError) {
-            final JavetEntityError javetEntityError = (JavetEntityError) object;
+        } else if (object instanceof IJavetEntityObject) {
+            final IJavetEntityObject<?> javetEntityObject = (IJavetEntityObject<?>) object;
+            v8Value = toV8Value(v8Runtime, javetEntityObject.getValue(), depth + 1);
+        } else if (object instanceof IJavetEntityPropertyDescriptor) {
+            final IJavetEntityPropertyDescriptor<?> javetEntityPropertyDescriptor = (IJavetEntityPropertyDescriptor<?>) object;
+            try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
+                V8ValueObject v8ValueObject = v8Scope.createV8ValueObject();
+                try (V8Value v8ValueInner = toV8Value(v8Runtime, javetEntityPropertyDescriptor.getValue(), depth + 1)) {
+                    v8ValueObject.set(
+                            v8Runtime.createV8ValueString(IJavetEntityPropertyDescriptor.PROXY_PROPERTY_CONFIGURABLE),
+                            v8Runtime.createV8ValueBoolean(javetEntityPropertyDescriptor.isConfigurable()),
+                            v8Runtime.createV8ValueString(IJavetEntityPropertyDescriptor.PROXY_PROPERTY_ENUMERABLE),
+                            v8Runtime.createV8ValueBoolean(javetEntityPropertyDescriptor.isEnumerable()),
+                            v8Runtime.createV8ValueString(IJavetEntityPropertyDescriptor.PROXY_PROPERTY_WRITABLE),
+                            v8Runtime.createV8ValueBoolean(javetEntityPropertyDescriptor.isWritable()),
+                            v8Runtime.createV8ValueString(IJavetEntityPropertyDescriptor.PROXY_PROPERTY_VALUE),
+                            v8ValueInner);
+                }
+                v8Value = v8ValueObject;
+                v8Scope.setEscapable();
+            }
+        } else if (object instanceof IJavetEntityError) {
+            final IJavetEntityError javetEntityError = (IJavetEntityError) object;
             try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
                 V8ValueError v8ValueError = v8Scope.createV8ValueError(
                         javetEntityError.getType(), javetEntityError.getMessage());

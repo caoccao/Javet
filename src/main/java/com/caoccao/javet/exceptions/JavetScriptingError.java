@@ -16,7 +16,7 @@
 
 package com.caoccao.javet.exceptions;
 
-import com.caoccao.javet.entities.JavetEntityError;
+import com.caoccao.javet.interfaces.IJavetEntityError;
 import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.values.V8Value;
 
@@ -65,8 +65,8 @@ public final class JavetScriptingError {
         } catch (JavetException e) {
             context = null;
         }
-        if (context instanceof JavetEntityError) {
-            JavetEntityError javetEntityError = (JavetEntityError) context;
+        if (context instanceof IJavetEntityError) {
+            IJavetEntityError javetEntityError = (IJavetEntityError) context;
             detailedMessage = javetEntityError.getDetailedMessage();
             message = javetEntityError.getMessage();
             stack = javetEntityError.getStack();

@@ -16,6 +16,8 @@
 
 package com.caoccao.javet.interop.binding;
 
+import com.caoccao.javet.interfaces.IJavetEntityPropertyDescriptor;
+
 import java.util.Set;
 
 /**
@@ -52,15 +54,6 @@ public interface IClassProxyPlugin {
     String getName();
 
     /**
-     * Get own keys.
-     *
-     * @param targetObject the target object
-     * @return the own keys
-     * @since 3.0.4
-     */
-    Object[] getOwnKeys(Object targetObject);
-
-    /**
      * Gets proxy get function by string property.
      *
      * @param <E>          the type parameter
@@ -83,6 +76,26 @@ public interface IClassProxyPlugin {
      */
     <E extends Exception> IClassProxyPluginFunction<E> getProxyGetBySymbol(
             Class<?> targetClass, String symbolName);
+
+    /**
+     * Get proxy own keys for Object.getOwnPropertyNames().
+     *
+     * @param targetObject the target object
+     * @return the own keys
+     * @since 3.0.4
+     */
+    Object[] getProxyOwnKeys(Object targetObject);
+
+    /**
+     * Gets proxy own property descriptor.
+     *
+     * @param <T>          the type parameter
+     * @param targetObject the target object
+     * @param propertyName the property name
+     * @return the proxy own property descriptor
+     * @since 3.0.4
+     */
+    <T> IJavetEntityPropertyDescriptor<T> getProxyOwnPropertyDescriptor(Object targetObject, Object propertyName);
 
     /**
      * Gets proxy symbol to primitive function.

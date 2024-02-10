@@ -17,6 +17,7 @@
 package com.caoccao.javet.entities;
 
 import com.caoccao.javet.enums.V8ValueErrorType;
+import com.caoccao.javet.interfaces.IJavetEntityError;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +27,7 @@ import java.util.Map;
  *
  * @since 3.0.4
  */
-public class JavetEntityError {
+public class JavetEntityError implements IJavetEntityError {
     /**
      * The Context.
      *
@@ -73,91 +74,47 @@ public class JavetEntityError {
         this.type = type;
     }
 
-    /**
-     * Gets context.
-     *
-     * @return the context
-     * @since 3.0.4
-     */
+    @Override
     public Map<String, Object> getContext() {
         return context;
     }
 
-    /**
-     * Gets detailed message.
-     *
-     * @return the detailed message
-     */
+    @Override
     public String getDetailedMessage() {
         return detailedMessage;
     }
 
-    /**
-     * Gets message.
-     *
-     * @return the message
-     * @since 3.0.4
-     */
+    @Override
     public String getMessage() {
         return message;
     }
 
-    /**
-     * Gets stack.
-     *
-     * @return the stack
-     * @since 3.0.4
-     */
+    @Override
     public String getStack() {
         return stack;
     }
 
-    /**
-     * Gets type.
-     *
-     * @return the type
-     * @since 3.0.4
-     */
+    @Override
     public V8ValueErrorType getType() {
         return type;
     }
 
-    /**
-     * Sets detailed message.
-     *
-     * @param detailedMessage the detailed message
-     * @since 3.0.4
-     */
+    @Override
     public void setDetailedMessage(String detailedMessage) {
         this.detailedMessage = detailedMessage;
     }
 
-    /**
-     * Sets message.
-     *
-     * @param message the message
-     * @since 3.0.4
-     */
+    @Override
     public void setMessage(String message) {
         this.message = message;
     }
 
-    /**
-     * Sets stack.
-     *
-     * @param stack the stack
-     * @since 3.0.4
-     */
+    @Override
     public void setStack(String stack) {
         this.stack = stack;
     }
 
-    /**
-     * Sets type.
-     *
-     * @param type the type
-     * @since 3.0.4
-     */
+    @Override
     public void setType(V8ValueErrorType type) {
         this.type = type;
     }

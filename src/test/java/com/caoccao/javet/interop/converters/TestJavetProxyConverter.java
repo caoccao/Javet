@@ -18,7 +18,7 @@ package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.annotations.*;
-import com.caoccao.javet.entities.JavetEntityError;
+import com.caoccao.javet.interfaces.IJavetEntityError;
 import com.caoccao.javet.enums.JavetErrorType;
 import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.enums.V8ProxyMode;
@@ -467,7 +467,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 assertEquals("TypeError: undefined is not a function", e.getMessage());
                 assertEquals(
                         V8ValueErrorType.TypeError,
-                        ((JavetEntityError) e.getScriptingError().getContext()).getType());
+                        ((IJavetEntityError) e.getScriptingError().getContext()).getType());
             }
             assertEquals("_10true21true", v8Runtime.getExecutor("intArray.reduce((x,y,i,a)=>''+x+y+i+(a===intArray), '_')").executeString());
             assertEquals("121true", v8Runtime.getExecutor("intArray.reduce((x,y,i,a)=>''+x+y+i+(a===intArray))").executeString());
@@ -478,7 +478,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 assertEquals("TypeError: undefined is not a function", e.getMessage());
                 assertEquals(
                         V8ValueErrorType.TypeError,
-                        ((JavetEntityError) e.getScriptingError().getContext()).getType());
+                        ((IJavetEntityError) e.getScriptingError().getContext()).getType());
             }
             assertEquals("_x0truey1true", v8Runtime.getExecutor("stringArray.reduce((x,y,i,a)=>x+y+i+(a===stringArray), '_')").executeString());
             assertEquals("xy1true", v8Runtime.getExecutor("stringArray.reduce((x,y,i,a)=>x+y+i+(a===stringArray))").executeString());
@@ -490,7 +490,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 assertEquals("TypeError: undefined is not a function", e.getMessage());
                 assertEquals(
                         V8ValueErrorType.TypeError,
-                        ((JavetEntityError) e.getScriptingError().getContext()).getType());
+                        ((IJavetEntityError) e.getScriptingError().getContext()).getType());
             }
             assertEquals("_21true10true", v8Runtime.getExecutor("intArray.reduceRight((x,y,i,a)=>''+x+y+i+(a===intArray), '_')").executeString());
             assertEquals("210true", v8Runtime.getExecutor("intArray.reduceRight((x,y,i,a)=>''+x+y+i+(a===intArray))").executeString());
@@ -501,7 +501,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 assertEquals("TypeError: undefined is not a function", e.getMessage());
                 assertEquals(
                         V8ValueErrorType.TypeError,
-                        ((JavetEntityError) e.getScriptingError().getContext()).getType());
+                        ((IJavetEntityError) e.getScriptingError().getContext()).getType());
             }
             assertEquals("_y1truex0true", v8Runtime.getExecutor("stringArray.reduceRight((x,y,i,a)=>x+y+i+(a===stringArray), '_')").executeString());
             assertEquals("yx0true", v8Runtime.getExecutor("stringArray.reduceRight((x,y,i,a)=>x+y+i+(a===stringArray))").executeString());
@@ -1107,7 +1107,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 assertEquals("TypeError: undefined is not a function", e.getMessage());
                 assertEquals(
                         V8ValueErrorType.TypeError,
-                        ((JavetEntityError) e.getScriptingError().getContext()).getType());
+                        ((IJavetEntityError) e.getScriptingError().getContext()).getType());
             }
             try {
                 v8Runtime.getExecutor("list.clear(); list.reduce((x,y)=>x+y)").executeVoid();
@@ -1116,7 +1116,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 assertEquals("TypeError: Reduce of empty array with no initial value", e.getMessage());
                 assertEquals(
                         V8ValueErrorType.TypeError,
-                        ((JavetEntityError) e.getScriptingError().getContext()).getType());
+                        ((IJavetEntityError) e.getScriptingError().getContext()).getType());
             }
             assertEquals("x", v8Runtime.getExecutor("list.clear(); list.reduce((x,y)=>x+y+',', 'x')").executeString());
             assertEquals("_x0true", v8Runtime.getExecutor("list.push('x'); list.reduce((x,y,i,a)=>x+y+i+(a===list), '_')").executeString());
@@ -1129,7 +1129,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 assertEquals("TypeError: undefined is not a function", e.getMessage());
                 assertEquals(
                         V8ValueErrorType.TypeError,
-                        ((JavetEntityError) e.getScriptingError().getContext()).getType());
+                        ((IJavetEntityError) e.getScriptingError().getContext()).getType());
             }
             try {
                 v8Runtime.getExecutor("list.clear(); list.reduceRight((x,y)=>x+y)").executeVoid();
@@ -1138,7 +1138,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 assertEquals("TypeError: Reduce of empty array with no initial value", e.getMessage());
                 assertEquals(
                         V8ValueErrorType.TypeError,
-                        ((JavetEntityError) e.getScriptingError().getContext()).getType());
+                        ((IJavetEntityError) e.getScriptingError().getContext()).getType());
             }
             assertEquals("x", v8Runtime.getExecutor("list.clear(); list.reduceRight((x,y)=>x+y+',', 'x')").executeString());
             assertEquals("_x0true", v8Runtime.getExecutor("list.push('x'); list.reduceRight((x,y,i,a)=>x+y+i+(a===list), '_')").executeString());

@@ -16,41 +16,39 @@
 
 package com.caoccao.javet.entities;
 
-import com.caoccao.javet.interfaces.IJavetEntitySymbol;
-
-import java.util.Objects;
+import com.caoccao.javet.interfaces.IJavetEntityObject;
 
 /**
- * The type Javet entity symbol is for converting JS symbol
- * to or from Java symbol.
+ * The type Javet entity object is a container for arbitrary object.
  *
- * @since 0.9.11
+ * @param <T> the type parameter
+ * @since 3.0.4
  */
-public class JavetEntitySymbol implements IJavetEntitySymbol {
+public class JavetEntityObject<T> implements IJavetEntityObject<T> {
     /**
-     * The Description.
+     * The Value.
      *
-     * @since 0.9.11
+     * @since 3.0.4
      */
-    protected String description;
+    protected T value;
 
     /**
-     * Instantiates a new Javet entity symbol.
+     * Instantiates a new Javet entity object.
      *
-     * @param description the description
-     * @since 0.9.11
+     * @param value the value
+     * @since 3.0.4
      */
-    public JavetEntitySymbol(String description) {
-        this.description = Objects.requireNonNull(description);
+    public JavetEntityObject(T value) {
+        this.value = value;
     }
 
     @Override
-    public String getDescription() {
-        return description;
+    public T getValue() {
+        return value;
     }
 
     @Override
-    public void setDescription(String description) {
-        this.description = description;
+    public void setValue(T value) {
+        this.value = value;
     }
 }
