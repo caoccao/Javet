@@ -100,4 +100,15 @@ public class TestV8ValueSymbol extends BaseTestJavetRuntime {
             assertEquals("Symbol(test)", v8ValueSymbol.toString());
         }
     }
+
+    @Test
+    public void testSymbolObject() throws JavetException {
+        try (V8ValueSymbol v8ValueSymbol1 = v8Runtime.createV8ValueSymbol("test")) {
+            try (V8ValueSymbolObject v8ValueSymbolObject = v8ValueSymbol1.toObject()) {
+                try (V8ValueSymbol v8ValueSymbol2 = v8ValueSymbolObject.valueOf()) {
+                    assertEquals("test", v8ValueSymbol2.getDescription());
+                }
+            }
+        }
+    }
 }

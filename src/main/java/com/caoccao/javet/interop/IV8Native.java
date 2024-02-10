@@ -384,6 +384,12 @@ public interface IV8Native {
 
     Object symbolCreate(long v8RuntimeHandle, String description);
 
+    String symbolDescription(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    Object symbolObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    Object symbolToObject(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     void terminateExecution(long v8RuntimeHandle);
 
     boolean throwError(long v8RuntimeHandle, int v8ValueErrorType, String message);

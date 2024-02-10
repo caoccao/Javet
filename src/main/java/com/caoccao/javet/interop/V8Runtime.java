@@ -3424,6 +3424,42 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Symbol description.
+     *
+     * @param v8ValueSymbol the V8 value symbol
+     * @return the description
+     * @since 3.0.4
+     */
+    String symbolDescription(V8ValueSymbol v8ValueSymbol) {
+        return v8Native.symbolDescription(
+                handle, Objects.requireNonNull(v8ValueSymbol).getHandle(), v8ValueSymbol.getType().getId());
+    }
+
+    /**
+     * Symbol.prototype.valueOf().
+     * The valueOf() method of Symbol values returns this symbol value.
+     *
+     * @param v8ValueSymbolObject the V8 value symbol object
+     * @return the V8 value symbol
+     * @since 3.0.4
+     */
+    public V8ValueSymbol symbolObjectValueOf(V8ValueSymbolObject v8ValueSymbolObject) {
+        return (V8ValueSymbol) v8Native.symbolObjectValueOf(
+                handle, Objects.requireNonNull(v8ValueSymbolObject).getHandle(), v8ValueSymbolObject.getType().getId());
+    }
+
+    /**
+     * From symbol to symbol object.
+     *
+     * @param v8ValueSymbol the V8 value symbol
+     * @return the V8 value symbol object
+     */
+    public V8ValueSymbolObject symbolToObject(V8ValueSymbol v8ValueSymbol) {
+        return (V8ValueSymbolObject) v8Native.symbolToObject(
+                handle, Objects.requireNonNull(v8ValueSymbol).getHandle(), v8ValueSymbol.getType().getId());
+    }
+
+    /**
      * Terminate execution.
      * <p>
      * Forcefully terminate the current thread of JavaScript execution

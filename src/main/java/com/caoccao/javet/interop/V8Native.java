@@ -583,6 +583,15 @@ class V8Native implements IV8Native {
     public native Object symbolCreate(long v8RuntimeHandle, String description);
 
     @Override
+    public native String symbolDescription(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native Object symbolObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native Object symbolToObject(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native void terminateExecution(long v8RuntimeHandle);
 
     @Override

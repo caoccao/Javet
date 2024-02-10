@@ -605,6 +605,18 @@ public final class V8Internal {
         return v8Runtime.strictEquals(iV8ValueObject1, iV8ValueObject2);
     }
 
+    public String symbolDescription(V8ValueSymbol v8ValueSymbol) {
+        return v8Runtime.symbolDescription(v8ValueSymbol);
+    }
+
+    public V8ValueSymbol symbolObjectValueOf(V8ValueSymbolObject v8ValueSymbolObject) {
+        return v8Runtime.symbolObjectValueOf(v8ValueSymbolObject);
+    }
+
+    public V8ValueSymbolObject symbolToObject(V8ValueSymbol v8ValueSymbol) {
+        return v8Runtime.symbolToObject(v8ValueSymbol);
+    }
+
     public String toString(IV8ValueReference iV8ValueReference) throws JavetException {
         return v8Runtime.toString(iV8ValueReference);
     }
