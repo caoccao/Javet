@@ -27,7 +27,9 @@ import com.caoccao.javet.values.IV8ValuePrimitiveValue;
  *
  * @since 0.9.11
  */
-public class V8ValueSymbol extends V8ValueObject implements IV8ValuePrimitiveValue<V8ValueSymbolObject> {
+public class V8ValueSymbol
+        extends V8ValueObject
+        implements IV8ValuePrimitiveValue<V8ValueSymbolObject> {
     /**
      * The constant FUNCTION_TO_STRING.
      *

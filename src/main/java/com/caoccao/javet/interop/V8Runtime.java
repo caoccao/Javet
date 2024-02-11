@@ -527,6 +527,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * From boolean object to boolean.
+     *
+     * @param v8ValueBooleanObject the V8 value boolean object
+     * @return the V8 value boolean
+     * @since 3.0.4
+     */
+    V8ValueBoolean booleanObjectValueOf(V8ValueBooleanObject v8ValueBooleanObject) {
+        return (V8ValueBoolean) v8Native.booleanObjectValueOf(
+                handle, Objects.requireNonNull(v8ValueBooleanObject).getHandle(), v8ValueBooleanObject.getType().getId());
+    }
+
+    /**
      * Set a reference to a strong reference.
      *
      * @param iV8ValueReference the V8 value reference
@@ -806,6 +818,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     public V8ValueBoolean createV8ValueBoolean(boolean booleanValue) throws JavetException {
         return cachedV8ValueBooleans[booleanValue ? V8_VALUE_BOOLEAN_TRUE_INDEX : V8_VALUE_BOOLEAN_FALSE_INDEX];
+    }
+
+    @Override
+    public V8ValueBooleanObject createV8ValueBooleanObject(boolean booleanValue) throws JavetException {
+        return (V8ValueBooleanObject) v8Native.booleanObjectCreate(handle, booleanValue);
     }
 
     @CheckReturnValue
@@ -3434,6 +3451,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      *
      * @param v8ValueStringObject the V8 value string object
      * @return the V8 value string
+     * @since 3.0.4
      */
     V8ValueString stringObjectValueOf(V8ValueStringObject v8ValueStringObject) {
         return (V8ValueString) v8Native.stringObjectValueOf(

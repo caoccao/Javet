@@ -41,6 +41,12 @@ public abstract class BaseJavetProxyPluginMultiple extends BaseJavetProxyPlugin 
      * @since 3.0.4
      */
     protected final Map<Class<?>, Map<String, IClassProxyPluginFunction<?>>> proxyGetBySymbolMap;
+    /**
+     * The Target object constructor map.
+     *
+     * @since 3.0.4
+     */
+    protected final Map<Class<?>, IClassProxyPluginFunction<?>> targetObjectConstructorMap;
 
     /**
      * Instantiates a new Base javet proxy plugin for multiple classes.
@@ -51,6 +57,7 @@ public abstract class BaseJavetProxyPluginMultiple extends BaseJavetProxyPlugin 
         super();
         proxyGetByStringMap = new HashMap<>();
         proxyGetBySymbolMap = new HashMap<>();
+        targetObjectConstructorMap = new HashMap<>();
     }
 
     @Override
@@ -71,5 +78,11 @@ public abstract class BaseJavetProxyPluginMultiple extends BaseJavetProxyPlugin 
         return (IClassProxyPluginFunction<E>) Optional.ofNullable(proxyGetBySymbolMap.get(targetClass))
                 .map(map -> map.get(symbolName))
                 .orElse(null);
+    }
+
+    @Override
+    public <E extends Exception> IClassProxyPluginFunction<E> getTargetObjectConstructor(Class<?> targetClass) {
+        return (IClassProxyPluginFunction<E>) Optional.ofNullable(targetObjectConstructorMap.get(targetClass))
+                .orElse(super.getTargetObjectConstructor(targetClass));
     }
 }

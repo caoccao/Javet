@@ -28,7 +28,9 @@ import com.caoccao.javet.values.IV8ValuePrimitiveObject;
  *
  * @since 0.9.11
  */
-public class V8ValueSymbolObject extends V8ValueObject implements IV8ValuePrimitiveObject<V8ValueSymbol> {
+public class V8ValueSymbolObject
+        extends V8ValueObject
+        implements IV8ValuePrimitiveObject<V8ValueSymbol> {
     /**
      * Instantiates a new V8 value symbol object.
      *

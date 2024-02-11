@@ -63,6 +63,12 @@ class V8Native implements IV8Native {
             Object[] v8ValueKeys, Object[] v8ValueValues, int length);
 
     @Override
+    public native Object booleanObjectCreate(long v8RuntimeHandle, boolean booleanValue);
+
+    @Override
+    public native Object booleanObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native void clearInternalStatistic();
 
     @Override

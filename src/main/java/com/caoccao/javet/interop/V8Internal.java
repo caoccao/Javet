@@ -23,6 +23,7 @@ import com.caoccao.javet.enums.V8ValueInternalType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.*;
 
@@ -57,6 +58,10 @@ public final class V8Internal {
             IV8ValueObject iV8ValueObject, V8Value[] v8ValueKeys, V8Value[] v8ValueValues, int length)
             throws JavetException {
         return v8Runtime.batchObjectGet(iV8ValueObject, v8ValueKeys, v8ValueValues, length);
+    }
+
+    public V8ValueBoolean booleanObjectValueOf(V8ValueBooleanObject v8ValueBooleanObject) {
+        return v8Runtime.booleanObjectValueOf(v8ValueBooleanObject);
     }
 
     public void clearWeak(IV8ValueReference iV8ValueReference) throws JavetException {

@@ -21,35 +21,35 @@ import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.IV8ValuePrimitiveObject;
-import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.primitive.V8ValueBoolean;
 
 /**
- * The type V8 value string object.
+ * The type V8 value boolean object.
  *
  * @since 3.0.4
  */
-public class V8ValueStringObject
+public class V8ValueBooleanObject
         extends V8ValueObject
-        implements IV8ValuePrimitiveObject<V8ValueString> {
+        implements IV8ValuePrimitiveObject<V8ValueBoolean> {
     /**
-     * Instantiates a new V8 value string object.
+     * Instantiates a new V8 value boolean object.
      *
      * @param v8Runtime the V8 runtime
      * @param handle    the handle
      * @throws JavetException the javet exception
      */
-    V8ValueStringObject(V8Runtime v8Runtime, long handle) throws JavetException {
+    V8ValueBooleanObject(V8Runtime v8Runtime, long handle) throws JavetException {
         super(v8Runtime, handle);
     }
 
     @Override
     public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.StringObject;
+        return V8ValueReferenceType.BooleanObject;
     }
 
     @CheckReturnValue
     @Override
-    public V8ValueString valueOf() throws JavetException {
-        return checkV8Runtime().getV8Internal().stringObjectValueOf(this);
+    public V8ValueBoolean valueOf() throws JavetException {
+        return checkV8Runtime().getV8Internal().booleanObjectValueOf(this);
     }
 }

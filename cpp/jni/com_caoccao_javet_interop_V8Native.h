@@ -73,6 +73,22 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_batchObjectGet
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    booleanObjectCreate
+ * Signature: (JZ)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_booleanObjectCreate
+  (JNIEnv *, jobject, jlong, jboolean);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    booleanObjectValueOf
+ * Signature: (JJI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_booleanObjectValueOf
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    clearInternalStatistic
  * Signature: ()V
  */

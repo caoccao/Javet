@@ -109,6 +109,16 @@ public interface IV8Creatable {
     V8ValueBoolean createV8ValueBoolean(boolean booleanValue) throws JavetException;
 
     /**
+     * Create V8 value boolean object.
+     *
+     * @param booleanValue the boolean value
+     * @return the V8 value boolean object
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    V8ValueBooleanObject createV8ValueBooleanObject(boolean booleanValue) throws JavetException;
+
+    /**
      * Create V8 value data view.
      *
      * @param v8ValueArrayBuffer the V8 value array buffer

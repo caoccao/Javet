@@ -30,7 +30,9 @@ import java.util.Objects;
  * @since 0.7.0
  */
 @SuppressWarnings("unchecked")
-public final class V8ValueString extends V8ValuePrimitive<String> implements IV8ValuePrimitiveValue<V8ValueStringObject> {
+public final class V8ValueString
+        extends V8ValuePrimitive<String>
+        implements IV8ValuePrimitiveValue<V8ValueStringObject> {
     /**
      * Instantiates a new V8 value string.
      *

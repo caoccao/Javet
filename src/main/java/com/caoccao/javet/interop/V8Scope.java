@@ -183,6 +183,12 @@ public class V8Scope implements IV8Creatable, IJavetClosable {
     }
 
     @Override
+    public V8ValueBooleanObject createV8ValueBooleanObject(boolean booleanValue) throws JavetException {
+        Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
+        return v8Runtime.createV8ValueBooleanObject(booleanValue);
+    }
+
+    @Override
     public V8ValueDataView createV8ValueDataView(V8ValueArrayBuffer v8ValueArrayBuffer) throws JavetException {
         Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
         return add(v8Runtime.createV8ValueDataView(v8ValueArrayBuffer));

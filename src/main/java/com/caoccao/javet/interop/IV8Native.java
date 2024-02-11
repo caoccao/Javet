@@ -45,6 +45,10 @@ public interface IV8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             Object[] v8ValueKeys, Object[] v8ValueValues, int length);
 
+    Object booleanObjectCreate(long v8RuntimeHandle, boolean booleanValue);
+
+    Object booleanObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     void clearInternalStatistic();
 
     void clearWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

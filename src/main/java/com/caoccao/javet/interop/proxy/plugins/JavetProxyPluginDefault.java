@@ -76,6 +76,9 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::booleanToJSON);
             proxyGetByStringMap.put(Boolean.class, polyfillFunctionMap);
+            targetObjectConstructorMap.put(
+                    Boolean.class,
+                    (v8Runtime, targetObject) -> v8Runtime.createV8ValueBooleanObject((Boolean) targetObject));
         }
         {
             // java.lang.Byte
@@ -124,6 +127,9 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::stringToJSON);
             proxyGetByStringMap.put(String.class, polyfillFunctionMap);
+            targetObjectConstructorMap.put(
+                    String.class,
+                    (v8Runtime, targetObject) -> v8Runtime.createV8ValueStringObject((String) targetObject));
         }
     }
 
@@ -242,14 +248,6 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
     @Override
     public String getName() {
         return NAME;
-    }
-
-    @Override
-    public <E extends Exception> IClassProxyPluginFunction<E> getTargetObjectConstructor(Class<?> targetClass) {
-        if (targetClass == String.class) {
-            return (v8Runtime, targetObject) -> v8Runtime.createV8ValueStringObject((String) targetObject);
-        }
-        return super.getTargetObjectConstructor(targetClass);
     }
 
     /**

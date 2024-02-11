@@ -101,6 +101,10 @@ namespace Javet {
         jmethodID jmethodIDV8ValueArrayBufferConstructor;
         jmethodID jmethodIDV8ValueArrayBufferGetHandle;
 
+        jclass jclassV8ValueBooleanObject;
+        jmethodID jmethodIDV8ValueBooleanObjectConstructor;
+        jmethodID jmethodIDV8ValueBooleanObjectGetHandle;
+
         jclass jclassV8ValueDataView;
         jmethodID jmethodIDV8ValueDataViewConstructor;
         jmethodID jmethodIDV8ValueDataViewGetHandle;
@@ -403,6 +407,10 @@ namespace Javet {
             jclassV8ValueArrayBuffer = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueArrayBuffer");
             jmethodIDV8ValueArrayBufferConstructor = jniEnv->GetMethodID(jclassV8ValueArrayBuffer, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;JLjava/nio/ByteBuffer;)V");
             jmethodIDV8ValueArrayBufferGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueArrayBuffer);
+
+            jclassV8ValueBooleanObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueBooleanObject");
+            jmethodIDV8ValueBooleanObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueBooleanObject);
+            jmethodIDV8ValueBooleanObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueBooleanObject);
 
             jclassV8ValueDataView = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueDataView");
             jmethodIDV8ValueDataViewConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueDataView);
@@ -805,8 +813,22 @@ namespace Javet {
                     v8Runtime->externalV8Runtime,
                     ToV8PersistentReference(v8Context, v8Value));
             }
+            if (v8Value->IsStringObject()) {
+                return jniEnv->NewObject(
+                    jclassV8ValueStringObject,
+                    jmethodIDV8ValueStringObjectConstructor,
+                    v8Runtime->externalV8Runtime,
+                    ToV8PersistentReference(v8Context, v8Value));
+            }
+            if (v8Value->IsBooleanObject()) {
+                return jniEnv->NewObject(
+                    jclassV8ValueBooleanObject,
+                    jmethodIDV8ValueBooleanObjectConstructor,
+                    v8Runtime->externalV8Runtime,
+                    ToV8PersistentReference(v8Context, v8Value));
+            }
             // Primitive types
-            if (v8Value->IsBoolean() || v8Value->IsBooleanObject()) {
+            if (v8Value->IsBoolean()) {
                 return jniEnv->CallObjectMethod(
                     v8Runtime->externalV8Runtime,
                     jmethodIDV8RuntimeCreateV8ValueBoolean,
@@ -855,13 +877,6 @@ namespace Javet {
                     v8Runtime->externalV8Runtime,
                     jmethodIDV8RuntimeCreateV8ValueDouble,
                     v8Value->NumberValue(v8Context).FromMaybe(0));
-            }
-            if (v8Value->IsStringObject()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueStringObject,
-                    jmethodIDV8ValueStringObjectConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
             }
             if (v8Value->IsString()) {
                 return ToExternalV8ValuePrimitive(
