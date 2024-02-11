@@ -32,7 +32,6 @@ import java.util.Objects;
  */
 @SuppressWarnings("unchecked")
 public final class V8ValueBigInteger extends V8ValuePrimitive<BigInteger> {
-
     private static final int BYTE_COUNT_PER_WORD = 8;
 
     /**
@@ -166,6 +165,11 @@ public final class V8ValueBigInteger extends V8ValuePrimitive<BigInteger> {
     @Override
     public int asInt() {
         return value.intValue();
+    }
+
+    @Override
+    public long asLong() throws JavetException {
+        return value.longValue();
     }
 
     /**

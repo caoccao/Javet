@@ -75,6 +75,8 @@ public class TestV8ValueBoolean extends BaseTestJavetRuntime {
         assertEquals(1, v8Runtime.getExecutor("new Boolean(true)").executeDouble(), DELTA);
         assertEquals(1, v8Runtime.getExecutor("true").executeInteger());
         assertEquals(1, v8Runtime.getExecutor("new Boolean(true)").executeInteger());
+        assertEquals(1L, v8Runtime.getExecutor("true").executeLong());
+        assertEquals(1L, v8Runtime.getExecutor("new Boolean(true)").executeLong());
         assertEquals("true", v8Runtime.getExecutor("true").executeString());
         assertEquals("true", v8Runtime.getExecutor("new Boolean(true)").executeString());
     }

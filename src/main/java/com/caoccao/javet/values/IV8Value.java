@@ -52,6 +52,17 @@ public interface IV8Value extends IJavetClosable, IV8Cloneable {
     }
 
     /**
+     * As long.
+     *
+     * @return the long value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    default long asLong() throws JavetException {
+        return asInt();
+    }
+
+    /**
      * As string.
      *
      * @return the string value

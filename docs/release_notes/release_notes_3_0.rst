@@ -7,7 +7,7 @@ Release Notes 3.0.x
 
 * Added proxy plugin system for converters
 * Added ``toJSON()``, ``proxyDeleteProperty()`` to ``IJavetDirectProxyHandler``
-* Added ``ifTrue()``, ``asDouble()``, ``asInt()``, ``asString()`` to ``IV8Value``
+* Added ``ifTrue()``, ``asDouble()``, ``asInt()``, ``asLong()``, ``asString()`` to ``IV8Value``
 * Added ``IClassProxyPlugin``, ``JavetProxyPluginArray``, ``JavetProxyPluginClass``, ``JavetProxyPluginDefault``, ``JavetProxyPluginList``, ``JavetProxyPluginMap``, ``JavetProxyPluginSet``
 * Added ``V8ValueBuiltInReflect``, ``JavetEntityObject``, ``JavetEntityPropertyDescriptor``
 * Added ``BindingContextStore``, ``ClassDescriptorStore``
@@ -26,6 +26,7 @@ Release Notes 3.0.x
 * Fixed a memory leak in adding a V8 module with the same name
 * Swapped ``JavetScriptingError.getMessage()`` and ``JavetScriptingError.getDetailedMessage()``
 * Removed ``JavetProxySymbolIterableConverter``, ``JavetProxySymbolToPrimitiveConverter``
+* Removed ``executePrimitive()`` from ``IV8Executable``
 
 3.0.3 V8 v12.1
 --------------

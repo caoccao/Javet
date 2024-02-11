@@ -36,6 +36,11 @@ public interface IV8ValuePrimitiveObject<T extends V8Value> extends IV8Value {
     }
 
     @Override
+    default long asLong() throws JavetException {
+        return valueOf().asLong();
+    }
+
+    @Override
     default String asString() throws JavetException {
         return valueOf().asString();
     }

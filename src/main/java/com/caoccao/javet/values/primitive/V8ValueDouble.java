@@ -69,6 +69,11 @@ public final class V8ValueDouble
     }
 
     @Override
+    public long asLong() throws JavetException {
+        return value.longValue();
+    }
+
+    @Override
     public boolean ifTrue() {
         return value != 0D;
     }

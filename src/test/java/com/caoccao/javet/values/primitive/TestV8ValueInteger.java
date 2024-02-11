@@ -88,6 +88,8 @@ public class TestV8ValueInteger extends BaseTestJavetRuntime {
         assertEquals(123, v8Runtime.getExecutor("new Number(123)").executeDouble(), DELTA);
         assertEquals(123, v8Runtime.getExecutor("123").executeInteger());
         assertEquals(123, v8Runtime.getExecutor("new Number(123)").executeInteger());
+        assertEquals(123L, v8Runtime.getExecutor("123").executeLong());
+        assertEquals(123L, v8Runtime.getExecutor("new Number(123)").executeLong());
         assertEquals("123", v8Runtime.getExecutor("123").executeString());
         assertEquals("123", v8Runtime.getExecutor("new Number(123)").executeString());
     }

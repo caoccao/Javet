@@ -72,6 +72,11 @@ public final class V8ValueLong extends V8ValuePrimitive<Long> {
     }
 
     @Override
+    public long asLong() throws JavetException {
+        return value;
+    }
+
+    @Override
     public boolean ifTrue() {
         return value != 0L;
     }

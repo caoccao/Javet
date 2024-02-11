@@ -57,6 +57,8 @@ public class TestV8ValueDouble extends BaseTestJavetRuntime {
         assertEquals(1.23, v8Runtime.getExecutor("new Number(1.23)").executeDouble(), DELTA);
         assertEquals(1, v8Runtime.getExecutor("1.23").executeInteger());
         assertEquals(1, v8Runtime.getExecutor("new Number(1.23)").executeInteger());
+        assertEquals(1L, v8Runtime.getExecutor("1.23").executeLong());
+        assertEquals(1L, v8Runtime.getExecutor("new Number(1.23)").executeLong());
         assertEquals("1.23", v8Runtime.getExecutor("'1.23'").executeString());
         assertEquals("1.23", v8Runtime.getExecutor("new Number('1.23')").executeString());
     }

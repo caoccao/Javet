@@ -79,6 +79,18 @@ public final class V8ValueString
     }
 
     @Override
+    public long asLong() {
+        String trimmedString = value.trim();
+        if (StringUtils.isDigital(trimmedString)) {
+            try {
+                return Long.parseLong(trimmedString);
+            } catch (Throwable ignored) {
+            }
+        }
+        return 0;
+    }
+
+    @Override
     public boolean ifTrue() {
         return StringUtils.isNotEmpty(value);
     }
