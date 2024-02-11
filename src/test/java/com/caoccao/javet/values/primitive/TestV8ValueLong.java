@@ -65,10 +65,10 @@ public class TestV8ValueLong extends BaseTestJavetRuntime {
 
     @Test
     public void testIfTrue() throws JavetException {
-        assertTrue(v8Runtime.createV8ValueLong(1L).ifTrue());
-        assertFalse(v8Runtime.createV8ValueLong(0L).ifTrue());
-        assertTrue(v8Runtime.getExecutor("1n").execute().ifTrue());
-        assertFalse(v8Runtime.getExecutor("0n").execute().ifTrue());
+        assertTrue(v8Runtime.createV8ValueLong(1L).asBoolean());
+        assertFalse(v8Runtime.createV8ValueLong(0L).asBoolean());
+        assertTrue(v8Runtime.getExecutor("1n").execute().asBoolean());
+        assertFalse(v8Runtime.getExecutor("0n").execute().asBoolean());
     }
 
     @Test

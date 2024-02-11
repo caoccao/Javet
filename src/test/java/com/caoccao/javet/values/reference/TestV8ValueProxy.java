@@ -250,7 +250,7 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
             assertEquals("abc", handler.getTargetObject().get("name"), "Getter should work.");
             assertEquals("abc", v8Runtime.getExecutor("y.get('name')").executeString(),
                     "Getter should work.");
-            assertEquals("null", v8Runtime.getExecutor("y['name']").executeString(),
+            assertNull(v8Runtime.getExecutor("y['name']").executeString(),
                     "Getter should not work.");
             assertEquals(2, v8Runtime.getExecutor("y.add(1, 1)").executeInteger(),
                     "add() should work.");

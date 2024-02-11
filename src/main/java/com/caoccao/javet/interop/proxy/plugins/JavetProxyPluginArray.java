@@ -376,7 +376,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
                                     Array.get(targetObject, i),
                                     v8Runtime.createV8ValueInteger(i),
                                     thisObject)) {
-                                if (!result.ifTrue()) {
+                                if (!result.asBoolean()) {
                                     return v8Runtime.createV8ValueBoolean(false);
                                 }
                             }
@@ -461,7 +461,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
                                     object,
                                     v8Runtime.createV8ValueInteger(i),
                                     thisObject)) {
-                                if (v8ValueResult.ifTrue()) {
+                                if (v8ValueResult.asBoolean()) {
                                     results.add(object);
                                 }
                             }
@@ -505,7 +505,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
                                     object,
                                     v8Runtime.createV8ValueInteger(i),
                                     thisObject)) {
-                                if (result.ifTrue()) {
+                                if (result.asBoolean()) {
                                     return v8Runtime.toV8Value(object);
                                 }
                             }
@@ -544,7 +544,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
                                     Array.get(targetObject, i),
                                     v8Runtime.createV8ValueInteger(i),
                                     thisObject)) {
-                                if (result.ifTrue()) {
+                                if (result.asBoolean()) {
                                     return v8Runtime.createV8ValueInteger(i);
                                 }
                             }
@@ -592,7 +592,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
                                     object,
                                     v8Runtime.createV8ValueInteger(i),
                                     thisObject)) {
-                                if (result.ifTrue()) {
+                                if (result.asBoolean()) {
                                     return v8Runtime.toV8Value(object);
                                 }
                             }
@@ -632,7 +632,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
                                     Array.get(targetObject, i),
                                     v8Runtime.createV8ValueInteger(i),
                                     thisObject)) {
-                                if (result.ifTrue()) {
+                                if (result.asBoolean()) {
                                     return v8Runtime.createV8ValueInteger(i);
                                 }
                             }
@@ -1366,7 +1366,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
                                     Array.get(targetObject, i),
                                     v8Runtime.createV8ValueInteger(i),
                                     thisObject)) {
-                                if (result.ifTrue()) {
+                                if (result.asBoolean()) {
                                     return v8Runtime.createV8ValueBoolean(true);
                                 }
                             }

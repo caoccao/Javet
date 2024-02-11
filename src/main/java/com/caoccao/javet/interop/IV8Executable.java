@@ -85,7 +85,7 @@ public interface IV8Executable extends IV8Convertible {
      */
     default Boolean executeBoolean() throws JavetException {
         try (V8Value v8Value = execute()) {
-            return v8Value.ifTrue();
+            return v8Value.asBoolean();
         } catch (JavetException e) {
             throw e;
         } catch (Throwable t) {
@@ -171,6 +171,9 @@ public interface IV8Executable extends IV8Convertible {
      */
     default String executeString() throws JavetException {
         try (V8Value v8Value = execute()) {
+            if (v8Value.isNullOrUndefined()) {
+                return null;
+            }
             return v8Value.asString();
         } catch (JavetException e) {
             throw e;

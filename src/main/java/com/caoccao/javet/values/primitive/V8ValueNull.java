@@ -30,17 +30,17 @@ public final class V8ValueNull extends V8Value {
     }
 
     @Override
+    public boolean asBoolean() {
+        return false;
+    }
+
+    @Override
     public void close() throws JavetException {
     }
 
     @Override
     public boolean equals(V8Value v8Value) {
         return v8Value instanceof V8ValueNull;
-    }
-
-    @Override
-    public boolean ifTrue() {
-        return false;
     }
 
     @Override

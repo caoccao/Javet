@@ -158,6 +158,11 @@ public final class V8ValueBigInteger extends V8ValuePrimitive<BigInteger> {
     }
 
     @Override
+    public boolean asBoolean() {
+        return !BigInteger.ZERO.equals(value);
+    }
+
+    @Override
     public double asDouble() {
         return value.doubleValue();
     }
@@ -193,11 +198,6 @@ public final class V8ValueBigInteger extends V8ValuePrimitive<BigInteger> {
      */
     int getSignum() {
         return value.signum();
-    }
-
-    @Override
-    public boolean ifTrue() {
-        return !BigInteger.ZERO.equals(value);
     }
 
     @Override

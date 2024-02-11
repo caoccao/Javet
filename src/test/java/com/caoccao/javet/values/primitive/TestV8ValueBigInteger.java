@@ -94,7 +94,7 @@ public class TestV8ValueBigInteger extends BaseTestJavetRuntime {
 
     @Test
     public void testIfTrue() throws JavetException {
-        assertTrue(v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(1)).ifTrue());
-        assertFalse(v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(0)).ifTrue());
+        assertTrue(v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(1)).asBoolean());
+        assertFalse(v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(0)).asBoolean());
     }
 }

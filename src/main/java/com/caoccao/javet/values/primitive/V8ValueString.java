@@ -57,6 +57,11 @@ public final class V8ValueString
     }
 
     @Override
+    public boolean asBoolean() {
+        return StringUtils.isNotEmpty(value);
+    }
+
+    @Override
     public double asDouble() {
         String trimmedString = value.trim();
         try {
@@ -88,11 +93,6 @@ public final class V8ValueString
             }
         }
         return 0;
-    }
-
-    @Override
-    public boolean ifTrue() {
-        return StringUtils.isNotEmpty(value);
     }
 
     @Override

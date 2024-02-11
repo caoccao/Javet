@@ -42,10 +42,10 @@ public class TestV8ValueInteger extends BaseTestJavetRuntime {
 
     @Test
     public void testIfTrue() throws JavetException {
-        assertTrue(v8Runtime.createV8ValueInteger(1).ifTrue());
-        assertFalse(v8Runtime.createV8ValueInteger(0).ifTrue());
-        assertTrue(v8Runtime.getExecutor("1").execute().ifTrue());
-        assertFalse(v8Runtime.getExecutor("0").execute().ifTrue());
+        assertTrue(v8Runtime.createV8ValueInteger(1).asBoolean());
+        assertFalse(v8Runtime.createV8ValueInteger(0).asBoolean());
+        assertTrue(v8Runtime.getExecutor("1").execute().asBoolean());
+        assertFalse(v8Runtime.getExecutor("0").execute().asBoolean());
     }
 
     @Test

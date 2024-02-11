@@ -370,7 +370,7 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                         for (Object object : list) {
                             try (V8Value result = v8ValueFunction.call(
                                     v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
-                                if (!result.ifTrue()) {
+                                if (!result.asBoolean()) {
                                     return v8Runtime.createV8ValueBoolean(false);
                                 }
                             }
@@ -452,7 +452,7 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                         for (Object object : list) {
                             try (V8Value v8ValueResult = v8ValueFunction.call(
                                     v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
-                                if (v8ValueResult.ifTrue()) {
+                                if (v8ValueResult.asBoolean()) {
                                     results.add(object);
                                 }
                             }
@@ -493,7 +493,7 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                         for (Object object : list) {
                             try (V8Value result = v8ValueFunction.call(
                                     v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
-                                if (result.ifTrue()) {
+                                if (result.asBoolean()) {
                                     return v8Runtime.toV8Value(object);
                                 }
                             }
@@ -530,7 +530,7 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                         for (Object object : list) {
                             try (V8Value result = v8ValueFunction.call(
                                     v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
-                                if (result.ifTrue()) {
+                                if (result.asBoolean()) {
                                     return v8Runtime.createV8ValueInteger(index);
                                 }
                             }
@@ -577,7 +577,7 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                             Object object = listIterator.previous();
                             try (V8Value result = v8ValueFunction.call(
                                     v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
-                                if (result.ifTrue()) {
+                                if (result.asBoolean()) {
                                     return v8Runtime.toV8Value(object);
                                 }
                             }
@@ -619,7 +619,7 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                                     listIterator.previous(),
                                     v8Runtime.createV8ValueInteger(index),
                                     thisObject)) {
-                                if (result.ifTrue()) {
+                                if (result.asBoolean()) {
                                     return v8Runtime.createV8ValueInteger(index);
                                 }
                             }
@@ -1360,7 +1360,7 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                         for (Object object : list) {
                             try (V8Value result = v8ValueFunction.call(
                                     v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
-                                if (result.ifTrue()) {
+                                if (result.asBoolean()) {
                                     return v8Runtime.createV8ValueBoolean(true);
                                 }
                             }

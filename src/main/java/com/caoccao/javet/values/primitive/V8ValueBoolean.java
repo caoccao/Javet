@@ -67,13 +67,13 @@ public final class V8ValueBoolean
     }
 
     @Override
-    public int asInt() {
-        return value ? 1 : 0;
+    public boolean asBoolean() {
+        return value;
     }
 
     @Override
-    public boolean ifTrue() {
-        return value;
+    public int asInt() {
+        return value ? 1 : 0;
     }
 
     @Override

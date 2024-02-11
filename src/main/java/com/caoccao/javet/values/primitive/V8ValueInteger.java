@@ -54,13 +54,13 @@ public final class V8ValueInteger
     }
 
     @Override
-    public int asInt() {
-        return value;
+    public boolean asBoolean() {
+        return value != 0;
     }
 
     @Override
-    public boolean ifTrue() {
-        return value != 0;
+    public int asInt() {
+        return value;
     }
 
     @Override

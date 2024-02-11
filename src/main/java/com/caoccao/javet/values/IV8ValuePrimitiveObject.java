@@ -26,6 +26,11 @@ import com.caoccao.javet.exceptions.JavetException;
  */
 public interface IV8ValuePrimitiveObject<T extends V8Value> extends IV8Value {
     @Override
+    default boolean asBoolean() throws JavetException {
+        return valueOf().asBoolean();
+    }
+
+    @Override
     default double asDouble() throws JavetException {
         return valueOf().asDouble();
     }
@@ -43,11 +48,6 @@ public interface IV8ValuePrimitiveObject<T extends V8Value> extends IV8Value {
     @Override
     default String asString() throws JavetException {
         return valueOf().asString();
-    }
-
-    @Override
-    default boolean ifTrue() throws JavetException {
-        return valueOf().ifTrue();
     }
 
     /**

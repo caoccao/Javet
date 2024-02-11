@@ -72,7 +72,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             assertEquals(9, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals("def", v8Runtime.getExecutor("a['stringValue']").executeString());
             assertEquals(10, mockAnnotationBasedCallbackReceiver.getCount());
-            assertEquals("null", v8Runtime.getExecutor("a[Symbol.for('symbolValue')]").executeString());
+            assertNull(v8Runtime.getExecutor("a[Symbol.for('symbolValue')]").executeString());
             assertEquals(11, mockAnnotationBasedCallbackReceiver.getCount());
             v8Runtime.getExecutor("a[Symbol.for('symbolValue')] = 'abc';").executeVoid();
             assertEquals(12, mockAnnotationBasedCallbackReceiver.getCount());
@@ -83,7 +83,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             assertEquals(1000, v8Runtime.getExecutor("a[Symbol.toPrimitive]").executeInteger());
             assertEquals(15, mockAnnotationBasedCallbackReceiver.getCount());
             assertEquals(19, v8ValueObject.unbind(mockAnnotationBasedCallbackReceiver));
-            assertEquals("undefined", v8Runtime.getExecutor("a['stringValue']").executeString());
+            assertNull(v8Runtime.getExecutor("a['stringValue']").executeString());
             assertEquals(15, mockAnnotationBasedCallbackReceiver.getCount());
         } finally {
             v8Runtime.lowMemoryNotification();
