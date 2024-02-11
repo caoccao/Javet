@@ -85,30 +85,45 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::byteToJSON);
             proxyGetByStringMap.put(Byte.class, polyfillFunctionMap);
+            targetObjectConstructorMap.put(
+                    Byte.class,
+                    (v8Runtime, targetObject) -> v8Runtime.createV8ValueIntegerObject((Byte) targetObject));
         }
         {
             // java.lang.Character
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::characterToJSON);
             proxyGetByStringMap.put(Character.class, polyfillFunctionMap);
+            targetObjectConstructorMap.put(
+                    Character.class,
+                    (v8Runtime, targetObject) -> v8Runtime.createV8ValueStringObject(String.valueOf(targetObject)));
         }
         {
             // java.lang.Double
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::doubleToJSON);
             proxyGetByStringMap.put(Double.class, polyfillFunctionMap);
+            targetObjectConstructorMap.put(
+                    Double.class,
+                    (v8Runtime, targetObject) -> v8Runtime.createV8ValueDoubleObject((Double) targetObject));
         }
         {
             // java.lang.Float
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::floatToJSON);
             proxyGetByStringMap.put(Float.class, polyfillFunctionMap);
+            targetObjectConstructorMap.put(
+                    Float.class,
+                    (v8Runtime, targetObject) -> v8Runtime.createV8ValueDoubleObject((Float) targetObject));
         }
         {
             // java.lang.Integer
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::integerToJSON);
             proxyGetByStringMap.put(Integer.class, polyfillFunctionMap);
+            targetObjectConstructorMap.put(
+                    Integer.class,
+                    (v8Runtime, targetObject) -> v8Runtime.createV8ValueIntegerObject((Integer) targetObject));
         }
         {
             // java.lang.Long
@@ -121,6 +136,9 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::shortToJSON);
             proxyGetByStringMap.put(Short.class, polyfillFunctionMap);
+            targetObjectConstructorMap.put(
+                    Short.class,
+                    (v8Runtime, targetObject) -> v8Runtime.createV8ValueIntegerObject((Short) targetObject));
         }
         {
             // java.lang.String
