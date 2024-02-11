@@ -25,6 +25,7 @@ import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
+import com.caoccao.javet.values.primitive.V8ValueNumber;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.*;
 
@@ -93,7 +94,7 @@ public final class V8Internal {
         return v8Runtime.contextSetLength(iV8Context, length);
     }
 
-    public V8Value doubleObjectValueOf(V8ValueDoubleObject v8ValueDoubleObject) {
+    public V8ValueNumber<?> doubleObjectValueOf(V8ValueDoubleObject v8ValueDoubleObject) {
         return v8Runtime.doubleObjectValueOf(v8ValueDoubleObject);
     }
 

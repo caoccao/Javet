@@ -22,10 +22,10 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.IV8ValuePrimitiveObject;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueNumber;
 
 /**
  * The type V8 value double object.
- * Its internal representative is either integer or double.
  *
  * @since 3.0.4
  */
@@ -62,8 +62,7 @@ public class V8ValueDoubleObject
 
     @CheckReturnValue
     @Override
-    public V8Value valueOf() throws JavetException {
-        // The value is either integer or double.
+    public V8ValueNumber<?> valueOf() throws JavetException {
         return checkV8Runtime().getV8Internal().doubleObjectValueOf(this);
     }
 }

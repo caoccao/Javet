@@ -30,7 +30,7 @@ import java.math.BigDecimal;
  */
 @SuppressWarnings("unchecked")
 public final class V8ValueDouble
-        extends V8ValuePrimitive<Double>
+        extends V8ValueNumber<Double>
         implements IV8ValuePrimitiveValue<V8ValueDoubleObject> {
     private String cachedToString;
 

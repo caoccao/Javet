@@ -987,14 +987,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * From double object to double.
+     * From double object to either double or integer.
      *
      * @param v8ValueDoubleObject the V8 value double object
-     * @return the V8 value double
+     * @return the V8 value number
      * @since 3.0.4
      */
-    V8Value doubleObjectValueOf(V8ValueDoubleObject v8ValueDoubleObject) {
-        return (V8Value) v8Native.doubleObjectValueOf(
+    V8ValueNumber<?> doubleObjectValueOf(V8ValueDoubleObject v8ValueDoubleObject) {
+        return (V8ValueNumber<?>) v8Native.doubleObjectValueOf(
                 handle, Objects.requireNonNull(v8ValueDoubleObject).getHandle(), v8ValueDoubleObject.getType().getId());
     }
 

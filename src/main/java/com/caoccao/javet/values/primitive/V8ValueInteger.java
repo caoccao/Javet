@@ -28,7 +28,7 @@ import com.caoccao.javet.values.reference.V8ValueIntegerObject;
  */
 @SuppressWarnings("unchecked")
 public final class V8ValueInteger
-        extends V8ValuePrimitive<Integer>
+        extends V8ValueNumber<Integer>
         implements IV8ValuePrimitiveValue<V8ValueIntegerObject> {
     /**
      * Instantiates a new V8 value integer.
