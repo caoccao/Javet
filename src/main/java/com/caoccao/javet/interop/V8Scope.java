@@ -249,9 +249,9 @@ public class V8Scope implements IV8Creatable, IJavetClosable {
     }
 
     @Override
-    public V8ValueProxy createV8ValueProxy(V8Value v8Value) throws JavetException {
+    public V8ValueProxy createV8ValueProxy(V8ValueObject v8ValueObject) throws JavetException {
         Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
-        return add(v8Runtime.createV8ValueProxy(v8Value));
+        return add(v8Runtime.createV8ValueProxy(v8ValueObject));
     }
 
     @Override
@@ -264,6 +264,12 @@ public class V8Scope implements IV8Creatable, IJavetClosable {
     public V8ValueString createV8ValueString(String str) throws JavetException {
         Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
         return v8Runtime.createV8ValueString(str);
+    }
+
+    @Override
+    public V8ValueStringObject createV8ValueStringObject(String str) throws JavetException {
+        Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
+        return v8Runtime.createV8ValueStringObject(Objects.requireNonNull(str));
     }
 
     @Override

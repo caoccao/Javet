@@ -41,7 +41,7 @@ import java.util.stream.IntStream;
  *
  * @since 3.0.4
  */
-public class JavetProxyPluginString extends BaseJavetProxyPluginSingle {
+public class JavetProxyPluginString extends BaseJavetProxyPluginSingle<String> {
     /**
      * The constant NAME.
      *
@@ -86,9 +86,14 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle {
     }
 
     @Override
+    protected V8Value createTargetObject(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        final String string = validateTargetObject(targetObject);
+        return v8Runtime.createV8ValueStringObject(string);
+    }
+
+    @Override
     public Object getByIndex(Object targetObject, int index) {
-        assert targetObject instanceof String : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING;
-        final String string = (String) targetObject;
+        final String string = validateTargetObject(targetObject);
         if (index >= 0 && index < string.length()) {
             return new JavetEntityObject<>(String.valueOf(string.charAt(index)));
         }
@@ -102,8 +107,7 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle {
 
     @Override
     public Object[] getProxyOwnKeys(Object targetObject) {
-        assert targetObject instanceof String : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING;
-        final String string = (String) targetObject;
+        final String string = validateTargetObject(targetObject);
         List<Object> keys = new ArrayList<>();
         IntStream.range(0, string.length()).boxed().forEach(keys::add);
         keys.add(LENGTH);
@@ -146,8 +150,7 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value length(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject instanceof String : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING;
-        final String string = (String) targetObject;
+        final String string = validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueInteger(string.length());
     }
 
@@ -164,8 +167,7 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value symbolIterator(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject instanceof String : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING;
-        final String string = (String) targetObject;
+        final String string = validateTargetObject(targetObject);
         List<V8Value> list = new ArrayList<>();
         try {
             for (char c : string.toCharArray()) {
@@ -190,8 +192,7 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value toJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject instanceof String : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING;
-        final String string = (String) targetObject;
+        final String string = validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
@@ -209,10 +210,15 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value toString(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject instanceof String : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING;
-        final String string = (String) targetObject;
+        final String string = validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_STRING, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> v8Runtime.createV8ValueString(string)));
+    }
+
+    @Override
+    protected String validateTargetObject(Object targetObject) {
+        assert targetObject instanceof String : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING;
+        return (String) targetObject;
     }
 }

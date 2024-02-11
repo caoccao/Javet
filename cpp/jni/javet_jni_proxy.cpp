@@ -25,8 +25,6 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_proxyCreate
         auto v8LocalValue = Javet::Converter::ToV8Value(jniEnv, v8Context, mTarget);
         if (v8LocalValue->IsObject()) {
             v8LocalObjectTaget = v8LocalValue.As<v8::Object>();
-        } else if (v8LocalValue->IsString()) {
-            v8LocalObjectTaget = Javet::Converter::ToV8StringObject(v8Context, v8LocalValue.As<v8::String>());
         }
     }
     if (v8LocalObjectTaget.IsEmpty()) {

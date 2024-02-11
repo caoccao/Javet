@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  * @since 3.0.4
  */
 @SuppressWarnings("unchecked")
-public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
+public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle<Map<Object, Object>> {
     /**
      * The constant NAME.
      *
@@ -117,14 +117,19 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value clear(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) targetObject;
+        final Map<Object, Object> map = validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 CLEAR, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     map.clear();
                     return v8Runtime.createV8ValueUndefined();
                 }));
+    }
+
+    @Override
+    protected V8Value createTargetObject(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        validateTargetObject(targetObject);
+        return null;
     }
 
     /**
@@ -138,8 +143,7 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value delete(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) targetObject;
+        final Map<Object, Object> map = validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 DELETE, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -153,8 +157,7 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
 
     @Override
     public boolean deleteByObject(Object targetObject, Object propertyKey) {
-        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) targetObject;
+        final Map<Object, Object> map = validateTargetObject(targetObject);
         return propertyKey != null && map.remove(propertyKey) != null;
     }
 
@@ -170,8 +173,7 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value entries(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) targetObject;
+        final Map<Object, Object> map = validateTargetObject(targetObject);
         List<List<Object>> entries = map.entrySet().stream()
                 .map(entry -> SimpleList.of(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
@@ -193,8 +195,7 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value forEach(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) targetObject;
+        final Map<Object, Object> map = validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FOR_EACH, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -225,8 +226,7 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value get(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) targetObject;
+        final Map<Object, Object> map = validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 GET, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -247,8 +247,8 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
 
     @Override
     public Object[] getProxyOwnKeys(Object targetObject) {
-        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        return ((Map<?, ?>) targetObject).keySet().toArray();
+        final Map<Object, Object> map = validateTargetObject(targetObject);
+        return map.keySet().toArray();
     }
 
     /**
@@ -273,8 +273,7 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value has(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) targetObject;
+        final Map<Object, Object> map = validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 HAS, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -288,8 +287,8 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
 
     @Override
     public boolean hasByObject(Object targetObject, Object propertyKey) {
-        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        return ((Map<?, ?>) targetObject).containsKey(propertyKey);
+        final Map<Object, Object> map = validateTargetObject(targetObject);
+        return map.containsKey(propertyKey);
     }
 
     @Override
@@ -329,8 +328,7 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value keys(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) targetObject;
+        final Map<Object, Object> map = validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 KEYS, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
@@ -339,8 +337,8 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
 
     @Override
     public void populateUniqueKeys(Set<String> uniqueKeySet, Object targetObject) {
-        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        ((Map<Object, ?>) targetObject).keySet().stream()
+        final Map<Object, Object> map = validateTargetObject(targetObject);
+        map.keySet().stream()
                 .map(Object::toString)
                 .filter(Objects::nonNull)
                 .forEach(Objects.requireNonNull(uniqueKeySet)::add);
@@ -357,8 +355,7 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value set(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<Object, Object> map = (Map<Object, Object>) targetObject;
+        final Map<Object, Object> map = validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 SET, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -382,8 +379,7 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value size(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) targetObject;
+        final Map<Object, Object> map = validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueInteger(map.size());
     }
 
@@ -397,8 +393,7 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value toJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) targetObject;
+        final Map<Object, Object> map = validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -424,11 +419,17 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value toString(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_STRING, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
                         v8Runtime.createV8ValueString(OBJECT_MAP)));
+    }
+
+    @Override
+    protected Map<Object, Object> validateTargetObject(Object targetObject) {
+        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
+        return (Map<Object, Object>) targetObject;
     }
 
     /**
@@ -443,8 +444,7 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value values(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject instanceof Map : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_MAP;
-        final Map<?, ?> map = (Map<?, ?>) targetObject;
+        final Map<Object, Object> map = validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 VALUES, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->

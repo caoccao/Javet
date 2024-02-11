@@ -1297,6 +1297,22 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_strictEquals
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    stringObjectCreate
+ * Signature: (JLjava/lang/String;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_stringObjectCreate
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    stringObjectValueOf
+ * Signature: (JJI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_stringObjectValueOf
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    symbolCreate
  * Signature: (JLjava/lang/String;)Ljava/lang/Object;
  */

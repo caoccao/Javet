@@ -16,7 +16,10 @@
 
 package com.caoccao.javet.interop.proxy.plugins;
 
+import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
+import com.caoccao.javet.values.V8Value;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +30,7 @@ import java.util.Map;
  * @since 3.0.4
  */
 @SuppressWarnings("unchecked")
-public abstract class BaseJavetProxyPluginSingle extends BaseJavetProxyPlugin {
+public abstract class BaseJavetProxyPluginSingle<T> extends BaseJavetProxyPlugin {
     /**
      * The Proxy get by string map.
      *
@@ -52,6 +55,17 @@ public abstract class BaseJavetProxyPluginSingle extends BaseJavetProxyPlugin {
         proxyGetBySymbolMap = new HashMap<>();
     }
 
+    /**
+     * Create target object.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    protected abstract V8Value createTargetObject(V8Runtime v8Runtime, Object targetObject) throws JavetException;
+
     @Override
     public <E extends Exception> IClassProxyPluginFunction<E> getProxyGetByString(
             Class<?> targetClass, String propertyName) {
@@ -67,4 +81,18 @@ public abstract class BaseJavetProxyPluginSingle extends BaseJavetProxyPlugin {
         }
         return (IClassProxyPluginFunction<E>) proxyGetBySymbolMap.get(symbolName);
     }
+
+    @Override
+    public <E extends Exception> IClassProxyPluginFunction<E> getTargetObjectConstructor(Class<?> targetClass) {
+        return this::createTargetObject;
+    }
+
+    /**
+     * Validate and return target object.
+     *
+     * @param targetObject the target object
+     * @return the typed target object
+     * @since 3.0.4
+     */
+    protected abstract T validateTargetObject(Object targetObject);
 }

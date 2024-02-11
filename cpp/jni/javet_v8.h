@@ -42,7 +42,9 @@ using V8IsolateScope = v8::Isolate::Scope;
 
 using V8LocalArray = v8::Local<v8::Array>;
 using V8LocalBigInt = v8::Local<v8::BigInt>;
+using V8LocalBigIntObject = v8::Local<v8::BigIntObject>;
 using V8LocalBoolean = v8::Local<v8::Boolean>;
+using V8LocalBooleanObject = v8::Local<v8::BooleanObject>;
 using V8LocalContext = v8::Local<v8::Context>;
 using V8LocalData = v8::Local<v8::Data>;
 using V8LocalFixedArray = v8::Local<v8::FixedArray>;
@@ -52,6 +54,7 @@ using V8LocalMap = v8::Local<v8::Map>;
 using V8LocalModule = v8::Local<v8::Module>;
 using V8LocalName = v8::Local<v8::Name>;
 using V8LocalNumber = v8::Local<v8::Number>;
+using V8LocalNumberObject = v8::Local<v8::NumberObject>;
 using V8LocalObject = v8::Local<v8::Object>;
 using V8LocalPrimitive = v8::Local<v8::Primitive>;
 using V8LocalPrimitiveArray = v8::Local<v8::PrimitiveArray>;

@@ -580,6 +580,12 @@ class V8Native implements IV8Native {
     public native boolean strictEquals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
     @Override
+    public native Object stringObjectCreate(long v8RuntimeHandle, String str);
+
+    @Override
+    public native Object stringObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native Object symbolCreate(long v8RuntimeHandle, String description);
 
     @Override

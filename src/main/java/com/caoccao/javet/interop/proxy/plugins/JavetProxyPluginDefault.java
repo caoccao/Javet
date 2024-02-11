@@ -244,6 +244,14 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
         return NAME;
     }
 
+    @Override
+    public <E extends Exception> IClassProxyPluginFunction<E> getTargetObjectConstructor(Class<?> targetClass) {
+        if (targetClass == String.class) {
+            return (v8Runtime, targetObject) -> v8Runtime.createV8ValueStringObject((String) targetObject);
+        }
+        return super.getTargetObjectConstructor(targetClass);
+    }
+
     /**
      * Polyfill Integer.toJSON().
      *

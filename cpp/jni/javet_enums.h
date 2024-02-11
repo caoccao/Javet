@@ -141,6 +141,10 @@ namespace Javet {
                 Script = 20,
                 Module = 21,
                 Context = 22,
+                BigIntObject = 23,
+                BooleanObject = 24,
+                NumberObject = 25,
+                StringObject = 26,
                 DataView = 30,
                 ArrayBuffer = 31,
                 SharedArrayBuffer = 32,
@@ -186,14 +190,18 @@ namespace Javet {
 constexpr auto IS_V8_ARRAY(jint type) { return type == Javet::Enums::V8ValueReferenceType::Array; }
 constexpr auto IS_V8_ARRAY_BUFFER(jint type) { return type == Javet::Enums::V8ValueReferenceType::ArrayBuffer; }
 constexpr auto IS_V8_ARGUMENTS(jint type) { return type == Javet::Enums::V8ValueReferenceType::Arguments; }
+constexpr auto IS_V8_BIG_INT_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::BigIntObject; }
+constexpr auto IS_V8_BOOLEAN_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::BooleanObject; }
 constexpr auto IS_V8_CONTEXT(jint type) { return type == Javet::Enums::V8ValueReferenceType::Context; }
 constexpr auto IS_V8_FUNCTION(jint type) { return type == Javet::Enums::V8ValueReferenceType::Function; }
 constexpr auto IS_V8_MAP(jint type) { return type == Javet::Enums::V8ValueReferenceType::Map; }
 constexpr auto IS_V8_MODULE(jint type) { return type == Javet::Enums::V8ValueReferenceType::Module; }
+constexpr auto IS_V8_NUMBER_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::NumberObject; }
 constexpr auto IS_V8_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::Object; }
 constexpr auto IS_V8_PROMISE(jint type) { return type == Javet::Enums::V8ValueReferenceType::Promise; }
 constexpr auto IS_V8_PROXY(jint type) { return type == Javet::Enums::V8ValueReferenceType::Proxy; }
 constexpr auto IS_V8_SCRIPT(jint type) { return type == Javet::Enums::V8ValueReferenceType::Script; }
 constexpr auto IS_V8_SET(jint type) { return type == Javet::Enums::V8ValueReferenceType::Set; }
+constexpr auto IS_V8_STRING_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::StringObject; }
 constexpr auto IS_V8_SYMBOL(jint type) { return type == Javet::Enums::V8ValueReferenceType::Symbol; }
 constexpr auto IS_V8_SYMBOL_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::SymbolObject; }

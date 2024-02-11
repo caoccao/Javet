@@ -23,6 +23,7 @@ import com.caoccao.javet.enums.V8ValueInternalType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.*;
 
 import java.util.Objects;
@@ -603,6 +604,10 @@ public final class V8Internal {
 
     public boolean strictEquals(IV8ValueObject iV8ValueObject1, IV8ValueObject iV8ValueObject2) {
         return v8Runtime.strictEquals(iV8ValueObject1, iV8ValueObject2);
+    }
+
+    public V8ValueString stringObjectValueOf(V8ValueStringObject v8ValueStringObject) {
+        return v8Runtime.stringObjectValueOf(v8ValueStringObject);
     }
 
     public String symbolDescription(V8ValueSymbol v8ValueSymbol) {

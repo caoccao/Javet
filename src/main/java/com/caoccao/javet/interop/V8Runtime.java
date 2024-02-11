@@ -752,9 +752,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Native.snapshotCreate(handle);
     }
 
-    @Override
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
+    @Override
     public V8Module createV8Module(String moduleName, IV8ValueObject iV8ValueObject) throws JavetException {
         if (StringUtils.isEmpty(moduleName)) {
             throw new JavetException(JavetError.ModuleNameEmpty);
@@ -769,23 +769,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8Module;
     }
 
-    @Override
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
+    @Override
     public V8ValueArray createV8ValueArray() throws JavetException {
         return (V8ValueArray) v8Native.arrayCreate(handle);
     }
 
-    @Override
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
+    @Override
     public V8ValueArrayBuffer createV8ValueArrayBuffer(int length) throws JavetException {
         return (V8ValueArrayBuffer) v8Native.arrayBufferCreate(handle, length);
     }
 
-    @Override
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
+    @Override
     public V8ValueArrayBuffer createV8ValueArrayBuffer(ByteBuffer byteBuffer) throws JavetException {
         Objects.requireNonNull(byteBuffer);
         assert byteBuffer.isDirect() : ERROR_BYTE_BUFFER_MUST_BE_DIRECT;
@@ -808,8 +808,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return cachedV8ValueBooleans[booleanValue ? V8_VALUE_BOOLEAN_TRUE_INDEX : V8_VALUE_BOOLEAN_FALSE_INDEX];
     }
 
-    @Override
     @CheckReturnValue
+    @Override
     public V8ValueDataView createV8ValueDataView(V8ValueArrayBuffer v8ValueArrayBuffer) throws JavetException {
         Objects.requireNonNull(v8ValueArrayBuffer);
         try (V8Value v8Value = getExecutor(PROPERTY_DATA_VIEW).execute()) {
@@ -826,15 +826,15 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return new V8ValueDouble(this, doubleValue);
     }
 
-    @Override
     @CheckReturnValue
+    @Override
     public V8ValueError createV8ValueError(V8ValueErrorType v8ValueErrorType, String message) throws JavetException {
         return (V8ValueError) v8Native.errorCreate(
                 handle, Objects.requireNonNull(v8ValueErrorType).getId(), Objects.requireNonNull(message));
     }
 
-    @Override
     @CheckReturnValue
+    @Override
     public V8ValueFunction createV8ValueFunction(JavetCallbackContext javetCallbackContext) throws JavetException {
         V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Native.functionCreate(
                 handle, Objects.requireNonNull(javetCallbackContext));
@@ -844,8 +844,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return v8ValueFunction;
     }
 
-    @Override
     @CheckReturnValue
+    @Override
     public V8ValueFunction createV8ValueFunction(String codeString) throws JavetException {
         return getExecutor(codeString).execute();
     }
@@ -859,7 +859,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     @Override
-    @CheckReturnValue
     public V8ValueLong createV8ValueLong(long longValue) throws JavetException {
         if (longValue >= V8_VALUE_NUMBER_LOWER_BOUND && longValue < V8_VALUE_NUMBER_UPPER_BOUND) {
             return cachedV8ValueLongs[(int) longValue - V8_VALUE_NUMBER_LOWER_BOUND];
@@ -867,9 +866,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return new V8ValueLong(this, longValue);
     }
 
-    @Override
     @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
+    @Override
     public V8ValueMap createV8ValueMap() throws JavetException {
         return (V8ValueMap) v8Native.mapCreate(handle);
     }
@@ -879,30 +878,30 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return cachedV8ValueNull;
     }
 
-    @Override
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
+    @Override
     public V8ValueObject createV8ValueObject() throws JavetException {
         return (V8ValueObject) v8Native.objectCreate(handle);
     }
 
-    @Override
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
+    @Override
     public V8ValuePromise createV8ValuePromise() throws JavetException {
         return (V8ValuePromise) v8Native.promiseCreate(handle);
     }
 
-    @Override
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
-    public V8ValueProxy createV8ValueProxy(V8Value v8Value) throws JavetException {
-        return (V8ValueProxy) v8Native.proxyCreate(handle, v8Value);
+    @Override
+    public V8ValueProxy createV8ValueProxy(V8ValueObject v8ValueObject) throws JavetException {
+        return (V8ValueProxy) v8Native.proxyCreate(handle, v8ValueObject);
     }
 
-    @Override
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
+    @Override
     public V8ValueSet createV8ValueSet() throws JavetException {
         return (V8ValueSet) v8Native.setCreate(handle);
     }
@@ -910,6 +909,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     public V8ValueString createV8ValueString(String str) throws JavetException {
         return new V8ValueString(this, str);
+    }
+
+    @SuppressWarnings("RedundantThrows")
+    @CheckReturnValue
+    @Override
+    public V8ValueStringObject createV8ValueStringObject(String str) throws JavetException {
+        return (V8ValueStringObject) v8Native.stringObjectCreate(handle, str);
     }
 
     @Override
@@ -3424,6 +3430,17 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * From string object to string.
+     *
+     * @param v8ValueStringObject the V8 value string object
+     * @return the V8 value string
+     */
+    V8ValueString stringObjectValueOf(V8ValueStringObject v8ValueStringObject) {
+        return (V8ValueString) v8Native.stringObjectValueOf(
+                handle, Objects.requireNonNull(v8ValueStringObject).getHandle(), v8ValueStringObject.getType().getId());
+    }
+
+    /**
      * Symbol description.
      *
      * @param v8ValueSymbol the V8 value symbol
@@ -3436,14 +3453,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Symbol.prototype.valueOf().
-     * The valueOf() method of Symbol values returns this symbol value.
+     * From symbol object to symbol.
      *
      * @param v8ValueSymbolObject the V8 value symbol object
      * @return the V8 value symbol
      * @since 3.0.4
      */
-    public V8ValueSymbol symbolObjectValueOf(V8ValueSymbolObject v8ValueSymbolObject) {
+    V8ValueSymbol symbolObjectValueOf(V8ValueSymbolObject v8ValueSymbolObject) {
         return (V8ValueSymbol) v8Native.symbolObjectValueOf(
                 handle, Objects.requireNonNull(v8ValueSymbolObject).getHandle(), v8ValueSymbolObject.getType().getId());
     }
@@ -3453,8 +3469,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      *
      * @param v8ValueSymbol the V8 value symbol
      * @return the V8 value symbol object
+     * @since 3.0.4
      */
-    public V8ValueSymbolObject symbolToObject(V8ValueSymbol v8ValueSymbol) {
+    V8ValueSymbolObject symbolToObject(V8ValueSymbol v8ValueSymbol) {
         return (V8ValueSymbolObject) v8Native.symbolToObject(
                 handle, Objects.requireNonNull(v8ValueSymbol).getHandle(), v8ValueSymbol.getType().getId());
     }

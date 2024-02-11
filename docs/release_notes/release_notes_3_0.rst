@@ -11,7 +11,8 @@ Release Notes 3.0.x
 * Added ``IClassProxyPlugin``, ``JavetProxyPluginArray``, ``JavetProxyPluginClass``, ``JavetProxyPluginDefault``, ``JavetProxyPluginList``, ``JavetProxyPluginMap``, ``JavetProxyPluginSet``
 * Added ``V8ValueBuiltInReflect``, ``JavetEntityObject``, ``JavetEntityPropertyDescriptor``
 * Added ``BindingContextStore``, ``ClassDescriptorStore``
-* Added ``createV8ValueError()``, ``throwError()`` to ``V8Runtime``
+* Added ``createV8ValueStringObject()``, ``createV8ValueError()``, ``throwError()`` to ``V8Runtime``
+* Added ``V8ValueStringObject``
 * Added ``V8ValueErrorType``, ``V8ErrorTemplate``, ``JavetEntityError``
 * Added ``getErrorType()`` to ``V8ValueError``
 * Added ``getProxyPlugins()``, ``isProxyArrayEnabled()``, ``setProxyArrayEnabled()``, to ``JavetConverterConfig``

@@ -18,6 +18,7 @@ package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.reference.V8ValueStringObject;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -61,6 +62,27 @@ public class TestV8ValueString extends BaseTestJavetRuntime {
         assertEquals("中文測試", v8Runtime.getExecutor("'中文測試'").executeString());
         assertEquals("français", v8Runtime.getExecutor("'français'").executeString());
         assertEquals("こにちは", v8Runtime.getExecutor("'こにちは'").executeString());
+    }
+
+    @Test
+    public void testStringObject() throws JavetException {
+        try (V8ValueString v8ValueString1 = v8Runtime.createV8ValueString("test")) {
+            try (V8ValueStringObject v8ValueStringObject = v8ValueString1.toObject()) {
+                try (V8ValueString v8ValueString2 = v8ValueStringObject.valueOf()) {
+                    assertEquals("test", v8ValueString2.getValue());
+                }
+            }
+        }
+        try (V8ValueStringObject v8ValueStringObject = v8Runtime.createV8ValueStringObject("test")) {
+            try (V8ValueString v8ValueString = v8ValueStringObject.valueOf()) {
+                assertEquals("test", v8ValueString.getValue());
+            }
+        }
+        try (V8ValueStringObject v8ValueStringObject = v8Runtime.getExecutor("new String('test')").execute()) {
+            try (V8ValueString v8ValueString = v8ValueStringObject.valueOf()) {
+                assertEquals("test", v8ValueString.getValue());
+            }
+        }
     }
 
     @Test

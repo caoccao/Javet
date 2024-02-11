@@ -33,7 +33,6 @@ import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueProxy;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * The type Javet proxy converter converts most of Java objects to
@@ -87,12 +86,13 @@ public class JavetProxyConverter extends JavetObjectConverter {
             v8Value = v8Runtime.createV8ValueUndefined();
         } else {
             V8ProxyMode proxyMode = V8ProxyMode.Object;
+            Class<?> objectClass = object.getClass();
             if (object instanceof Class) {
                 if (V8ProxyMode.isClassMode((Class<?>) object)) {
                     proxyMode = V8ProxyMode.Class;
                 }
-            } else if (object.getClass().isAnnotationPresent(V8Convert.class)) {
-                V8Convert v8Convert = object.getClass().getAnnotation(V8Convert.class);
+            } else if (objectClass.isAnnotationPresent(V8Convert.class)) {
+                V8Convert v8Convert = objectClass.getAnnotation(V8Convert.class);
                 if (v8Convert.proxyMode() == V8ProxyMode.Function) {
                     proxyMode = V8ProxyMode.Function;
                 }
@@ -107,15 +107,20 @@ public class JavetProxyConverter extends JavetObjectConverter {
                         }
                         break;
                     default:
-                        V8Value v8ValueTarget = null;
+                        V8ValueObject v8ValueTarget = null;
                         try {
-                            if (object instanceof List || object.getClass().isArray()) {
-                                v8ValueTarget = v8Runtime.createV8ValueArray();
-                            } else if (object instanceof Set) {
-                                v8ValueTarget = v8Runtime.createV8ValueSet();
-                            } else if (object instanceof String) {
-                                v8ValueTarget = v8Runtime.createV8ValueString((String) object);
-                            }
+                            v8ValueTarget = (V8ValueObject) getConfig().getProxyPlugins().stream()
+                                    .filter(p -> p.isProxyable(objectClass))
+                                    .findFirst()
+                                    .map(p -> p.getTargetObjectConstructor(objectClass))
+                                    .map(f -> {
+                                        try {
+                                            return f.invoke(v8Runtime, object);
+                                        } catch (Throwable ignored) {
+                                        }
+                                        return null;
+                                    })
+                                    .orElse(null);
                             v8ValueProxy = v8Scope.createV8ValueProxy(v8ValueTarget);
                         } finally {
                             JavetResourceUtils.safeClose(v8ValueTarget);

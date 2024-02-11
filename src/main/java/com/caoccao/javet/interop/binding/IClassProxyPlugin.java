@@ -107,6 +107,16 @@ public interface IClassProxyPlugin {
     <E extends Exception> IClassProxyPluginFunction<E> getProxySymbolToPrimitive();
 
     /**
+     * Gets target object constructor.
+     *
+     * @param <E>         the type parameter
+     * @param targetClass the target class
+     * @return the target object constructor
+     * @since 3.0.4
+     */
+    <E extends Exception> IClassProxyPluginFunction<E> getTargetObjectConstructor(Class<?> targetClass);
+
+    /**
      * Has by object property.
      *
      * @param targetObject the target object

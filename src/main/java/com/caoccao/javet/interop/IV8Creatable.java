@@ -21,7 +21,6 @@ import com.caoccao.javet.enums.V8ValueErrorType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
-import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
 
@@ -237,13 +236,13 @@ public interface IV8Creatable {
     /**
      * Create V8 value proxy.
      *
-     * @param v8Value the V8 value
+     * @param v8ValueObject the V8 value object
      * @return the V8 value proxy
      * @throws JavetException the javet exception
      * @since 0.9.6
      */
     @CheckReturnValue
-    V8ValueProxy createV8ValueProxy(V8Value v8Value) throws JavetException;
+    V8ValueProxy createV8ValueProxy(V8ValueObject v8ValueObject) throws JavetException;
 
     /**
      * Create V8 value set.
@@ -264,6 +263,16 @@ public interface IV8Creatable {
      * @since 0.8.5
      */
     V8ValueString createV8ValueString(String str) throws JavetException;
+
+    /**
+     * Create V8 value string object from string.
+     *
+     * @param str the str
+     * @return the V8 value string object
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    V8ValueStringObject createV8ValueStringObject(String str) throws JavetException;
 
     /**
      * Create V8 value symbol.

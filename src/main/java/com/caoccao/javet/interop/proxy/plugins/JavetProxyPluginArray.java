@@ -46,7 +46,7 @@ import java.util.stream.Stream;
  * @since 3.0.4
  */
 @SuppressWarnings("unchecked")
-public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
+public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
     /**
      * The constant NAME.
      *
@@ -184,7 +184,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value at(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 AT, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -212,7 +212,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value concat(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 CONCAT, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -255,7 +255,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value copyWithin(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 COPY_WITHIN, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -303,8 +303,14 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
     }
 
     @Override
+    protected V8Value createTargetObject(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        validateTargetObject(targetObject);
+        return v8Runtime.createV8ValueArray();
+    }
+
+    @Override
     public boolean deleteByObject(Object targetObject, Object propertyKey) {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         if (propertyKey instanceof String) {
             String propertyName = (String) propertyKey;
             if (StringUtils.isDigital(propertyName)) {
@@ -333,7 +339,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value entries(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         final int length = Array.getLength(targetObject);
         List<List<Object>> entries = IntStream.range(0, length)
                 .mapToObj(i -> SimpleList.of(i, Array.get(targetObject, i)))
@@ -356,7 +362,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value every(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 EVERY, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -393,7 +399,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value fill(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FILL, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -439,7 +445,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value filter(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FILTER, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -484,7 +490,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value find(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FIND, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -524,7 +530,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value findIndex(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FIND_INDEX, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -571,7 +577,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value findLast(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FIND_LAST, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -612,7 +618,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value findLastIndex(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FIND_LAST_INDEX, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -648,7 +654,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value flat(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FLAT, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -674,7 +680,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value flatMap(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FLAT_MAP, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -712,7 +718,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value forEach(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 FOR_EACH, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -735,7 +741,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
 
     @Override
     public Object getByIndex(Object targetObject, int index) {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         if (index >= 0 && index < Array.getLength(targetObject)) {
             return Array.get(targetObject, index);
         }
@@ -749,7 +755,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
 
     @Override
     public Object[] getProxyOwnKeys(Object targetObject) {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         List<Object> keys = new ArrayList<>();
         IntStream.range(0, Array.getLength(targetObject)).boxed().forEach(keys::add);
         keys.add(LENGTH);
@@ -780,7 +786,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
 
     @Override
     public boolean hasByObject(Object targetObject, Object propertyKey) {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         if (propertyKey instanceof String) {
             String propertyName = (String) propertyKey;
             if (StringUtils.isDigital(propertyName)) {
@@ -803,7 +809,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value includes(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 INCLUDES, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -838,7 +844,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value indexOf(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 INDEX_OF, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -899,7 +905,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value join(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 JOIN, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -923,7 +929,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value keys(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 KEYS, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -949,7 +955,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value lastIndexOf(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 LAST_INDEX_OF, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -984,7 +990,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value length(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueInteger(Array.getLength(targetObject));
     }
 
@@ -1000,7 +1006,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value map(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 MAP, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -1037,7 +1043,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value pop(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 POP, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -1060,7 +1066,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value push(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 PUSH, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -1088,7 +1094,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value reduce(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 REDUCE, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -1167,7 +1173,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value reduceRight(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 REDUCE, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -1245,7 +1251,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value reverse(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 REVERSE, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -1256,7 +1262,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
 
     @Override
     public boolean setByIndex(Object targetObject, int index, Object value) {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         if (index >= 0 && index < Array.getLength(targetObject)) {
             Array.set(targetObject, index, value);
             return true;
@@ -1276,7 +1282,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value shift(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 SHIFT, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -1300,7 +1306,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value slice(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 SLICE, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -1346,7 +1352,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value some(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 SOME, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -1388,7 +1394,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value sort(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 SORT, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -1438,7 +1444,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value splice(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 SPLICE, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -1459,7 +1465,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value toJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
@@ -1478,7 +1484,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value toReversed(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_REVERSED, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
@@ -1502,7 +1508,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value toSorted(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_SORTED, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -1544,7 +1550,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value toSpliced(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_SPLICED, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -1593,7 +1599,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value toString(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_STRING, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -1616,7 +1622,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value unshift(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 UNSHIFT, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
@@ -1625,6 +1631,12 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
                             V8ErrorTemplate.typeErrorFunctionIsNotSupported(UNSHIFT));
                     return v8Runtime.createV8ValueUndefined();
                 }));
+    }
+
+    @Override
+    protected Object validateTargetObject(Object targetObject) {
+        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        return targetObject;
     }
 
     /**
@@ -1639,7 +1651,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value values(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         final int length = Array.getLength(targetObject);
         List<Object> values = new ArrayList<>(length);
         ListUtils.addAll(values, targetObject);
@@ -1661,7 +1673,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle {
      * @since 3.0.4
      */
     public V8Value with(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        assert targetObject != null && targetObject.getClass().isArray() : ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY;
+        validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 WITH, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {

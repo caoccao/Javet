@@ -151,6 +151,10 @@ namespace Javet {
         jmethodID jmethodIDV8ValueSharedArrayBufferConstructor;
         jmethodID jmethodIDV8ValueSharedArrayBufferGetHandle;
 
+        jclass jclassV8ValueStringObject;
+        jmethodID jmethodIDV8ValueStringObjectConstructor;
+        jmethodID jmethodIDV8ValueStringObjectGetHandle;
+
         jmethodID jmethodIDV8ValueSymbolConstructor;
         jmethodID jmethodIDV8ValueSymbolGetHandle;
 
@@ -449,6 +453,10 @@ namespace Javet {
             jclassV8ValueSharedArrayBuffer = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueSharedArrayBuffer");
             jmethodIDV8ValueSharedArrayBufferConstructor = jniEnv->GetMethodID(jclassV8ValueSharedArrayBuffer, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;JLjava/nio/ByteBuffer;)V");
             jmethodIDV8ValueSharedArrayBufferGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueSharedArrayBuffer);
+
+            jclassV8ValueStringObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueStringObject");
+            jmethodIDV8ValueStringObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueStringObject);
+            jmethodIDV8ValueStringObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueStringObject);
 
             jclassV8ValueSymbol = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueSymbol");
             jmethodIDV8ValueSymbolConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueSymbol);
@@ -848,7 +856,14 @@ namespace Javet {
                     jmethodIDV8RuntimeCreateV8ValueDouble,
                     v8Value->NumberValue(v8Context).FromMaybe(0));
             }
-            if (v8Value->IsString() || v8Value->IsStringObject()) {
+            if (v8Value->IsStringObject()) {
+                return jniEnv->NewObject(
+                    jclassV8ValueStringObject,
+                    jmethodIDV8ValueStringObjectConstructor,
+                    v8Runtime->externalV8Runtime,
+                    ToV8PersistentReference(v8Context, v8Value));
+            }
+            if (v8Value->IsString()) {
                 return ToExternalV8ValuePrimitive(
                     jniEnv,
                     jclassV8ValueString,

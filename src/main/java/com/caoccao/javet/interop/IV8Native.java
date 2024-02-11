@@ -382,6 +382,10 @@ public interface IV8Native {
 
     boolean strictEquals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
+    Object stringObjectCreate(long v8RuntimeHandle, String str);
+
+    Object stringObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     Object symbolCreate(long v8RuntimeHandle, String description);
 
     String symbolDescription(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

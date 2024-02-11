@@ -133,6 +133,11 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
     }
 
     @Override
+    public <E extends Exception> IClassProxyPluginFunction<E> getTargetObjectConstructor(Class<?> targetClass) {
+        return (v8Runtime, targetObject) -> null;
+    }
+
+    @Override
     public boolean hasByObject(Object targetObject, Object propertyKey) {
         return false;
     }
