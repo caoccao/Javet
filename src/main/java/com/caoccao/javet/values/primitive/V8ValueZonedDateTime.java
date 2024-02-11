@@ -38,6 +38,16 @@ public final class V8ValueZonedDateTime extends V8ValuePrimitive<ZonedDateTime> 
     }
 
     @Override
+    public int asInt() throws JavetException {
+        return ifTrue() ? 1 : 0;
+    }
+
+    @Override
+    public boolean ifTrue() {
+        return value != null;
+    }
+
+    @Override
     public V8ValueZonedDateTime toClone(boolean referenceCopy) throws JavetException {
         return this;
     }

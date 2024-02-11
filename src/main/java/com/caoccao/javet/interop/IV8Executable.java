@@ -75,7 +75,13 @@ public interface IV8Executable extends IV8Convertible {
      * @since 0.8.0
      */
     default Boolean executeBoolean() throws JavetException {
-        return executePrimitive();
+        try (V8Value v8Value = execute()) {
+            return v8Value.ifTrue();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     /**
@@ -86,7 +92,13 @@ public interface IV8Executable extends IV8Convertible {
      * @since 0.8.0
      */
     default Double executeDouble() throws JavetException {
-        return executePrimitive();
+        try (V8Value v8Value = execute()) {
+            return v8Value.asDouble();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     /**
@@ -97,7 +109,13 @@ public interface IV8Executable extends IV8Convertible {
      * @since 0.8.0
      */
     default Integer executeInteger() throws JavetException {
-        return executePrimitive();
+        try (V8Value v8Value = execute()) {
+            return v8Value.asInt();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     /**
@@ -156,7 +174,13 @@ public interface IV8Executable extends IV8Convertible {
      * @since 0.8.10
      */
     default String executeString() throws JavetException {
-        return executePrimitive();
+        try (V8Value v8Value = execute()) {
+            return v8Value.asString();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /**

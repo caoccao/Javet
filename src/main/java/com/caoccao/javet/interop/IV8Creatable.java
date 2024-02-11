@@ -140,6 +140,16 @@ public interface IV8Creatable {
     V8ValueDouble createV8ValueDouble(double doubleValue) throws JavetException;
 
     /**
+     * Create V8 value double object.
+     *
+     * @param doubleValue the double value
+     * @return the V8 value double object
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    V8ValueDoubleObject createV8ValueDoubleObject(double doubleValue) throws JavetException;
+
+    /**
      * Create V8 value error by type and message.
      *
      * @param v8ValueErrorType the V8 value error type
@@ -182,6 +192,16 @@ public interface IV8Creatable {
      * @since 0.7.4
      */
     V8ValueInteger createV8ValueInteger(int integerValue) throws JavetException;
+
+    /**
+     * Create V8 value int object.
+     *
+     * @param intValue the int value
+     * @return the V8 value integer object
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    V8ValueIntegerObject createV8ValueIntegerObject(int intValue) throws JavetException;
 
     /**
      * Create V8 value long.

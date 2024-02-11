@@ -143,8 +143,9 @@ namespace Javet {
                 Context = 22,
                 BigIntObject = 23,
                 BooleanObject = 24,
-                NumberObject = 25,
-                StringObject = 26,
+                IntegerObject = 25,
+                DoubleObject = 26,
+                StringObject = 27,
                 DataView = 30,
                 ArrayBuffer = 31,
                 SharedArrayBuffer = 32,
@@ -193,10 +194,11 @@ constexpr auto IS_V8_ARGUMENTS(jint type) { return type == Javet::Enums::V8Value
 constexpr auto IS_V8_BIG_INT_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::BigIntObject; }
 constexpr auto IS_V8_BOOLEAN_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::BooleanObject; }
 constexpr auto IS_V8_CONTEXT(jint type) { return type == Javet::Enums::V8ValueReferenceType::Context; }
+constexpr auto IS_V8_DOUBLE_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::DoubleObject; }
 constexpr auto IS_V8_FUNCTION(jint type) { return type == Javet::Enums::V8ValueReferenceType::Function; }
+constexpr auto IS_V8_INTEGER_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::IntegerObject; }
 constexpr auto IS_V8_MAP(jint type) { return type == Javet::Enums::V8ValueReferenceType::Map; }
 constexpr auto IS_V8_MODULE(jint type) { return type == Javet::Enums::V8ValueReferenceType::Module; }
-constexpr auto IS_V8_NUMBER_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::NumberObject; }
 constexpr auto IS_V8_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::Object; }
 constexpr auto IS_V8_PROMISE(jint type) { return type == Javet::Enums::V8ValueReferenceType::Promise; }
 constexpr auto IS_V8_PROXY(jint type) { return type == Javet::Enums::V8ValueReferenceType::Proxy; }

@@ -1141,7 +1141,13 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.7.0
      */
     default String invokeString(String functionName, Object... objects) throws JavetException {
-        return invokePrimitive(functionName, objects);
+        try (V8Value v8Value = invokeExtended(functionName, true, objects)) {
+            return v8Value.asString();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     /**

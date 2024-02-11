@@ -25,6 +25,26 @@ import com.caoccao.javet.exceptions.JavetException;
  * @since 3.0.4
  */
 public interface IV8ValuePrimitiveObject<T extends V8Value> extends IV8Value {
+    @Override
+    default double asDouble() throws JavetException {
+        return valueOf().asDouble();
+    }
+
+    @Override
+    default int asInt() throws JavetException {
+        return valueOf().asInt();
+    }
+
+    @Override
+    default String asString() throws JavetException {
+        return valueOf().asString();
+    }
+
+    @Override
+    default boolean ifTrue() throws JavetException {
+        return valueOf().ifTrue();
+    }
+
     /**
      * Get the primitive value of the primitive object.
      *

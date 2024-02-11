@@ -21,36 +21,47 @@ import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.IV8ValuePrimitiveObject;
-import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.primitive.V8ValueInteger;
 
 /**
- * The type V8 value string object.
+ * The type V8 value integer object.
  *
  * @since 3.0.4
  */
-public class V8ValueStringObject
+public class V8ValueIntegerObject
         extends V8ValueObject
-        implements IV8ValuePrimitiveObject<V8ValueString> {
+        implements IV8ValuePrimitiveObject<V8ValueInteger> {
     /**
-     * Instantiates a new V8 value string object.
+     * Instantiates a new V8 value integer object.
      *
      * @param v8Runtime the V8 runtime
      * @param handle    the handle
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    V8ValueStringObject(V8Runtime v8Runtime, long handle) throws JavetException {
+    public V8ValueIntegerObject(V8Runtime v8Runtime, long handle) throws JavetException {
         super(v8Runtime, handle);
     }
 
     @Override
     public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.StringObject;
+        return V8ValueReferenceType.IntegerObject;
+    }
+
+    /**
+     * Convert to double object.
+     *
+     * @return the V8 value double object
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public V8ValueDoubleObject toDoubleObject() throws JavetException {
+        return new V8ValueDoubleObject(v8Runtime, handle);
     }
 
     @CheckReturnValue
     @Override
-    public V8ValueString valueOf() throws JavetException {
-        return checkV8Runtime().getV8Internal().stringObjectValueOf(this);
+    public V8ValueInteger valueOf() throws JavetException {
+        return checkV8Runtime().getV8Internal().integerObjectValueOf(this);
     }
 }

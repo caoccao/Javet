@@ -21,36 +21,49 @@ import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.IV8ValuePrimitiveObject;
-import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.V8Value;
 
 /**
- * The type V8 value string object.
+ * The type V8 value double object.
+ * Its internal representative is either integer or double.
  *
  * @since 3.0.4
  */
-public class V8ValueStringObject
+public class V8ValueDoubleObject
         extends V8ValueObject
-        implements IV8ValuePrimitiveObject<V8ValueString> {
+        implements IV8ValuePrimitiveObject<V8Value> {
     /**
-     * Instantiates a new V8 value string object.
+     * Instantiates a new V8 value double object.
      *
      * @param v8Runtime the V8 runtime
      * @param handle    the handle
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    V8ValueStringObject(V8Runtime v8Runtime, long handle) throws JavetException {
+    public V8ValueDoubleObject(V8Runtime v8Runtime, long handle) throws JavetException {
         super(v8Runtime, handle);
     }
 
     @Override
     public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.StringObject;
+        return V8ValueReferenceType.DoubleObject;
+    }
+
+    /**
+     * Convert to integer object.
+     *
+     * @return the V8 value integer object
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public V8ValueIntegerObject toIntegerObject() throws JavetException {
+        return new V8ValueIntegerObject(v8Runtime, handle);
     }
 
     @CheckReturnValue
     @Override
-    public V8ValueString valueOf() throws JavetException {
-        return checkV8Runtime().getV8Internal().stringObjectValueOf(this);
+    public V8Value valueOf() throws JavetException {
+        // The value is either integer or double.
+        return checkV8Runtime().getV8Internal().doubleObjectValueOf(this);
     }
 }

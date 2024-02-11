@@ -109,6 +109,10 @@ namespace Javet {
         jmethodID jmethodIDV8ValueDataViewConstructor;
         jmethodID jmethodIDV8ValueDataViewGetHandle;
 
+        jclass jclassV8ValueDoubleObject;
+        jmethodID jmethodIDV8ValueDoubleObjectConstructor;
+        jmethodID jmethodIDV8ValueDoubleObjectGetHandle;
+
         jclass jclassV8ValueFunction;
         jmethodID jmethodIDV8ValueFunctionConstructor;
         jmethodID jmethodIDV8ValueFunctionGetHandle;
@@ -120,6 +124,10 @@ namespace Javet {
         jclass jclassV8ValueGlobalObject;
         jmethodID jmethodIDV8ValueGlobalObjectConstructor;
         jmethodID jmethodIDV8ValueGlobalObjectGetHandle;
+
+        jclass jclassV8ValueIntegerObject;
+        jmethodID jmethodIDV8ValueIntegerObjectConstructor;
+        jmethodID jmethodIDV8ValueIntegerObjectGetHandle;
 
         jclass jclassV8ValueIterator;
         jmethodID jmethodIDV8ValueIteratorConstructor;
@@ -416,6 +424,10 @@ namespace Javet {
             jmethodIDV8ValueDataViewConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueDataView);
             jmethodIDV8ValueDataViewGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueDataView);
 
+            jclassV8ValueDoubleObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueDoubleObject");
+            jmethodIDV8ValueDoubleObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueDoubleObject);
+            jmethodIDV8ValueDoubleObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueDoubleObject);
+
             jclassV8ValueFunction = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueFunction");
             jmethodIDV8ValueFunctionConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueFunction);
             jmethodIDV8ValueFunctionGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueFunction);
@@ -427,6 +439,10 @@ namespace Javet {
             jclassV8ValueGlobalObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueGlobalObject");
             jmethodIDV8ValueGlobalObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueGlobalObject);
             jmethodIDV8ValueGlobalObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueGlobalObject);
+
+            jclassV8ValueIntegerObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueIntegerObject");
+            jmethodIDV8ValueIntegerObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueIntegerObject);
+            jmethodIDV8ValueIntegerObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueIntegerObject);
 
             jclassV8ValueIterator = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueIterator");
             jmethodIDV8ValueIteratorConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueIterator);
@@ -820,6 +836,13 @@ namespace Javet {
                     v8Runtime->externalV8Runtime,
                     ToV8PersistentReference(v8Context, v8Value));
             }
+            if (v8Value->IsNumberObject()) {
+                return jniEnv->NewObject(
+                    jclassV8ValueDoubleObject,
+                    jmethodIDV8ValueDoubleObjectConstructor,
+                    v8Runtime->externalV8Runtime,
+                    ToV8PersistentReference(v8Context, v8Value));
+            }
             if (v8Value->IsBooleanObject()) {
                 return jniEnv->NewObject(
                     jclassV8ValueBooleanObject,
@@ -872,7 +895,7 @@ namespace Javet {
                     jmethodIDV8RuntimeCreateV8ValueZonedDateTime,
                     static_cast<std::int64_t>(v8Date->ValueOf()));
             }
-            if (v8Value->IsNumber() || v8Value->IsNumberObject()) {
+            if (v8Value->IsNumber()) {
                 return jniEnv->CallObjectMethod(
                     v8Runtime->externalV8Runtime,
                     jmethodIDV8RuntimeCreateV8ValueDouble,

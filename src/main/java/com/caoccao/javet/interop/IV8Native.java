@@ -69,6 +69,10 @@ public interface IV8Native {
 
     long createV8Runtime(Object runtimeOptions);
 
+    Object doubleObjectCreate(long v8RuntimeHandle, double doubleValue);
+
+    Object doubleObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     boolean equals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
     Object errorCreate(long v8RuntimeHandle, int v8ValueErrorTypeId, String message);
@@ -149,6 +153,10 @@ public interface IV8Native {
     boolean hasScheduledException(long v8RuntimeHandle);
 
     void idleNotificationDeadline(long v8RuntimeHandle, long deadlineInMillis);
+
+    Object integerObjectCreate(long v8RuntimeHandle, int intValue);
+
+    Object integerObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     boolean isDead(long v8RuntimeHandle);
 

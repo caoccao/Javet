@@ -83,6 +83,14 @@ public class TestV8ValueString extends BaseTestJavetRuntime {
                 assertEquals("test", v8ValueString.getValue());
             }
         }
+        assertTrue(v8Runtime.getExecutor("'abc'").executeBoolean());
+        assertTrue(v8Runtime.getExecutor("new String('abc')").executeBoolean());
+        assertEquals(1.23, v8Runtime.getExecutor("'1.23'").executeDouble(), DELTA);
+        assertEquals(1.23, v8Runtime.getExecutor("new String('1.23')").executeDouble(), DELTA);
+        assertEquals(1, v8Runtime.getExecutor("'1'").executeInteger());
+        assertEquals(1, v8Runtime.getExecutor("new String('1')").executeInteger());
+        assertEquals("test", v8Runtime.getExecutor("'test'").executeString());
+        assertEquals("test", v8Runtime.getExecutor("new String('test')").executeString());
     }
 
     @Test

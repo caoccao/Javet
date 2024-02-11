@@ -843,6 +843,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return new V8ValueDouble(this, doubleValue);
     }
 
+    @Override
+    public V8ValueDoubleObject createV8ValueDoubleObject(double doubleValue) throws JavetException {
+        return (V8ValueDoubleObject) v8Native.doubleObjectCreate(handle, doubleValue);
+    }
+
     @CheckReturnValue
     @Override
     public V8ValueError createV8ValueError(V8ValueErrorType v8ValueErrorType, String message) throws JavetException {
@@ -873,6 +878,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             return cachedV8ValueIntegers[integerValue - V8_VALUE_NUMBER_LOWER_BOUND];
         }
         return new V8ValueInteger(this, integerValue);
+    }
+
+    @Override
+    public V8ValueIntegerObject createV8ValueIntegerObject(int intValue) throws JavetException {
+        // V8 NumberObject is always mapped to double. An internal conversion is required.
+        return ((V8ValueDoubleObject) v8Native.integerObjectCreate(handle, intValue)).toIntegerObject();
     }
 
     @Override
@@ -973,6 +984,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     public V8ValueZonedDateTime createV8ValueZonedDateTime(ZonedDateTime zonedDateTime) throws JavetException {
         return new V8ValueZonedDateTime(this, zonedDateTime);
+    }
+
+    /**
+     * From double object to double.
+     *
+     * @param v8ValueDoubleObject the V8 value double object
+     * @return the V8 value double
+     * @since 3.0.4
+     */
+    V8Value doubleObjectValueOf(V8ValueDoubleObject v8ValueDoubleObject) {
+        return (V8Value) v8Native.doubleObjectValueOf(
+                handle, Objects.requireNonNull(v8ValueDoubleObject).getHandle(), v8ValueDoubleObject.getType().getId());
     }
 
     /**
@@ -1696,6 +1719,19 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         } catch (JavetException e) {
             logger.logError(e, e.getMessage());
         }
+    }
+
+    /**
+     * From integer object to integer.
+     *
+     * @param v8ValueIntegerObject the V8 value integer object
+     * @return the V8 value integer
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    V8ValueInteger integerObjectValueOf(V8ValueIntegerObject v8ValueIntegerObject) throws JavetException {
+        return (V8ValueInteger) v8Native.integerObjectValueOf(
+                handle, Objects.requireNonNull(v8ValueIntegerObject).getHandle(), v8ValueIntegerObject.getType().getId());
     }
 
     @Override

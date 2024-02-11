@@ -30,6 +30,17 @@ import com.caoccao.javet.values.primitive.V8ValueUndefined;
  */
 public interface IV8Value extends IJavetClosable, IV8Cloneable {
     /**
+     * As double.
+     *
+     * @return the double value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    default double asDouble() throws JavetException {
+        return asInt();
+    }
+
+    /**
      * As int.
      *
      * @return the int value
@@ -38,6 +49,17 @@ public interface IV8Value extends IJavetClosable, IV8Cloneable {
      */
     default int asInt() throws JavetException {
         return 0;
+    }
+
+    /**
+     * As string.
+     *
+     * @return the string value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    default String asString() throws JavetException {
+        return toString();
     }
 
     /**
@@ -64,9 +86,10 @@ public interface IV8Value extends IJavetClosable, IV8Cloneable {
      * A simulation of the JS <code>if (variable)</code>
      *
      * @return true : yes, false : no
+     * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    default boolean ifTrue() {
+    default boolean ifTrue() throws JavetException {
         return true;
     }
 

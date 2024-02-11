@@ -31,6 +31,19 @@ public final class V8ValueBoolean
         extends V8ValuePrimitive<Boolean>
         implements IV8ValuePrimitiveValue<V8ValueBooleanObject> {
     /**
+     * The constant FALSE.
+     *
+     * @since 3.0.4
+     */
+    public static final String FALSE = "false";
+    /**
+     * The constant TRUE.
+     *
+     * @since 3.0.4
+     */
+    public static final String TRUE = "true";
+
+    /**
      * Instantiates a new V8 value boolean.
      *
      * @param v8Runtime the V8 runtime
@@ -81,5 +94,10 @@ public final class V8ValueBoolean
      */
     public boolean toPrimitive() {
         return value;
+    }
+
+    @Override
+    public String toString() {
+        return value ? TRUE : FALSE;
     }
 }

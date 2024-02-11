@@ -100,6 +100,12 @@ class V8Native implements IV8Native {
     public native long createV8Runtime(Object runtimeOptions);
 
     @Override
+    public native Object doubleObjectCreate(long v8RuntimeHandle, double doubleValue);
+
+    @Override
+    public native Object doubleObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native boolean equals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
     @Override
@@ -214,6 +220,12 @@ class V8Native implements IV8Native {
 
     @Override
     public native void idleNotificationDeadline(long v8RuntimeHandle, long deadlineInMillis);
+
+    @Override
+    public native Object integerObjectCreate(long v8RuntimeHandle, int intValue);
+
+    @Override
+    public native Object integerObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native boolean isDead(long v8RuntimeHandle);

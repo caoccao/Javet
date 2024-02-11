@@ -57,6 +57,16 @@ public final class V8ValueString
     }
 
     @Override
+    public double asDouble() {
+        String trimmedString = value.trim();
+        try {
+            return Double.parseDouble(trimmedString);
+        } catch (Throwable ignored) {
+        }
+        return 0;
+    }
+
+    @Override
     public int asInt() {
         String trimmedString = value.trim();
         if (StringUtils.isDigital(trimmedString)) {
@@ -90,6 +100,11 @@ public final class V8ValueString
      * @since 0.7.0
      */
     public String toPrimitive() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
         return value;
     }
 }

@@ -159,6 +159,11 @@ public final class V8ValueBigInteger extends V8ValuePrimitive<BigInteger> {
     }
 
     @Override
+    public double asDouble() {
+        return value.doubleValue();
+    }
+
+    @Override
     public int asInt() {
         return value.intValue();
     }

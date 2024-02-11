@@ -169,6 +169,22 @@ JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    doubleObjectCreate
+ * Signature: (JD)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_doubleObjectCreate
+  (JNIEnv *, jobject, jlong, jdouble);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    doubleObjectValueOf
+ * Signature: (JJI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_doubleObjectValueOf
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    equals
  * Signature: (JJJ)Z
  */
@@ -438,6 +454,22 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasScheduledE
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_idleNotificationDeadline
   (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    integerObjectCreate
+ * Signature: (JI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_integerObjectCreate
+  (JNIEnv *, jobject, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    integerObjectValueOf
+ * Signature: (JJI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_integerObjectValueOf
+  (JNIEnv *, jobject, jlong, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

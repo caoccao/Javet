@@ -25,7 +25,6 @@ import com.caoccao.javet.interop.options.V8Flags;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetOSUtils;
-import org.junit.jupiter.api.BeforeAll;
 
 import java.io.File;
 import java.time.ZonedDateTime;
@@ -36,6 +35,7 @@ import java.util.concurrent.TimeoutException;
 import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class BaseTestJavet {
+    public static final double DELTA = 0.001;
     public static final long DEFAULT_INTERVAL_IN_MILLISECONDS = 10;
     protected IJavetLogger logger;
     protected V8Host v8Host;

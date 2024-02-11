@@ -24,6 +24,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
+import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.*;
 
@@ -90,6 +91,10 @@ public final class V8Internal {
 
     public boolean contextSetLength(IV8Context iV8Context, int length) throws JavetException {
         return v8Runtime.contextSetLength(iV8Context, length);
+    }
+
+    public V8Value doubleObjectValueOf(V8ValueDoubleObject v8ValueDoubleObject) {
+        return v8Runtime.doubleObjectValueOf(v8ValueDoubleObject);
     }
 
     public boolean equals(IV8ValueReference iV8ValueReference1, IV8ValueReference iV8ValueReference2)
@@ -193,6 +198,10 @@ public final class V8Internal {
 
     public boolean hasInternalType(IV8ValueObject iV8ValueObject, V8ValueInternalType internalType) {
         return v8Runtime.hasInternalType(iV8ValueObject, internalType);
+    }
+
+    public V8ValueInteger integerObjectValueOf(V8ValueIntegerObject v8ValueIntegerObject) throws JavetException {
+        return v8Runtime.integerObjectValueOf(v8ValueIntegerObject);
     }
 
     public boolean isWeak(IV8ValueReference iV8ValueReference) {

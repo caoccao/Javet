@@ -201,6 +201,12 @@ public class V8Scope implements IV8Creatable, IJavetClosable {
     }
 
     @Override
+    public V8ValueDoubleObject createV8ValueDoubleObject(double doubleValue) throws JavetException {
+        Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
+        return v8Runtime.createV8ValueDoubleObject(Objects.requireNonNull(doubleValue));
+    }
+
+    @Override
     public V8ValueError createV8ValueError(V8ValueErrorType v8ValueErrorType, String message) throws JavetException {
         Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
         return v8Runtime.createV8ValueError(v8ValueErrorType, message);
@@ -222,6 +228,12 @@ public class V8Scope implements IV8Creatable, IJavetClosable {
     public V8ValueInteger createV8ValueInteger(int integerValue) throws JavetException {
         Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
         return v8Runtime.createV8ValueInteger(integerValue);
+    }
+
+    @Override
+    public V8ValueIntegerObject createV8ValueIntegerObject(int intValue) throws JavetException {
+        Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
+        return v8Runtime.createV8ValueIntegerObject(Objects.requireNonNull(intValue));
     }
 
     @Override

@@ -19,18 +19,51 @@ package com.caoccao.javet.values.primitive;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 
+/**
+ * The type V8 value long.
+ *
+ * @since 0.7.0
+ */
 @SuppressWarnings("unchecked")
 public final class V8ValueLong extends V8ValuePrimitive<Long> {
+    /**
+     * Instantiates a new V8 value long.
+     *
+     * @param v8Runtime the V8 runtime
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public V8ValueLong(V8Runtime v8Runtime) throws JavetException {
         this(v8Runtime, 0L);
     }
 
+    /**
+     * Instantiates a new V8 value long.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param value     the value
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public V8ValueLong(V8Runtime v8Runtime, long value) throws JavetException {
         super(v8Runtime, value);
     }
 
+    /**
+     * Instantiates a new V8 value long.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param value     the value
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public V8ValueLong(V8Runtime v8Runtime, String value) throws JavetException {
         this(v8Runtime, Long.parseLong(value));
+    }
+
+    @Override
+    public double asDouble() {
+        return value.doubleValue();
     }
 
     @Override
@@ -48,6 +81,12 @@ public final class V8ValueLong extends V8ValuePrimitive<Long> {
         return this;
     }
 
+    /**
+     * To primitive long.
+     *
+     * @return the long
+     * @since 0.7.0
+     */
     public long toPrimitive() {
         return value;
     }
