@@ -133,6 +133,10 @@ namespace Javet {
         jmethodID jmethodIDV8ValueIteratorConstructor;
         jmethodID jmethodIDV8ValueIteratorGetHandle;
 
+        jclass jclassV8ValueLongObject;
+        jmethodID jmethodIDV8ValueLongObjectConstructor;
+        jmethodID jmethodIDV8ValueLongObjectGetHandle;
+
         jclass jclassV8ValueMap;
         jmethodID jmethodIDV8ValueMapConstructor;
         jmethodID jmethodIDV8ValueMapGetHandle;
@@ -447,6 +451,10 @@ namespace Javet {
             jclassV8ValueIterator = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueIterator");
             jmethodIDV8ValueIteratorConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueIterator);
             jmethodIDV8ValueIteratorGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueIterator);
+
+            jclassV8ValueLongObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueLongObject");
+            jmethodIDV8ValueLongObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueLongObject);
+            jmethodIDV8ValueLongObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueLongObject);
 
             jclassV8ValueMap = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueMap");
             jmethodIDV8ValueMapConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueMap);
@@ -850,6 +858,13 @@ namespace Javet {
                     v8Runtime->externalV8Runtime,
                     ToV8PersistentReference(v8Context, v8Value));
             }
+            if (v8Value->IsBigIntObject()) {
+                return jniEnv->NewObject(
+                    jclassV8ValueLongObject,
+                    jmethodIDV8ValueLongObjectConstructor,
+                    v8Runtime->externalV8Runtime,
+                    ToV8PersistentReference(v8Context, v8Value));
+            }
             // Primitive types
             if (v8Value->IsBoolean()) {
                 return jniEnv->CallObjectMethod(
@@ -863,7 +878,7 @@ namespace Javet {
                     jmethodIDV8RuntimeCreateV8ValueInteger,
                     v8Value->Int32Value(v8Context).FromMaybe(0));
             }
-            if (v8Value->IsBigInt() || v8Value->IsBigIntObject()) {
+            if (v8Value->IsBigInt()) {
                 V8LocalBigInt v8LocalBigInt = v8Value->ToBigInt(v8Context).ToLocalChecked();
                 int wordCount = v8LocalBigInt->WordCount();
                 if (wordCount <= 1) {

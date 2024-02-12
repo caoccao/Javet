@@ -166,6 +166,10 @@ public interface IV8Native {
 
     boolean lockV8Runtime(long v8RuntimeHandle);
 
+    Object longObjectCreate(long v8RuntimeHandle, long longValue);
+
+    Object longObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     void lowMemoryNotification(long v8RuntimeHandle);
 
     Object mapAsArray(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

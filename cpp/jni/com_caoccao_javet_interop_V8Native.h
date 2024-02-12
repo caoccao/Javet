@@ -505,6 +505,22 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    longObjectCreate
+ * Signature: (JJ)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_longObjectCreate
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    longObjectValueOf
+ * Signature: (JJI)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_longObjectValueOf
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    lowMemoryNotification
  * Signature: (J)V
  */

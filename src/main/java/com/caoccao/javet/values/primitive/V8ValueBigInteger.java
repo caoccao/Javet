@@ -31,7 +31,7 @@ import java.util.Objects;
  * @since 1.1.5
  */
 @SuppressWarnings("unchecked")
-public final class V8ValueBigInteger extends V8ValuePrimitive<BigInteger> {
+public final class V8ValueBigInteger extends V8ValueBigNumber<BigInteger> {
     private static final int BYTE_COUNT_PER_WORD = 8;
 
     /**
@@ -173,7 +173,7 @@ public final class V8ValueBigInteger extends V8ValuePrimitive<BigInteger> {
     }
 
     @Override
-    public long asLong() throws JavetException {
+    public long asLong() {
         return value.longValue();
     }
 

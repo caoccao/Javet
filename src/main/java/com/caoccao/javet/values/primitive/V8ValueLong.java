@@ -18,6 +18,8 @@ package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.values.IV8ValuePrimitiveValue;
+import com.caoccao.javet.values.reference.V8ValueLongObject;
 
 /**
  * The type V8 value long.
@@ -25,7 +27,9 @@ import com.caoccao.javet.interop.V8Runtime;
  * @since 0.7.0
  */
 @SuppressWarnings("unchecked")
-public final class V8ValueLong extends V8ValuePrimitive<Long> {
+public final class V8ValueLong
+        extends V8ValueBigNumber<Long>
+        implements IV8ValuePrimitiveValue<V8ValueLongObject> {
     /**
      * Instantiates a new V8 value long.
      *
@@ -77,13 +81,18 @@ public final class V8ValueLong extends V8ValuePrimitive<Long> {
     }
 
     @Override
-    public long asLong() throws JavetException {
+    public long asLong() {
         return value;
     }
 
     @Override
     public V8ValueLong toClone(boolean referenceCopy) throws JavetException {
         return this;
+    }
+
+    @Override
+    public V8ValueLongObject toObject() throws JavetException {
+        return checkV8Runtime().createV8ValueLongObject(value);
     }
 
     /**

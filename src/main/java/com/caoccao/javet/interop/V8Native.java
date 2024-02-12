@@ -240,6 +240,12 @@ class V8Native implements IV8Native {
     public native boolean lockV8Runtime(long v8RuntimeHandle);
 
     @Override
+    public native Object longObjectCreate(long v8RuntimeHandle, long longValue);
+
+    @Override
+    public native Object longObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native void lowMemoryNotification(long v8RuntimeHandle);
 
     @Override

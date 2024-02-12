@@ -130,6 +130,9 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::longToJSON);
             proxyGetByStringMap.put(Long.class, polyfillFunctionMap);
+            targetObjectConstructorMap.put(
+                    Long.class,
+                    (v8Runtime, targetObject) -> v8Runtime.createV8ValueLongObject((Long) targetObject));
         }
         {
             // java.lang.Short

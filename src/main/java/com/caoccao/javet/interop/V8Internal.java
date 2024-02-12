@@ -23,10 +23,7 @@ import com.caoccao.javet.enums.V8ValueInternalType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.V8ValueBoolean;
-import com.caoccao.javet.values.primitive.V8ValueInteger;
-import com.caoccao.javet.values.primitive.V8ValueNumber;
-import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
 
 import java.util.Objects;
@@ -207,6 +204,10 @@ public final class V8Internal {
 
     public boolean isWeak(IV8ValueReference iV8ValueReference) {
         return v8Runtime.isWeak(iV8ValueReference);
+    }
+
+    public V8ValueLong longObjectValueOf(V8ValueLongObject v8ValueLongObject) throws JavetException {
+        return v8Runtime.longObjectValueOf(v8ValueLongObject);
     }
 
     @CheckReturnValue

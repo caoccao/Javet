@@ -535,7 +535,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     V8ValueBoolean booleanObjectValueOf(V8ValueBooleanObject v8ValueBooleanObject) {
         return (V8ValueBoolean) v8Native.booleanObjectValueOf(
-                handle, Objects.requireNonNull(v8ValueBooleanObject).getHandle(), v8ValueBooleanObject.getType().getId());
+                handle,
+                Objects.requireNonNull(v8ValueBooleanObject).getHandle(),
+                v8ValueBooleanObject.getType().getId());
     }
 
     /**
@@ -892,6 +894,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             return cachedV8ValueLongs[(int) longValue - V8_VALUE_NUMBER_LOWER_BOUND];
         }
         return new V8ValueLong(this, longValue);
+    }
+
+    @Override
+    public V8ValueLongObject createV8ValueLongObject(long longValue) throws JavetException {
+        return (V8ValueLongObject) v8Native.longObjectCreate(handle, longValue);
     }
 
     @CheckReturnValue
@@ -1788,6 +1795,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     boolean isWeak(IV8ValueReference iV8ValueReference) {
         return v8Native.isWeak(handle, iV8ValueReference.getHandle(), iV8ValueReference.getType().getId());
+    }
+
+    /**
+     * From long object to long.
+     *
+     * @param v8ValueLongObject the V8 value long object
+     * @return the V8 value long
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    V8ValueLong longObjectValueOf(V8ValueLongObject v8ValueLongObject) throws JavetException {
+        return (V8ValueLong) v8Native.longObjectValueOf(
+                handle,
+                Objects.requireNonNull(v8ValueLongObject).getHandle(),
+                v8ValueLongObject.getType().getId());
     }
 
     /**

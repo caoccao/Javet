@@ -214,6 +214,16 @@ public interface IV8Creatable {
     V8ValueLong createV8ValueLong(long longValue) throws JavetException;
 
     /**
+     * Create V8 value long object.
+     *
+     * @param longValue the long value
+     * @return the V8 value long object
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    V8ValueLongObject createV8ValueLongObject(long longValue) throws JavetException;
+
+    /**
      * Create V8 value map.
      *
      * @return the V8 value map

@@ -18,6 +18,7 @@ package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.reference.V8ValueLongObject;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.Test;
 
@@ -69,6 +70,31 @@ public class TestV8ValueLong extends BaseTestJavetRuntime {
         assertFalse(v8Runtime.createV8ValueLong(0L).asBoolean());
         assertTrue(v8Runtime.getExecutor("1n").execute().asBoolean());
         assertFalse(v8Runtime.getExecutor("0n").execute().asBoolean());
+    }
+
+    @Test
+    public void testLongObject() throws JavetException {
+        // 2n**62n = 4611686018427387904n
+        try (V8ValueLong v8ValueLong1 = v8Runtime.createV8ValueLong(4611686018427387904L)) {
+            try (V8ValueLongObject v8ValueLongObject = v8ValueLong1.toObject()) {
+                try (V8ValueLong v8ValueLong2 = v8ValueLongObject.valueOf()) {
+                    assertEquals(4611686018427387904L, v8ValueLong2.getValue());
+                }
+            }
+        }
+        try (V8ValueLongObject v8ValueLongObject = v8Runtime.createV8ValueLongObject(4611686018427387904L)) {
+            try (V8ValueLong v8ValueLong = v8ValueLongObject.valueOf()) {
+                assertEquals(4611686018427387904L, v8ValueLong.getValue());
+            }
+        }
+        try (V8ValueLong v8ValueLong = v8Runtime.getExecutor("BigInt(4611686018427387904n)").execute()) {
+            assertEquals(4611686018427387904L, v8ValueLong.getValue());
+        }
+        assertTrue(v8Runtime.getExecutor("4611686018427387904n").executeBoolean());
+        assertEquals(4611686018427387904D, v8Runtime.getExecutor("4611686018427387904n").executeDouble(), DELTA);
+        assertEquals(0, v8Runtime.getExecutor("4611686018427387904n").executeInteger());
+        assertEquals(4611686018427387904L, v8Runtime.getExecutor("4611686018427387904n").executeLong());
+        assertEquals("4611686018427387904", v8Runtime.getExecutor("4611686018427387904n").executeString());
     }
 
     @Test

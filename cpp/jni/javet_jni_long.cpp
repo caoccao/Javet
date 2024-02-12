@@ -17,20 +17,19 @@
 
 #include "javet_jni.h"
 
-JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_integerObjectCreate
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint mInt) {
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_longObjectCreate
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong mLong) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    auto v8LocalDoubleObject = v8::NumberObject::New(v8Context->GetIsolate(), mInt);
-    return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalDoubleObject);
+    auto v8LocalLongObject = v8::BigIntObject::New(v8Context->GetIsolate(), mLong);
+    return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalLongObject);
 }
 
-JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_integerObjectValueOf
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_longObjectValueOf
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    if (IS_V8_INTEGER_OBJECT(v8ValueType)) {
-        auto intValue = (int)(v8LocalValue.As<v8::NumberObject>()->ValueOf());
-        auto v8LocalInteger = Javet::Converter::ToV8Integer(v8Context, intValue);
-        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalInteger);
+    if (IS_V8_BIG_INT_OBJECT(v8ValueType)) {
+        auto v8LocalBigInt = v8LocalValue.As<v8::BigIntObject>()->ValueOf();
+        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalBigInt);
     }
     return nullptr;
 }
