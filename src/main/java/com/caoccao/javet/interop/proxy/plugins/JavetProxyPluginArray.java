@@ -147,6 +147,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
         proxyGetByStringMap.put(TO_SPLICED, this::toSpliced);
         proxyGetByStringMap.put(TO_STRING, this::toString);
         proxyGetByStringMap.put(UNSHIFT, this::unshift);
+        proxyGetByStringMap.put(VALUE_OF, this::valueOf);
         proxyGetByStringMap.put(VALUES, this::values);
         proxyGetByStringMap.put(WITH, this::with);
         proxyGetBySymbolMap.put(V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR, this::values);
@@ -340,14 +341,15 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
      */
     public V8Value entries(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         validateTargetObject(targetObject);
-        final int length = Array.getLength(targetObject);
-        List<List<Object>> entries = IntStream.range(0, length)
-                .mapToObj(i -> SimpleList.of(i, Array.get(targetObject, i)))
-                .collect(Collectors.toList());
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 ENTRIES, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
-                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
-                        PROXY_CONVERTER.toV8Value(v8Runtime, new V8VirtualIterator<>(entries.iterator()))));
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    final int length = Array.getLength(targetObject);
+                    List<List<Object>> entries = IntStream.range(0, length)
+                            .mapToObj(i -> SimpleList.of(i, Array.get(targetObject, i)))
+                            .collect(Collectors.toList());
+                    return PROXY_CONVERTER.toV8Value(v8Runtime, new V8VirtualIterator<>(entries.iterator()));
+                }));
     }
 
     /**
@@ -1640,6 +1642,25 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
     }
 
     /**
+     * Polyfill Object.prototype.valueOf().
+     * The valueOf() method of Object instances converts the this value to an object.
+     * This method is meant to be overridden by derived objects for custom type conversion logic.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public V8Value valueOf(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        validateTargetObject(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                VALUE_OF, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        V8ValueUtils.createV8ValueArray(v8Runtime, ArrayUtils.copyOf(targetObject))));
+    }
+
+    /**
      * Polyfill Array.prototype.values().
      * The values() method of Array instances returns a new array iterator object that iterates the value
      * of each item in the array.
@@ -1652,13 +1673,14 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
      */
     public V8Value values(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         validateTargetObject(targetObject);
-        final int length = Array.getLength(targetObject);
-        List<Object> values = new ArrayList<>(length);
-        ListUtils.addAll(values, targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 VALUES, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
-                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
-                        PROXY_CONVERTER.toV8Value(v8Runtime, new V8VirtualIterator<>(values.iterator()))));
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    final int length = Array.getLength(targetObject);
+                    List<Object> values = new ArrayList<>(length);
+                    ListUtils.addAll(values, targetObject);
+                    return PROXY_CONVERTER.toV8Value(v8Runtime, new V8VirtualIterator<>(values.iterator()));
+                }));
     }
 
     /**

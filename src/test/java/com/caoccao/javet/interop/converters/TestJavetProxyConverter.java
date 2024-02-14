@@ -297,6 +297,13 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"x\",\"y\"]",
                     v8Runtime.getExecutor("JSON.stringify(stringArray)").executeString());
+            // valueOf()
+            assertEquals(
+                    "[1,2]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.valueOf())").executeString());
+            assertEquals(
+                    "[\"x\",\"y\"]",
+                    v8Runtime.getExecutor("JSON.stringify(stringArray.valueOf())").executeString());
             // Symbol.iterator
             assertEquals(
                     "[1,2]",
@@ -1000,6 +1007,10 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",
                     v8Runtime.getExecutor("JSON.stringify(list)").executeString());
+            // valueOf()
+            assertEquals(
+                    "[\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.valueOf())").executeString());
             // Symbol.iterator
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",
@@ -1353,6 +1364,10 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "{\"z\":\"4\"}",
                     v8Runtime.getExecutor("JSON.stringify(map);").executeString());
+            // valueOf()
+            assertEquals(
+                    "[[\"z\",\"4\"]]",
+                    v8Runtime.getExecutor("JSON.stringify([...map.valueOf()[Symbol.iterator]()]);").executeString());
             // Symbol.iterator
             assertEquals(
                     "[[\"z\",\"4\"]]",
@@ -1504,6 +1519,10 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "{}",
                     v8Runtime.getExecutor("JSON.stringify(set);").executeString());
+            // valueOf()
+            assertEquals(
+                    "[\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify([...set.valueOf()[Symbol.iterator]()].sort());").executeString());
             // ownKeys()
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",

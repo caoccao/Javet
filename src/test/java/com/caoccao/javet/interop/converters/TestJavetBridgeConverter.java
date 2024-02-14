@@ -410,6 +410,9 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals(
                 "[\"x\",\"y\"]",
                 v8Runtime.getExecutor("JSON.stringify(a.toV8Value())").executeString());
+        assertEquals(
+                "[\"x\",\"y\"]",
+                v8Runtime.getExecutor("JSON.stringify(a.valueOf())").executeString());
         assertEquals("[\"x\",\"y\"]", v8Runtime.getExecutor("JSON.stringify([...a])").executeString());
         assertEquals("{\"0\":\"x\",\"1\":\"y\"}", v8Runtime.getExecutor("JSON.stringify({...a})").executeString());
         v8Runtime.getGlobalObject().delete("a");
@@ -438,28 +441,43 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
     public void testZonedDateTime() throws JavetException {
         ZonedDateTime zonedDateTime = ZonedDateTime.of(
                 2000, 1, 2, 3, 4, 5, 6, JavetDateTimeUtils.ZONE_ID_UTC);
+        v8Runtime.getExecutor("const d = new Date('2000-01-02T03:04:05.000Z')").executeVoid();
         v8Runtime.getGlobalObject().set("z", zonedDateTime);
         assertEquals(zonedDateTime, v8Runtime.getExecutor("z").executeObject());
         // toJSON()
         assertEquals(
-                "\"2000-01-02T03:04:05.000Z\"",
+                v8Runtime.getExecutor("JSON.stringify(d)").executeString(),
                 v8Runtime.getExecutor("JSON.stringify(z)").executeString());
         // toLocaleDateString()
-        assertTrue(v8Runtime.getExecutor("z.toLocaleDateString()").executeString().contains("2000"));
+        assertEquals(
+                v8Runtime.getExecutor("d.toLocaleDateString()").executeString(),
+                v8Runtime.getExecutor("z.toLocaleDateString()").executeString());
         // toLocaleString()
-        assertTrue(v8Runtime.getExecutor("z.toLocaleString()").executeString().contains("2000"));
+        assertEquals(
+                v8Runtime.getExecutor("d.toLocaleString()").executeString(),
+                v8Runtime.getExecutor("z.toLocaleString()").executeString());
         // toLocaleTimeString()
-        assertFalse(v8Runtime.getExecutor("z.toLocaleTimeString()").executeString().contains("2000"));
-        assertTrue(v8Runtime.getExecutor("z.toLocaleTimeString('en-US')").executeString().contains(":04:05"));
+        assertEquals(
+                v8Runtime.getExecutor("d.toLocaleTimeString()").executeString(),
+                v8Runtime.getExecutor("z.toLocaleTimeString()").executeString());
+        assertEquals(
+                v8Runtime.getExecutor("d.toLocaleTimeString('en-US')").executeString(),
+                v8Runtime.getExecutor("z.toLocaleTimeString('en-US')").executeString());
         // toTimeString()
-        assertFalse(v8Runtime.getExecutor("z.toTimeString()").executeString().contains("2000"));
-        assertTrue(v8Runtime.getExecutor("z.toTimeString()").executeString().contains(":04:05"));
+        assertEquals(
+                v8Runtime.getExecutor("d.toTimeString()").executeString(),
+                v8Runtime.getExecutor("z.toTimeString()").executeString());
         // toUTCString()
-        assertTrue(v8Runtime.getExecutor("z.toUTCString()").executeString().contains("2000"));
+        assertEquals(
+                v8Runtime.getExecutor("d.toUTCString()").executeString(),
+                v8Runtime.getExecutor("z.toUTCString()").executeString());
         // toString()
-        assertTrue(v8Runtime.getExecutor("z.toString()").executeString().contains(" 2000 "));
+        assertEquals(
+                v8Runtime.getExecutor("d.toString()").executeString(),
+                v8Runtime.getExecutor("z.toString()").executeString());
         // valueOf()
         assertEquals(946782245000L, v8Runtime.getExecutor("z.valueOf()").executeLong());
+        assertTrue(v8Runtime.getExecutor("d.valueOf() === z.valueOf()").executeBoolean());
         v8Runtime.getGlobalObject().delete("z");
     }
 }

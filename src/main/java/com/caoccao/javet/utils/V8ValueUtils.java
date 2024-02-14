@@ -24,10 +24,9 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
-import com.caoccao.javet.values.reference.V8ValueArray;
-import com.caoccao.javet.values.reference.V8ValueFunction;
-import com.caoccao.javet.values.reference.V8ValueObject;
+import com.caoccao.javet.values.reference.*;
 
+import java.util.Map;
 import java.util.StringJoiner;
 
 /**
@@ -256,6 +255,33 @@ public final class V8ValueUtils {
     }
 
     /**
+     * Create V8 value map from map.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param map       the map
+     * @return the V8 value map
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    @CheckReturnValue
+    public static V8ValueMap createV8ValueMap(V8Runtime v8Runtime, Map<?, ?> map) throws JavetException {
+        try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
+            V8ValueMap v8ValueMap = v8Scope.createV8ValueMap();
+            if (map != null && !map.isEmpty()) {
+                Object[] keyAndValuePairs = new Object[map.size() << 1];
+                int index = 0;
+                for (Map.Entry<?, ?> entry : map.entrySet()) {
+                    keyAndValuePairs[index++] = entry.getKey();
+                    keyAndValuePairs[index++] = entry.getValue();
+                }
+                v8ValueMap.set(keyAndValuePairs);
+            }
+            v8Scope.setEscapable();
+            return v8ValueMap;
+        }
+    }
+
+    /**
      * Create V8 value object from object array.
      *
      * @param v8Runtime the V8 runtime
@@ -273,6 +299,29 @@ public final class V8ValueUtils {
             }
             v8Scope.setEscapable();
             return v8ValueObject;
+        }
+    }
+
+    /**
+     * Create V8 value set from object array.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param objects   the objects
+     * @return the V8 value set
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    @CheckReturnValue
+    public static V8ValueSet createV8ValueSet(V8Runtime v8Runtime, Object... objects) throws JavetException {
+        try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
+            V8ValueSet v8ValueSet = v8Scope.createV8ValueSet();
+            if (ArrayUtils.isNotEmpty(objects)) {
+                for (Object object : objects) {
+                    v8ValueSet.add(object);
+                }
+            }
+            v8Scope.setEscapable();
+            return v8ValueSet;
         }
     }
 

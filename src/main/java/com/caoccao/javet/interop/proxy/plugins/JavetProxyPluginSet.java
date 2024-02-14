@@ -89,6 +89,7 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
         proxyGetByStringMap.put(SIZE, this::size);
         proxyGetByStringMap.put(TO_JSON, this::toJSON);
         proxyGetByStringMap.put(TO_STRING, this::toString);
+        proxyGetByStringMap.put(VALUE_OF, this::valueOf);
         proxyGetByStringMap.put(VALUES, this::values);
         proxyGetBySymbolMap.put(V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR, this::values);
     }
@@ -358,6 +359,25 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
     protected Set<Object> validateTargetObject(Object targetObject) {
         assert targetObject instanceof Set : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SET;
         return (Set<Object>) targetObject;
+    }
+
+    /**
+     * Polyfill Object.prototype.valueOf().
+     * The valueOf() method of Object instances converts the this value to an object.
+     * This method is meant to be overridden by derived objects for custom type conversion logic.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public V8Value valueOf(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        final Set<Object> set = validateTargetObject(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                VALUE_OF, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        V8ValueUtils.createV8ValueSet(v8Runtime, set.toArray())));
     }
 
     /**
