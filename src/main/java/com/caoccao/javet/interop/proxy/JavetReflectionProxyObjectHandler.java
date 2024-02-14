@@ -123,7 +123,10 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             if (StringUtils.isDigital(propertyString)) {
                 final int index = Integer.parseInt(propertyString);
                 if (index >= 0) {
-                    return v8Runtime.toV8Value(classDescriptor.getClassProxyPlugin().getByIndex(targetObject, index));
+                    Object result = classDescriptor.getClassProxyPlugin().getByIndex(targetObject, index);
+                    if (result != null) {
+                        return v8Runtime.toV8Value(result);
+                    }
                 }
             }
         }

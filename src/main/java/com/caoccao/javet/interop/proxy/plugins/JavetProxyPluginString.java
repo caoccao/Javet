@@ -16,7 +16,6 @@
 
 package com.caoccao.javet.interop.proxy.plugins;
 
-import com.caoccao.javet.entities.JavetEntityObject;
 import com.caoccao.javet.entities.JavetEntityPropertyDescriptor;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetEntityPropertyDescriptor;
@@ -99,15 +98,6 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle<String> {
     protected V8Value createTargetObject(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         final String string = validateTargetObject(targetObject);
         return v8Runtime.createV8ValueStringObject(string);
-    }
-
-    @Override
-    public Object getByIndex(Object targetObject, int index) {
-        final String string = validateTargetObject(targetObject);
-        if (index >= 0 && index < string.length()) {
-            return new JavetEntityObject<>(String.valueOf(string.charAt(index)));
-        }
-        return null;
     }
 
     @Override

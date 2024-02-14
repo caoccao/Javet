@@ -106,7 +106,7 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
     }
 
     /**
-     * Call prototype function with the object converter by name.
+     * Call function with the object converter by name.
      *
      * @param functionName the function name
      * @param v8Runtime    the V8 runtime
@@ -114,7 +114,7 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
      * @return the V8 value
      * @throws JavetException the javet exception
      */
-    protected V8Value callPrototypeWithObjectConverter(
+    protected V8Value callWithObjectConverter(
             String functionName, V8Runtime v8Runtime, Object targetObject)
             throws JavetException {
         Objects.requireNonNull(functionName);
@@ -122,8 +122,7 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 functionName, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(
-                            functionName).execute()) {
+                    try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(functionName).execute()) {
                         return v8ValueFunction.call(OBJECT_CONVERTER.toV8Value(v8Runtime, targetObject), v8Values);
                     }
                 }));

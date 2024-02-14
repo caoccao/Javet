@@ -108,7 +108,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
             polyfillFunctionMap.put(TO_LOCALE_STRING, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(BIG_INT_PROTOTYPE_TO_LOCALE_STRING, v8Runtime, targetObject));
+                    callWithObjectConverter(BIG_INT_PROTOTYPE_TO_LOCALE_STRING, v8Runtime, targetObject));
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(BigInteger.class, SimpleSet.of(VALUE_OF));
             proxyGetByStringMap.put(BigInteger.class, polyfillFunctionMap);
@@ -128,14 +128,14 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             // java.lang.Byte
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_EXPONENTIAL, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_EXPONENTIAL, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_EXPONENTIAL, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_FIXED, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_FIXED, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_FIXED, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
             polyfillFunctionMap.put(TO_LOCALE_STRING, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_LOCALE_STRING, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_LOCALE_STRING, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_PRECISION, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_PRECISION, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_PRECISION, v8Runtime, targetObject));
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(Byte.class, SimpleSet.of(VALUE_OF));
             proxyGetByStringMap.put(Byte.class, polyfillFunctionMap);
@@ -158,14 +158,14 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             // java.lang.Double
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_EXPONENTIAL, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_EXPONENTIAL, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_EXPONENTIAL, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_FIXED, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_FIXED, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_FIXED, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
             polyfillFunctionMap.put(TO_LOCALE_STRING, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_LOCALE_STRING, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_LOCALE_STRING, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_PRECISION, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_PRECISION, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_PRECISION, v8Runtime, targetObject));
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(Double.class, SimpleSet.of(VALUE_OF));
             proxyGetByStringMap.put(Double.class, polyfillFunctionMap);
@@ -177,14 +177,14 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             // java.lang.Float
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_EXPONENTIAL, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_EXPONENTIAL, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_EXPONENTIAL, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_FIXED, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_FIXED, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_FIXED, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
             polyfillFunctionMap.put(TO_LOCALE_STRING, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_LOCALE_STRING, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_LOCALE_STRING, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_PRECISION, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_PRECISION, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_PRECISION, v8Runtime, targetObject));
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(Float.class, SimpleSet.of(VALUE_OF));
             proxyGetByStringMap.put(Float.class, polyfillFunctionMap);
@@ -196,14 +196,14 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             // java.lang.Integer
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_EXPONENTIAL, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_EXPONENTIAL, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_EXPONENTIAL, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_FIXED, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_FIXED, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_FIXED, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
             polyfillFunctionMap.put(TO_LOCALE_STRING, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_LOCALE_STRING, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_LOCALE_STRING, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_PRECISION, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_PRECISION, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_PRECISION, v8Runtime, targetObject));
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(Integer.class, SimpleSet.of(VALUE_OF));
             proxyGetByStringMap.put(Integer.class, polyfillFunctionMap);
@@ -216,7 +216,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
             polyfillFunctionMap.put(TO_LOCALE_STRING, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(BIG_INT_PROTOTYPE_TO_LOCALE_STRING, v8Runtime, targetObject));
+                    callWithObjectConverter(BIG_INT_PROTOTYPE_TO_LOCALE_STRING, v8Runtime, targetObject));
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(Long.class, SimpleSet.of(VALUE_OF));
             proxyGetByStringMap.put(Long.class, polyfillFunctionMap);
@@ -228,14 +228,14 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             // java.lang.Short
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_EXPONENTIAL, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_EXPONENTIAL, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_EXPONENTIAL, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_FIXED, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_FIXED, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_FIXED, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
             polyfillFunctionMap.put(TO_LOCALE_STRING, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_LOCALE_STRING, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_LOCALE_STRING, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_PRECISION, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(NUMBER_PROTOTYPE_TO_PRECISION, v8Runtime, targetObject));
+                    callWithObjectConverter(NUMBER_PROTOTYPE_TO_PRECISION, v8Runtime, targetObject));
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(Short.class, SimpleSet.of(VALUE_OF));
             proxyGetByStringMap.put(Short.class, polyfillFunctionMap);
@@ -263,21 +263,21 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             // java.time.ZonedDateTime
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(DATE_PROTOTYPE_TO_JSON, v8Runtime, targetObject));
+                    callWithObjectConverter(DATE_PROTOTYPE_TO_JSON, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_LOCALE_DATE_STRING, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(DATE_PROTOTYPE_TO_LOCALE_DATE_STRING, v8Runtime, targetObject));
+                    callWithObjectConverter(DATE_PROTOTYPE_TO_LOCALE_DATE_STRING, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_LOCALE_STRING, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(DATE_PROTOTYPE_TO_LOCALE_STRING, v8Runtime, targetObject));
+                    callWithObjectConverter(DATE_PROTOTYPE_TO_LOCALE_STRING, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_LOCALE_TIME_STRING, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(DATE_PROTOTYPE_TO_LOCALE_TIME_STRING, v8Runtime, targetObject));
+                    callWithObjectConverter(DATE_PROTOTYPE_TO_LOCALE_TIME_STRING, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_STRING, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(DATE_PROTOTYPE_TO_STRING, v8Runtime, targetObject));
+                    callWithObjectConverter(DATE_PROTOTYPE_TO_STRING, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_TIME_STRING, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(DATE_PROTOTYPE_TO_TIME_STRING, v8Runtime, targetObject));
+                    callWithObjectConverter(DATE_PROTOTYPE_TO_TIME_STRING, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_UTC_STRING, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(DATE_PROTOTYPE_TO_UTC_STRING, v8Runtime, targetObject));
+                    callWithObjectConverter(DATE_PROTOTYPE_TO_UTC_STRING, v8Runtime, targetObject));
             polyfillFunctionMap.put(VALUE_OF, (v8Runtime, targetObject) ->
-                    callPrototypeWithObjectConverter(DATE_PROTOTYPE_VALUE_OF, v8Runtime, targetObject));
+                    callWithObjectConverter(DATE_PROTOTYPE_VALUE_OF, v8Runtime, targetObject));
             proxyableMethodsMap.put(ZonedDateTime.class, SimpleSet.of(
                     VALUE_OF, TO_STRING));
             proxyGetByStringMap.put(ZonedDateTime.class, polyfillFunctionMap);
