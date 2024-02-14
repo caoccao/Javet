@@ -71,6 +71,8 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
     protected static final String LENGTH = "length";
     protected static final String NUMBER_PROTOTYPE_TO_EXPONENTIAL = "Number.prototype.toExponential";
     protected static final String NUMBER_PROTOTYPE_TO_FIXED = "Number.prototype.toFixed";
+    protected static final String NUMBER_PROTOTYPE_TO_LOCALE_STRING = "Number.prototype.toLocaleString";
+    protected static final String NUMBER_PROTOTYPE_TO_PRECISION = "Number.prototype.toPrecision";
     protected static final String REPEAT = "repeat";
     protected static final String REPLACE = "replace";
     protected static final String REPLACE_ALL = "replaceAll";
@@ -79,6 +81,8 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
     protected static final String SUBSTRING = "substring";
     protected static final String TO_EXPONENTIAL = "toExponential";
     protected static final String TO_FIXED = "toFixed";
+    protected static final String TO_LOCALE_STRING = "toLocaleString";
+    protected static final String TO_PRECISION = "toPrecision";
     protected static final String TRIM = "trim";
     private static final JavetProxyPluginDefault instance = new JavetProxyPluginDefault();
 
@@ -109,6 +113,8 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             polyfillFunctionMap.put(TO_EXPONENTIAL, this::toExponential);
             polyfillFunctionMap.put(TO_FIXED, this::toFixed);
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
+            polyfillFunctionMap.put(TO_LOCALE_STRING, this::toLocaleString);
+            polyfillFunctionMap.put(TO_PRECISION, this::toPrecision);
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(Byte.class, SimpleSet.of(VALUE_OF));
             proxyGetByStringMap.put(Byte.class, polyfillFunctionMap);
@@ -133,6 +139,8 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             polyfillFunctionMap.put(TO_EXPONENTIAL, this::toExponential);
             polyfillFunctionMap.put(TO_FIXED, this::toFixed);
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
+            polyfillFunctionMap.put(TO_LOCALE_STRING, this::toLocaleString);
+            polyfillFunctionMap.put(TO_PRECISION, this::toPrecision);
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(Double.class, SimpleSet.of(VALUE_OF));
             proxyGetByStringMap.put(Double.class, polyfillFunctionMap);
@@ -146,6 +154,8 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             polyfillFunctionMap.put(TO_EXPONENTIAL, this::toExponential);
             polyfillFunctionMap.put(TO_FIXED, this::toFixed);
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
+            polyfillFunctionMap.put(TO_LOCALE_STRING, this::toLocaleString);
+            polyfillFunctionMap.put(TO_PRECISION, this::toPrecision);
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(Float.class, SimpleSet.of(VALUE_OF));
             proxyGetByStringMap.put(Float.class, polyfillFunctionMap);
@@ -159,6 +169,8 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             polyfillFunctionMap.put(TO_EXPONENTIAL, this::toExponential);
             polyfillFunctionMap.put(TO_FIXED, this::toFixed);
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
+            polyfillFunctionMap.put(TO_LOCALE_STRING, this::toLocaleString);
+            polyfillFunctionMap.put(TO_PRECISION, this::toPrecision);
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(Integer.class, SimpleSet.of(VALUE_OF));
             proxyGetByStringMap.put(Integer.class, polyfillFunctionMap);
@@ -169,8 +181,6 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
         {
             // java.lang.Long
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
-            polyfillFunctionMap.put(TO_EXPONENTIAL, this::toExponential);
-            polyfillFunctionMap.put(TO_FIXED, this::toFixed);
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(Long.class, SimpleSet.of(VALUE_OF));
@@ -185,6 +195,8 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             polyfillFunctionMap.put(TO_EXPONENTIAL, this::toExponential);
             polyfillFunctionMap.put(TO_FIXED, this::toFixed);
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
+            polyfillFunctionMap.put(TO_LOCALE_STRING, this::toLocaleString);
+            polyfillFunctionMap.put(TO_PRECISION, this::toPrecision);
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(Short.class, SimpleSet.of(VALUE_OF));
             proxyGetByStringMap.put(Short.class, polyfillFunctionMap);
@@ -282,6 +294,55 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(
                             NUMBER_PROTOTYPE_TO_FIXED).execute()) {
+                        return v8ValueFunction.call(OBJECT_CONVERTER.toV8Value(v8Runtime, targetObject), v8Values);
+                    }
+                }));
+    }
+
+    /**
+     * Polyfill Number.prototype.toLocaleString().
+     * The toLocaleString() method of Number values returns a string with a language-sensitive representation of
+     * this number. In implementations with Intl.NumberFormat API support, this method simply calls Intl.NumberFormat.
+     * <p>
+     * Every time toLocaleString is called, it has to perform a search in a big database of localization strings,
+     * which is potentially inefficient. When the method is called many times with the same arguments,
+     * it is better to create a Intl.NumberFormat object and use its format() method, because a NumberFormat object
+     * remembers the arguments passed to it and may decide to cache a slice of the database,
+     * so future format calls can search for localization strings within a more constrained context.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public V8Value toLocaleString(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                TO_LOCALE_STRING, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(
+                            NUMBER_PROTOTYPE_TO_LOCALE_STRING).execute()) {
+                        return v8ValueFunction.call(OBJECT_CONVERTER.toV8Value(v8Runtime, targetObject), v8Values);
+                    }
+                }));
+    }
+
+    /**
+     * Polyfill Number.prototype.toPrecision().
+     * The toPrecision() method of Number values returns a string representing this number to the specified precision.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public V8Value toPrecision(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                TO_PRECISION, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(
+                            NUMBER_PROTOTYPE_TO_PRECISION).execute()) {
                         return v8ValueFunction.call(OBJECT_CONVERTER.toV8Value(v8Runtime, targetObject), v8Values);
                     }
                 }));

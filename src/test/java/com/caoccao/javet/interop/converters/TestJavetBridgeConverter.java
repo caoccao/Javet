@@ -87,6 +87,10 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals("1.23e+0", v8Runtime.getExecutor("d.toExponential()").executeString());
         // toFixed()
         assertEquals("1.2300", v8Runtime.getExecutor("d.toFixed(4)").executeString());
+        // toLocaleString()
+        assertEquals("1.23", v8Runtime.getExecutor("d.toLocaleString()").executeString());
+        // toPrecision()
+        assertEquals("1.2300", v8Runtime.getExecutor("d.toPrecision(5)").executeString());
         // Symbol.toPrimitive
         assertEquals(1.23D, v8Runtime.getExecutor("d[Symbol.toPrimitive]()").executeDouble(), DELTA);
         // +
@@ -135,6 +139,10 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals("1.2345e+4", v8Runtime.getExecutor("i.toExponential()").executeString());
         // toFixed()
         assertEquals("12345.00", v8Runtime.getExecutor("i.toFixed(2)").executeString());
+        // toLocaleString()
+        assertEquals("12345", v8Runtime.getExecutor("i.toLocaleString()").executeString());
+        // toPrecision()
+        assertEquals("1.23e+4", v8Runtime.getExecutor("i.toPrecision(3)").executeString());
         // Symbol.toPrimitive
         assertEquals(12345, v8Runtime.getExecutor("i[Symbol.toPrimitive]()").executeInteger());
         // +
