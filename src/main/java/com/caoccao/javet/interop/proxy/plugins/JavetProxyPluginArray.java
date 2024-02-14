@@ -883,7 +883,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
     }
 
     @Override
-    public boolean isMethodProxyable(String methodName) {
+    public boolean isMethodProxyable(String methodName, Class<?> targetClass) {
         return proxyableMethods.contains(methodName);
     }
 

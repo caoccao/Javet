@@ -302,7 +302,7 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle<Map<Object, 
     }
 
     @Override
-    public boolean isMethodProxyable(String methodName) {
+    public boolean isMethodProxyable(String methodName, Class<?> targetClass) {
         return proxyableMethods.contains(methodName);
     }
 

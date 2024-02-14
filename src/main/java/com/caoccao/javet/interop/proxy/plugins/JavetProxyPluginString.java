@@ -68,7 +68,7 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle<String> {
     protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
             CHAR_AT, CODE_POINT_AT, ENDS_WITH, INDEX_OF, LAST_INDEX_OF,
             LENGTH, REPEAT, REPLACE, REPLACE_ALL, SPLIT,
-            STARTS_WITH, SUBSTRING, TO_STRING, TRIM, VALUE_OF};
+            STARTS_WITH, SUBSTRING, TRIM, VALUE_OF};
     private static final JavetProxyPluginString instance = new JavetProxyPluginString();
     /**
      * The proxyable methods.
@@ -81,9 +81,8 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle<String> {
         super();
         proxyableMethods = SimpleSet.of(DEFAULT_PROXYABLE_METHODS);
         proxyGetByStringMap.put(LENGTH, this::length);
-        proxyGetByStringMap.put(TO_JSON, this::toString);
-        proxyGetByStringMap.put(TO_STRING, this::toString);
-        proxyGetByStringMap.put(VALUE_OF, this::toString);
+        proxyGetByStringMap.put(TO_JSON, this::valueOf);
+        proxyGetByStringMap.put(VALUE_OF, this::valueOf);
     }
 
     /**
@@ -141,7 +140,7 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle<String> {
     }
 
     @Override
-    public boolean isMethodProxyable(String methodName) {
+    public boolean isMethodProxyable(String methodName, Class<?> targetClass) {
         return proxyableMethods.contains(methodName);
     }
 
@@ -165,9 +164,15 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle<String> {
         return Objects.requireNonNull(v8Runtime).createV8ValueInteger(string.length());
     }
 
+    @Override
+    protected String validateTargetObject(Object targetObject) {
+        assert targetObject instanceof String : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING;
+        return (String) targetObject;
+    }
+
     /**
-     * Polyfill String.prototype.toString().
-     * The toString() method of String values returns this string value.
+     * Polyfill String.prototype.valueOf().
+     * The valueOf() method of String values returns this string value.
      *
      * @param v8Runtime    the V8 runtime
      * @param targetObject the target object
@@ -175,16 +180,10 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle<String> {
      * @throws JavetException the javet exception
      * @since 3.0.4
      */
-    public V8Value toString(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+    public V8Value valueOf(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         final String string = validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_STRING, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> v8Runtime.createV8ValueString(string)));
-    }
-
-    @Override
-    protected String validateTargetObject(Object targetObject) {
-        assert targetObject instanceof String : ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING;
-        return (String) targetObject;
     }
 }

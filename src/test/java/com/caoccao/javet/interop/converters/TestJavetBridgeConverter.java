@@ -18,6 +18,7 @@ package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.utils.SimpleList;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.utils.SimpleSet;
@@ -50,7 +51,7 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
     public void beforeEach() throws JavetException {
         super.beforeEach();
         v8Runtime.setConverter(javetBridgeConverter);
-        assertEquals(6, javetBridgeConverter.getConfig().getProxyPlugins().size());
+        assertEquals(7, javetBridgeConverter.getConfig().getProxyPlugins().size());
         assertTrue(javetBridgeConverter.getConfig().isProxyArrayEnabled());
         assertTrue(javetBridgeConverter.getConfig().isProxyListEnabled());
         assertTrue(javetBridgeConverter.getConfig().isProxyMapEnabled());
@@ -72,6 +73,35 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         v8Runtime.getGlobalObject().delete("bTrue");
         v8Runtime.getGlobalObject().delete("bFalse");
         v8Runtime.getGlobalObject().delete("list");
+    }
+
+    @Test
+    public void testDouble() throws JavetException {
+        Double d = 1.23D;
+        v8Runtime.getGlobalObject().set("d", d);
+        assertEquals(1.23D, v8Runtime.getExecutor("d").executeObject(), DELTA);
+        assertEquals(1.23D, v8Runtime.getExecutor("d.toV8Value()").executeDouble(), DELTA);
+        // valueOf()
+        assertEquals(1.23D, v8Runtime.getExecutor("d.valueOf()").executeDouble(), DELTA);
+        // toExponential()
+        assertEquals("1.23e+0", v8Runtime.getExecutor("d.toExponential()").executeString());
+        // toFixed()
+        assertEquals("1.2300", v8Runtime.getExecutor("d.toFixed(4)").executeString());
+        // Symbol.toPrimitive
+        assertEquals(1.23D, v8Runtime.getExecutor("d[Symbol.toPrimitive]()").executeDouble(), DELTA);
+        // +
+        assertEquals(2.23D, v8Runtime.getExecutor("1 + d").executeDouble(), DELTA);
+        // Symbol.iterator
+        assertEquals(
+                "TypeError: d is not iterable",
+                assertThrows(
+                        JavetExecutionException.class,
+                        () -> v8Runtime.getExecutor("JSON.stringify([...d])").executeVoid()).getMessage());
+        // toJSON()
+        assertEquals("1.23", v8Runtime.getExecutor("JSON.stringify(d)").executeString());
+        // toString()
+        assertEquals("1.23", v8Runtime.getExecutor("d.toString()").executeString());
+        v8Runtime.getGlobalObject().delete("d");
     }
 
     @Test
@@ -99,9 +129,26 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         v8Runtime.getGlobalObject().set("list", SimpleList.of(1, -1));
         assertEquals(12345, (Integer) v8Runtime.getExecutor("i").executeObject());
         assertEquals(12345, v8Runtime.getExecutor("i.toV8Value()").executeInteger());
+        // valueOf()
+        assertEquals(12345, v8Runtime.getExecutor("i.valueOf()").executeInteger());
+        // toExponential()
+        assertEquals("1.2345e+4", v8Runtime.getExecutor("i.toExponential()").executeString());
+        // toFixed()
+        assertEquals("12345.00", v8Runtime.getExecutor("i.toFixed(2)").executeString());
+        // Symbol.toPrimitive
         assertEquals(12345, v8Runtime.getExecutor("i[Symbol.toPrimitive]()").executeInteger());
+        // +
         assertEquals(12346, v8Runtime.getExecutor("1 + i").executeInteger());
+        // Symbol.iterator
+        assertEquals(
+                "TypeError: i is not iterable",
+                assertThrows(
+                        JavetExecutionException.class,
+                        () -> v8Runtime.getExecutor("JSON.stringify([...i])").executeVoid()).getMessage());
+        // toJSON()
         assertEquals("[1,-1]", v8Runtime.getExecutor("JSON.stringify(list)").executeString());
+        // toString()
+        assertEquals("12345", v8Runtime.getExecutor("i.toString()").executeString());
         v8Runtime.getGlobalObject().delete("i");
         v8Runtime.getGlobalObject().delete("list");
     }

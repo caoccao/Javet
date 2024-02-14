@@ -1066,7 +1066,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
     <T extends V8Value> T functionCall(
-            IV8ValueObject iV8ValueObject, IV8ValueObject receiver, boolean returnResult,
+            IV8ValueObject iV8ValueObject, V8Value receiver, boolean returnResult,
             V8Value... v8Values)
             throws JavetException {
         return (T) v8Native.functionCall(

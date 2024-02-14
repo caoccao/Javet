@@ -152,11 +152,12 @@ public interface IClassProxyPlugin {
     /**
      * Is method proxyable.
      *
-     * @param methodName the method name
+     * @param methodName  the method name
+     * @param targetClass the target class
      * @return true : yes, false : no
      * @since 3.0.4
      */
-    boolean isMethodProxyable(String methodName);
+    boolean isMethodProxyable(String methodName, Class<?> targetClass);
 
     /**
      * Is the target class proxyable.

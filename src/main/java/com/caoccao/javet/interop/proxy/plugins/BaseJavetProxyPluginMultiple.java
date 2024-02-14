@@ -21,6 +21,7 @@ import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * The type Base javet proxy plugin for multiple classes.
@@ -42,6 +43,12 @@ public abstract class BaseJavetProxyPluginMultiple extends BaseJavetProxyPlugin 
      */
     protected final Map<Class<?>, Map<String, IClassProxyPluginFunction<?>>> proxyGetBySymbolMap;
     /**
+     * The Proxyable methods map.
+     *
+     * @since 3.0.4
+     */
+    protected final Map<Class<?>, Set<String>> proxyableMethodsMap;
+    /**
      * The Target object constructor map.
      *
      * @since 3.0.4
@@ -55,6 +62,7 @@ public abstract class BaseJavetProxyPluginMultiple extends BaseJavetProxyPlugin 
      */
     public BaseJavetProxyPluginMultiple() {
         super();
+        proxyableMethodsMap = new HashMap<>();
         proxyGetByStringMap = new HashMap<>();
         proxyGetBySymbolMap = new HashMap<>();
         targetObjectConstructorMap = new HashMap<>();
@@ -84,5 +92,12 @@ public abstract class BaseJavetProxyPluginMultiple extends BaseJavetProxyPlugin 
     public <E extends Exception> IClassProxyPluginFunction<E> getTargetObjectConstructor(Class<?> targetClass) {
         return (IClassProxyPluginFunction<E>) Optional.ofNullable(targetObjectConstructorMap.get(targetClass))
                 .orElse(super.getTargetObjectConstructor(targetClass));
+    }
+
+    @Override
+    public boolean isMethodProxyable(String methodName, Class<?> targetClass) {
+        return Optional.ofNullable(proxyableMethodsMap.get(targetClass))
+                .map(m -> m.contains(methodName))
+                .orElse(false);
     }
 }

@@ -282,7 +282,7 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
     }
 
     @Override
-    public boolean isMethodProxyable(String methodName) {
+    public boolean isMethodProxyable(String methodName, Class<?> targetClass) {
         return proxyableMethods.contains(methodName);
     }
 

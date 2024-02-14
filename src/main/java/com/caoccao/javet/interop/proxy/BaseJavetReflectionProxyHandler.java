@@ -272,7 +272,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     protected V8Value getFromMethod(V8Value target, V8Value property) throws JavetException, E {
         if (property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).toPrimitive();
-            if (!classDescriptor.getClassProxyPlugin().isMethodProxyable(propertyName)) {
+            if (!classDescriptor.getClassProxyPlugin().isMethodProxyable(propertyName, classDescriptor.getTargetClass())) {
                 List<Method> methods = classDescriptor.getMethodsMap().get(propertyName);
                 if (ListUtils.isNotEmpty(methods)) {
                     JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(

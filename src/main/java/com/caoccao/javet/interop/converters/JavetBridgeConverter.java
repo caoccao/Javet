@@ -46,6 +46,7 @@ public class JavetBridgeConverter extends JavetProxyConverter {
             JavetProxyPluginSet.getInstance(),
             JavetProxyPluginList.getInstance(),
             JavetProxyPluginArray.getInstance(),
+            JavetProxyPluginClass.getInstance(),
             JavetProxyPluginString.getInstance(),
             JavetProxyPluginDefault.getInstance(), // The default proxy plugin must be the last one.
     };

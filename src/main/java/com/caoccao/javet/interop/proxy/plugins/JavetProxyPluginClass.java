@@ -69,7 +69,7 @@ public class JavetProxyPluginClass extends BaseJavetProxyPlugin {
     }
 
     @Override
-    public boolean isMethodProxyable(String methodName) {
+    public boolean isMethodProxyable(String methodName, Class<?> targetClass) {
         return false;
     }
 

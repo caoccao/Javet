@@ -102,7 +102,7 @@ public final class V8Internal {
 
     @CheckReturnValue
     public <T extends V8Value> T functionCall(
-            IV8ValueObject iV8ValueObject, IV8ValueObject receiver, boolean returnResult, V8Value... v8Values)
+            IV8ValueObject iV8ValueObject, V8Value receiver, boolean returnResult, V8Value... v8Values)
             throws JavetException {
         return v8Runtime.functionCall(iV8ValueObject, receiver, returnResult, v8Values);
     }
