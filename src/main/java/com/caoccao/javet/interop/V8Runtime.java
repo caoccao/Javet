@@ -930,8 +930,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
     @Override
-    public V8ValueProxy createV8ValueProxy(V8ValueObject v8ValueObject) throws JavetException {
-        return (V8ValueProxy) v8Native.proxyCreate(handle, v8ValueObject);
+    public V8ValueProxy createV8ValueProxy(V8Value v8Value) throws JavetException {
+        return (V8ValueProxy) v8Native.proxyCreate(handle, v8Value);
     }
 
     @SuppressWarnings("RedundantThrows")

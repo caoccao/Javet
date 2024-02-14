@@ -29,7 +29,6 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueLong;
 import com.caoccao.javet.values.reference.IV8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueFunction;
-import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueProxy;
 
 import java.util.List;
@@ -107,9 +106,9 @@ public class JavetProxyConverter extends JavetObjectConverter {
                         }
                         break;
                     default:
-                        V8ValueObject v8ValueTarget = null;
+                        V8Value v8ValueTarget = null;
                         try {
-                            v8ValueTarget = (V8ValueObject) getConfig().getProxyPlugins().stream()
+                            v8ValueTarget = getConfig().getProxyPlugins().stream()
                                     .filter(p -> p.isProxyable(objectClass))
                                     .findFirst()
                                     .map(p -> p.getTargetObjectConstructor(objectClass))

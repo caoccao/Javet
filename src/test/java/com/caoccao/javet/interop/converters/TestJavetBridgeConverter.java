@@ -19,6 +19,7 @@ package com.caoccao.javet.interop.converters;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
+import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.utils.SimpleList;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.utils.SimpleSet;
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZonedDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -67,8 +69,16 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertFalse((Boolean) v8Runtime.getExecutor("bFalse").executeObject());
         assertEquals(1, v8Runtime.getExecutor("bTrue.toV8Value()?1:0").executeInteger());
         assertEquals(0, v8Runtime.getExecutor("bFalse.toV8Value()?1:0").executeInteger());
+        // Symbol.toPrimitive
         assertEquals(1, v8Runtime.getExecutor("bTrue[Symbol.toPrimitive]()?1:0").executeInteger());
         assertEquals(0, v8Runtime.getExecutor("bFalse[Symbol.toPrimitive]()?1:0").executeInteger());
+        // valueOf()
+        assertTrue(v8Runtime.getExecutor("bTrue.valueOf()").executeBoolean());
+        assertFalse(v8Runtime.getExecutor("bFalse.valueOf()").executeBoolean());
+        // toString()
+        assertEquals("true", v8Runtime.getExecutor("bTrue.toString()").executeString());
+        assertEquals("false", v8Runtime.getExecutor("bFalse.toString()").executeString());
+        // toJSON()
         assertEquals("[true,false]", v8Runtime.getExecutor("JSON.stringify(list)").executeString());
         v8Runtime.getGlobalObject().delete("bTrue");
         v8Runtime.getGlobalObject().delete("bFalse");
@@ -422,5 +432,34 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals("[\"x\",\"y\"]", v8Runtime.getExecutor("JSON.stringify([...l])").executeString());
         assertEquals("{\"0\":\"x\",\"1\":\"y\"}", v8Runtime.getExecutor("JSON.stringify({...l})").executeString());
         v8Runtime.getGlobalObject().delete("l");
+    }
+
+    @Test
+    public void testZonedDateTime() throws JavetException {
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(
+                2000, 1, 2, 3, 4, 5, 6, JavetDateTimeUtils.ZONE_ID_UTC);
+        v8Runtime.getGlobalObject().set("z", zonedDateTime);
+        assertEquals(zonedDateTime, v8Runtime.getExecutor("z").executeObject());
+        // toJSON()
+        assertEquals(
+                "\"2000-01-02T03:04:05.000Z\"",
+                v8Runtime.getExecutor("JSON.stringify(z)").executeString());
+        // toLocaleDateString()
+        assertTrue(v8Runtime.getExecutor("z.toLocaleDateString()").executeString().contains("2000"));
+        // toLocaleString()
+        assertTrue(v8Runtime.getExecutor("z.toLocaleString()").executeString().contains("2000"));
+        // toLocaleTimeString()
+        assertFalse(v8Runtime.getExecutor("z.toLocaleTimeString()").executeString().contains("2000"));
+        assertTrue(v8Runtime.getExecutor("z.toLocaleTimeString('en-US')").executeString().contains(":04:05"));
+        // toTimeString()
+        assertFalse(v8Runtime.getExecutor("z.toTimeString()").executeString().contains("2000"));
+        assertTrue(v8Runtime.getExecutor("z.toTimeString()").executeString().contains(":04:05"));
+        // toUTCString()
+        assertTrue(v8Runtime.getExecutor("z.toUTCString()").executeString().contains("2000"));
+        // toString()
+        assertTrue(v8Runtime.getExecutor("z.toString()").executeString().contains(" 2000 "));
+        // valueOf()
+        assertEquals(946782245000L, v8Runtime.getExecutor("z.valueOf()").executeLong());
+        v8Runtime.getGlobalObject().delete("z");
     }
 }

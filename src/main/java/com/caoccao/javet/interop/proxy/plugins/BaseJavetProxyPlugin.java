@@ -30,6 +30,7 @@ import com.caoccao.javet.interop.converters.JavetProxyConverter;
 import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
 import java.util.Objects;
@@ -102,6 +103,30 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
      * @since 3.0.4
      */
     public BaseJavetProxyPlugin() {
+    }
+
+    /**
+     * Call prototype function with the object converter by name.
+     *
+     * @param functionName the function name
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     */
+    protected V8Value callPrototypeWithObjectConverter(
+            String functionName, V8Runtime v8Runtime, Object targetObject)
+            throws JavetException {
+        Objects.requireNonNull(functionName);
+        Objects.requireNonNull(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                functionName, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(
+                            functionName).execute()) {
+                        return v8ValueFunction.call(OBJECT_CONVERTER.toV8Value(v8Runtime, targetObject), v8Values);
+                    }
+                }));
     }
 
     @Override

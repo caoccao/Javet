@@ -46,7 +46,7 @@ public class TestV8ValueZonedDateTime extends BaseTestJavetRuntime {
         ZonedDateTime maxZonedDateTime = ZonedDateTime.of(
                 9999, 12, 31, 23, 59, 59, 0, JavetDateTimeUtils.ZONE_ID_UTC);
         ZonedDateTime minZonedDateTime = ZonedDateTime.of(
-                1900, 01, 01, 0, 0, 0, 0, JavetDateTimeUtils.ZONE_ID_UTC);
+                1900, 1, 1, 0, 0, 0, 0, JavetDateTimeUtils.ZONE_ID_UTC);
         assertEquals(253402300799L, maxZonedDateTime.toInstant().getEpochSecond());
         assertEquals(-2208988800L, minZonedDateTime.toInstant().getEpochSecond());
         assertEquals(maxZonedDateTime, v8Runtime.getExecutor("new Date(253402300799000)")
