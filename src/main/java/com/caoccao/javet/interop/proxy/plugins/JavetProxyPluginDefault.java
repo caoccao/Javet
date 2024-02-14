@@ -43,6 +43,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
      * @since 3.0.4
      */
     public static final String NAME = Object.class.getName();
+    protected static final String BIG_INT_PROTOTYPE_TO_LOCALE_STRING = "BigInt.prototype.toLocaleString";
     protected static final String CHAR_AT = "charAt";
     protected static final String CODE_POINT_AT = "codePointAt";
     protected static final String ENDS_WITH = "endsWith";
@@ -92,6 +93,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             // java.math.BigInteger
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
+            polyfillFunctionMap.put(TO_LOCALE_STRING, this::bigIntToLocaleString);
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(BigInteger.class, SimpleSet.of(VALUE_OF));
             proxyGetByStringMap.put(BigInteger.class, polyfillFunctionMap);
@@ -113,7 +115,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             polyfillFunctionMap.put(TO_EXPONENTIAL, this::toExponential);
             polyfillFunctionMap.put(TO_FIXED, this::toFixed);
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
-            polyfillFunctionMap.put(TO_LOCALE_STRING, this::toLocaleString);
+            polyfillFunctionMap.put(TO_LOCALE_STRING, this::numberToLocaleString);
             polyfillFunctionMap.put(TO_PRECISION, this::toPrecision);
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(Byte.class, SimpleSet.of(VALUE_OF));
@@ -139,7 +141,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             polyfillFunctionMap.put(TO_EXPONENTIAL, this::toExponential);
             polyfillFunctionMap.put(TO_FIXED, this::toFixed);
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
-            polyfillFunctionMap.put(TO_LOCALE_STRING, this::toLocaleString);
+            polyfillFunctionMap.put(TO_LOCALE_STRING, this::numberToLocaleString);
             polyfillFunctionMap.put(TO_PRECISION, this::toPrecision);
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(Double.class, SimpleSet.of(VALUE_OF));
@@ -154,7 +156,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             polyfillFunctionMap.put(TO_EXPONENTIAL, this::toExponential);
             polyfillFunctionMap.put(TO_FIXED, this::toFixed);
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
-            polyfillFunctionMap.put(TO_LOCALE_STRING, this::toLocaleString);
+            polyfillFunctionMap.put(TO_LOCALE_STRING, this::numberToLocaleString);
             polyfillFunctionMap.put(TO_PRECISION, this::toPrecision);
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(Float.class, SimpleSet.of(VALUE_OF));
@@ -169,7 +171,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             polyfillFunctionMap.put(TO_EXPONENTIAL, this::toExponential);
             polyfillFunctionMap.put(TO_FIXED, this::toFixed);
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
-            polyfillFunctionMap.put(TO_LOCALE_STRING, this::toLocaleString);
+            polyfillFunctionMap.put(TO_LOCALE_STRING, this::numberToLocaleString);
             polyfillFunctionMap.put(TO_PRECISION, this::toPrecision);
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(Integer.class, SimpleSet.of(VALUE_OF));
@@ -182,6 +184,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             // java.lang.Long
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
+            polyfillFunctionMap.put(TO_LOCALE_STRING, this::bigIntToLocaleString);
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(Long.class, SimpleSet.of(VALUE_OF));
             proxyGetByStringMap.put(Long.class, polyfillFunctionMap);
@@ -195,7 +198,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             polyfillFunctionMap.put(TO_EXPONENTIAL, this::toExponential);
             polyfillFunctionMap.put(TO_FIXED, this::toFixed);
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
-            polyfillFunctionMap.put(TO_LOCALE_STRING, this::toLocaleString);
+            polyfillFunctionMap.put(TO_LOCALE_STRING, this::numberToLocaleString);
             polyfillFunctionMap.put(TO_PRECISION, this::toPrecision);
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(Short.class, SimpleSet.of(VALUE_OF));
@@ -231,6 +234,34 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
         return instance;
     }
 
+    /**
+     * Polyfill BigInt.prototype.toLocaleString().
+     * The toLocaleString() method of BigInt values returns a string with a language-sensitive representation of
+     * this BigInt. In implementations with Intl.NumberFormat API support, this method simply calls Intl.NumberFormat.
+     * <p>
+     * Every time toLocaleString is called, it has to perform a search in a big database of localization strings,
+     * which is potentially inefficient. When the method is called many times with the same arguments,
+     * it is better to create a Intl.NumberFormat object and use its format() method, because a NumberFormat object
+     * remembers the arguments passed to it and may decide to cache a slice of the database, so future format calls
+     * can search for localization strings within a more constrained context.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public V8Value bigIntToLocaleString(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                TO_LOCALE_STRING, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(
+                            BIG_INT_PROTOTYPE_TO_LOCALE_STRING).execute()) {
+                        return v8ValueFunction.call(OBJECT_CONVERTER.toV8Value(v8Runtime, targetObject), v8Values);
+                    }
+                }));
+    }
+
     @Override
     public String getName() {
         return NAME;
@@ -239,6 +270,34 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
     @Override
     public boolean isProxyable(Class<?> targetClass) {
         return targetClass != null;
+    }
+
+    /**
+     * Polyfill Number.prototype.toLocaleString().
+     * The toLocaleString() method of Number values returns a string with a language-sensitive representation of
+     * this number. In implementations with Intl.NumberFormat API support, this method simply calls Intl.NumberFormat.
+     * <p>
+     * Every time toLocaleString is called, it has to perform a search in a big database of localization strings,
+     * which is potentially inefficient. When the method is called many times with the same arguments,
+     * it is better to create a Intl.NumberFormat object and use its format() method, because a NumberFormat object
+     * remembers the arguments passed to it and may decide to cache a slice of the database,
+     * so future format calls can search for localization strings within a more constrained context.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public V8Value numberToLocaleString(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                TO_LOCALE_STRING, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(
+                            NUMBER_PROTOTYPE_TO_LOCALE_STRING).execute()) {
+                        return v8ValueFunction.call(OBJECT_CONVERTER.toV8Value(v8Runtime, targetObject), v8Values);
+                    }
+                }));
     }
 
     /**
@@ -294,34 +353,6 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(
                             NUMBER_PROTOTYPE_TO_FIXED).execute()) {
-                        return v8ValueFunction.call(OBJECT_CONVERTER.toV8Value(v8Runtime, targetObject), v8Values);
-                    }
-                }));
-    }
-
-    /**
-     * Polyfill Number.prototype.toLocaleString().
-     * The toLocaleString() method of Number values returns a string with a language-sensitive representation of
-     * this number. In implementations with Intl.NumberFormat API support, this method simply calls Intl.NumberFormat.
-     * <p>
-     * Every time toLocaleString is called, it has to perform a search in a big database of localization strings,
-     * which is potentially inefficient. When the method is called many times with the same arguments,
-     * it is better to create a Intl.NumberFormat object and use its format() method, because a NumberFormat object
-     * remembers the arguments passed to it and may decide to cache a slice of the database,
-     * so future format calls can search for localization strings within a more constrained context.
-     *
-     * @param v8Runtime    the V8 runtime
-     * @param targetObject the target object
-     * @return the V8 value
-     * @throws JavetException the javet exception
-     * @since 3.0.4
-     */
-    public V8Value toLocaleString(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
-                TO_LOCALE_STRING, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
-                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    try (V8ValueFunction v8ValueFunction = v8Runtime.getExecutor(
-                            NUMBER_PROTOTYPE_TO_LOCALE_STRING).execute()) {
                         return v8ValueFunction.call(OBJECT_CONVERTER.toV8Value(v8Runtime, targetObject), v8Values);
                     }
                 }));

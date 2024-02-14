@@ -205,10 +205,25 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         v8Runtime.getGlobalObject().set("list", SimpleList.of(1L, -1L));
         assertEquals(12345L, (Long) v8Runtime.getExecutor("l").executeObject());
         assertEquals(12345L, v8Runtime.getExecutor("l.toV8Value()").executeLong());
+        // valueOf()
+        assertEquals(12345L, v8Runtime.getExecutor("l.valueOf()").executeLong());
+        // toLocaleString()
+        assertEquals("12345", v8Runtime.getExecutor("l.toLocaleString()").executeString());
+        // Symbol.toPrimitive
         assertEquals(12345L, v8Runtime.getExecutor("l[Symbol.toPrimitive]()").executeLong());
+        // +
         assertEquals(12346L, v8Runtime.getExecutor("1n + l").executeLong());
+        // Symbol.iterator
+        assertEquals(
+                "TypeError: l is not iterable",
+                assertThrows(
+                        JavetExecutionException.class,
+                        () -> v8Runtime.getExecutor("JSON.stringify([...l])").executeVoid()).getMessage());
+        // toJSON()
         assertEquals("[\"1\",\"-1\"]", v8Runtime.getExecutor("JSON.stringify(list, (key, value) =>" +
                 " typeof value === 'bigint'?value.toString():value)").executeString());
+        // toString()
+        assertEquals("12345", v8Runtime.getExecutor("l.toString()").executeString());
         v8Runtime.getGlobalObject().delete("l");
         v8Runtime.getGlobalObject().delete("list");
     }
