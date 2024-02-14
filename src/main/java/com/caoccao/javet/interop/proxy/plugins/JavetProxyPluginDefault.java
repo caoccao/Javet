@@ -69,12 +69,14 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             // java.math.BigInteger
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::bigIntegerToJSON);
+            polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyGetByStringMap.put(BigInteger.class, polyfillFunctionMap);
         }
         {
             // java.lang.Boolean
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::booleanToJSON);
+            polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyGetByStringMap.put(Boolean.class, polyfillFunctionMap);
             targetObjectConstructorMap.put(
                     Boolean.class,
@@ -84,6 +86,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             // java.lang.Byte
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::byteToJSON);
+            polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyGetByStringMap.put(Byte.class, polyfillFunctionMap);
             targetObjectConstructorMap.put(
                     Byte.class,
@@ -93,6 +96,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             // java.lang.Character
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::characterToJSON);
+            polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyGetByStringMap.put(Character.class, polyfillFunctionMap);
             targetObjectConstructorMap.put(
                     Character.class,
@@ -102,6 +106,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             // java.lang.Double
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::doubleToJSON);
+            polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyGetByStringMap.put(Double.class, polyfillFunctionMap);
             targetObjectConstructorMap.put(
                     Double.class,
@@ -111,6 +116,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             // java.lang.Float
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::floatToJSON);
+            polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyGetByStringMap.put(Float.class, polyfillFunctionMap);
             targetObjectConstructorMap.put(
                     Float.class,
@@ -120,6 +126,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             // java.lang.Integer
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::integerToJSON);
+            polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyGetByStringMap.put(Integer.class, polyfillFunctionMap);
             targetObjectConstructorMap.put(
                     Integer.class,
@@ -129,6 +136,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             // java.lang.Long
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::longToJSON);
+            polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyGetByStringMap.put(Long.class, polyfillFunctionMap);
             targetObjectConstructorMap.put(
                     Long.class,
@@ -138,6 +146,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             // java.lang.Short
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::shortToJSON);
+            polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyGetByStringMap.put(Short.class, polyfillFunctionMap);
             targetObjectConstructorMap.put(
                     Short.class,
@@ -147,6 +156,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             // java.lang.String
             Map<String, IClassProxyPluginFunction<?>> polyfillFunctionMap = new HashMap<>();
             polyfillFunctionMap.put(TO_JSON, this::stringToJSON);
+            polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyGetByStringMap.put(String.class, polyfillFunctionMap);
             targetObjectConstructorMap.put(
                     String.class,
@@ -178,7 +188,8 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
         final BigInteger value = (BigInteger) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
-                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> v8Runtime.createV8ValueBigInteger(value)));
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        v8Runtime.createV8ValueBigInteger(value)));
     }
 
     /**
@@ -212,7 +223,8 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
         final Byte value = (Byte) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
-                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> v8Runtime.createV8ValueInteger(value.intValue())));
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        v8Runtime.createV8ValueInteger(value.intValue())));
     }
 
     /**
@@ -229,7 +241,8 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
         final Character value = (Character) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
-                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> v8Runtime.createV8ValueString(value.toString())));
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        v8Runtime.createV8ValueString(value.toString())));
     }
 
     /**
@@ -263,7 +276,8 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
         final Float value = (Float) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
-                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> v8Runtime.createV8ValueDouble(value.doubleValue())));
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        v8Runtime.createV8ValueDouble(value.doubleValue())));
     }
 
     @Override
@@ -285,7 +299,8 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
         final Integer value = (Integer) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
-                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> v8Runtime.createV8ValueInteger(value)));
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        v8Runtime.createV8ValueInteger(value)));
     }
 
     @Override
@@ -329,7 +344,8 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
         final Short value = (Short) targetObject;
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
-                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> v8Runtime.createV8ValueInteger(value.intValue())));
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        v8Runtime.createV8ValueInteger(value.intValue())));
     }
 
     /**
@@ -347,5 +363,21 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> v8Runtime.createV8ValueString(value)));
+    }
+
+    /**
+     * Polyfill valueOf().
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    public V8Value valueOf(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                VALUE_OF, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
+                        OBJECT_CONVERTER.toV8Value(v8Runtime, targetObject)));
     }
 }
