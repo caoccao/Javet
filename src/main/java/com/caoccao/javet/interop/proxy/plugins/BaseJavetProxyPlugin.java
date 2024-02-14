@@ -89,6 +89,12 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
      * @since 3.0.4
      */
     protected static final String TO_STRING = "toString";
+    /**
+     * The constant VALUE_OF.
+     *
+     * @since 3.0.4
+     */
+    protected static final String VALUE_OF = "valueOf";
 
     /**
      * Instantiates a new Base javet proxy plugin.

@@ -218,18 +218,98 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
     public void testString() throws JavetException {
         v8Runtime.getGlobalObject().set("s", "test");
         assertEquals("test", v8Runtime.getExecutor("s").executeObject());
+        // length
         assertEquals(4, v8Runtime.getExecutor("s.length").executeInteger());
         assertEquals("test", v8Runtime.getExecutor("s.toV8Value()").executeString());
+        // toString()
         assertEquals("test", v8Runtime.getExecutor("s.toString()").executeString());
-        assertEquals("t", v8Runtime.getExecutor("s[0]").executeObject());
+        // valueOf()
+        assertEquals("test", v8Runtime.getExecutor("s.valueOf()").executeString());
+        // toJSON()
+        assertEquals("\"test\"", v8Runtime.getExecutor("JSON.stringify(s)").executeString());
+        // []
+        assertEquals("t", v8Runtime.getExecutor("s[0]").executeString());
+        // at(0)
+        assertEquals("t", v8Runtime.getExecutor("s.at(0)").executeString());
+        // charAt()
+        assertEquals("t", v8Runtime.getExecutor("s.charAt(0)").executeString());
+        // charCodeAt()
+        assertEquals('t', v8Runtime.getExecutor("s.charCodeAt(0)").executeInteger());
+        // codePointAt()
+        assertEquals('t', v8Runtime.getExecutor("s.codePointAt(0)").executeInteger());
+        // concat()
+        assertEquals("test123", v8Runtime.getExecutor("s.concat('123')").executeString());
+        // endsWith()
+        assertTrue(v8Runtime.getExecutor("s.endsWith('t')").executeBoolean());
+        assertFalse(v8Runtime.getExecutor("s.endsWith('x')").executeBoolean());
+        // hashCode()
+        assertEquals("test".hashCode(), (Integer) v8Runtime.getExecutor("s.hashCode()").executeObject());
+        // includes()
+        assertTrue(v8Runtime.getExecutor("s.includes('t')").executeBoolean());
+        assertFalse(v8Runtime.getExecutor("s.includes('x')").executeBoolean());
+        // indexOf()
+        assertEquals(1, v8Runtime.getExecutor("s.indexOf('e')").executeInteger());
+        // isWellFormed()
+        assertTrue(v8Runtime.getExecutor("s.isWellFormed()").executeBoolean());
+        // lastIndexOf()
+        assertEquals(1, v8Runtime.getExecutor("s.lastIndexOf('e')").executeInteger());
+        // localeCompare()
+        assertEquals(0, v8Runtime.getExecutor("s.localeCompare('test')").executeInteger());
+        assertEquals(-132, v8Runtime.getExecutor("s.localeCompare('tést')").executeInteger());
+        // match()
+        assertTrue(v8Runtime.getExecutor("s.match(/^t/)").executeBoolean());
+        assertFalse(v8Runtime.getExecutor("s.match(/123/)").executeBoolean());
+        // matchAll()
+        assertEquals("[[\"t\"],[\"t\"]]", v8Runtime.getExecutor("JSON.stringify([...s.matchAll(/t/g)])").executeString());
+        // normalize()
+        assertEquals("test", v8Runtime.getExecutor("s.normalize()").executeString());
+        // padEnd()
+        assertEquals("test..", v8Runtime.getExecutor("s.padEnd(6, '.')").executeString());
+        // padStart()
+        assertEquals("..test", v8Runtime.getExecutor("s.padStart(6, '.')").executeString());
+        // repeat()
+        assertEquals("testtest", v8Runtime.getExecutor("s.repeat(2)").executeString());
+        // replace()
+        assertEquals("xest", v8Runtime.getExecutor("s.replace('t', 'x')").executeString());
+        // replaceAll()
+        assertEquals("xesx", v8Runtime.getExecutor("s.replaceAll('t', 'x')").executeString());
+        // search()
+        assertEquals(1, v8Runtime.getExecutor("s.search('e')").executeInteger());
+        // slice()
+        assertEquals("es", v8Runtime.getExecutor("s.slice(1,3)").executeString());
+        // split()
+        assertEquals("[\"t\",\"st\"]", v8Runtime.getExecutor("JSON.stringify(s.split('e'))").executeString());
+        // startsWith()
+        assertTrue(v8Runtime.getExecutor("s.startsWith('t')").executeBoolean());
+        assertFalse(v8Runtime.getExecutor("s.startsWith('x')").executeBoolean());
+        // substring()
+        assertEquals("es", v8Runtime.getExecutor("s.substring(1,3)").executeString());
+        // toLocaleLowerCase()
+        assertEquals("test", v8Runtime.getExecutor("s.toLocaleLowerCase()").executeString());
+        // toLocaleUpperCase()
+        assertEquals("TEST", v8Runtime.getExecutor("s.toLocaleUpperCase()").executeString());
+        // toLowerCase()
+        assertEquals("test", v8Runtime.getExecutor("s.toLowerCase()").executeString());
+        // toUpperCase()
+        assertEquals("TEST", v8Runtime.getExecutor("s.toUpperCase()").executeString());
+        // toWellFormed()
+        assertEquals("test", v8Runtime.getExecutor("s.toWellFormed()").executeString());
+        // trim()
+        assertEquals("test", v8Runtime.getExecutor("s.trim()").executeString());
+        // trimEnd()
+        assertEquals("test", v8Runtime.getExecutor("s.trimEnd()").executeString());
+        // trimStart()
+        assertEquals("test", v8Runtime.getExecutor("s.trimStart()").executeString());
+        // Object.getOwnPropertyNames()
         assertEquals("[\"0\",\"1\",\"2\",\"3\",\"length\"]", v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(s))").executeString());
+        // Object.keys()
         assertEquals("[\"0\",\"1\",\"2\",\"3\"]", v8Runtime.getExecutor("JSON.stringify(Object.keys(s))").executeString());
+        // Symbol.toPrimitive
         assertEquals("test", v8Runtime.getExecutor("s[Symbol.toPrimitive]()").executeString());
-        assertEquals("abc test", v8Runtime.getExecutor("'abc ' + s").executeString());
-        assertEquals('t', (Character) v8Runtime.getExecutor("s.charAt(0)").executeObject());
-        assertEquals(1, (Integer) v8Runtime.getExecutor("s.indexOf('e')").executeObject());
+        // Symbol.iterator
         assertEquals("[\"t\",\"e\",\"s\",\"t\"]", v8Runtime.getExecutor("JSON.stringify([...s])").executeString());
         assertEquals("{\"0\":\"t\",\"1\":\"e\",\"2\":\"s\",\"3\":\"t\"}", v8Runtime.getExecutor("JSON.stringify({...s})").executeString());
+        assertEquals("abc test", v8Runtime.getExecutor("'abc ' + s").executeString());
         v8Runtime.getGlobalObject().delete("s");
     }
 

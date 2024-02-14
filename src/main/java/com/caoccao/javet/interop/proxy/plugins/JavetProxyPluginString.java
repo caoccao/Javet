@@ -24,11 +24,8 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
-import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleSet;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
-import com.caoccao.javet.values.virtual.V8VirtualIterator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,16 +45,30 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle<String> {
      * @since 3.0.4
      */
     public static final String NAME = String.class.getName();
+    protected static final String CHAR_AT = "charAt";
+    protected static final String CODE_POINT_AT = "codePointAt";
+    protected static final String ENDS_WITH = "endsWith";
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING =
             "Target object must be an instance of String.";
+    protected static final String INDEX_OF = "indexOf";
+    protected static final String LAST_INDEX_OF = "lastIndexOf";
     protected static final String LENGTH = "length";
+    protected static final String REPEAT = "repeat";
+    protected static final String REPLACE = "replace";
+    protected static final String REPLACE_ALL = "replaceAll";
+    protected static final String SPLIT = "split";
+    protected static final String STARTS_WITH = "startsWith";
+    protected static final String SUBSTRING = "substring";
+    protected static final String TRIM = "trim";
     /**
      * The constant DEFAULT_PROXYABLE_METHODS.
      *
      * @since 3.0.4
      */
     protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
-            LENGTH, TO_STRING};
+            CHAR_AT, CODE_POINT_AT, ENDS_WITH, INDEX_OF, LAST_INDEX_OF,
+            LENGTH, REPEAT, REPLACE, REPLACE_ALL, SPLIT,
+            STARTS_WITH, SUBSTRING, TO_STRING, TRIM, VALUE_OF};
     private static final JavetProxyPluginString instance = new JavetProxyPluginString();
     /**
      * The proxyable methods.
@@ -70,9 +81,9 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle<String> {
         super();
         proxyableMethods = SimpleSet.of(DEFAULT_PROXYABLE_METHODS);
         proxyGetByStringMap.put(LENGTH, this::length);
-        proxyGetByStringMap.put(TO_JSON, this::toJSON);
+        proxyGetByStringMap.put(TO_JSON, this::toString);
         proxyGetByStringMap.put(TO_STRING, this::toString);
-        proxyGetBySymbolMap.put(V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR, this::symbolIterator);
+        proxyGetByStringMap.put(VALUE_OF, this::toString);
     }
 
     /**
@@ -152,51 +163,6 @@ public class JavetProxyPluginString extends BaseJavetProxyPluginSingle<String> {
     public V8Value length(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         final String string = validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueInteger(string.length());
-    }
-
-    /**
-     * Polyfill String.prototype[@@iterator]().
-     * The [@@iterator]() method of String values implements the iterable protocol and allows strings
-     * to be consumed by most syntaxes expecting iterables, such as the spread syntax and for...of loops.
-     * It returns a string iterator object that yields the Unicode code points of the string value as individual strings.
-     *
-     * @param v8Runtime    the V8 runtime
-     * @param targetObject the target object
-     * @return the V8 value
-     * @throws JavetException the javet exception
-     * @since 3.0.4
-     */
-    public V8Value symbolIterator(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        final String string = validateTargetObject(targetObject);
-        List<V8Value> list = new ArrayList<>();
-        try {
-            for (char c : string.toCharArray()) {
-                list.add(v8Runtime.createV8ValueString(String.valueOf(c)));
-            }
-            return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
-                    V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
-                    (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
-                            PROXY_CONVERTER.toV8Value(v8Runtime, new V8VirtualIterator<>(list.iterator()))));
-        } finally {
-            JavetResourceUtils.safeClose(list);
-        }
-    }
-
-    /**
-     * Polyfill List.toJSON().
-     *
-     * @param v8Runtime    the V8 runtime
-     * @param targetObject the target object
-     * @return the V8 value
-     * @throws JavetException the javet exception
-     * @since 3.0.4
-     */
-    public V8Value toJSON(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        final String string = validateTargetObject(targetObject);
-        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
-                TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
-                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
-                        v8Runtime.createV8ValueString(string)));
     }
 
     /**
