@@ -38,6 +38,7 @@ import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.utils.StringUtils;
+import com.caoccao.javet.values.IV8ValueNonProxyable;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
@@ -927,10 +928,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         return (V8ValuePromise) v8Native.promiseCreate(handle);
     }
 
-    @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
     @Override
     public V8ValueProxy createV8ValueProxy(V8Value v8Value) throws JavetException {
+        if (v8Value instanceof IV8ValueNonProxyable) {
+            throw new JavetException(
+                    JavetError.NotSupported,
+                    SimpleMap.of(PARAMETER_FEATURE, v8Value.toString()));
+        }
         return (V8ValueProxy) v8Native.proxyCreate(handle, v8Value);
     }
 
@@ -969,7 +974,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     @CheckReturnValue
     public V8ValueTypedArray createV8ValueTypedArray(V8ValueReferenceType type, int length) throws JavetException {
-        try (V8Value v8Value = getExecutor(type.getName()).execute()) {
+        try (V8Value v8Value = getGlobalObject().get(type.getName())) {
             if (v8Value instanceof V8ValueFunction) {
                 V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Value;
                 return v8ValueFunction.callAsConstructor(createV8ValueInteger(length));

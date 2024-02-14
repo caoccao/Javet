@@ -16,22 +16,10 @@
 
 package com.caoccao.javet.values;
 
-import com.caoccao.javet.exceptions.JavetException;
-
 /**
- * The interface V8 value primitive value.
+ * The interface V8 value non-proxyable is for the types that do not support proxy.
  *
- * @param <T> the type parameter
  * @since 3.0.4
  */
-public interface IV8ValuePrimitiveValue<T extends V8Value>
-        extends IV8Value, IV8ValueNonProxyable {
-    /**
-     * Convert the primitive value to the primitive object.
-     *
-     * @return the primitive object
-     * @throws JavetException the javet exception
-     * @since 3.0.4
-     */
-    T toObject() throws JavetException;
+public interface IV8ValueNonProxyable {
 }
