@@ -23,6 +23,7 @@ import com.caoccao.javet.values.V8Value;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * The type Base javet proxy plugin for single class.
@@ -75,11 +76,8 @@ public abstract class BaseJavetProxyPluginSingle<T> extends BaseJavetProxyPlugin
     @Override
     public <E extends Exception> IClassProxyPluginFunction<E> getProxyGetBySymbol(
             Class<?> targetClass, String symbolName) {
-        IClassProxyPluginFunction<E> classProxyPluginFunction = super.getProxyGetBySymbol(targetClass, symbolName);
-        if (classProxyPluginFunction != null) {
-            return classProxyPluginFunction;
-        }
-        return (IClassProxyPluginFunction<E>) proxyGetBySymbolMap.get(symbolName);
+        return (IClassProxyPluginFunction<E>) Optional.ofNullable(proxyGetBySymbolMap.get(symbolName))
+                .orElse(super.getProxyGetBySymbol(targetClass, symbolName));
     }
 
     @Override

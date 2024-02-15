@@ -79,13 +79,9 @@ public abstract class BaseJavetProxyPluginMultiple extends BaseJavetProxyPlugin 
     @Override
     public <E extends Exception> IClassProxyPluginFunction<E> getProxyGetBySymbol(
             Class<?> targetClass, String symbolName) {
-        IClassProxyPluginFunction<E> classProxyPluginFunction = super.getProxyGetBySymbol(targetClass, symbolName);
-        if (classProxyPluginFunction != null) {
-            return classProxyPluginFunction;
-        }
         return (IClassProxyPluginFunction<E>) Optional.ofNullable(proxyGetBySymbolMap.get(targetClass))
                 .map(map -> map.get(symbolName))
-                .orElse(null);
+                .orElse(super.getProxyGetBySymbol(targetClass, symbolName));
     }
 
     @Override

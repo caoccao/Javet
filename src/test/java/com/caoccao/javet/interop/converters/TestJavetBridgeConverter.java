@@ -444,40 +444,55 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         v8Runtime.getExecutor("const d = new Date('2000-01-02T03:04:05.000Z')").executeVoid();
         v8Runtime.getGlobalObject().set("z", zonedDateTime);
         assertEquals(zonedDateTime, v8Runtime.getExecutor("z").executeObject());
+        SimpleList.of("getDate", "getDay", "getFullYear", "getHours", "getMilliseconds",
+                "getMinutes", "getMonth", "getSeconds", "getTime", "getTimezoneOffset",
+                "getUTCDate", "getUTCDay", "getUTCFullYear", "getUTCHours", "getUTCMilliseconds",
+                "getUTCMinutes", "getUTCMonth", "getUTCSeconds").forEach(functionName -> {
+            try {
+                assertEquals(
+                        v8Runtime.getExecutor("d." + functionName + "()").executeInteger(),
+                        v8Runtime.getExecutor("z." + functionName + "()").executeInteger(),
+                        functionName + "() should match.");
+            } catch (JavetException e) {
+                fail(e);
+            }
+        });
+        SimpleList.of("setDate", "setFullYear", "setHours", "setMilliseconds", "setMinutes",
+                "setMonth", "setSeconds", "setTime", "setUTCDate", "setUTCFullYear",
+                "setUTCHours", "setUTCMilliseconds", "setUTCMinutes", "setUTCMonth", "setUTCSeconds",
+                "setYear").forEach(functionName -> assertEquals(
+                "TypeError: Date.prototype." + functionName + "() is not supported",
+                assertThrows(
+                        JavetExecutionException.class,
+                        () -> v8Runtime.getExecutor("z." + functionName + "()").executeVoid()).getMessage()));
         // toJSON()
         assertEquals(
                 v8Runtime.getExecutor("JSON.stringify(d)").executeString(),
                 v8Runtime.getExecutor("JSON.stringify(z)").executeString());
-        // toLocaleDateString()
-        assertEquals(
-                v8Runtime.getExecutor("d.toLocaleDateString()").executeString(),
-                v8Runtime.getExecutor("z.toLocaleDateString()").executeString());
-        // toLocaleString()
-        assertEquals(
-                v8Runtime.getExecutor("d.toLocaleString()").executeString(),
-                v8Runtime.getExecutor("z.toLocaleString()").executeString());
-        // toLocaleTimeString()
-        assertEquals(
-                v8Runtime.getExecutor("d.toLocaleTimeString()").executeString(),
-                v8Runtime.getExecutor("z.toLocaleTimeString()").executeString());
-        assertEquals(
-                v8Runtime.getExecutor("d.toLocaleTimeString('en-US')").executeString(),
-                v8Runtime.getExecutor("z.toLocaleTimeString('en-US')").executeString());
-        // toTimeString()
-        assertEquals(
-                v8Runtime.getExecutor("d.toTimeString()").executeString(),
-                v8Runtime.getExecutor("z.toTimeString()").executeString());
-        // toUTCString()
-        assertEquals(
-                v8Runtime.getExecutor("d.toUTCString()").executeString(),
-                v8Runtime.getExecutor("z.toUTCString()").executeString());
-        // toString()
-        assertEquals(
-                v8Runtime.getExecutor("d.toString()").executeString(),
-                v8Runtime.getExecutor("z.toString()").executeString());
+        SimpleList.of(
+                "toDateString", "toISOString", "toLocaleDateString", "toLocaleString", "toLocaleTimeString",
+                "toTimeString", "toUTCString", "toString").forEach(functionName -> {
+            try {
+                assertEquals(
+                        v8Runtime.getExecutor("d." + functionName + "()").executeString(),
+                        v8Runtime.getExecutor("z." + functionName + "()").executeString(),
+                        functionName + "() should match.");
+            } catch (JavetException e) {
+                fail(e);
+            }
+        });
         // valueOf()
         assertEquals(946782245000L, v8Runtime.getExecutor("z.valueOf()").executeLong());
         assertTrue(v8Runtime.getExecutor("d.valueOf() === z.valueOf()").executeBoolean());
+        // Symbol.toPrimitive
+        assertEquals(
+                v8Runtime.getExecutor("d[Symbol.toPrimitive]('string')").executeString(),
+                v8Runtime.getExecutor("z[Symbol.toPrimitive]('string')").executeString(),
+                "[Symbol.toPrimitive]('string') should match.");
+        assertEquals(
+                v8Runtime.getExecutor("d[Symbol.toPrimitive]('number')").executeLong(),
+                v8Runtime.getExecutor("z[Symbol.toPrimitive]('number')").executeLong(),
+                "[Symbol.toPrimitive]('number') should match.");
         v8Runtime.getGlobalObject().delete("z");
     }
 }

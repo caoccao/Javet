@@ -19,6 +19,8 @@ package com.caoccao.javet.exceptions;
 import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 
+import java.util.Objects;
+
 /**
  * The type V8 error template is for generating the V8 error message.
  *
@@ -58,7 +60,7 @@ public final class V8ErrorTemplate {
      * @since 3.0.4
      */
     public static String typeErrorFunctionIsNotSupported(String functionName) {
-        return functionName + "() is not supported";
+        return Objects.requireNonNull(functionName) + "() is not supported";
     }
 
     /**

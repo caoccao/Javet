@@ -16,7 +16,9 @@
 
 package com.caoccao.javet.interop.proxy.plugins;
 
+import com.caoccao.javet.enums.V8ValueErrorType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.V8ErrorTemplate;
 import com.caoccao.javet.interfaces.IJavetEntityPropertyDescriptor;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.IClassProxyPlugin;
@@ -292,5 +294,19 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
                     }
                     return OBJECT_CONVERTER.toV8Value(v8Runtime, targetObject);
                 }));
+    }
+
+    /**
+     * TypeError: ${functionName}() is not supported.
+     *
+     * @param functionName the function name
+     * @param v8Runtime    the V8 runtime
+     * @return the V8 value
+     * @since 3.0.4
+     */
+    protected V8Value typeErrorFunctionIsNotSupported(String functionName, V8Runtime v8Runtime) {
+        String message = V8ErrorTemplate.typeErrorFunctionIsNotSupported(functionName);
+        Objects.requireNonNull(v8Runtime).throwError(V8ValueErrorType.TypeError, message);
+        return v8Runtime.createV8ValueUndefined();
     }
 }
