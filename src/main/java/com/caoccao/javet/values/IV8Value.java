@@ -37,6 +37,7 @@ public interface IV8Value extends IJavetClosable, IV8Cloneable {
      * @since 3.0.4
      */
     default boolean asBoolean() throws JavetException {
+        // All objects become true.
         return true;
     }
 

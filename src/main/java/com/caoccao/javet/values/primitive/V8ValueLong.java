@@ -67,6 +67,7 @@ public final class V8ValueLong
 
     @Override
     public boolean asBoolean() {
+        // 0n turns into false; other BigInts turn into true.
         return value != 0L;
     }
 

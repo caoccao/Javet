@@ -159,6 +159,7 @@ public final class V8ValueBigInteger extends V8ValueBigNumber<BigInteger> {
 
     @Override
     public boolean asBoolean() {
+        // 0n turns into false; other BigInts turn into true.
         return !BigInteger.ZERO.equals(value);
     }
 

@@ -60,7 +60,8 @@ public final class V8ValueDouble
 
     @Override
     public boolean asBoolean() {
-        return value != 0D;
+        // 0, -0, and NaN turn into false; other numbers turn into true.
+        return value != 0D && !Double.isNaN(value) && Double.isFinite(value);
     }
 
     @Override

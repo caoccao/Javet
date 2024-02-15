@@ -58,6 +58,7 @@ public final class V8ValueString
 
     @Override
     public boolean asBoolean() {
+        // The empty string "" turns into false; other strings turn into true.
         return StringUtils.isNotEmpty(value);
     }
 

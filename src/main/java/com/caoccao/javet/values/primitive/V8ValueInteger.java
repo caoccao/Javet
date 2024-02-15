@@ -55,6 +55,7 @@ public final class V8ValueInteger
 
     @Override
     public boolean asBoolean() {
+        // 0, -0, and NaN turn into false; other numbers turn into true.
         return value != 0;
     }
 
