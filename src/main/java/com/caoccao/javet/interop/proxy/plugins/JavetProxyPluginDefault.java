@@ -31,6 +31,7 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * The type Javet proxy plugin primitive.
@@ -164,6 +165,9 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
     protected static final String SPLIT = "split";
     protected static final String STARTS_WITH = "startsWith";
     protected static final String SUBSTRING = "substring";
+    protected static final Set<Class<?>> SUPPORTED_CLASSES = SimpleSet.of(
+            BigInteger.class, Boolean.class, Byte.class, Character.class, Double.class,
+            Float.class, Integer.class, Long.class, Short.class, String.class, ZonedDateTime.class);
     protected static final String TO_DATE_STRING = "toDateString";
     protected static final String TO_EXPONENTIAL = "toExponential";
     protected static final String TO_FIXED = "toFixed";
@@ -459,17 +463,7 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
 
     @Override
     public boolean isOwnKeysSupported(Class<?> targetClass) {
-        return targetClass != BigInteger.class &&
-                targetClass != Boolean.class &&
-                targetClass != Byte.class &&
-                targetClass != Character.class &&
-                targetClass != Double.class &&
-                targetClass != Float.class &&
-                targetClass != Integer.class &&
-                targetClass != Long.class &&
-                targetClass != Short.class &&
-                targetClass != String.class &&
-                targetClass != ZonedDateTime.class;
+        return !SUPPORTED_CLASSES.contains(targetClass);
     }
 
     @Override
