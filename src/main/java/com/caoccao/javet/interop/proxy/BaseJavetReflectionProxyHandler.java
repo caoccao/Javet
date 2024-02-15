@@ -327,10 +327,12 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
                 IJavetEntityPropertyDescriptor<V8Value> javetEntityPropertyDescriptor =
                         classDescriptor.getClassProxyPlugin().getProxyOwnPropertyDescriptor(
                                 targetObject, ((V8ValueString) property).getValue());
-                v8Value = internalGet(target, property);
-                if (v8Value != null) {
-                    javetEntityPropertyDescriptor.setValue(v8Value);
-                    return v8Runtime.toV8Value(javetEntityPropertyDescriptor);
+                if (javetEntityPropertyDescriptor != null) {
+                    v8Value = internalGet(target, property);
+                    if (v8Value != null) {
+                        javetEntityPropertyDescriptor.setValue(v8Value);
+                        return v8Runtime.toV8Value(javetEntityPropertyDescriptor);
+                    }
                 }
             }
         } finally {
@@ -477,7 +479,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
             }
             JavetReflectionUtils.safeSetAccessible(field);
             classDescriptor.getFieldMap().put(fieldName, field);
-            if (!classDescriptor.getClassProxyPlugin().isUniqueKeySupported()) {
+            if (!classDescriptor.getClassProxyPlugin().isUniqueKeySupported(classDescriptor.getTargetClass())) {
                 classDescriptor.getUniqueKeySet().add(fieldName);
             }
         }
@@ -515,7 +517,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
                 final int getterPrefixLength = getGetterPrefixLength(method);
                 if (getterPrefixLength > 0) {
                     addMethod(method, getterPrefixLength, classDescriptor.getGettersMap());
-                    if (!classDescriptor.getClassProxyPlugin().isUniqueKeySupported()) {
+                    if (!classDescriptor.getClassProxyPlugin().isUniqueKeySupported(classDescriptor.getTargetClass())) {
                         String aliasMethodName = method.getName().substring(getterPrefixLength);
                         Matcher matcher = PATTERN_CAPITALIZED_PREFIX.matcher(aliasMethodName);
                         if (matcher.find()) {

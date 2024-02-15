@@ -128,26 +128,29 @@ public interface IClassProxyPlugin {
     /**
      * Is keyword delete supported.
      *
+     * @param targetClass the target class
      * @return true : supported, false : not supported
      * @since 3.0.4
      */
-    boolean isDeleteSupported();
+    boolean isDeleteSupported(Class<?> targetClass);
 
     /**
      * Is has() supported.
      *
+     * @param targetClass the target class
      * @return true : supported, false : not supported
      * @since 3.0.4
      */
-    boolean isHasSupported();
+    boolean isHasSupported(Class<?> targetClass);
 
     /**
      * Is indexed property supported.
      *
+     * @param targetClass the target class
      * @return true : supported, false : not supported
      * @since 3.0.4
      */
-    boolean isIndexedPropertySupported();
+    boolean isIndexedPropertySupported(Class<?> targetClass);
 
     /**
      * Is method proxyable.
@@ -158,6 +161,15 @@ public interface IClassProxyPlugin {
      * @since 3.0.4
      */
     boolean isMethodProxyable(String methodName, Class<?> targetClass);
+
+    /**
+     * Is ownKeys() supported.
+     *
+     * @param targetClass the target class
+     * @return true : supported, false : not supported
+     * @since 3.0.4
+     */
+    boolean isOwnKeysSupported(Class<?> targetClass);
 
     /**
      * Is the target class proxyable.
@@ -171,10 +183,11 @@ public interface IClassProxyPlugin {
     /**
      * Is unique key supported.
      *
+     * @param targetClass the target class
      * @return true : supported, false : not supported
      * @since 3.0.4
      */
-    boolean isUniqueKeySupported();
+    boolean isUniqueKeySupported(Class<?> targetClass);
 
     /**
      * Populate unique keys.

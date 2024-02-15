@@ -70,8 +70,9 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @throws JavetException the javet exception
      */
     protected boolean deleteFromCollection(V8Value property) throws JavetException {
-        if (classDescriptor.getClassProxyPlugin().isDeleteSupported()) {
-            return classDescriptor.getClassProxyPlugin().deleteByObject(targetObject, v8Runtime.toObject(property));
+        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
+        if (classProxyPlugin.isDeleteSupported(classDescriptor.getTargetClass())) {
+            return classProxyPlugin.deleteByObject(targetObject, v8Runtime.toObject(property));
         }
         return false;
     }
@@ -177,8 +178,9 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @since 1.1.7
      */
     protected boolean hasFromCollection(V8Value property) throws JavetException {
-        if (classDescriptor.getClassProxyPlugin().isHasSupported()) {
-            return classDescriptor.getClassProxyPlugin().hasByObject(targetObject, v8Runtime.toObject(property));
+        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
+        if (classProxyPlugin.isHasSupported(classDescriptor.getTargetClass())) {
+            return classProxyPlugin.hasByObject(targetObject, v8Runtime.toObject(property));
         }
         return false;
     }
@@ -208,8 +210,9 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @since 1.1.7
      */
     protected void initializeCollection() {
-        if (classDescriptor.getClassProxyPlugin().isUniqueKeySupported()) {
-            classDescriptor.getClassProxyPlugin().populateUniqueKeys(classDescriptor.getUniqueKeySet(), targetObject);
+        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
+        if (classProxyPlugin.isUniqueKeySupported(classDescriptor.getTargetClass())) {
+            classProxyPlugin.populateUniqueKeys(classDescriptor.getUniqueKeySet(), targetObject);
         }
     }
 
@@ -243,22 +246,26 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     }
 
     @Override
-    public V8ValueArray ownKeys(V8Value target) throws JavetException {
-        Object[] keys = classDescriptor.getClassProxyPlugin().getProxyOwnKeys(targetObject);
-        if (ArrayUtils.isEmpty(keys)) {
-            keys = classDescriptor.getUniqueKeySet().toArray();
-        }
-        for (int i = 0; i < keys.length; i++) {
-            Object key = keys[i];
-            if (key instanceof String) {
-                keys[i] = v8Runtime.createV8ValueString((String) key);
-            } else if (key instanceof IJavetEntitySymbol) {
-                keys[i] = v8Runtime.createV8ValueSymbol(((IJavetEntitySymbol) key).getDescription());
-            } else {
-                keys[i] = v8Runtime.createV8ValueString(String.valueOf(key));
+    public V8ValueArray ownKeys(V8Value target) throws JavetException, E {
+        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
+        if (classProxyPlugin.isOwnKeysSupported(classDescriptor.getTargetClass())) {
+            Object[] keys = classProxyPlugin.getProxyOwnKeys(targetObject);
+            if (ArrayUtils.isEmpty(keys)) {
+                keys = classDescriptor.getUniqueKeySet().toArray();
             }
+            for (int i = 0; i < keys.length; i++) {
+                Object key = keys[i];
+                if (key instanceof String) {
+                    keys[i] = v8Runtime.createV8ValueString((String) key);
+                } else if (key instanceof IJavetEntitySymbol) {
+                    keys[i] = v8Runtime.createV8ValueSymbol(((IJavetEntitySymbol) key).getDescription());
+                } else {
+                    keys[i] = v8Runtime.createV8ValueString(String.valueOf(key));
+                }
+            }
+            return V8ValueUtils.createV8ValueArray(v8Runtime, keys);
         }
-        return V8ValueUtils.createV8ValueArray(v8Runtime, keys);
+        return super.ownKeys(target);
     }
 
     @Override
@@ -287,9 +294,10 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             String propertyKeyString = ((V8ValueString) propertyKey).getValue();
             if (StringUtils.isDigital(propertyKeyString)) {
                 final int index = Integer.parseInt(propertyKeyString);
-                if (index >= 0 && classDescriptor.getClassProxyPlugin().isIndexedPropertySupported()) {
-                    return classDescriptor.getClassProxyPlugin().setByIndex(
-                            targetObject, index, v8Runtime.toObject(propertyValue));
+                IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
+                if (index >= 0 && classProxyPlugin.isIndexedPropertySupported(
+                        classDescriptor.getTargetClass())) {
+                    return classProxyPlugin.setByIndex(targetObject, index, v8Runtime.toObject(propertyValue));
                 }
             }
         }

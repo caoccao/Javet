@@ -16,7 +16,9 @@
 
 package com.caoccao.javet.interop.proxy.plugins;
 
+import com.caoccao.javet.entities.JavetEntityPropertyDescriptor;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interfaces.IJavetEntityPropertyDescriptor;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
@@ -237,14 +239,9 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
         return set.toArray();
     }
 
-    /**
-     * Gets proxyable methods.
-     *
-     * @return the proxyable methods
-     * @since 3.0.4
-     */
-    public Set<String> getProxyableMethods() {
-        return proxyableMethods;
+    @Override
+    public <T> IJavetEntityPropertyDescriptor<T> getProxyOwnPropertyDescriptor(Object targetObject, Object propertyName) {
+        return new JavetEntityPropertyDescriptor<>(true, true, true);
     }
 
     /**
@@ -278,7 +275,7 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
     }
 
     @Override
-    public boolean isHasSupported() {
+    public boolean isHasSupported(Class<?> targetClass) {
         return true;
     }
 
@@ -288,12 +285,17 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
     }
 
     @Override
+    public boolean isOwnKeysSupported(Class<?> targetClass) {
+        return true;
+    }
+
+    @Override
     public boolean isProxyable(Class<?> targetClass) {
         return targetClass != null && Set.class.isAssignableFrom(targetClass);
     }
 
     @Override
-    public boolean isUniqueKeySupported() {
+    public boolean isUniqueKeySupported(Class<?> targetClass) {
         return true;
     }
 

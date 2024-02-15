@@ -249,11 +249,12 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             polyfillFunctionMap.put(LENGTH, (v8Runtime, targetObject) ->
                     v8Runtime.createV8ValueInteger(((String) targetObject).length()));
             polyfillFunctionMap.put(TO_JSON, this::valueOf);
+            polyfillFunctionMap.put(TO_STRING, this::valueOf);
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(String.class, SimpleSet.of(
                     CHAR_AT, CODE_POINT_AT, ENDS_WITH, INDEX_OF, LAST_INDEX_OF,
                     LENGTH, REPEAT, REPLACE, REPLACE_ALL, SPLIT,
-                    STARTS_WITH, SUBSTRING, TRIM, VALUE_OF));
+                    STARTS_WITH, SUBSTRING, TRIM, VALUE_OF, TO_STRING));
             proxyGetByStringMap.put(String.class, polyfillFunctionMap);
             targetObjectConstructorMap.put(
                     String.class,
@@ -300,6 +301,21 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
     @Override
     public String getName() {
         return NAME;
+    }
+
+    @Override
+    public boolean isOwnKeysSupported(Class<?> targetClass) {
+        return targetClass != BigInteger.class &&
+                targetClass != Boolean.class &&
+                targetClass != Byte.class &&
+                targetClass != Character.class &&
+                targetClass != Double.class &&
+                targetClass != Float.class &&
+                targetClass != Integer.class &&
+                targetClass != Long.class &&
+                targetClass != Short.class &&
+                targetClass != String.class &&
+                targetClass != ZonedDateTime.class;
     }
 
     @Override

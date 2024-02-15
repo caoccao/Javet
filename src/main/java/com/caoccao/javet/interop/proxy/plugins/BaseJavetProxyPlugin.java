@@ -16,7 +16,6 @@
 
 package com.caoccao.javet.interop.proxy.plugins;
 
-import com.caoccao.javet.entities.JavetEntityPropertyDescriptor;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetEntityPropertyDescriptor;
 import com.caoccao.javet.interop.V8Runtime;
@@ -154,7 +153,7 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
 
     @Override
     public <T> IJavetEntityPropertyDescriptor<T> getProxyOwnPropertyDescriptor(Object targetObject, Object propertyName) {
-        return new JavetEntityPropertyDescriptor<T>(true, true, true);
+        return null;
     }
 
     @Override
@@ -173,22 +172,27 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
     }
 
     @Override
-    public boolean isDeleteSupported() {
+    public boolean isDeleteSupported(Class<?> targetClass) {
         return false;
     }
 
     @Override
-    public boolean isHasSupported() {
+    public boolean isHasSupported(Class<?> targetClass) {
         return false;
     }
 
     @Override
-    public boolean isIndexedPropertySupported() {
+    public boolean isIndexedPropertySupported(Class<?> targetClass) {
         return false;
     }
 
     @Override
-    public boolean isUniqueKeySupported() {
+    public boolean isOwnKeysSupported(Class<?> targetClass) {
+        return false;
+    }
+
+    @Override
+    public boolean isUniqueKeySupported(Class<?> targetClass) {
         return false;
     }
 

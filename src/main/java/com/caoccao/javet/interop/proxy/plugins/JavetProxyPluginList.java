@@ -758,16 +758,6 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
         return new JavetEntityPropertyDescriptor<>(false, false, false);
     }
 
-    /**
-     * Gets proxyable methods.
-     *
-     * @return the proxyable methods
-     * @since 3.0.4
-     */
-    public Set<String> getProxyableMethods() {
-        return proxyableMethods;
-    }
-
     @Override
     public boolean hasByObject(Object targetObject, Object propertyKey) {
         final List<Object> list = validateTargetObject(targetObject);
@@ -852,23 +842,28 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
     }
 
     @Override
-    public boolean isDeleteSupported() {
+    public boolean isDeleteSupported(Class<?> targetClass) {
         return true;
     }
 
     @Override
-    public boolean isHasSupported() {
+    public boolean isHasSupported(Class<?> targetClass) {
         return true;
     }
 
     @Override
-    public boolean isIndexedPropertySupported() {
+    public boolean isIndexedPropertySupported(Class<?> targetClass) {
         return true;
     }
 
     @Override
     public boolean isMethodProxyable(String methodName, Class<?> targetClass) {
         return proxyableMethods.contains(methodName);
+    }
+
+    @Override
+    public boolean isOwnKeysSupported(Class<?> targetClass) {
+        return true;
     }
 
     @Override
