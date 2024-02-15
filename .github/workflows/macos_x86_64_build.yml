@@ -70,6 +70,7 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
+        sed -i '.bak' 's/`nproc`/2/g' build-macos.sh
         sh ./build-macos.sh -DV8_DIR=${{ env.ROOT }}/google/v8
 
     - name: Upload the Artifact
@@ -115,6 +116,7 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
+        sed -i '.bak' 's/`nproc`/2/g' build-macos.sh
         sh ./build-macos.sh -DNODE_DIR=${{ env.ROOT }}/node
 
     - name: Upload the Artifact
