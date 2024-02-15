@@ -144,13 +144,13 @@ public interface IClassProxyPlugin {
     boolean isHasSupported(Class<?> targetClass);
 
     /**
-     * Is indexed property supported.
+     * Is index supported.
      *
      * @param targetClass the target class
      * @return true : supported, false : not supported
      * @since 3.0.4
      */
-    boolean isIndexedPropertySupported(Class<?> targetClass);
+    boolean isIndexSupported(Class<?> targetClass);
 
     /**
      * Is method proxyable.

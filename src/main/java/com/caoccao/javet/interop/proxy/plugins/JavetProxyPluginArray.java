@@ -870,7 +870,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
     }
 
     @Override
-    public boolean isIndexedPropertySupported(Class<?> targetClass) {
+    public boolean isIndexSupported(Class<?> targetClass) {
         return true;
     }
 

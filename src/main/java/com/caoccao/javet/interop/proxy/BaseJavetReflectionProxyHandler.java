@@ -181,14 +181,14 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     }
 
     /**
-     * Gets from field.
+     * Gets by field.
      *
      * @param property the property
      * @return the V8 value
      * @throws JavetException the javet exception
      * @since 1.1.7
      */
-    protected V8Value getFromField(V8Value property) throws JavetException {
+    protected V8Value getByField(V8Value property) throws JavetException {
         if (!classDescriptor.getFieldMap().isEmpty() && property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).toPrimitive();
             Field field = classDescriptor.getFieldMap().get(propertyName);
@@ -211,14 +211,14 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     }
 
     /**
-     * Gets from getter.
+     * Gets by getter.
      *
      * @param property the property
      * @return the V8 value
      * @throws JavetException the javet exception
      * @since 1.1.7
      */
-    protected V8Value getFromGetter(V8Value property) throws JavetException {
+    protected V8Value getByGetter(V8Value property) throws JavetException {
         if (!classDescriptor.getGenericGetters().isEmpty()) {
             try {
                 Object propertyObject = v8Runtime.toObject(property);
@@ -260,7 +260,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     }
 
     /**
-     * Gets from method.
+     * Gets by method.
      *
      * @param target   the target
      * @param property the property
@@ -269,7 +269,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
      * @throws E              the custom exception
      * @since 1.1.7
      */
-    protected V8Value getFromMethod(V8Value target, V8Value property) throws JavetException, E {
+    protected V8Value getByMethod(V8Value target, V8Value property) throws JavetException, E {
         if (property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).toPrimitive();
             if (!classDescriptor.getClassProxyPlugin().isMethodProxyable(propertyName, classDescriptor.getTargetClass())) {

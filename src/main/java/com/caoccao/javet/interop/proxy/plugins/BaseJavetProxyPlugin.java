@@ -184,7 +184,7 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
     }
 
     @Override
-    public boolean isIndexedPropertySupported(Class<?> targetClass) {
+    public boolean isIndexSupported(Class<?> targetClass) {
         return false;
     }
 

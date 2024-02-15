@@ -83,6 +83,59 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         return super.deleteProperty(target, property);
     }
 
+    /**
+     * Gets by index.
+     *
+     * @param property the property
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 1.1.7
+     */
+    protected V8Value getByIndex(V8Value property) throws JavetException {
+        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
+        if (classProxyPlugin.isIndexSupported(classDescriptor.getTargetClass())
+                && property instanceof V8ValueString) {
+            String propertyString = ((V8ValueString) property).getValue();
+            if (StringUtils.isDigital(propertyString)) {
+                final int index = Integer.parseInt(propertyString);
+                if (index >= 0) {
+                    Object result = classProxyPlugin.getByIndex(targetObject, index);
+                    if (result != null) {
+                        return v8Runtime.toV8Value(result);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets by polyfill.
+     *
+     * @param property the property
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 3.0.3
+     */
+    protected V8Value getByPolyfill(V8Value property) throws JavetException, E {
+        IClassProxyPluginFunction<E> classProxyPluginFunction = null;
+        if (property instanceof V8ValueString) {
+            String propertyName = ((V8ValueString) property).getValue();
+            classProxyPluginFunction = classDescriptor.getClassProxyPlugin().getProxyGetByString(
+                    classDescriptor.getTargetClass(), propertyName);
+        } else if (property instanceof V8ValueSymbol) {
+            V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
+            String description = propertySymbol.getDescription();
+            classProxyPluginFunction = classDescriptor.getClassProxyPlugin().getProxyGetBySymbol(
+                    classDescriptor.getTargetClass(), description);
+        }
+        if (classProxyPluginFunction != null) {
+            return classProxyPluginFunction.invoke(v8Runtime, targetObject);
+        }
+        return null;
+    }
+
     @Override
     public JavetCallbackContext[] getCallbackContexts() {
         if (callbackContexts == null) {
@@ -108,57 +161,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             };
         }
         return callbackContexts;
-    }
-
-    /**
-     * Gets from collection.
-     *
-     * @param property the property
-     * @return the V8 value
-     * @throws JavetException the javet exception
-     * @since 1.1.7
-     */
-    protected V8Value getFromCollection(V8Value property) throws JavetException {
-        if (property instanceof V8ValueString) {
-            String propertyString = ((V8ValueString) property).getValue();
-            if (StringUtils.isDigital(propertyString)) {
-                final int index = Integer.parseInt(propertyString);
-                if (index >= 0) {
-                    Object result = classDescriptor.getClassProxyPlugin().getByIndex(targetObject, index);
-                    if (result != null) {
-                        return v8Runtime.toV8Value(result);
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Gets from polyfill.
-     *
-     * @param property the property
-     * @return the V8 value
-     * @throws JavetException the javet exception
-     * @throws E              the custom exception
-     * @since 3.0.3
-     */
-    protected V8Value getFromPolyfill(V8Value property) throws JavetException, E {
-        IClassProxyPluginFunction<E> classProxyPluginFunction = null;
-        if (property instanceof V8ValueString) {
-            String propertyName = ((V8ValueString) property).getValue();
-            classProxyPluginFunction = classDescriptor.getClassProxyPlugin().getProxyGetByString(
-                    classDescriptor.getTargetClass(), propertyName);
-        } else if (property instanceof V8ValueSymbol) {
-            V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
-            String description = propertySymbol.getDescription();
-            classProxyPluginFunction = classDescriptor.getClassProxyPlugin().getProxyGetBySymbol(
-                    classDescriptor.getTargetClass(), description);
-        }
-        if (classProxyPluginFunction != null) {
-            return classProxyPluginFunction.invoke(v8Runtime, targetObject);
-        }
-        return null;
     }
 
     @Override
@@ -237,11 +239,11 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
 
     @Override
     protected V8Value internalGet(V8Value target, V8Value property) throws JavetException, E {
-        V8Value v8Value = getFromCollection(property);
-        v8Value = v8Value == null ? getFromField(property) : v8Value;
-        v8Value = v8Value == null ? getFromMethod(target, property) : v8Value;
-        v8Value = v8Value == null ? getFromGetter(property) : v8Value;
-        v8Value = v8Value == null ? getFromPolyfill(property) : v8Value;
+        V8Value v8Value = getByIndex(property);
+        v8Value = v8Value == null ? getByField(property) : v8Value;
+        v8Value = v8Value == null ? getByMethod(target, property) : v8Value;
+        v8Value = v8Value == null ? getByGetter(property) : v8Value;
+        v8Value = v8Value == null ? getByPolyfill(property) : v8Value;
         return v8Value;
     }
 
@@ -274,14 +276,14 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             V8Value propertyKey,
             V8Value propertyValue,
             V8Value receiver) throws JavetException {
-        boolean isSet = setToCollection(propertyKey, propertyValue);
+        boolean isSet = setByIndex(propertyKey, propertyValue);
         isSet = isSet || setToField(propertyKey, propertyValue);
         isSet = isSet || setToSetter(target, propertyKey, propertyValue);
         return v8Runtime.createV8ValueBoolean(isSet);
     }
 
     /**
-     * Sets to collection.
+     * Sets by index.
      *
      * @param propertyKey   the property key
      * @param propertyValue the property value
@@ -289,14 +291,14 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @throws JavetException the javet exception
      * @since 1.1.7
      */
-    protected boolean setToCollection(V8Value propertyKey, V8Value propertyValue) throws JavetException {
-        if (propertyKey instanceof V8ValueString) {
+    protected boolean setByIndex(V8Value propertyKey, V8Value propertyValue) throws JavetException {
+        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
+        if (classProxyPlugin.isIndexSupported(classDescriptor.getTargetClass())
+                && propertyKey instanceof V8ValueString) {
             String propertyKeyString = ((V8ValueString) propertyKey).getValue();
             if (StringUtils.isDigital(propertyKeyString)) {
                 final int index = Integer.parseInt(propertyKeyString);
-                IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
-                if (index >= 0 && classProxyPlugin.isIndexedPropertySupported(
-                        classDescriptor.getTargetClass())) {
+                if (index >= 0) {
                     return classProxyPlugin.setByIndex(targetObject, index, v8Runtime.toObject(propertyValue));
                 }
             }

@@ -163,9 +163,9 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
 
     @Override
     protected V8Value internalGet(V8Value target, V8Value property) throws JavetException, E {
-        V8Value v8Value = getFromField(property);
-        v8Value = v8Value == null ? getFromMethod(target, property) : v8Value;
-        v8Value = v8Value == null ? getFromGetter(property) : v8Value;
+        V8Value v8Value = getByField(property);
+        v8Value = v8Value == null ? getByMethod(target, property) : v8Value;
+        v8Value = v8Value == null ? getByGetter(property) : v8Value;
         return v8Value;
     }
 
