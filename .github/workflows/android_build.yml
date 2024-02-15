@@ -73,7 +73,7 @@ jobs:
         java-version: 11
 
     - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v1.14
+      uses: jwlawson/actions-setup-cmake@v2.0
       with:
         cmake-version: '3.23.x'
 
@@ -147,7 +147,7 @@ jobs:
         java-version: 11
 
     - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v1.14
+      uses: jwlawson/actions-setup-cmake@v2.0
       with:
         cmake-version: '3.23.x'
 
@@ -221,7 +221,7 @@ jobs:
         java-version: 11
 
     - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v1.14
+      uses: jwlawson/actions-setup-cmake@v2.0
       with:
         cmake-version: '3.23.x'
 
@@ -295,7 +295,7 @@ jobs:
         java-version: 11
 
     - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v1.14
+      uses: jwlawson/actions-setup-cmake@v2.0
       with:
         cmake-version: '3.23.x'
 
