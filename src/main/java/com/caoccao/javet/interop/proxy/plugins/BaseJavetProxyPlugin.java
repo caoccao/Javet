@@ -34,6 +34,7 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
+import java.math.BigInteger;
 import java.util.Objects;
 import java.util.Set;
 
@@ -221,7 +222,7 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
                 V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     if (targetObject != null) {
-                        String hintString = V8ValueUtils.asString(v8Values, 0);
+                        String hintString = V8ValueUtils.asString(v8Values, 0, null);
                         if (HINT_NUMBER.equals(hintString)) {
                             if (targetObject instanceof Integer) {
                                 return v8Runtime.createV8ValueInteger((Integer) targetObject);
@@ -241,6 +242,9 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
                             if (targetObject instanceof Boolean) {
                                 return v8Runtime.createV8ValueInteger(((Boolean) targetObject) ? 1 : 0);
                             }
+                            if (targetObject instanceof BigInteger) {
+                                return v8Runtime.createV8ValueBigInteger((BigInteger) targetObject);
+                            }
                             return v8Runtime.createV8ValueInteger(0);
                         } else if (HINT_STRING.equals(hintString)) {
                             return v8Runtime.createV8ValueString(targetObject.toString());
@@ -252,13 +256,17 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
                                 return v8Runtime.createV8ValueBoolean(((Integer) targetObject) != 0);
                             }
                             if (targetObject instanceof Double) {
-                                return v8Runtime.createV8ValueBoolean(((Double) targetObject) != 0);
+                                double value = (double) targetObject;
+                                return v8Runtime.createV8ValueBoolean(
+                                        value != 0F && !Double.isNaN(value) && Double.isFinite(value));
                             }
                             if (targetObject instanceof Long) {
                                 return v8Runtime.createV8ValueBoolean(((Long) targetObject) != 0);
                             }
                             if (targetObject instanceof Float) {
-                                return v8Runtime.createV8ValueBoolean(((Float) targetObject) != 0);
+                                float value = (float) targetObject;
+                                return v8Runtime.createV8ValueBoolean(
+                                        value != 0F && !Float.isNaN(value) && Float.isFinite(value));
                             }
                             if (targetObject instanceof Short) {
                                 return v8Runtime.createV8ValueBoolean(((Short) targetObject) != 0);
@@ -268,6 +276,9 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
                             }
                             if (targetObject instanceof Character) {
                                 return v8Runtime.createV8ValueBoolean(true);
+                            }
+                            if (targetObject instanceof BigInteger) {
+                                return v8Runtime.createV8ValueBoolean(!BigInteger.ZERO.equals(targetObject));
                             }
                             return v8Runtime.createV8ValueBoolean(false);
                         } else if (HINT_DEFAULT.equals(hintString)) {
@@ -288,6 +299,9 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
                             }
                             if (targetObject instanceof Boolean) {
                                 return v8Runtime.createV8ValueBoolean((Boolean) targetObject);
+                            }
+                            if (targetObject instanceof BigInteger) {
+                                return v8Runtime.createV8ValueBigInteger((BigInteger) targetObject);
                             }
                             return v8Runtime.createV8ValueString(targetObject.toString());
                         }

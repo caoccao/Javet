@@ -28,6 +28,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import java.util.*;
 
@@ -58,6 +59,39 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertTrue(javetBridgeConverter.getConfig().isProxyListEnabled());
         assertTrue(javetBridgeConverter.getConfig().isProxyMapEnabled());
         assertTrue(javetBridgeConverter.getConfig().isProxySetEnabled());
+    }
+
+    @Test
+    public void testBigInteger() throws JavetException {
+        // 2n**65n
+        BigInteger bigInteger = new BigInteger("36893488147419103232");
+        v8Runtime.getGlobalObject().set("l", bigInteger);
+        v8Runtime.getGlobalObject().set("list", SimpleList.of(bigInteger, bigInteger.negate()));
+        assertEquals(bigInteger, v8Runtime.getExecutor("l").executeObject());
+        assertEquals(bigInteger, v8Runtime.getExecutor("l.toV8Value()").executeBigInteger());
+        // valueOf()
+        assertEquals(bigInteger, v8Runtime.getExecutor("l.valueOf()").executeBigInteger());
+        // toLocaleString()
+        assertEquals("36893488147419103232", v8Runtime.getExecutor("l.toLocaleString()").executeString());
+        // Symbol.toPrimitive
+        assertEquals(bigInteger, v8Runtime.getExecutor("l[Symbol.toPrimitive]()").executeBigInteger());
+        // +
+        assertEquals(bigInteger.add(new BigInteger("1")), v8Runtime.getExecutor("1n + l").executeBigInteger());
+        // Symbol.iterator
+        assertEquals(
+                "TypeError: l is not iterable",
+                assertThrows(
+                        JavetExecutionException.class,
+                        () -> v8Runtime.getExecutor("JSON.stringify([...l])").executeVoid()).getMessage());
+        // toJSON()
+        assertEquals(
+                "[\"36893488147419103232\",\"-36893488147419103232\"]",
+                v8Runtime.getExecutor("JSON.stringify(list, (key, value) =>" +
+                        " typeof value === 'bigint'?value.toString():value)").executeString());
+        // toString()
+        assertEquals("36893488147419103232", v8Runtime.getExecutor("l.toString()").executeString());
+        v8Runtime.getGlobalObject().delete("l");
+        v8Runtime.getGlobalObject().delete("list");
     }
 
     @Test

@@ -192,6 +192,9 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
             polyfillFunctionMap.put(VALUE_OF, this::valueOf);
             proxyableMethodsMap.put(BigInteger.class, SimpleSet.of(VALUE_OF));
             proxyGetByStringMap.put(BigInteger.class, polyfillFunctionMap);
+            polyfillFunctionMap = new HashMap<>();
+            polyfillFunctionMap.put(V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE, this::symbolToPrimitive);
+            proxyGetBySymbolMap.put(BigInteger.class, polyfillFunctionMap);
         }
         {
             // java.lang.Boolean
