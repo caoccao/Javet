@@ -226,16 +226,16 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
                 if (optionalGetter.isPresent()) {
                     v8Value = optionalGetter.get().apply(propertyString);
                 }
-                if (v8Value != null) {
+                if (v8Value == null) {
                     IClassProxyPlugin classProxyPlugin = getProxyPlugin();
                     if (classProxyPlugin != null) {
                         javetEntityPropertyDescriptor =
                                 classProxyPlugin.getProxyOwnPropertyDescriptor(this, propertyString);
-                    } else {
-                        javetEntityPropertyDescriptor =
-                                new JavetEntityPropertyDescriptor<>(true, true, true);
+                        javetEntityPropertyDescriptor.setValue(getV8Runtime().createV8ValueUndefined());
                     }
-                    javetEntityPropertyDescriptor.setValue(v8Value);
+                } else {
+                    javetEntityPropertyDescriptor =
+                            new JavetEntityPropertyDescriptor<>(true, true, true, v8Value);
                 }
             } else if (property instanceof V8ValueSymbol) {
                 final V8ValueSymbol propertySymbol = (V8ValueSymbol) property;

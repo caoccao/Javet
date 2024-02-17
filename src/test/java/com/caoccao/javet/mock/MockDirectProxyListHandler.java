@@ -17,33 +17,24 @@
 package com.caoccao.javet.mock;
 
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interfaces.IJavetBiFunction;
-import com.caoccao.javet.interfaces.IJavetUniFunction;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.binding.IClassProxyPlugin;
 import com.caoccao.javet.interop.proxy.IJavetDirectProxyHandler;
+import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginList;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
-import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.reference.V8ValueArray;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 
-public class MockDirectProxyObjectHandler implements IJavetDirectProxyHandler<IOException> {
+public class MockDirectProxyListHandler<T> extends ArrayList<T> implements IJavetDirectProxyHandler<IOException> {
     protected int callCount;
-    protected Map<String, IJavetUniFunction<String, ? extends V8Value, IOException>> stringGetterMap;
-    protected Map<String, IJavetBiFunction<String, V8Value, Boolean, IOException>> stringSetterMap;
     protected V8Runtime v8Runtime;
-    protected int x;
-    protected int y;
 
-    public MockDirectProxyObjectHandler() {
+    public MockDirectProxyListHandler() {
+        super();
         callCount = 0;
-        stringGetterMap = null;
-        stringSetterMap = null;
-        x = 0;
-        y = 0;
     }
 
     public int getCallCount() {
@@ -51,21 +42,13 @@ public class MockDirectProxyObjectHandler implements IJavetDirectProxyHandler<IO
     }
 
     @Override
+    public IClassProxyPlugin getProxyPlugin() {
+        return JavetProxyPluginList.getInstance();
+    }
+
+    @Override
     public V8Runtime getV8Runtime() {
         return v8Runtime;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public V8Value increaseX(V8Value... v8Values) throws JavetException {
-        x++;
-        return v8Runtime.createV8ValueBoolean(true);
     }
 
     @Override
@@ -78,39 +61,6 @@ public class MockDirectProxyObjectHandler implements IJavetDirectProxyHandler<IO
     public V8Value proxyGetOwnPropertyDescriptor(V8Value target, V8Value property) throws JavetException, IOException {
         ++callCount;
         return IJavetDirectProxyHandler.super.proxyGetOwnPropertyDescriptor(target, property);
-    }
-
-    @Override
-    public Map<String, IJavetUniFunction<String, ? extends V8Value, IOException>> proxyGetStringGetterMap() {
-        if (stringGetterMap == null) {
-            stringGetterMap = new HashMap<>();
-            registerStringGetterFunction("increaseX", this::increaseX);
-            registerStringGetter("x", (propertyName) -> v8Runtime.createV8ValueInteger(getX()));
-            registerStringGetter("y", (propertyName) -> v8Runtime.createV8ValueInteger(getY()));
-        }
-        return stringGetterMap;
-    }
-
-    @Override
-    public Map<String, IJavetBiFunction<String, V8Value, Boolean, IOException>> proxyGetStringSetterMap() {
-        if (stringSetterMap == null) {
-            stringSetterMap = new HashMap<>();
-            registerStringSetter("x", (propertyName, propertyValue) -> {
-                if (propertyValue instanceof V8ValueInteger) {
-                    x = ((V8ValueInteger) propertyValue).toPrimitive();
-                    return true;
-                }
-                return false;
-            });
-            registerStringSetter("y", (propertyName, propertyValue) -> {
-                if (propertyValue instanceof V8ValueInteger) {
-                    y = ((V8ValueInteger) propertyValue).toPrimitive();
-                    return true;
-                }
-                return false;
-            });
-        }
-        return stringSetterMap;
     }
 
     @Override
@@ -139,7 +89,8 @@ public class MockDirectProxyObjectHandler implements IJavetDirectProxyHandler<IO
 
     @Override
     public V8Value symbolToPrimitive(V8Value... v8Values) throws JavetException, IOException {
-        return v8Runtime.createV8ValueString(toString());
+        ++callCount;
+        return IJavetDirectProxyHandler.super.symbolToPrimitive(v8Values);
     }
 
     @Override

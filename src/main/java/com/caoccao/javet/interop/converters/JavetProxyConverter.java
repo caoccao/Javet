@@ -179,9 +179,13 @@ public class JavetProxyConverter extends JavetObjectConverter {
             return (T) object;
         }
         boolean proxyable = false;
-        if (object != null && !(object instanceof IJavetNonProxy)) {
-            final Class<?> objectClass = object.getClass();
-            proxyable = getConfig().getProxyPlugins().stream().anyMatch(p -> p.isProxyable(objectClass));
+        if (object != null) {
+            if (object instanceof IJavetDirectProxyHandler<?>) {
+                proxyable = true;
+            } else if (!(object instanceof IJavetNonProxy)) {
+                final Class<?> objectClass = object.getClass();
+                proxyable = getConfig().getProxyPlugins().stream().anyMatch(p -> p.isProxyable(objectClass));
+            }
         }
         if (!proxyable) {
             final V8Value v8Value = super.toV8Value(v8Runtime, object, depth);

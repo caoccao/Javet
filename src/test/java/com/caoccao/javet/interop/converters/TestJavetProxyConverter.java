@@ -18,7 +18,6 @@ package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.annotations.*;
-import com.caoccao.javet.interfaces.IJavetEntityError;
 import com.caoccao.javet.enums.JavetErrorType;
 import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.enums.V8ProxyMode;
@@ -28,12 +27,14 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interfaces.IJavetClosable;
+import com.caoccao.javet.interfaces.IJavetEntityError;
 import com.caoccao.javet.interfaces.IJavetUniFunction;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.proxy.IJavetDirectProxyHandler;
 import com.caoccao.javet.interop.proxy.JavetReflectionObjectFactory;
 import com.caoccao.javet.mock.MockCallbackReceiver;
 import com.caoccao.javet.mock.MockDirectProxyFunctionHandler;
+import com.caoccao.javet.mock.MockDirectProxyListHandler;
 import com.caoccao.javet.mock.MockDirectProxyObjectHandler;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.utils.SimpleList;
@@ -709,6 +710,30 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         v8Runtime.getGlobalObject().set("a", handler);
         // Test apply().
         assertEquals(6, v8Runtime.getExecutor("a(1,2,3);").executeInteger());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        v8Runtime.getGlobalObject().delete("a");
+    }
+
+    @Test
+    public void testDirectProxyListHandler() throws JavetException {
+        int expectedCallCount = 0;
+        MockDirectProxyListHandler<String> handler = new MockDirectProxyListHandler<>();
+        v8Runtime.getGlobalObject().set("a", handler);
+        assertEquals(0, v8Runtime.getExecutor("a.length;").executeInteger());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        handler.add("a");
+        assertEquals(1, v8Runtime.getExecutor("a.length;").executeInteger());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        assertEquals(2, v8Runtime.getExecutor("a.push('b');").executeInteger());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        assertEquals("0,1,length", v8Runtime.getExecutor("Object.getOwnPropertyNames(a).toString();").executeString());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        assertEquals("0,1", v8Runtime.getExecutor("Object.keys(a).toString();").executeString());
+        expectedCallCount += 3;
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        assertTrue(v8Runtime.getExecutor("0 in a").executeBoolean());
+        assertEquals(++expectedCallCount, handler.getCallCount());
+        assertFalse(v8Runtime.getExecutor("3 in a").executeBoolean());
         assertEquals(++expectedCallCount, handler.getCallCount());
         v8Runtime.getGlobalObject().delete("a");
     }
