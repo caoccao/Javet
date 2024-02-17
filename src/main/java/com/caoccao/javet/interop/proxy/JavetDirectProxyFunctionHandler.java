@@ -45,7 +45,11 @@ public class JavetDirectProxyFunctionHandler<T extends IJavetDirectProxyHandler<
 
     @Override
     public V8Value apply(V8Value target, V8Value thisObject, V8ValueArray arguments) throws JavetException, E {
-        return targetObject.proxyApply(target, thisObject, arguments);
+        V8Value v8Value = targetObject.proxyApply(target, thisObject, arguments);
+        if (v8Value != null) {
+            return v8Value;
+        }
+        return super.apply(target, thisObject, arguments);
     }
 
     @Override

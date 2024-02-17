@@ -79,7 +79,10 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
 
     @Override
     public V8ValueBoolean deleteProperty(V8Value target, V8Value property) throws JavetException, E {
-        boolean result = deleteFromCollection(property);
+        boolean deleted = deleteFromCollection(property);
+        if (deleted) {
+            return v8Runtime.createV8ValueBoolean(true);
+        }
         return super.deleteProperty(target, property);
     }
 

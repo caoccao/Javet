@@ -210,7 +210,7 @@ public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
         @Override
         public V8Value proxyGet(V8Value target, V8Value property, V8Value receiver) throws JavetException, Exception {
             V8Value v8Value = IJavetDirectProxyHandler.super.proxyGet(target, property, receiver);
-            if (v8Value.isUndefined()) {
+            if (v8Value == null) {
                 if (property instanceof V8ValueString) {
                     String childName = ((V8ValueString) property).getValue();
                     if (!StringUtils.isEmpty(childName)) {

@@ -23,7 +23,6 @@ import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.reference.V8ValueArray;
-import com.caoccao.javet.values.reference.V8ValueObject;
 
 /**
  * The type Javet direct proxy object handler.
@@ -47,12 +46,20 @@ public class JavetDirectProxyObjectHandler<T extends IJavetDirectProxyHandler<E>
 
     @Override
     public V8ValueBoolean deleteProperty(V8Value target, V8Value property) throws JavetException, E {
-        return targetObject.proxyDeleteProperty(target, property);
+        V8ValueBoolean v8ValueBoolean = targetObject.proxyDeleteProperty(target, property);
+        if (v8ValueBoolean != null) {
+            return v8ValueBoolean;
+        }
+        return super.deleteProperty(target, property);
     }
 
     @Override
     public V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException, E {
-        return targetObject.proxyGet(target, property, receiver);
+        V8Value v8Value = targetObject.proxyGet(target, property, receiver);
+        if (v8Value != null) {
+            return v8Value;
+        }
+        return super.get(target, property, receiver);
     }
 
     @Override
@@ -80,18 +87,30 @@ public class JavetDirectProxyObjectHandler<T extends IJavetDirectProxyHandler<E>
     }
 
     @Override
-    public V8ValueObject getOwnPropertyDescriptor(V8Value target, V8Value property) throws JavetException, E {
-        return targetObject.proxyGetOwnPropertyDescriptor(target, property);
+    public V8Value getOwnPropertyDescriptor(V8Value target, V8Value property) throws JavetException, E {
+        V8Value v8Value = targetObject.proxyGetOwnPropertyDescriptor(target, property);
+        if (v8Value != null) {
+            return v8Value;
+        }
+        return super.getOwnPropertyDescriptor(target, property);
     }
 
     @Override
     public V8ValueBoolean has(V8Value target, V8Value property) throws JavetException, E {
-        return targetObject.proxyHas(target, property);
+        V8ValueBoolean v8ValueBoolean = targetObject.proxyHas(target, property);
+        if (v8ValueBoolean != null) {
+            return v8ValueBoolean;
+        }
+        return super.has(target, property);
     }
 
     @Override
     public V8ValueArray ownKeys(V8Value target) throws JavetException, E {
-        return targetObject.proxyOwnKeys(target);
+        V8ValueArray v8ValueArray = targetObject.proxyOwnKeys(target);
+        if (v8ValueArray != null) {
+            return v8ValueArray;
+        }
+        return super.ownKeys(target);
     }
 
     @Override
@@ -101,6 +120,10 @@ public class JavetDirectProxyObjectHandler<T extends IJavetDirectProxyHandler<E>
             V8Value propertyValue,
             V8Value receiver)
             throws JavetException, E {
-        return targetObject.proxySet(target, propertyKey, propertyValue, receiver);
+        V8ValueBoolean v8ValueBoolean = targetObject.proxySet(target, propertyKey, propertyValue, receiver);
+        if (v8ValueBoolean != null) {
+            return v8ValueBoolean;
+        }
+        return super.set(target, propertyKey, propertyValue, receiver);
     }
 }

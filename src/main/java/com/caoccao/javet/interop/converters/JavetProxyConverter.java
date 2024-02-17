@@ -22,6 +22,7 @@ import com.caoccao.javet.enums.V8ProxyMode;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
+import com.caoccao.javet.interop.binding.IClassProxyPlugin;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.proxy.*;
 import com.caoccao.javet.utils.JavetResourceUtils;
@@ -32,6 +33,7 @@ import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueProxy;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The type Javet proxy converter converts most of Java objects to
@@ -108,9 +110,16 @@ public class JavetProxyConverter extends JavetObjectConverter {
                     default:
                         V8Value v8ValueTarget = null;
                         try {
-                            v8ValueTarget = getConfig().getProxyPlugins().stream()
-                                    .filter(p -> p.isProxyable(objectClass))
-                                    .findFirst()
+                            Optional<IClassProxyPlugin> optionalClassProxyPlugin;
+                            if (object instanceof IJavetDirectProxyHandler<?>) {
+                                optionalClassProxyPlugin = Optional.ofNullable(
+                                        ((IJavetDirectProxyHandler<?>) object).getProxyPlugin());
+                            } else {
+                                optionalClassProxyPlugin = getConfig().getProxyPlugins().stream()
+                                        .filter(p -> p.isProxyable(objectClass))
+                                        .findFirst();
+                            }
+                            v8ValueTarget = optionalClassProxyPlugin
                                     .map(p -> p.getTargetObjectConstructor(objectClass))
                                     .map(f -> {
                                         try {

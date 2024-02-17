@@ -166,8 +166,7 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      * @throws E              the custom exception
      * @since 2.2.0
      */
-    default V8ValueBoolean deleteProperty(V8Value target, V8Value property)
-            throws JavetException, E {
+    default V8ValueBoolean deleteProperty(V8Value target, V8Value property) throws JavetException, E {
         try (V8ValueBuiltInReflect v8ValueBuiltInReflect = getV8Runtime().getGlobalObject().getBuiltInReflect()) {
             return v8ValueBuiltInReflect.deleteProperty(target, property);
         }
