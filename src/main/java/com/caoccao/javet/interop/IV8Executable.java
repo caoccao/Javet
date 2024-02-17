@@ -30,7 +30,6 @@ import java.time.ZonedDateTime;
  *
  * @since 0.8.5
  */
-@SuppressWarnings("unchecked")
 public interface IV8Executable extends IV8Convertible {
     /**
      * Execute and return V8 value.

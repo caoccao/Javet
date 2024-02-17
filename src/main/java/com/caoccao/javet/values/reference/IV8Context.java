@@ -20,18 +20,19 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ContextType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueBigInteger;
 import com.caoccao.javet.values.primitive.V8ValueNull;
-import com.caoccao.javet.values.primitive.V8ValuePrimitive;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
+import com.caoccao.javet.values.primitive.V8ValueZonedDateTime;
 
 import java.math.BigInteger;
+import java.time.ZonedDateTime;
 
 /**
  * The interface V8 context.
  *
  * @since 2.0.1
  */
-@SuppressWarnings("unchecked")
 public interface IV8Context extends IV8ValueReference {
 
     /**
@@ -55,7 +56,15 @@ public interface IV8Context extends IV8ValueReference {
      * @since 2.0.1
      */
     default BigInteger getBigInteger(int index) throws JavetException {
-        return getPrimitive(index);
+        try (V8Value v8Value = get(index)) {
+            if (v8Value instanceof V8ValueBigInteger) {
+                return ((V8ValueBigInteger) v8Value).getValue();
+            }
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /**
@@ -67,7 +76,13 @@ public interface IV8Context extends IV8ValueReference {
      * @since 2.0.1
      */
     default Boolean getBoolean(int index) throws JavetException {
-        return getPrimitive(index);
+        try (V8Value v8Value = get(index)) {
+            return v8Value.asBoolean();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /**
@@ -79,7 +94,13 @@ public interface IV8Context extends IV8ValueReference {
      * @since 2.0.1
      */
     default Double getDouble(int index) throws JavetException {
-        return getPrimitive(index);
+        try (V8Value v8Value = get(index)) {
+            return v8Value.asDouble();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /**
@@ -104,7 +125,13 @@ public interface IV8Context extends IV8ValueReference {
      * @since 2.0.1
      */
     default Integer getInteger(int index) throws JavetException {
-        return getPrimitive(index);
+        try (V8Value v8Value = get(index)) {
+            return v8Value.asInt();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /**
@@ -125,7 +152,13 @@ public interface IV8Context extends IV8ValueReference {
      * @since 2.0.1
      */
     default Long getLong(int index) throws JavetException {
-        return getPrimitive(index);
+        try (V8Value v8Value = get(index)) {
+            return v8Value.asLong();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /**
@@ -160,26 +193,6 @@ public interface IV8Context extends IV8ValueReference {
     }
 
     /**
-     * Gets element as primitive by index.
-     *
-     * @param <R>   the type parameter
-     * @param <T>   the type parameter
-     * @param index the index
-     * @return the element as primitive
-     * @throws JavetException the javet exception
-     * @since 2.0.1
-     */
-    default <R, T extends V8ValuePrimitive<R>> R getPrimitive(int index) throws JavetException {
-        try (V8Value v8Value = get(index)) {
-            return ((T) v8Value).getValue();
-        } catch (JavetException e) {
-            throw e;
-        } catch (Throwable ignored) {
-        }
-        return null;
-    }
-
-    /**
      * Gets string by index.
      *
      * @param index the index
@@ -188,7 +201,16 @@ public interface IV8Context extends IV8ValueReference {
      * @since 2.0.1
      */
     default String getString(int index) throws JavetException {
-        return getPrimitive(index);
+        try (V8Value v8Value = get(index)) {
+            if (v8Value.isNullOrUndefined()) {
+                return null;
+            }
+            return v8Value.asString();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /**
@@ -201,6 +223,26 @@ public interface IV8Context extends IV8ValueReference {
      */
     default V8ValueUndefined getUndefined(int index) throws JavetException {
         return get(index);
+    }
+
+    /**
+     * Gets element as zoned date time by index.
+     *
+     * @param index the index
+     * @return the element as zoned date time
+     * @throws JavetException the javet exception
+     * @since 2.0.1
+     */
+    default ZonedDateTime getZonedDateTime(int index) throws JavetException {
+        try (V8Value v8Value = get(index)) {
+            if (v8Value instanceof V8ValueZonedDateTime) {
+                return ((V8ValueZonedDateTime) v8Value).getValue();
+            }
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /**

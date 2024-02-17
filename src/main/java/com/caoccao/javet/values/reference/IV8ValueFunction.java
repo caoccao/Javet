@@ -24,9 +24,11 @@ import com.caoccao.javet.enums.V8ValueInternalType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.V8ValuePrimitive;
+import com.caoccao.javet.values.primitive.V8ValueBigInteger;
+import com.caoccao.javet.values.primitive.V8ValueZonedDateTime;
 
 import java.math.BigInteger;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -37,7 +39,6 @@ import java.util.stream.Collectors;
  *
  * @since 0.7.0
  */
-@SuppressWarnings("unchecked")
 public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
 
     /**
@@ -104,7 +105,15 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
      * @since 1.1.5
      */
     default BigInteger callBigInteger(V8Value receiver, Object... objects) throws JavetException {
-        return callPrimitive(receiver, objects);
+        try (V8Value v8Value = callExtended(receiver, true, objects)) {
+            if (v8Value instanceof V8ValueBigInteger) {
+                return ((V8ValueBigInteger) v8Value).getValue();
+            }
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /**
@@ -117,7 +126,13 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
      * @since 0.8.5
      */
     default Boolean callBoolean(V8Value receiver, Object... objects) throws JavetException {
-        return callPrimitive(receiver, objects);
+        try (V8Value v8Value = callExtended(receiver, true, objects)) {
+            return v8Value.asBoolean();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     /**
@@ -130,7 +145,13 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
      * @since 0.8.5
      */
     default Double callDouble(V8Value receiver, Object... objects) throws JavetException {
-        return callPrimitive(receiver, objects);
+        try (V8Value v8Value = callExtended(receiver, true, objects)) {
+            return v8Value.asDouble();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     /**
@@ -163,7 +184,6 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     <T extends V8Value> T callExtended(V8Value receiver, boolean returnResult, V8Value... v8Values)
             throws JavetException;
 
-
     /**
      * Call a function by objects and return float.
      *
@@ -188,7 +208,13 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
      * @since 0.8.5
      */
     default Integer callInteger(V8Value receiver, Object... objects) throws JavetException {
-        return callPrimitive(receiver, objects);
+        try (V8Value v8Value = callExtended(receiver, true, objects)) {
+            return v8Value.asInt();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     /**
@@ -201,7 +227,13 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
      * @since 0.8.5
      */
     default Long callLong(V8Value receiver, Object... objects) throws JavetException {
-        return callPrimitive(receiver, objects);
+        try (V8Value v8Value = callExtended(receiver, true, objects)) {
+            return v8Value.asLong();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     /**
@@ -225,28 +257,6 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     }
 
     /**
-     * Call a function by objects and return primitive object.
-     *
-     * @param <R>      the type parameter
-     * @param <T>      the type parameter
-     * @param receiver the receiver
-     * @param objects  the objects
-     * @return the primitive object
-     * @throws JavetException the javet exception
-     * @since 0.8.5
-     */
-    default <R, T extends V8ValuePrimitive<R>> R callPrimitive(
-            V8Value receiver, Object... objects) throws JavetException {
-        try (V8Value v8Value = callExtended(receiver, true, objects)) {
-            return ((T) v8Value).getValue();
-        } catch (JavetException e) {
-            throw e;
-        } catch (Throwable t) {
-            return null;
-        }
-    }
-
-    /**
      * Call a function by objects and return string.
      *
      * @param receiver the receiver
@@ -256,7 +266,16 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
      * @since 0.8.5
      */
     default String callString(V8Value receiver, Object... objects) throws JavetException {
-        return callPrimitive(receiver, objects);
+        try (V8Value v8Value = callExtended(receiver, true, objects)) {
+            if (v8Value.isNullOrUndefined()) {
+                return null;
+            }
+            return v8Value.asString();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /**
@@ -283,6 +302,27 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     default void callVoid(V8Value receiver, V8Value... v8Values) throws JavetException {
         callExtended(receiver, false, (Object[]) v8Values);
+    }
+
+    /**
+     * Call a function by objects and return zoned date time.
+     *
+     * @param receiver the receiver
+     * @param objects  the objects
+     * @return the zoned date time
+     * @throws JavetException the javet exception
+     * @since 1.1.5
+     */
+    default ZonedDateTime callZonedDateTime(V8Value receiver, Object... objects) throws JavetException {
+        try (V8Value v8Value = callExtended(receiver, true, objects)) {
+            if (v8Value instanceof V8ValueZonedDateTime) {
+                return ((V8ValueZonedDateTime) v8Value).getValue();
+            }
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /**
