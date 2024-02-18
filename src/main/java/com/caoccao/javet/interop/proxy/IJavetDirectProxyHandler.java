@@ -144,7 +144,36 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
      */
     default V8Value proxyGet(V8Value target, V8Value property, V8Value receiver) throws JavetException, E {
         V8Value v8Value = null;
-        if (property instanceof V8ValueString) {
+        IClassProxyPlugin classProxyPlugin = getProxyPlugin();
+        if (classProxyPlugin != null) {
+            if (classProxyPlugin.isIndexSupported(getClass()) && property instanceof V8ValueString) {
+                String propertyString = ((V8ValueString) property).getValue();
+                if (StringUtils.isDigital(propertyString)) {
+                    final int index = Integer.parseInt(propertyString);
+                    if (index >= 0) {
+                        Object result = classProxyPlugin.getByIndex(this, index);
+                        if (result != null) {
+                            v8Value = getV8Runtime().toV8Value(result);
+                        }
+                    }
+                }
+            }
+            if (v8Value == null) {
+                IClassProxyPluginFunction<E> classProxyPluginFunction = null;
+                if (property instanceof V8ValueString) {
+                    String propertyName = ((V8ValueString) property).getValue();
+                    classProxyPluginFunction = classProxyPlugin.getProxyGetByString(getClass(), propertyName);
+                } else if (property instanceof V8ValueSymbol) {
+                    V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
+                    String description = propertySymbol.getDescription();
+                    classProxyPluginFunction = classProxyPlugin.getProxyGetBySymbol(getClass(), description);
+                }
+                if (classProxyPluginFunction != null) {
+                    v8Value = classProxyPluginFunction.invoke(getV8Runtime(), this);
+                }
+            }
+        }
+        if (v8Value == null && property instanceof V8ValueString) {
             final String propertyString = ((V8ValueString) property).getValue();
             Optional<IJavetUniFunction<String, ? extends V8Value, E>> optionalGetter =
                     Optional.ofNullable(proxyGetStringGetterMap()).map(m -> m.get(propertyString));
@@ -153,19 +182,19 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
             } else if (IJavetProxyHandler.FUNCTION_NAME_TO_JSON.equals(propertyString)) {
                 v8Value = getV8Runtime().createV8ValueFunction(
                         new JavetCallbackContext(
-                                V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE,
+                                IJavetProxyHandler.FUNCTION_NAME_TO_JSON,
                                 V8ValueSymbolType.BuiltIn,
                                 JavetCallbackType.DirectCallNoThisAndResult,
                                 (IJavetDirectCallable.NoThisAndResult<?>) this::toJSON));
             } else if (IJavetProxyHandler.FUNCTION_NAME_TO_V8_VALUE.equals(propertyString)) {
                 v8Value = getV8Runtime().createV8ValueFunction(
                         new JavetCallbackContext(
-                                V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_PRIMITIVE,
+                                IJavetProxyHandler.FUNCTION_NAME_TO_V8_VALUE,
                                 V8ValueSymbolType.BuiltIn,
                                 JavetCallbackType.DirectCallNoThisAndResult,
                                 (IJavetDirectCallable.NoThisAndResult<?>) this::symbolToPrimitive));
             }
-        } else if (property instanceof V8ValueSymbol) {
+        } else if (v8Value == null && property instanceof V8ValueSymbol) {
             final V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
             final String description = propertySymbol.getDescription();
             Optional<IJavetUniFunction<V8ValueSymbol, ? extends V8Value, E>> optionalGetter =
@@ -186,38 +215,6 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
                                 V8ValueSymbolType.BuiltIn,
                                 JavetCallbackType.DirectCallNoThisAndResult,
                                 (IJavetDirectCallable.NoThisAndResult<?>) this::symbolIterator));
-            }
-        }
-        if (v8Value == null) {
-            IClassProxyPlugin classProxyPlugin = getProxyPlugin();
-            if (classProxyPlugin != null) {
-                if (classProxyPlugin.isIndexSupported(getClass()) && property instanceof V8ValueString) {
-                    String propertyString = ((V8ValueString) property).getValue();
-                    if (StringUtils.isDigital(propertyString)) {
-                        final int index = Integer.parseInt(propertyString);
-                        if (index >= 0) {
-                            Object result = classProxyPlugin.getByIndex(this, index);
-                            if (result != null) {
-                                v8Value = getV8Runtime().toV8Value(result);
-                                if (v8Value != null) {
-                                    return v8Value;
-                                }
-                            }
-                        }
-                    }
-                }
-                IClassProxyPluginFunction<E> classProxyPluginFunction = null;
-                if (property instanceof V8ValueString) {
-                    String propertyName = ((V8ValueString) property).getValue();
-                    classProxyPluginFunction = classProxyPlugin.getProxyGetByString(getClass(), propertyName);
-                } else if (property instanceof V8ValueSymbol) {
-                    V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
-                    String description = propertySymbol.getDescription();
-                    classProxyPluginFunction = classProxyPlugin.getProxyGetBySymbol(getClass(), description);
-                }
-                if (classProxyPluginFunction != null) {
-                    v8Value = classProxyPluginFunction.invoke(getV8Runtime(), this);
-                }
             }
         }
         return v8Value;
@@ -332,24 +329,22 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
      */
     default V8ValueBoolean proxyHas(V8Value target, V8Value property) throws JavetException, E {
         boolean hasProperty = false;
-        if (property instanceof V8ValueString) {
+        IClassProxyPlugin classProxyPlugin = getProxyPlugin();
+        if (classProxyPlugin != null && classProxyPlugin.isHasSupported(getClass())) {
+            hasProperty = classProxyPlugin.hasByObject(this, getV8Runtime().toObject(property));
+        }
+        if (!hasProperty && property instanceof V8ValueString) {
             String propertyString = ((V8ValueString) property).toPrimitive();
             Map<String, IJavetUniFunction<String, ? extends V8Value, E>> stringGetterMap = proxyGetStringGetterMap();
             if (stringGetterMap != null && !stringGetterMap.isEmpty()) {
                 hasProperty = stringGetterMap.containsKey(propertyString);
             }
-        } else if (property instanceof V8ValueSymbol) {
+        } else if (!hasProperty && property instanceof V8ValueSymbol) {
             V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
             String description = propertySymbol.getDescription();
             Map<String, IJavetUniFunction<V8ValueSymbol, ? extends V8Value, E>> symbolGetterMap = proxyGetSymbolGetterMap();
             if (symbolGetterMap != null && !symbolGetterMap.isEmpty()) {
                 hasProperty = symbolGetterMap.containsKey(description);
-            }
-        }
-        if (!hasProperty) {
-            IClassProxyPlugin classProxyPlugin = getProxyPlugin();
-            if (classProxyPlugin != null && classProxyPlugin.isHasSupported(getClass())) {
-                hasProperty = classProxyPlugin.hasByObject(this, getV8Runtime().toObject(property));
             }
         }
         if (hasProperty) {
@@ -419,7 +414,19 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
             V8Value target, V8Value propertyKey, V8Value propertyValue, V8Value receiver)
             throws JavetException, E {
         boolean isSet = false;
-        if (propertyKey instanceof V8ValueString) {
+        IClassProxyPlugin classProxyPlugin = getProxyPlugin();
+        if (classProxyPlugin != null
+                && classProxyPlugin.isIndexSupported(getClass())
+                && propertyKey instanceof V8ValueString) {
+            String propertyKeyString = ((V8ValueString) propertyKey).getValue();
+            if (StringUtils.isDigital(propertyKeyString)) {
+                final int index = Integer.parseInt(propertyKeyString);
+                if (index >= 0) {
+                    isSet = classProxyPlugin.setByIndex(this, index, getV8Runtime().toObject(propertyValue));
+                }
+            }
+        }
+        if (!isSet && propertyKey instanceof V8ValueString) {
             String propertyKeyString = ((V8ValueString) propertyKey).toPrimitive();
             Map<String, IJavetBiFunction<String, V8Value, Boolean, E>> stringSetterMap = proxyGetStringSetterMap();
             if (stringSetterMap != null && !stringSetterMap.isEmpty()) {
@@ -428,7 +435,7 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
                     isSet = setter.apply(propertyKeyString, propertyValue);
                 }
             }
-        } else if (propertyKey instanceof V8ValueSymbol) {
+        } else if (!isSet && propertyKey instanceof V8ValueSymbol) {
             V8ValueSymbol propertyKeySymbol = (V8ValueSymbol) propertyKey;
             String description = propertyKeySymbol.getDescription();
             Map<String, IJavetBiFunction<V8ValueSymbol, V8Value, Boolean, E>> symbolSetterMap = proxyGetSymbolSetterMap();
@@ -436,20 +443,6 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
                 IJavetBiFunction<V8ValueSymbol, V8Value, Boolean, E> setter = symbolSetterMap.get(description);
                 if (setter != null) {
                     isSet = setter.apply(propertyKeySymbol, propertyValue);
-                }
-            }
-        }
-        if (!isSet) {
-            IClassProxyPlugin classProxyPlugin = getProxyPlugin();
-            if (classProxyPlugin != null
-                    && classProxyPlugin.isIndexSupported(getClass())
-                    && propertyKey instanceof V8ValueString) {
-                String propertyKeyString = ((V8ValueString) propertyKey).getValue();
-                if (StringUtils.isDigital(propertyKeyString)) {
-                    final int index = Integer.parseInt(propertyKeyString);
-                    if (index >= 0) {
-                        isSet = classProxyPlugin.setByIndex(this, index, getV8Runtime().toObject(propertyValue));
-                    }
                 }
             }
         }

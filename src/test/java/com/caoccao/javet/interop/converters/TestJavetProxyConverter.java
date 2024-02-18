@@ -719,22 +719,35 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         int expectedCallCount = 0;
         MockDirectProxyListHandler<String> handler = new MockDirectProxyListHandler<>();
         v8Runtime.getGlobalObject().set("a", handler);
+        // length
         assertEquals(0, v8Runtime.getExecutor("a.length;").executeInteger());
         assertEquals(++expectedCallCount, handler.getCallCount());
         handler.add("a");
         assertEquals(1, v8Runtime.getExecutor("a.length;").executeInteger());
         assertEquals(++expectedCallCount, handler.getCallCount());
+        // push()
         assertEquals(2, v8Runtime.getExecutor("a.push('b');").executeInteger());
         assertEquals(++expectedCallCount, handler.getCallCount());
+        // Object.getOwnPropertyNames()
         assertEquals("0,1,length", v8Runtime.getExecutor("Object.getOwnPropertyNames(a).toString();").executeString());
         assertEquals(++expectedCallCount, handler.getCallCount());
+        // Object.keys()
         assertEquals("0,1", v8Runtime.getExecutor("Object.keys(a).toString();").executeString());
         expectedCallCount += 3;
         assertEquals(++expectedCallCount, handler.getCallCount());
+        // in
         assertTrue(v8Runtime.getExecutor("0 in a").executeBoolean());
         assertEquals(++expectedCallCount, handler.getCallCount());
         assertFalse(v8Runtime.getExecutor("3 in a").executeBoolean());
         assertEquals(++expectedCallCount, handler.getCallCount());
+        // of
+        assertEquals(
+                "[\"a\",\"b\"]",
+                v8Runtime.getExecutor("const l = []; for (const x of a) { l.push(x); } JSON.stringify(l)").executeString());
+        // toJSON
+        assertEquals(
+                "[\"a\",\"b\"]",
+                v8Runtime.getExecutor("JSON.stringify(a)").executeString());
         v8Runtime.getGlobalObject().delete("a");
     }
 
