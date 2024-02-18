@@ -16,6 +16,8 @@
 
 package com.caoccao.javet.entities;
 
+import com.caoccao.javet.interfaces.IJavetEntitySymbol;
+
 import java.util.Objects;
 
 /**
@@ -24,7 +26,7 @@ import java.util.Objects;
  *
  * @since 0.9.11
  */
-public class JavetEntitySymbol {
+public class JavetEntitySymbol implements IJavetEntitySymbol {
     /**
      * The Description.
      *
@@ -42,13 +44,13 @@ public class JavetEntitySymbol {
         this.description = Objects.requireNonNull(description);
     }
 
-    /**
-     * Gets description.
-     *
-     * @return the description
-     * @since 0.9.11
-     */
+    @Override
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

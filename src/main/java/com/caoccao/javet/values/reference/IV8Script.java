@@ -19,11 +19,30 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.IV8Executable;
+import com.caoccao.javet.values.IV8ValueNonProxyable;
 import com.caoccao.javet.values.V8Value;
 
-public interface IV8Script extends IV8Cacheable, IV8ValueReference, IV8Executable {
+/**
+ * The interface V8 script.
+ *
+ * @since 0.8.0
+ */
+public interface IV8Script
+        extends IV8Cacheable, IV8ValueReference, IV8Executable, IV8ValueNonProxyable {
+    /**
+     * Gets resource name.
+     *
+     * @return the resource name
+     * @since 0.8.0
+     */
     String getResourceName();
 
+    /**
+     * Sets resource name.
+     *
+     * @param resourceName the resource name
+     * @since 0.8.0
+     */
     void setResourceName(String resourceName);
 
     @Override

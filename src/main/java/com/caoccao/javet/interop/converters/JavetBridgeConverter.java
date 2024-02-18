@@ -19,7 +19,12 @@ package com.caoccao.javet.interop.converters;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.binding.IClassProxyPlugin;
+import com.caoccao.javet.interop.proxy.IJavetNonProxy;
+import com.caoccao.javet.interop.proxy.plugins.*;
 import com.caoccao.javet.values.V8Value;
+
+import java.util.Collections;
 
 /**
  * The type Javet bridge converter converts all Java objects to
@@ -32,12 +37,28 @@ import com.caoccao.javet.values.V8Value;
 @SuppressWarnings("unchecked")
 public class JavetBridgeConverter extends JavetProxyConverter {
     /**
+     * The constant DEFAULT_PROXY_PLUGINS.
+     *
+     * @since 3.0.4
+     */
+    protected static final IClassProxyPlugin[] DEFAULT_PROXY_PLUGINS = new IClassProxyPlugin[]{
+            JavetProxyPluginMap.getInstance(),
+            JavetProxyPluginSet.getInstance(),
+            JavetProxyPluginList.getInstance(),
+            JavetProxyPluginArray.getInstance(),
+            JavetProxyPluginClass.getInstance(),
+            JavetProxyPluginDefault.getInstance(), // The default proxy plugin must be the last one.
+    };
+
+    /**
      * Instantiates a new Javet bridge converter.
      *
      * @since 1.0.4
      */
     public JavetBridgeConverter() {
         super();
+        // The bridge converter has all built-in proxy plugins enabled by default.
+        Collections.addAll(getConfig().getProxyPlugins(), DEFAULT_PROXY_PLUGINS);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -72,6 +93,8 @@ public class JavetBridgeConverter extends JavetProxyConverter {
             }
         } else if (object instanceof V8Value) {
             v8Value = (V8Value) object;
+        } else if (object instanceof IJavetNonProxy) {
+            v8Value = super.toV8Value(v8Runtime, object, depth);
         } else {
             v8Value = toProxiedV8Value(v8Runtime, object);
         }

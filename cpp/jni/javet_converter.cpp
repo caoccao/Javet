@@ -101,9 +101,17 @@ namespace Javet {
         jmethodID jmethodIDV8ValueArrayBufferConstructor;
         jmethodID jmethodIDV8ValueArrayBufferGetHandle;
 
+        jclass jclassV8ValueBooleanObject;
+        jmethodID jmethodIDV8ValueBooleanObjectConstructor;
+        jmethodID jmethodIDV8ValueBooleanObjectGetHandle;
+
         jclass jclassV8ValueDataView;
         jmethodID jmethodIDV8ValueDataViewConstructor;
         jmethodID jmethodIDV8ValueDataViewGetHandle;
+
+        jclass jclassV8ValueDoubleObject;
+        jmethodID jmethodIDV8ValueDoubleObjectConstructor;
+        jmethodID jmethodIDV8ValueDoubleObjectGetHandle;
 
         jclass jclassV8ValueFunction;
         jmethodID jmethodIDV8ValueFunctionConstructor;
@@ -117,9 +125,17 @@ namespace Javet {
         jmethodID jmethodIDV8ValueGlobalObjectConstructor;
         jmethodID jmethodIDV8ValueGlobalObjectGetHandle;
 
+        jclass jclassV8ValueIntegerObject;
+        jmethodID jmethodIDV8ValueIntegerObjectConstructor;
+        jmethodID jmethodIDV8ValueIntegerObjectGetHandle;
+
         jclass jclassV8ValueIterator;
         jmethodID jmethodIDV8ValueIteratorConstructor;
         jmethodID jmethodIDV8ValueIteratorGetHandle;
+
+        jclass jclassV8ValueLongObject;
+        jmethodID jmethodIDV8ValueLongObjectConstructor;
+        jmethodID jmethodIDV8ValueLongObjectGetHandle;
 
         jclass jclassV8ValueMap;
         jmethodID jmethodIDV8ValueMapConstructor;
@@ -150,6 +166,10 @@ namespace Javet {
         jclass jclassV8ValueSharedArrayBuffer;
         jmethodID jmethodIDV8ValueSharedArrayBufferConstructor;
         jmethodID jmethodIDV8ValueSharedArrayBufferGetHandle;
+
+        jclass jclassV8ValueStringObject;
+        jmethodID jmethodIDV8ValueStringObjectConstructor;
+        jmethodID jmethodIDV8ValueStringObjectGetHandle;
 
         jmethodID jmethodIDV8ValueSymbolConstructor;
         jmethodID jmethodIDV8ValueSymbolGetHandle;
@@ -400,9 +420,17 @@ namespace Javet {
             jmethodIDV8ValueArrayBufferConstructor = jniEnv->GetMethodID(jclassV8ValueArrayBuffer, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;JLjava/nio/ByteBuffer;)V");
             jmethodIDV8ValueArrayBufferGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueArrayBuffer);
 
+            jclassV8ValueBooleanObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueBooleanObject");
+            jmethodIDV8ValueBooleanObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueBooleanObject);
+            jmethodIDV8ValueBooleanObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueBooleanObject);
+
             jclassV8ValueDataView = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueDataView");
             jmethodIDV8ValueDataViewConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueDataView);
             jmethodIDV8ValueDataViewGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueDataView);
+
+            jclassV8ValueDoubleObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueDoubleObject");
+            jmethodIDV8ValueDoubleObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueDoubleObject);
+            jmethodIDV8ValueDoubleObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueDoubleObject);
 
             jclassV8ValueFunction = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueFunction");
             jmethodIDV8ValueFunctionConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueFunction);
@@ -416,9 +444,17 @@ namespace Javet {
             jmethodIDV8ValueGlobalObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueGlobalObject);
             jmethodIDV8ValueGlobalObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueGlobalObject);
 
+            jclassV8ValueIntegerObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueIntegerObject");
+            jmethodIDV8ValueIntegerObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueIntegerObject);
+            jmethodIDV8ValueIntegerObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueIntegerObject);
+
             jclassV8ValueIterator = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueIterator");
             jmethodIDV8ValueIteratorConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueIterator);
             jmethodIDV8ValueIteratorGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueIterator);
+
+            jclassV8ValueLongObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueLongObject");
+            jmethodIDV8ValueLongObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueLongObject);
+            jmethodIDV8ValueLongObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueLongObject);
 
             jclassV8ValueMap = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueMap");
             jmethodIDV8ValueMapConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueMap);
@@ -449,6 +485,10 @@ namespace Javet {
             jclassV8ValueSharedArrayBuffer = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueSharedArrayBuffer");
             jmethodIDV8ValueSharedArrayBufferConstructor = jniEnv->GetMethodID(jclassV8ValueSharedArrayBuffer, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;JLjava/nio/ByteBuffer;)V");
             jmethodIDV8ValueSharedArrayBufferGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueSharedArrayBuffer);
+
+            jclassV8ValueStringObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueStringObject");
+            jmethodIDV8ValueStringObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueStringObject);
+            jmethodIDV8ValueStringObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueStringObject);
 
             jclassV8ValueSymbol = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueSymbol");
             jmethodIDV8ValueSymbolConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueSymbol);
@@ -797,8 +837,36 @@ namespace Javet {
                     v8Runtime->externalV8Runtime,
                     ToV8PersistentReference(v8Context, v8Value));
             }
+            if (v8Value->IsStringObject()) {
+                return jniEnv->NewObject(
+                    jclassV8ValueStringObject,
+                    jmethodIDV8ValueStringObjectConstructor,
+                    v8Runtime->externalV8Runtime,
+                    ToV8PersistentReference(v8Context, v8Value));
+            }
+            if (v8Value->IsNumberObject()) {
+                return jniEnv->NewObject(
+                    jclassV8ValueDoubleObject,
+                    jmethodIDV8ValueDoubleObjectConstructor,
+                    v8Runtime->externalV8Runtime,
+                    ToV8PersistentReference(v8Context, v8Value));
+            }
+            if (v8Value->IsBooleanObject()) {
+                return jniEnv->NewObject(
+                    jclassV8ValueBooleanObject,
+                    jmethodIDV8ValueBooleanObjectConstructor,
+                    v8Runtime->externalV8Runtime,
+                    ToV8PersistentReference(v8Context, v8Value));
+            }
+            if (v8Value->IsBigIntObject()) {
+                return jniEnv->NewObject(
+                    jclassV8ValueLongObject,
+                    jmethodIDV8ValueLongObjectConstructor,
+                    v8Runtime->externalV8Runtime,
+                    ToV8PersistentReference(v8Context, v8Value));
+            }
             // Primitive types
-            if (v8Value->IsBoolean() || v8Value->IsBooleanObject()) {
+            if (v8Value->IsBoolean()) {
                 return jniEnv->CallObjectMethod(
                     v8Runtime->externalV8Runtime,
                     jmethodIDV8RuntimeCreateV8ValueBoolean,
@@ -810,7 +878,7 @@ namespace Javet {
                     jmethodIDV8RuntimeCreateV8ValueInteger,
                     v8Value->Int32Value(v8Context).FromMaybe(0));
             }
-            if (v8Value->IsBigInt() || v8Value->IsBigIntObject()) {
+            if (v8Value->IsBigInt()) {
                 V8LocalBigInt v8LocalBigInt = v8Value->ToBigInt(v8Context).ToLocalChecked();
                 int wordCount = v8LocalBigInt->WordCount();
                 if (wordCount <= 1) {
@@ -842,13 +910,13 @@ namespace Javet {
                     jmethodIDV8RuntimeCreateV8ValueZonedDateTime,
                     static_cast<std::int64_t>(v8Date->ValueOf()));
             }
-            if (v8Value->IsNumber() || v8Value->IsNumberObject()) {
+            if (v8Value->IsNumber()) {
                 return jniEnv->CallObjectMethod(
                     v8Runtime->externalV8Runtime,
                     jmethodIDV8RuntimeCreateV8ValueDouble,
                     v8Value->NumberValue(v8Context).FromMaybe(0));
             }
-            if (v8Value->IsString() || v8Value->IsStringObject()) {
+            if (v8Value->IsString()) {
                 return ToExternalV8ValuePrimitive(
                     jniEnv,
                     jclassV8ValueString,

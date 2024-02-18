@@ -380,7 +380,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
         } catch (JavetCompilationException e) {
             assertFalse(v8Runtime.containsV8Module("./test.js"));
             assertEquals(0, v8Runtime.getV8ModuleCount());
-            assertEquals("SyntaxError: Unexpected identifier 'b'", e.getScriptingError().getMessage());
+            assertEquals("SyntaxError: Unexpected identifier 'b'", e.getScriptingError().getDetailedMessage());
         }
     }
 

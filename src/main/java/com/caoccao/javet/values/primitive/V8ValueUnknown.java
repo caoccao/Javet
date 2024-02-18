@@ -18,15 +18,36 @@ package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.values.IV8ValueNonProxyable;
 
 import java.util.Objects;
 
+/**
+ * The type V8 value unknown.
+ *
+ * @since 0.7.0
+ */
 @SuppressWarnings("unchecked")
-public final class V8ValueUnknown extends V8ValuePrimitive<String> {
+public final class V8ValueUnknown extends V8ValuePrimitive<String> implements IV8ValueNonProxyable {
+    /**
+     * Instantiates a new V8 value unknown.
+     *
+     * @param v8Runtime the V8 runtime
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public V8ValueUnknown(V8Runtime v8Runtime) throws JavetException {
         this(v8Runtime, null);
     }
 
+    /**
+     * Instantiates a new V 8 value unknown.
+     *
+     * @param v8Runtime the v 8 runtime
+     * @param value     the value
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public V8ValueUnknown(V8Runtime v8Runtime, String value) throws JavetException {
         super(v8Runtime, Objects.requireNonNull(value));
     }

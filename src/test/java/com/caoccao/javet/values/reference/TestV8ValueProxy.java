@@ -103,7 +103,7 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
     @Test
     public void testReflectionProxyHandlerInInstanceMode() throws JavetException {
         JavetReflectionProxyObjectHandler<MockPojo, ?> handler =
-                new JavetReflectionProxyObjectHandler<>(v8Runtime, null, new MockPojo());
+                new JavetReflectionProxyObjectHandler<>(v8Runtime, new MockPojo());
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
             try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
                 assertNotNull(v8ValueProxy);
@@ -130,7 +130,9 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
                     "Parameters with varargs should work.");
             assertEquals(3.3, v8Runtime.getExecutor("y.add(1.1,2.2)").executeDouble(), 0.001,
                     "Parameters with non-primitive type should work.");
-            assertTrue(v8Runtime.getExecutor("y['a']").execute().isUndefined(),
+            assertEquals(1, v8Runtime.getExecutor("y['a']").executeInteger(),
+                    "Reflect.get() should work.");
+            assertTrue(v8Runtime.getExecutor("y['c']").execute().isUndefined(),
                     "Generic getter should return undefined.");
             v8Runtime.getExecutor("y['name'] = 'abc';").executeVoid();
             assertEquals("abc", handler.getTargetObject().getName(), "Getter should work.");
@@ -181,7 +183,7 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
     @Test
     public void testReflectionProxyHandlerInStaticMode() throws JavetException {
         JavetReflectionProxyClassHandler<Class<?>, ?> handler =
-                new JavetReflectionProxyClassHandler<>(v8Runtime, null, MockPojo.class);
+                new JavetReflectionProxyClassHandler<>(v8Runtime, MockPojo.class);
         assertEquals(MockPojo.class, handler.getTargetObject());
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
             try (V8ValueProxy v8ValueProxy = v8Runtime.createV8ValueProxy(v8ValueObject)) {
@@ -225,7 +227,7 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
     @Test
     public void testReflectionProxyHandlerWithGenericGetterAndSetter() throws JavetException {
         JavetReflectionProxyObjectHandler<MockPojoWithGenericGetterAndSetter, ?> handler =
-                new JavetReflectionProxyObjectHandler<>(v8Runtime, null, new MockPojoWithGenericGetterAndSetter());
+                new JavetReflectionProxyObjectHandler<>(v8Runtime, new MockPojoWithGenericGetterAndSetter());
         handler.getTargetObject().set("c", "3");
         handler.getTargetObject().set("d", "4");
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {a:1,b:2}; x;").execute()) {
@@ -239,7 +241,9 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
             }
             assertEquals("3", v8Runtime.getExecutor("y['c']").executeString(),
                     "Generic getter should work.");
-            assertTrue(v8Runtime.getExecutor("y['a']").execute().isUndefined(),
+            assertEquals(1, v8Runtime.getExecutor("y['a']").executeInteger(),
+                    "Reflect.get() should work.");
+            assertTrue(v8Runtime.getExecutor("y['e']").execute().isUndefined(),
                     "Generic getter should return undefined.");
             v8Runtime.getExecutor("y['name'] = 'abc';").executeVoid();
             assertNull(handler.getTargetObject().getName(), "Generic getter should take higher priority.");

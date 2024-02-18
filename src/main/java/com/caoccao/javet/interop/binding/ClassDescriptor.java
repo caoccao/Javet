@@ -36,43 +36,61 @@ public class ClassDescriptor {
      *
      * @since 1.1.7
      */
-    protected List<Method> applyFunctions;
+    protected final List<Method> applyFunctions;
+    /**
+     * The Class proxy plugin.
+     *
+     * @since 3.0.4
+     */
+    protected final IClassProxyPlugin classProxyPlugin;
     /**
      * The Constructors.
      *
      * @since 0.9.8
      */
-    protected List<Constructor<?>> constructors;
+    protected final List<Constructor<?>> constructors;
     /**
      * The Field map.
      *
      * @since 0.9.7
      */
-    protected Map<String, Field> fieldMap;
+    protected final Map<String, Field> fieldMap;
     /**
      * The Generic getters.
      *
      * @since 0.9.6
      */
-    protected List<Method> genericGetters;
+    protected final List<Method> genericGetters;
     /**
      * The Generic setters.
      *
      * @since 0.9.6
      */
-    protected List<Method> genericSetters;
+    protected final List<Method> genericSetters;
     /**
      * The Getters map.
      *
      * @since 0.9.6
      */
-    protected Map<String, List<Method>> gettersMap;
+    protected final Map<String, List<Method>> gettersMap;
     /**
      * The Methods map.
      *
      * @since 0.9.6
      */
-    protected Map<String, List<Method>> methodsMap;
+    protected final Map<String, List<Method>> methodsMap;
+    /**
+     * The Setters map.
+     *
+     * @since 0.9.6
+     */
+    protected final Map<String, List<Method>> settersMap;
+    /**
+     * The Unique key set.
+     *
+     * @since 0.9.7
+     */
+    protected final Set<String> uniqueKeySet;
     /**
      * The Proxy mode.
      *
@@ -80,67 +98,32 @@ public class ClassDescriptor {
      */
     protected V8ProxyMode proxyMode;
     /**
-     * The Setters map.
-     *
-     * @since 0.9.6
-     */
-    protected Map<String, List<Method>> settersMap;
-    /**
      * The Target class.
      *
      * @since 0.9.6
      */
     protected Class<?> targetClass;
-    /**
-     * The Target type list.
-     *
-     * @since 3.0.3
-     */
-    protected boolean targetTypeList;
-    /**
-     * The target type map.
-     *
-     * @since 0.9.7
-     */
-    protected boolean targetTypeMap;
-    /**
-     * The target type set.
-     *
-     * @since 0.9.7
-     */
-    protected boolean targetTypeSet;
-    /**
-     * The Unique key set.
-     *
-     * @since 0.9.7
-     */
-    protected Set<String> uniqueKeySet;
 
     /**
      * Instantiates a new Class descriptor.
      *
-     * @param proxyMode   the proxy mode
-     * @param targetClass the target class
+     * @param proxyMode        the proxy mode
+     * @param targetClass      the target class
+     * @param classProxyPlugin the class proxy plugin
      * @since 1.1.7
      */
-    public ClassDescriptor(V8ProxyMode proxyMode, Class<?> targetClass) {
+    public ClassDescriptor(V8ProxyMode proxyMode, Class<?> targetClass, IClassProxyPlugin classProxyPlugin) {
         applyFunctions = new ArrayList<>();
         constructors = new ArrayList<>();
         fieldMap = new LinkedHashMap<>();
         genericGetters = new ArrayList<>();
         genericSetters = new ArrayList<>();
         gettersMap = new LinkedHashMap<>();
+        this.classProxyPlugin = Objects.requireNonNull(classProxyPlugin);
         methodsMap = new LinkedHashMap<>();
         this.proxyMode = proxyMode;
         settersMap = new LinkedHashMap<>();
         this.targetClass = targetClass;
-        targetTypeList = List.class.isAssignableFrom(targetClass);
-        if (!targetTypeList) {
-            targetTypeMap = Map.class.isAssignableFrom(targetClass);
-            if (!targetTypeMap) {
-                targetTypeSet = Set.class.isAssignableFrom(targetClass);
-            }
-        }
         uniqueKeySet = new LinkedHashSet<>();
     }
 
@@ -152,6 +135,16 @@ public class ClassDescriptor {
      */
     public List<Method> getApplyFunctions() {
         return applyFunctions;
+    }
+
+    /**
+     * Gets class proxy plugin.
+     *
+     * @return the class proxy plugin
+     * @since 3.0.4
+     */
+    public IClassProxyPlugin getClassProxyPlugin() {
+        return classProxyPlugin;
     }
 
     /**
@@ -264,35 +257,5 @@ public class ClassDescriptor {
      */
     public Set<String> getUniqueKeySet() {
         return uniqueKeySet;
-    }
-
-    /**
-     * Is target type list.
-     *
-     * @return true: is a list, false: is not a list
-     * @since 3.0.3
-     */
-    public boolean isTargetTypeList() {
-        return targetTypeList;
-    }
-
-    /**
-     * Is target type map.
-     *
-     * @return true: is a map, false: is not a map
-     * @since 1.1.7
-     */
-    public boolean isTargetTypeMap() {
-        return targetTypeMap;
-    }
-
-    /**
-     * Is target type set.
-     *
-     * @return true: is a set, false: is not a set
-     * @since 1.1.7
-     */
-    public boolean isTargetTypeSet() {
-        return targetTypeSet;
     }
 }

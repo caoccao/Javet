@@ -18,15 +18,62 @@ package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.values.IV8ValuePrimitiveValue;
+import com.caoccao.javet.values.reference.V8ValueBooleanObject;
 
+/**
+ * The type V8 value boolean.
+ *
+ * @since 0.7.0
+ */
 @SuppressWarnings("unchecked")
-public class V8ValueBoolean extends V8ValuePrimitive<Boolean> {
+public final class V8ValueBoolean
+        extends V8ValuePrimitive<Boolean>
+        implements IV8ValuePrimitiveValue<V8ValueBooleanObject> {
+    /**
+     * The constant FALSE.
+     *
+     * @since 3.0.4
+     */
+    public static final String FALSE = "false";
+    /**
+     * The constant TRUE.
+     *
+     * @since 3.0.4
+     */
+    public static final String TRUE = "true";
+
+    /**
+     * Instantiates a new V8 value boolean.
+     *
+     * @param v8Runtime the V8 runtime
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public V8ValueBoolean(V8Runtime v8Runtime) throws JavetException {
         this(v8Runtime, false);
     }
 
+    /**
+     * Instantiates a new V8 value boolean.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param value     the value
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public V8ValueBoolean(V8Runtime v8Runtime, boolean value) throws JavetException {
         super(v8Runtime, value);
+    }
+
+    @Override
+    public boolean asBoolean() {
+        return value;
+    }
+
+    @Override
+    public int asInt() {
+        return value ? 1 : 0;
     }
 
     @Override
@@ -34,7 +81,23 @@ public class V8ValueBoolean extends V8ValuePrimitive<Boolean> {
         return this;
     }
 
+    @Override
+    public V8ValueBooleanObject toObject() throws JavetException {
+        return checkV8Runtime().createV8ValueBooleanObject(value);
+    }
+
+    /**
+     * To primitive boolean.
+     *
+     * @return the boolean
+     * @since 0.7.0
+     */
     public boolean toPrimitive() {
         return value;
+    }
+
+    @Override
+    public String toString() {
+        return value ? TRUE : FALSE;
     }
 }

@@ -16,14 +16,10 @@
 
 package com.caoccao.javet.exceptions;
 
-import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.utils.JavetResourceUtils;
+import com.caoccao.javet.interfaces.IJavetEntityError;
+import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.reference.V8ValueError;
-import com.caoccao.javet.values.reference.V8ValueObject;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -32,17 +28,21 @@ import java.util.Map;
  * @since 0.7.0
  */
 public final class JavetScriptingError {
+    private static final JavetObjectConverter CONVERTER = new JavetObjectConverter();
+    private static final String DETAILED_MESSAGE = "detailedMessage";
+    private static final String MESSAGE = "message";
+    private static final String STACK = "stack";
     private final int endColumn;
     private final int endPosition;
     private final int lineNumber;
+    private final String message;
     private final String resourceName;
     private final String sourceLine;
+    private final String stack;
     private final int startColumn;
     private final int startPosition;
-    private Map<String, Object> context;
+    private Object context;
     private String detailedMessage;
-    private String message;
-    private String stack;
 
     /**
      * Instantiates a new Javet scripting error.
@@ -60,47 +60,40 @@ public final class JavetScriptingError {
     JavetScriptingError(
             V8Value v8Value, String resourceName, String sourceLine,
             int lineNumber, int startColumn, int endColumn, int startPosition, int endPosition) {
-        context = new LinkedHashMap<>();
-        detailedMessage = null;
-        message = null;
-        stack = null;
         try {
-            if (v8Value instanceof V8ValueError) {
-                // https://v8.dev/features/error-cause
-                V8ValueError v8ValueError = (V8ValueError) v8Value;
-                detailedMessage = v8ValueError.getMessage();
-                message = v8ValueError.toString();
-                stack = v8ValueError.getStack();
-                final V8Runtime v8Runtime = v8ValueError.getV8Runtime();
-                v8ValueError.forEach((V8Value key, V8Value value) -> {
-                    context.put(key.toString(), v8Runtime.toObject(value));
-                });
-            } else if (v8Value instanceof V8ValueObject) {
-                V8ValueObject v8ValueObject = (V8ValueObject) v8Value;
-                detailedMessage = v8ValueObject.getString(V8ValueError.MESSAGE);
-                message = detailedMessage;
-                stack = v8ValueObject.getString(V8ValueError.STACK);
-                final V8Runtime v8Runtime = v8ValueObject.getV8Runtime();
-                v8ValueObject.forEach((V8Value key, V8Value value) -> {
-                    String keyString = key.toString();
-                    if (!V8ValueError.MESSAGE.equals(keyString) && !V8ValueError.STACK.equals(keyString)) {
-                        context.put(keyString, v8Runtime.toObject(value));
-                    }
-                });
-            }
+            context = CONVERTER.toObject(v8Value, true);
         } catch (JavetException e) {
-            e.printStackTrace();
-        } finally {
-            JavetResourceUtils.safeClose(v8Value);
+            context = null;
         }
-        context = Collections.unmodifiableMap(context);
+        if (context instanceof IJavetEntityError) {
+            IJavetEntityError javetEntityError = (IJavetEntityError) context;
+            detailedMessage = javetEntityError.getDetailedMessage();
+            message = javetEntityError.getMessage();
+            stack = javetEntityError.getStack();
+        } else if (context instanceof Map) {
+            Map<?, ?> map = (Map<?, ?>) context;
+            if (map.containsKey(DETAILED_MESSAGE)) {
+                detailedMessage = String.valueOf(map.get(DETAILED_MESSAGE));
+            } else {
+                detailedMessage = null;
+            }
+            message = String.valueOf(map.getOrDefault(MESSAGE, null));
+            stack = String.valueOf(map.getOrDefault(STACK, null));
+        } else {
+            detailedMessage = null;
+            message = null;
+            stack = null;
+        }
+        if (detailedMessage == null) {
+            detailedMessage = message;
+        }
+        this.endColumn = endColumn;
+        this.endPosition = endPosition;
+        this.lineNumber = lineNumber;
         this.resourceName = resourceName;
         this.sourceLine = sourceLine;
-        this.lineNumber = lineNumber;
         this.startColumn = startColumn;
-        this.endColumn = endColumn;
         this.startPosition = startPosition;
-        this.endPosition = endPosition;
     }
 
     /**
@@ -109,7 +102,7 @@ public final class JavetScriptingError {
      * @return the context
      * @since 1.0.7
      */
-    public Map<String, Object> getContext() {
+    public Object getContext() {
         return context;
     }
 
@@ -215,7 +208,7 @@ public final class JavetScriptingError {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(message).append("\n");
+        sb.append(detailedMessage).append("\n");
         sb.append("Resource: ").append(resourceName).append("\n");
         sb.append("Source Code: ").append(sourceLine).append("\n");
         sb.append("Line Number: ").append(lineNumber).append("\n");

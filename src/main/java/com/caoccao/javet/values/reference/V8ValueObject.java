@@ -26,12 +26,13 @@ import com.caoccao.javet.interfaces.IJavetBiConsumer;
 import com.caoccao.javet.interfaces.IJavetBiIndexedConsumer;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.BindingContext;
+import com.caoccao.javet.interop.binding.BindingContextStore;
 import com.caoccao.javet.interop.binding.MethodDescriptor;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.utils.ArrayUtils;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
-import com.caoccao.javet.utils.ThreadSafeMap;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson;
@@ -65,12 +66,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     protected static final String FUNCTION_HAS = "has";
     protected static final String FUNCTION_SET = "set";
     protected static final String PROPERTY_PROTOTYPE = "prototype";
-    /**
-     * The constant bindingContextMap.
-     *
-     * @since 1.1.7
-     */
-    protected static final ThreadSafeMap<Class<?>, BindingContext> bindingContextMap = new ThreadSafeMap<>();
 
     /**
      * Instantiates a new V8 value object.
@@ -82,16 +77,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
      */
     protected V8ValueObject(V8Runtime v8Runtime, long handle) throws JavetException {
         super(v8Runtime, handle);
-    }
-
-    /**
-     * Gets binding context map.
-     *
-     * @return the binding context map
-     * @since 1.1.7
-     */
-    public static ThreadSafeMap<Class<?>, BindingContext> getBindingContextMap() {
-        return bindingContextMap;
     }
 
     @Override
@@ -382,7 +367,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     BindingContext getBindingContext(Class<?> callbackReceiverClass) throws JavetException {
         Objects.requireNonNull(callbackReceiverClass);
-        BindingContext bindingContext = bindingContextMap.get(callbackReceiverClass);
+        BindingContext bindingContext = BindingContextStore.getMap().get(callbackReceiverClass);
         if (bindingContext == null) {
             bindingContext = new BindingContext();
             Map<String, MethodDescriptor> propertyGetterMap = bindingContext.getPropertyGetterMap();
@@ -393,7 +378,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                 if (method.isAnnotationPresent(V8Property.class)) {
                     V8Property v8Property = method.getAnnotation(V8Property.class);
                     String propertyName = v8Property.name();
-                    if (propertyName.length() == 0) {
+                    if (propertyName.isEmpty()) {
                         String methodName = method.getName();
                         if (methodName.startsWith(METHOD_PREFIX_IS)) {
                             propertyName = methodName.substring(METHOD_PREFIX_IS.length());
@@ -404,11 +389,11 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                         } else {
                             propertyName = methodName;
                         }
-                        if (propertyName.length() > 0) {
+                        if (!propertyName.isEmpty()) {
                             propertyName = propertyName.substring(0, 1).toLowerCase(Locale.ROOT) + propertyName.substring(1);
                         }
                     }
-                    if (propertyName.length() > 0) {
+                    if (!propertyName.isEmpty()) {
                         final int expectedGetterParameterCount = v8Property.thisObjectRequired() ? 1 : 0;
                         final int expectedSetterParameterCount = expectedGetterParameterCount + 1;
                         if (method.getParameterCount() == expectedGetterParameterCount) {
@@ -439,7 +424,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                 if (method.isAnnotationPresent(V8Function.class)) {
                     V8Function v8Function = method.getAnnotation(V8Function.class);
                     String functionName = v8Function.name();
-                    if (functionName.length() == 0) {
+                    if (functionName.isEmpty()) {
                         functionName = method.getName();
                     }
                     // Duplicated function will be dropped.
@@ -486,7 +471,7 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                     }
                 }
             }
-            bindingContextMap.put(callbackReceiverClass, bindingContext);
+            BindingContextStore.getMap().put(callbackReceiverClass, bindingContext);
         }
         return bindingContext;
     }
@@ -645,26 +630,29 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
 
     @Override
     public boolean set(Object... keysAndValues) throws JavetException {
-        assert keysAndValues.length > 0 && keysAndValues.length % 2 == 0 : ERROR_THE_KEY_VALUE_PAIR_MUST_MATCH;
-        final int length = keysAndValues.length;
-        final int pairLength = keysAndValues.length >> 1;
-        Object[] keys = new Object[pairLength];
-        Object[] values = new Object[pairLength];
-        for (int i = 0; i < pairLength; i++) {
-            keys[i] = keysAndValues[i * 2];
-            values[i] = keysAndValues[i * 2 + 1];
-        }
-        try (V8VirtualValueList v8VirtualValueKeys = new V8VirtualValueList(checkV8Runtime(), OBJECT_CONVERTER, keys);
-             V8VirtualValueList v8VirtualValueValues = new V8VirtualValueList(v8Runtime, null, values)) {
-            V8Value[] v8ValueKeys = v8VirtualValueKeys.get();
-            V8Value[] v8ValueValues = v8VirtualValueValues.get();
-            V8Value[] v8Values = new V8Value[length];
+        if (ArrayUtils.isNotEmpty(keysAndValues)) {
+            assert keysAndValues.length % 2 == 0 : ERROR_THE_KEY_VALUE_PAIR_MUST_MATCH;
+            final int length = keysAndValues.length;
+            final int pairLength = length >> 1;
+            Object[] keys = new Object[pairLength];
+            Object[] values = new Object[pairLength];
             for (int i = 0; i < pairLength; i++) {
-                v8Values[i * 2] = v8ValueKeys[i];
-                v8Values[i * 2 + 1] = v8ValueValues[i];
+                keys[i] = keysAndValues[i * 2];
+                values[i] = keysAndValues[i * 2 + 1];
             }
-            return v8Runtime.getV8Internal().objectSet(this, v8Values);
+            try (V8VirtualValueList v8VirtualValueKeys = new V8VirtualValueList(checkV8Runtime(), OBJECT_CONVERTER, keys);
+                 V8VirtualValueList v8VirtualValueValues = new V8VirtualValueList(v8Runtime, null, values)) {
+                V8Value[] v8ValueKeys = v8VirtualValueKeys.get();
+                V8Value[] v8ValueValues = v8VirtualValueValues.get();
+                V8Value[] v8Values = new V8Value[length];
+                for (int i = 0; i < pairLength; i++) {
+                    v8Values[i * 2] = v8ValueKeys[i];
+                    v8Values[i * 2 + 1] = v8ValueValues[i];
+                }
+                return v8Runtime.getV8Internal().objectSet(this, v8Values);
+            }
         }
+        return false;
     }
 
     @Override
@@ -824,7 +812,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
         } else {
             BindingContext bindingContext = getBindingContext(callbackReceiver.getClass());
             Map<String, MethodDescriptor> propertyGetterMap = bindingContext.getPropertyGetterMap();
-            Map<String, MethodDescriptor> propertySetterMap = bindingContext.getPropertySetterMap();
             Map<String, MethodDescriptor> functionMap = bindingContext.getFunctionMap();
             Method v8BindingEnabler = bindingContext.getV8BindingEnabler();
             if (!propertyGetterMap.isEmpty()) {

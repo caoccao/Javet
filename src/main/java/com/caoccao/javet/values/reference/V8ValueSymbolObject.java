@@ -20,6 +20,7 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.values.IV8ValuePrimitiveObject;
 
 /**
  * The type V8 value symbol object.
@@ -27,14 +28,9 @@ import com.caoccao.javet.interop.V8Runtime;
  *
  * @since 0.9.11
  */
-public class V8ValueSymbolObject extends V8ValueSymbol {
-    /**
-     * The constant FUNCTION_VALUE_OF.
-     *
-     * @since 0.9.11
-     */
-    protected static final String FUNCTION_VALUE_OF = "valueOf";
-
+public class V8ValueSymbolObject
+        extends V8ValueObject
+        implements IV8ValuePrimitiveObject<V8ValueSymbol> {
     /**
      * Instantiates a new V8 value symbol object.
      *
@@ -50,15 +46,9 @@ public class V8ValueSymbolObject extends V8ValueSymbol {
         return V8ValueReferenceType.SymbolObject;
     }
 
-    /**
-     * Value of V8 value symbol.
-     *
-     * @return the V8 value symbol
-     * @throws JavetException the javet exception
-     * @since 0.9.11
-     */
     @CheckReturnValue
+    @Override
     public V8ValueSymbol valueOf() throws JavetException {
-        return invoke(FUNCTION_VALUE_OF);
+        return checkV8Runtime().getV8Internal().symbolObjectValueOf(this);
     }
 }

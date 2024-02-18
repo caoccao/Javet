@@ -29,6 +29,24 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setAdd
     }
 }
 
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_setAsArray
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (IS_V8_SET(v8ValueType)) {
+        auto v8LocalArray = v8LocalValue.As<v8::Set>()->AsArray();
+        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalArray);
+    }
+    return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setClear
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (IS_V8_SET(v8ValueType)) {
+        v8LocalValue.As<v8::Set>()->Clear();
+    }
+}
+
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_setCreate
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);

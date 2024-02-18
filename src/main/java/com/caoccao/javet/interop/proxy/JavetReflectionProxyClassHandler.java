@@ -22,11 +22,12 @@ import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
+import com.caoccao.javet.interop.binding.ClassDescriptorStore;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
+import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginClass;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
-import com.caoccao.javet.utils.ThreadSafeMap;
 import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBoolean;
@@ -47,26 +48,18 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
      * @since 0.9.8
      */
     protected static final String METHOD_NAME_CONSTRUCTOR = "constructor";
-    /**
-     * The constant classDescriptorMap.
-     *
-     * @since 1.1.7
-     */
-    protected static final ThreadSafeMap<Class<?>, ClassDescriptor> classDescriptorMap = new ThreadSafeMap<>();
 
     /**
      * Instantiates a new Javet reflection proxy handler.
      *
-     * @param v8Runtime               the V8 runtime
-     * @param reflectionObjectFactory the reflection object factory
-     * @param targetObject            the target object
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
      * @since 0.9.6
      */
     public JavetReflectionProxyClassHandler(
             V8Runtime v8Runtime,
-            IJavetReflectionObjectFactory reflectionObjectFactory,
             T targetObject) {
-        super(v8Runtime, reflectionObjectFactory, targetObject);
+        super(v8Runtime, targetObject);
     }
 
     @Override
@@ -76,7 +69,7 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
             try {
                 v8Values = arguments.toArray();
                 return v8Runtime.toV8Value(execute(
-                        reflectionObjectFactory,
+                        v8Runtime.getConverter().getConfig().getReflectionObjectFactory(),
                         null,
                         (V8ValueObject) target,
                         classDescriptor.getConstructors(),
@@ -98,14 +91,6 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
     }
 
     @Override
-    public V8Value get(V8Value target, V8Value property, V8Value receiver) throws JavetException {
-        V8Value result = getFromField(property);
-        result = result == null ? getFromMethod(target, property) : result;
-        result = result == null ? getFromGetter(property) : result;
-        return result == null ? v8Runtime.createV8ValueUndefined() : result;
-    }
-
-    @Override
     public JavetCallbackContext[] getCallbackContexts() {
         if (callbackContexts == null) {
             callbackContexts = new JavetCallbackContext[]{
@@ -115,6 +100,9 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
                     new JavetCallbackContext(
                             PROXY_FUNCTION_NAME_GET, this, JavetCallbackType.DirectCallNoThisAndResult,
                             (NoThisAndResult<?>) (v8Values) -> get(v8Values[0], v8Values[1], v8Values[2])),
+                    new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_GET_OWN_PROPERTY_DESCRIPTOR, this, JavetCallbackType.DirectCallNoThisAndResult,
+                            (NoThisAndResult<?>) (v8Values) -> getOwnPropertyDescriptor(v8Values[0], v8Values[1])),
                     new JavetCallbackContext(
                             PROXY_FUNCTION_NAME_HAS, this, JavetCallbackType.DirectCallNoThisAndResult,
                             (NoThisAndResult<?>) (v8Values) -> has(v8Values[0], v8Values[1])),
@@ -130,11 +118,6 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
     }
 
     @Override
-    public ThreadSafeMap<Class<?>, ClassDescriptor> getClassDescriptorCache() {
-        return classDescriptorMap;
-    }
-
-    @Override
     public V8ValueBoolean has(V8Value target, V8Value property) throws JavetException {
         boolean isFound = hasFromRegular(property);
         isFound = isFound || hasFromGeneric(property);
@@ -143,13 +126,16 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
 
     @Override
     protected void initialize() {
-        classDescriptor = classDescriptorMap.get(targetObject);
+        classDescriptor = ClassDescriptorStore.getClassMap().get(targetObject);
         if (classDescriptor == null) {
-            classDescriptor = new ClassDescriptor(V8ProxyMode.Class, targetObject);
+            classDescriptor = new ClassDescriptor(
+                    V8ProxyMode.Class,
+                    targetObject,
+                    JavetProxyPluginClass.getInstance());
             Class<?> targetClass = targetObject.getClass();
             initializeFieldsAndMethods(targetObject, true);
             initializeFieldsAndMethods(targetClass, false);
-            classDescriptorMap.put(targetObject, classDescriptor);
+            ClassDescriptorStore.getClassMap().put(targetObject, classDescriptor);
         }
     }
 
@@ -176,8 +162,16 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
     }
 
     @Override
+    protected V8Value internalGet(V8Value target, V8Value property) throws JavetException, E {
+        V8Value v8Value = getByField(property);
+        v8Value = v8Value == null ? getByMethod(target, property) : v8Value;
+        v8Value = v8Value == null ? getByGetter(property) : v8Value;
+        return v8Value;
+    }
+
+    @Override
     public V8ValueArray ownKeys(V8Value target) throws JavetException {
-        return v8Runtime.toV8Value(classDescriptor.getUniqueKeySet().toArray());
+        return V8ValueUtils.createV8ValueArray(v8Runtime, classDescriptor.getUniqueKeySet().toArray());
     }
 
     @Override

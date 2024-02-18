@@ -19,7 +19,8 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.V8ValuePrimitive;
+import com.caoccao.javet.values.primitive.V8ValueBigInteger;
+import com.caoccao.javet.values.primitive.V8ValueZonedDateTime;
 
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
@@ -29,7 +30,6 @@ import java.time.ZonedDateTime;
  *
  * @since 0.8.5
  */
-@SuppressWarnings("unchecked")
 public interface IV8Executable extends IV8Convertible {
     /**
      * Execute and return V8 value.
@@ -64,7 +64,15 @@ public interface IV8Executable extends IV8Convertible {
      * @since 1.1.5
      */
     default BigInteger executeBigInteger() throws JavetException {
-        return executePrimitive();
+        try (V8Value v8Value = execute()) {
+            if (v8Value instanceof V8ValueBigInteger) {
+                return ((V8ValueBigInteger) v8Value).getValue();
+            }
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /**
@@ -75,7 +83,13 @@ public interface IV8Executable extends IV8Convertible {
      * @since 0.8.0
      */
     default Boolean executeBoolean() throws JavetException {
-        return executePrimitive();
+        try (V8Value v8Value = execute()) {
+            return v8Value.asBoolean();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     /**
@@ -86,7 +100,13 @@ public interface IV8Executable extends IV8Convertible {
      * @since 0.8.0
      */
     default Double executeDouble() throws JavetException {
-        return executePrimitive();
+        try (V8Value v8Value = execute()) {
+            return v8Value.asDouble();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     /**
@@ -97,7 +117,13 @@ public interface IV8Executable extends IV8Convertible {
      * @since 0.8.0
      */
     default Integer executeInteger() throws JavetException {
-        return executePrimitive();
+        try (V8Value v8Value = execute()) {
+            return v8Value.asInt();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     /**
@@ -108,7 +134,13 @@ public interface IV8Executable extends IV8Convertible {
      * @since 0.8.0
      */
     default Long executeLong() throws JavetException {
-        return executePrimitive();
+        try (V8Value v8Value = execute()) {
+            return v8Value.asLong();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     /**
@@ -130,25 +162,6 @@ public interface IV8Executable extends IV8Convertible {
     }
 
     /**
-     * Execute and return a primitive.
-     *
-     * @param <R> the type parameter
-     * @param <T> the type parameter
-     * @return the primitive
-     * @throws JavetException the javet exception
-     * @since 0.8.10
-     */
-    default <R, T extends V8ValuePrimitive<R>> R executePrimitive() throws JavetException {
-        try (V8Value v8Value = execute()) {
-            return ((T) v8Value).getValue();
-        } catch (JavetException e) {
-            throw e;
-        } catch (Throwable ignored) {
-        }
-        return null;
-    }
-
-    /**
      * Execute and return string.
      *
      * @return the string
@@ -156,7 +169,16 @@ public interface IV8Executable extends IV8Convertible {
      * @since 0.8.10
      */
     default String executeString() throws JavetException {
-        return executePrimitive();
+        try (V8Value v8Value = execute()) {
+            if (v8Value.isNullOrUndefined()) {
+                return null;
+            }
+            return v8Value.asString();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /**
@@ -178,6 +200,14 @@ public interface IV8Executable extends IV8Convertible {
      * @since 0.8.0
      */
     default ZonedDateTime executeZonedDateTime() throws JavetException {
-        return executePrimitive();
+        try (V8Value v8Value = execute()) {
+            if (v8Value instanceof V8ValueZonedDateTime) {
+                return ((V8ValueZonedDateTime) v8Value).getValue();
+            }
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 }

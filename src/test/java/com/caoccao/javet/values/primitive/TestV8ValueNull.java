@@ -25,16 +25,25 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestV8ValueNull extends BaseTestJavetRuntime {
     @Test
     public void testEquals() throws JavetException {
-        V8ValueNull v8ValueNull = v8Runtime.getExecutor("null").execute();
-        assertTrue(v8ValueNull.equals(v8Runtime.createV8ValueNull()));
-        assertFalse(v8ValueNull.equals(null));
-        assertFalse(v8ValueNull.equals(v8Runtime.createV8ValueUndefined()));
+        try (V8ValueNull v8ValueNull = v8Runtime.getExecutor("null").execute()) {
+            assertTrue(v8ValueNull.equals(v8Runtime.createV8ValueNull()));
+            assertFalse(v8ValueNull.equals(null));
+            assertFalse(v8ValueNull.equals(v8Runtime.createV8ValueUndefined()));
+        }
+    }
+
+    @Test
+    public void testIfTrue() throws JavetException {
+        assertFalse(v8Runtime.createV8ValueNull().asBoolean());
     }
 
     @Test
     public void testNull() throws JavetException {
-        V8ValueNull v8ValueNull = v8Runtime.getExecutor("null").execute();
-        assertNotNull(v8ValueNull);
-        assertEquals(v8Runtime, v8ValueNull.getV8Runtime());
+        try (V8ValueNull v8ValueNull = v8Runtime.getExecutor("null").execute()) {
+            assertNotNull(v8ValueNull);
+            assertEquals(v8Runtime, v8ValueNull.getV8Runtime());
+            assertTrue(v8ValueNull.isNull());
+            assertTrue(v8ValueNull.isNullOrUndefined());
+        }
     }
 }

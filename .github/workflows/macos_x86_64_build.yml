@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 20.11.0
-  JAVET_V8_VERSION: 12.1.285.26
-  JAVET_VERSION: 3.0.3
+  JAVET_NODE_VERSION: 20.11.1
+  JAVET_V8_VERSION: 12.2.281.16
+  JAVET_VERSION: 3.0.4
   ROOT: /Users/runner/work/Javet
 
 jobs:
@@ -20,10 +20,10 @@ jobs:
     steps:
 
     - name: Checkout the code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11' 
 
@@ -57,23 +57,24 @@ jobs:
         ninja -C out.gn/x64.release v8_monolith
 
     - name: Setup JDK 8
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: corretto
         java-version: 8
 
     - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v1.13
+      uses: jwlawson/actions-setup-cmake@v2.0
       with:
         cmake-version: '3.23.x'
 
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
+        sed -i '.bak' 's/`nproc`/2/g' build-macos.sh
         sh ./build-macos.sh -DV8_DIR=${{ env.ROOT }}/google/v8
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: javet-macos-v8-x86_64-${{ env.JAVET_VERSION }}
         path: src/main/resources/*.dylib
@@ -85,7 +86,7 @@ jobs:
     steps:
 
     - name: Checkout the code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup XCode
       uses: maxim-lobanov/setup-xcode@v1
@@ -102,23 +103,24 @@ jobs:
         make -j4
 
     - name: Setup JDK 8
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: corretto
         java-version: 8
 
     - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v1.13
+      uses: jwlawson/actions-setup-cmake@v2.0
       with:
         cmake-version: '3.23.x'
 
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
+        sed -i '.bak' 's/`nproc`/2/g' build-macos.sh
         sh ./build-macos.sh -DNODE_DIR=${{ env.ROOT }}/node
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: javet-macos-node-x86_64-${{ env.JAVET_VERSION }}
         path: src/main/resources/*.dylib
@@ -131,27 +133,27 @@ jobs:
     steps:
 
     - name: Checkout the code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup JDK 8
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: corretto
         java-version: 8
 
     - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2
+      uses: gradle/gradle-build-action@v3
       with:
         gradle-version: 8.2
 
     - name: Download Javet V8
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: javet-macos-v8-x86_64-${{ env.JAVET_VERSION }}
         path: src/main/resources/
 
     - name: Download Javet Node
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: javet-macos-node-x86_64-${{ env.JAVET_VERSION }}
         path: src/main/resources/
@@ -167,7 +169,7 @@ jobs:
         zip -d build/libs/javet-${{ env.JAVET_VERSION }}-sources.jar *.dylib
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: javet-macos-x86_64-${{ env.JAVET_VERSION }}
         path: |
@@ -175,11 +177,11 @@ jobs:
           build/libs/*.pom
 
     - name: Delete Javet V8
-      uses: geekyeggo/delete-artifact@v2
+      uses: geekyeggo/delete-artifact@v4
       with:
         name: javet-macos-v8-x86_64-${{ env.JAVET_VERSION }}
 
     - name: Delete Javet Node
-      uses: geekyeggo/delete-artifact@v2
+      uses: geekyeggo/delete-artifact@v4
       with:
         name: javet-macos-node-x86_64-${{ env.JAVET_VERSION }}

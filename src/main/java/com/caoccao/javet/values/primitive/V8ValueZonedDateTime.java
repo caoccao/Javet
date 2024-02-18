@@ -23,18 +23,56 @@ import com.caoccao.javet.utils.JavetDateTimeUtils;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
+/**
+ * The type V8 value zoned date time.
+ *
+ * @since 0.7.0
+ */
 @SuppressWarnings("unchecked")
 public final class V8ValueZonedDateTime extends V8ValuePrimitive<ZonedDateTime> {
+    /**
+     * Instantiates a new V8 value zoned date time.
+     *
+     * @param v8Runtime the V8 runtime
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public V8ValueZonedDateTime(V8Runtime v8Runtime) throws JavetException {
         this(v8Runtime, null);
     }
 
+    /**
+     * Instantiates a new V8 value zoned date time.
+     *
+     * @param v8Runtime   the V8 runtime
+     * @param jsTimestamp the js timestamp
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public V8ValueZonedDateTime(V8Runtime v8Runtime, long jsTimestamp) throws JavetException {
         this(v8Runtime, JavetDateTimeUtils.toZonedDateTime(jsTimestamp));
     }
 
+    /**
+     * Instantiates a new V8 value zoned date time.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param value     the value
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public V8ValueZonedDateTime(V8Runtime v8Runtime, ZonedDateTime value) throws JavetException {
         super(v8Runtime, Objects.requireNonNull(value));
+    }
+
+    @Override
+    public boolean asBoolean() {
+        return value != null;
+    }
+
+    @Override
+    public int asInt() throws JavetException {
+        return asBoolean() ? 1 : 0;
     }
 
     @Override
@@ -42,6 +80,12 @@ public final class V8ValueZonedDateTime extends V8ValuePrimitive<ZonedDateTime> 
         return this;
     }
 
+    /**
+     * To primitive long.
+     *
+     * @return the long
+     * @since 0.7.0
+     */
     public long toPrimitive() {
         return value.toInstant().toEpochMilli();
     }

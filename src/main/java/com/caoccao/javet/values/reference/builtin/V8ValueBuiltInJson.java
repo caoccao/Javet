@@ -23,15 +23,47 @@ import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.util.Objects;
 
+/**
+ * The type V8 value built-in JSON.
+ *
+ * @since 0.8.0
+ */
 @SuppressWarnings("unchecked")
 public class V8ValueBuiltInJson extends V8ValueObject {
-
+    /**
+     * The constant FUNCTION_STRINGIFY.
+     *
+     * @since 0.8.0
+     */
     public static final String FUNCTION_STRINGIFY = "stringify";
 
+    /**
+     * The constant NAME.
+     *
+     * @since 0.8.0
+     */
+    public static final String NAME = "JSON";
+
+    /**
+     * Instantiates a new V8 value built-in JSON.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param handle    the handle
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     public V8ValueBuiltInJson(V8Runtime v8Runtime, long handle) throws JavetException {
         super(v8Runtime, handle);
     }
 
+    /**
+     * Stringify string.
+     *
+     * @param v8Value the V8 value
+     * @return the JSON string
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     public String stringify(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Value);
         return invokeString(FUNCTION_STRINGIFY, v8Value);

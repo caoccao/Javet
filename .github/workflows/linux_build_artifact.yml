@@ -17,9 +17,9 @@ on:
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
   DOCKERHUB_REPO_JAVET: ${{ secrets.DOCKERHUB_REPO_JAVET }}
-  JAVET_NODE_VERSION: 20.11.0
-  JAVET_V8_VERSION: 12.1.285.26
-  JAVET_VERSION: 3.0.3
+  JAVET_NODE_VERSION: 20.11.1
+  JAVET_V8_VERSION: 12.2.281.16
+  JAVET_VERSION: 3.0.4
 
 jobs:
   javet_linux_x86_64:
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build the Artifact
         run: |
@@ -42,7 +42,7 @@ jobs:
         run: mkdir $PWD/build && docker run --rm -i -v $PWD/build:/output javet:local cp -rf /Javet/build/libs /output
 
       - name: Upload the Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: javet-linux-x86_64
           path: build/libs/javet*.jar

@@ -20,14 +20,40 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
-public abstract class V8ValuePrimitive<T> extends V8Value {
-    protected T value;
+/**
+ * The type V8 value primitive.
+ *
+ * @param <Primitive> the type parameter
+ * @since 1.0.7
+ */
+public abstract class V8ValuePrimitive<Primitive> extends V8Value {
+    /**
+     * The Value.
+     *
+     * @since 1.0.7
+     */
+    protected Primitive value;
 
+    /**
+     * Instantiates a new V8 value primitive.
+     *
+     * @param v8Runtime the V8 runtime
+     * @throws JavetException the javet exception
+     * @since 1.0.7
+     */
     public V8ValuePrimitive(V8Runtime v8Runtime) throws JavetException {
         this(v8Runtime, null);
     }
 
-    public V8ValuePrimitive(V8Runtime v8Runtime, T value) throws JavetException {
+    /**
+     * Instantiates a new V8 value primitive.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param value     the value
+     * @throws JavetException the javet exception
+     * @since 1.0.7
+     */
+    public V8ValuePrimitive(V8Runtime v8Runtime, Primitive value) throws JavetException {
         super(v8Runtime);
         this.value = value;
     }
@@ -48,14 +74,32 @@ public abstract class V8ValuePrimitive<T> extends V8Value {
         return getValue().equals(((V8ValuePrimitive<?>) v8Value).getValue());
     }
 
-    public T getValue() {
+    /**
+     * Gets the primitive value.
+     *
+     * @return the primitive value
+     * @since 1.0.7
+     */
+    public Primitive getValue() {
         return value;
     }
 
+    /**
+     * Is empty.
+     *
+     * @return true : empty, false : not empty
+     * @since 1.0.7
+     */
     public boolean isEmpty() {
         return value == null;
     }
 
+    /**
+     * Is present.
+     *
+     * @return true : present, false : not present
+     * @since 1.0.7
+     */
     public boolean isPresent() {
         return value != null;
     }

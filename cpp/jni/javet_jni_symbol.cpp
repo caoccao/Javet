@@ -27,3 +27,33 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_symbolCreate
     }
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
 }
+
+JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_symbolDescription
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (IS_V8_SYMBOL(v8ValueType)) {
+        auto v8String = v8LocalValue.As<v8::Symbol>()->Description(v8Context->GetIsolate()).As<v8::String>();
+        return Javet::Converter::ToJavaString(jniEnv, v8Context, v8String);
+    }
+    return nullptr;
+}
+
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_symbolObjectValueOf
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (IS_V8_SYMBOL_OBJECT(v8ValueType)) {
+        auto v8LocalSymbol = v8LocalValue.As<v8::SymbolObject>()->ValueOf();
+        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalSymbol);
+    }
+    return nullptr;
+}
+
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_symbolToObject
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (IS_V8_SYMBOL(v8ValueType)) {
+        auto v8LocalSymbolObject = v8::SymbolObject::New(v8Context->GetIsolate(), v8LocalValue.As<v8::Symbol>());
+        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalSymbolObject);
+    }
+    return nullptr;
+}

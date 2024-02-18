@@ -26,6 +26,8 @@ import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 
+import java.util.Objects;
+
 /**
  * The type Base javet proxy symbol converter.
  *
@@ -72,8 +74,8 @@ public abstract class BaseJavetProxySymbolConverter<T> implements IJavetProxySym
      * @since 1.0.4
      */
     public BaseJavetProxySymbolConverter(V8Runtime v8Runtime, T targetObject) {
-        this.targetObject = targetObject;
-        this.v8Runtime = v8Runtime;
+        this.targetObject = Objects.requireNonNull(targetObject);
+        this.v8Runtime = Objects.requireNonNull(v8Runtime);
     }
 
     @CheckReturnValue

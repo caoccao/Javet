@@ -33,14 +33,23 @@ public class TestV8ValueUndefined extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testIfTrue() throws JavetException {
+        assertFalse(v8Runtime.createV8ValueUndefined().asBoolean());
+    }
+
+    @Test
     public void testUndefined() throws JavetException {
         try (V8ValueUndefined v8ValueUndefined = v8Runtime.getExecutor("undefined").execute()) {
             assertNotNull(v8ValueUndefined);
             assertEquals(v8Runtime, v8ValueUndefined.getV8Runtime());
+            assertFalse(v8ValueUndefined.isNull());
+            assertTrue(v8ValueUndefined.isNullOrUndefined());
         }
         try (V8ValueUndefined v8ValueUndefined = v8Runtime.getExecutor(StringUtils.EMPTY).execute()) {
             assertNotNull(v8ValueUndefined);
             assertEquals(v8Runtime, v8ValueUndefined.getV8Runtime());
+            assertFalse(v8ValueUndefined.isNull());
+            assertTrue(v8ValueUndefined.isNullOrUndefined());
         }
     }
 }

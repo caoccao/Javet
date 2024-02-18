@@ -16,7 +16,15 @@
 
 package com.caoccao.javet.interop.converters;
 
+import com.caoccao.javet.interop.binding.IClassProxyPlugin;
 import com.caoccao.javet.interop.proxy.IJavetReflectionObjectFactory;
+import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginArray;
+import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginList;
+import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginMap;
+import com.caoccao.javet.interop.proxy.plugins.JavetProxyPluginSet;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The type Javet converter config.
@@ -31,6 +39,12 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @since 0.9.4
      */
     public static final int DEFAULT_MAX_DEPTH = 20;
+    /**
+     * The Proxy plugins.
+     *
+     * @since 3.0.4
+     */
+    protected final List<IClassProxyPlugin> proxyPlugins;
     /**
      * The Default boolean.
      *
@@ -92,24 +106,6 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     protected int maxDepth;
     /**
-     * The Proxy list enabled.
-     *
-     * @since 3.0.3
-     */
-    protected boolean proxyListEnabled;
-    /**
-     * The Proxy map enabled.
-     *
-     * @since 0.9.6
-     */
-    protected boolean proxyMapEnabled;
-    /**
-     * The Proxy set enabled.
-     *
-     * @since 0.9.8
-     */
-    protected boolean proxySetEnabled;
-    /**
      * The Reflection object factory.
      *
      * @since 2.0.1
@@ -138,9 +134,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
         defaultShort = 0;
         extractFunctionSourceCode = false;
         maxDepth = DEFAULT_MAX_DEPTH;
-        proxyListEnabled = false;
-        proxyMapEnabled = false;
-        proxySetEnabled = false;
+        proxyPlugins = new ArrayList<>();
         reflectionObjectFactory = null;
         skipFunctionInObject = true;
     }
@@ -236,6 +230,16 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
     }
 
     /**
+     * Gets proxy plugins.
+     *
+     * @return the proxy plugins
+     * @since 3.0.4
+     */
+    public List<IClassProxyPlugin> getProxyPlugins() {
+        return proxyPlugins;
+    }
+
+    /**
      * Gets reflection object factory.
      *
      * @return the reflection object factory
@@ -256,13 +260,23 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
     }
 
     /**
+     * Is proxy array enabled.
+     *
+     * @return true : enabled, false : disabled
+     * @since 3.0.4
+     */
+    public boolean isProxyArrayEnabled() {
+        return getProxyPlugins().stream().anyMatch(p -> p instanceof JavetProxyPluginArray);
+    }
+
+    /**
      * Is proxy list enabled.
      *
      * @return true : enabled, false : disabled
      * @since 3.0.3
      */
     public boolean isProxyListEnabled() {
-        return proxyListEnabled;
+        return getProxyPlugins().stream().anyMatch(p -> p instanceof JavetProxyPluginList);
     }
 
     /**
@@ -272,7 +286,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @since 0.9.6
      */
     public boolean isProxyMapEnabled() {
-        return proxyMapEnabled;
+        return getProxyPlugins().stream().anyMatch(p -> p instanceof JavetProxyPluginMap);
     }
 
     /**
@@ -282,7 +296,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @since 0.9.8
      */
     public boolean isProxySetEnabled() {
-        return proxySetEnabled;
+        return getProxyPlugins().stream().anyMatch(p -> p instanceof JavetProxyPluginSet);
     }
 
     /**
@@ -426,6 +440,25 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
     }
 
     /**
+     * Sets proxy array enabled.
+     *
+     * @param proxyArrayEnabled the proxy array enabled
+     * @return the self
+     * @since 3.0.4
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public JavetConverterConfig<T> setProxyArrayEnabled(boolean proxyArrayEnabled) {
+        if (proxyArrayEnabled) {
+            if (!isProxyArrayEnabled()) {
+                getProxyPlugins().add(0, JavetProxyPluginArray.getInstance());
+            }
+        } else {
+            getProxyPlugins().removeIf(p -> p instanceof JavetProxyPluginArray);
+        }
+        return this;
+    }
+
+    /**
      * Sets proxy list enabled.
      *
      * @param proxyListEnabled the proxy list enabled
@@ -434,7 +467,13 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     @SuppressWarnings("UnusedReturnValue")
     public JavetConverterConfig<T> setProxyListEnabled(boolean proxyListEnabled) {
-        this.proxyListEnabled = proxyListEnabled;
+        if (proxyListEnabled) {
+            if (!isProxyListEnabled()) {
+                getProxyPlugins().add(0, JavetProxyPluginList.getInstance());
+            }
+        } else {
+            getProxyPlugins().removeIf(p -> p instanceof JavetProxyPluginList);
+        }
         return this;
     }
 
@@ -447,7 +486,13 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     @SuppressWarnings("UnusedReturnValue")
     public JavetConverterConfig<T> setProxyMapEnabled(boolean proxyMapEnabled) {
-        this.proxyMapEnabled = proxyMapEnabled;
+        if (proxyMapEnabled) {
+            if (!isProxyMapEnabled()) {
+                getProxyPlugins().add(0, JavetProxyPluginMap.getInstance());
+            }
+        } else {
+            getProxyPlugins().removeIf(p -> p instanceof JavetProxyPluginMap);
+        }
         return this;
     }
 
@@ -460,7 +505,13 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     @SuppressWarnings("UnusedReturnValue")
     public JavetConverterConfig<T> setProxySetEnabled(boolean proxySetEnabled) {
-        this.proxySetEnabled = proxySetEnabled;
+        if (proxySetEnabled) {
+            if (!isProxySetEnabled()) {
+                getProxyPlugins().add(0, JavetProxyPluginSet.getInstance());
+            }
+        } else {
+            getProxyPlugins().removeIf(p -> p instanceof JavetProxyPluginSet);
+        }
         return this;
     }
 

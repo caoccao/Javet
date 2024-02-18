@@ -45,6 +45,10 @@ public interface IV8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             Object[] v8ValueKeys, Object[] v8ValueValues, int length);
 
+    Object booleanObjectCreate(long v8RuntimeHandle, boolean booleanValue);
+
+    Object booleanObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     void clearInternalStatistic();
 
     void clearWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -65,7 +69,13 @@ public interface IV8Native {
 
     long createV8Runtime(Object runtimeOptions);
 
+    Object doubleObjectCreate(long v8RuntimeHandle, double doubleValue);
+
+    Object doubleObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     boolean equals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
+
+    Object errorCreate(long v8RuntimeHandle, int v8ValueErrorTypeId, String message);
 
     Object functionCall(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
@@ -144,6 +154,10 @@ public interface IV8Native {
 
     void idleNotificationDeadline(long v8RuntimeHandle, long deadlineInMillis);
 
+    Object integerObjectCreate(long v8RuntimeHandle, int intValue);
+
+    Object integerObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     boolean isDead(long v8RuntimeHandle);
 
     boolean isInUse(long v8RuntimeHandle);
@@ -152,7 +166,15 @@ public interface IV8Native {
 
     boolean lockV8Runtime(long v8RuntimeHandle);
 
+    Object longObjectCreate(long v8RuntimeHandle, long longValue);
+
+    Object longObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     void lowMemoryNotification(long v8RuntimeHandle);
+
+    Object mapAsArray(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    void mapClear(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object mapCreate(long v8RuntimeHandle);
 
@@ -358,6 +380,10 @@ public interface IV8Native {
 
     void setAdd(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
+    Object setAsArray(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    void setClear(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     Object setCreate(long v8RuntimeHandle);
 
     boolean setDelete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
@@ -372,9 +398,23 @@ public interface IV8Native {
 
     boolean strictEquals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
+    Object stringObjectCreate(long v8RuntimeHandle, String str);
+
+    Object stringObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     Object symbolCreate(long v8RuntimeHandle, String description);
 
+    String symbolDescription(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    Object symbolObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    Object symbolToObject(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     void terminateExecution(long v8RuntimeHandle);
+
+    boolean throwError(long v8RuntimeHandle, int v8ValueErrorType, String message);
+
+    boolean throwError(long v8RuntimeHandle, Object v8Value);
 
     String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 

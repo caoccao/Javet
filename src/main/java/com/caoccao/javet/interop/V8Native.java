@@ -63,6 +63,12 @@ class V8Native implements IV8Native {
             Object[] v8ValueKeys, Object[] v8ValueValues, int length);
 
     @Override
+    public native Object booleanObjectCreate(long v8RuntimeHandle, boolean booleanValue);
+
+    @Override
+    public native Object booleanObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native void clearInternalStatistic();
 
     @Override
@@ -94,7 +100,16 @@ class V8Native implements IV8Native {
     public native long createV8Runtime(Object runtimeOptions);
 
     @Override
+    public native Object doubleObjectCreate(long v8RuntimeHandle, double doubleValue);
+
+    @Override
+    public native Object doubleObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native boolean equals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
+
+    @Override
+    public native Object errorCreate(long v8RuntimeHandle, int v8ValueErrorTypeId, String message);
 
     @Override
     public native Object functionCall(
@@ -207,6 +222,12 @@ class V8Native implements IV8Native {
     public native void idleNotificationDeadline(long v8RuntimeHandle, long deadlineInMillis);
 
     @Override
+    public native Object integerObjectCreate(long v8RuntimeHandle, int intValue);
+
+    @Override
+    public native Object integerObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native boolean isDead(long v8RuntimeHandle);
 
     @Override
@@ -219,7 +240,19 @@ class V8Native implements IV8Native {
     public native boolean lockV8Runtime(long v8RuntimeHandle);
 
     @Override
+    public native Object longObjectCreate(long v8RuntimeHandle, long longValue);
+
+    @Override
+    public native Object longObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native void lowMemoryNotification(long v8RuntimeHandle);
+
+    @Override
+    public native Object mapAsArray(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native void mapClear(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native Object mapCreate(long v8RuntimeHandle);
@@ -544,6 +577,12 @@ class V8Native implements IV8Native {
     public native void setAdd(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
 
     @Override
+    public native Object setAsArray(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native void setClear(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native Object setCreate(long v8RuntimeHandle);
 
     @Override
@@ -565,10 +604,31 @@ class V8Native implements IV8Native {
     public native boolean strictEquals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
 
     @Override
+    public native Object stringObjectCreate(long v8RuntimeHandle, String str);
+
+    @Override
+    public native Object stringObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native Object symbolCreate(long v8RuntimeHandle, String description);
 
     @Override
+    public native String symbolDescription(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native Object symbolObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native Object symbolToObject(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native void terminateExecution(long v8RuntimeHandle);
+
+    @Override
+    public native boolean throwError(long v8RuntimeHandle, int v8ValueErrorType, String message);
+
+    @Override
+    public native boolean throwError(long v8RuntimeHandle, Object v8Value);
 
     @Override
     public native String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

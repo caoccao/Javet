@@ -17,13 +17,14 @@
 package com.caoccao.javet.interfaces;
 
 import com.caoccao.javet.enums.JSFunctionType;
+import com.caoccao.javet.interop.proxy.IJavetNonProxy;
 
 /**
  * The interface Javet entity function.
  *
  * @since 0.9.4
  */
-public interface IJavetEntityFunction {
+public interface IJavetEntityFunction extends IJavetNonProxy {
     /**
      * Gets JS function type.
      *

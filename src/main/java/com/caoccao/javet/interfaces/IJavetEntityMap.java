@@ -16,6 +16,8 @@
 
 package com.caoccao.javet.interfaces;
 
+import com.caoccao.javet.interop.proxy.IJavetNonProxy;
+
 import java.util.Map;
 
 /**
@@ -23,5 +25,5 @@ import java.util.Map;
  *
  * @since 0.9.4
  */
-public interface IJavetEntityMap extends Map<String, Object> {
+public interface IJavetEntityMap extends Map<String, Object>, IJavetNonProxy {
 }

@@ -20,9 +20,16 @@
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_proxyCreate
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mTarget) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    V8LocalObject v8LocalObjectTaget = mTarget == nullptr
-        ? v8::Object::New(v8Context->GetIsolate())
-        : Javet::Converter::ToV8Value(jniEnv, v8Context, mTarget).As<v8::Object>();
+    V8LocalObject v8LocalObjectTaget;
+    if (mTarget != nullptr) {
+        auto v8LocalValue = Javet::Converter::ToV8Value(jniEnv, v8Context, mTarget);
+        if (v8LocalValue->IsObject()) {
+            v8LocalObjectTaget = v8LocalValue.As<v8::Object>();
+        }
+    }
+    if (v8LocalObjectTaget.IsEmpty()) {
+        v8LocalObjectTaget = v8::Object::New(v8Context->GetIsolate());
+    }
     auto v8LocalObjectHandler = v8::Object::New(v8Context->GetIsolate());
     auto v8MaybeLocalProxy = v8::Proxy::New(v8Context, v8LocalObjectTaget, v8LocalObjectHandler);
     if (v8MaybeLocalProxy.IsEmpty()) {

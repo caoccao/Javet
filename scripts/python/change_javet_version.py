@@ -96,7 +96,7 @@ class ChangeJavetVersion(object):
       re.compile(r'javet-windows:(?P<version>\d+\.\d+\.\d+)$'))
     self._update(
       'android/javet-android/build.gradle.kts', '\n',
-      re.compile(r'^version = "(?P<version>\d+\.\d+\.\d+)"$'))
+      re.compile(r'const val JAVET = "(?P<version>\d+\.\d+\.\d+)"$'))
     self._update(
       'android/javet-android/src/main/AndroidManifest.xml', '\n',
       re.compile(r'versionName="(?P<version>\d+\.\d+\.\d+)"$'))
@@ -180,7 +180,7 @@ class ChangeJavetVersion(object):
       logging.info('  Updated.')
 
 def main():
-  change_javet_version = ChangeJavetVersion('3.0.3')
+  change_javet_version = ChangeJavetVersion('3.0.4')
   change_javet_version.update()
   return 0
 

@@ -19,7 +19,6 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetResourceUtils;
-import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import org.junit.jupiter.api.Tag;
@@ -27,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.math.BigInteger;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +35,30 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueArray extends BaseTestJavetRuntime {
+    @Test
+    public void testAsInt() throws JavetException {
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("[]").execute()) {
+            assertEquals(0, v8ValueArray.asInt());
+        }
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("[0,]").execute()) {
+            assertEquals(0, v8ValueArray.asInt());
+        }
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("[1,]").execute()) {
+            assertEquals(1, v8ValueArray.asInt());
+        }
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("[[1,],]").execute()) {
+            assertEquals(1, v8ValueArray.asInt());
+        }
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("['a']").execute()) {
+            assertEquals(0, v8ValueArray.asInt());
+        }
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("[' 1 ',]").execute()) {
+            assertEquals(1, v8ValueArray.asInt());
+        }
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("[' 1 ', '2']").execute()) {
+            assertEquals(0, v8ValueArray.asInt());
+        }
+    }
 
     @Test
     public void testForEach() throws JavetException {
@@ -98,7 +122,7 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
             assertEquals(2, v8ValueArray.batchGet(v8Values, 1, 3));
             assertEquals("2", ((V8ValueString) v8Values[0]).getValue());
             assertEquals(3L, ((V8ValueLong) v8Values[1]).getValue());
-            JavetResourceUtils.safeClose( v8Values);
+            JavetResourceUtils.safeClose(v8Values);
         }
     }
 
@@ -176,24 +200,25 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testPushPop() throws JavetException {
-        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("[]").execute()) {
+    public void testPushAndPop() throws JavetException {
+        try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+            v8ValueArray.push(
+                    null, 1, 1L, 1.23D, true, false, "abc",
+                    v8Runtime.createV8ValueZonedDateTime(1234567890L),
+                    v8Runtime.createV8ValueUndefined(),
+                    v8Runtime.createV8ValueBigInteger("1234567890123456789012345678901234567890"));
+            assertEquals(10, v8ValueArray.getLength());
+            assertEquals(new BigInteger("1234567890123456789012345678901234567890"), v8ValueArray.popBigInteger());
+            assertTrue(v8ValueArray.popUndefined().isUndefined());
+            assertEquals(1234567L, v8ValueArray.popZonedDateTime().toInstant().getEpochSecond());
+            assertEquals("abc", v8ValueArray.popString());
+            assertFalse(v8ValueArray.popBoolean());
+            assertTrue(v8ValueArray.popBoolean());
+            assertEquals(1.23D, v8ValueArray.popDouble(), 0.001D);
+            assertEquals(1L, v8ValueArray.popLong());
+            assertEquals(1, v8ValueArray.popInteger());
+            assertTrue(v8ValueArray.popNull().isNull());
             assertEquals(0, v8ValueArray.getLength());
-            assertEquals(1, v8ValueArray.push(true));
-            assertEquals(5, v8ValueArray.push(1.23, 4, 5L, "x"));
-            assertEquals(6, v8ValueArray.pushNull());
-            assertEquals(7, v8ValueArray.pushUndefined());
-            assertEquals(7, v8ValueArray.getLength());
-            assertEquals("true,1.23,4,5,x,,", v8ValueArray.toString());
-            assertNotNull(v8ValueArray.popUndefined());
-            assertNotNull(v8ValueArray.popNull());
-            assertEquals("x", v8ValueArray.popString());
-            assertEquals(5L, v8ValueArray.popLong());
-            assertEquals(4, v8ValueArray.popInteger());
-            assertEquals(1.23, v8ValueArray.popDouble(), 0.001);
-            assertEquals(true, v8ValueArray.popBoolean());
-            assertEquals(0, v8ValueArray.getLength());
-            assertEquals(StringUtils.EMPTY, v8ValueArray.toString());
         }
     }
 
@@ -220,6 +245,29 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
                 }
                 assertEquals(v8Runtime, clonedV8ValueArray.getV8Runtime());
             }
+        }
+    }
+
+    @Test
+    public void testUnshiftAndShift() throws JavetException {
+        try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+            v8ValueArray.unshift(
+                    null, 1, 1L, 1.23D, true, false, "abc",
+                    v8Runtime.createV8ValueZonedDateTime(1234567890L),
+                    v8Runtime.createV8ValueUndefined(),
+                    v8Runtime.createV8ValueBigInteger("1234567890123456789012345678901234567890"));
+            assertEquals(10, v8ValueArray.getLength());
+            assertTrue(v8ValueArray.shiftNull().isNull());
+            assertEquals(1, v8ValueArray.shiftInteger());
+            assertEquals(1L, v8ValueArray.shiftLong());
+            assertEquals(1.23D, v8ValueArray.shiftDouble(), 0.001D);
+            assertTrue(v8ValueArray.shiftBoolean());
+            assertFalse(v8ValueArray.shiftBoolean());
+            assertEquals("abc", v8ValueArray.shiftString());
+            assertEquals(1234567L, v8ValueArray.shiftZonedDateTime().toInstant().getEpochSecond());
+            assertTrue(v8ValueArray.shiftUndefined().isUndefined());
+            assertEquals(new BigInteger("1234567890123456789012345678901234567890"), v8ValueArray.shiftBigInteger());
+            assertEquals(0, v8ValueArray.getLength());
         }
     }
 }

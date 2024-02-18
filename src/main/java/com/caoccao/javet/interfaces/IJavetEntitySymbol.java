@@ -14,27 +14,29 @@
  * limitations under the License.
  */
 
-package com.caoccao.javet.interop.proxy;
+package com.caoccao.javet.interfaces;
 
-import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.interop.proxy.IJavetNonProxy;
 
 /**
- * The interface Javet proxy polyfill function.
+ * The interface Javet entity symbol.
  *
- * @param <T> the type parameter
- * @param <E> the type parameter
- * @since 3.0.3
+ * @since 3.0.4
  */
-public interface IJavetProxyPolyfillFunction<T, E extends Exception> {
+public interface IJavetEntitySymbol extends IJavetNonProxy {
     /**
-     * Apply to the handle and return a V8 value.
+     * Gets description.
      *
-     * @param handler the handler
-     * @return the V8 value
-     * @throws JavetException the javet exception
-     * @throws E              the custom exception
-     * @since 3.0.3
+     * @return the description
+     * @since 3.0.4
      */
-    V8Value apply(IJavetProxyHandler<T, E> handler) throws JavetException, E;
+    String getDescription();
+
+    /**
+     * Sets description.
+     *
+     * @param description the description
+     * @since 3.0.4
+     */
+    void setDescription(String description);
 }

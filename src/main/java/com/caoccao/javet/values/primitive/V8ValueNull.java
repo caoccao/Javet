@@ -18,15 +18,38 @@ package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.values.IV8ValueNonProxyable;
 import com.caoccao.javet.values.V8Value;
 
+/**
+ * The type V8 value null.
+ *
+ * @since 0.7.0
+ */
 @SuppressWarnings("unchecked")
-public final class V8ValueNull extends V8Value {
+public final class V8ValueNull extends V8Value implements IV8ValueNonProxyable {
 
+    /**
+     * The constant NULL.
+     *
+     * @since 0.7.0
+     */
     public static final String NULL = "null";
 
+    /**
+     * Instantiates a new V8 value null.
+     *
+     * @param v8Runtime the V8 runtime
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public V8ValueNull(V8Runtime v8Runtime) throws JavetException {
         super(v8Runtime);
+    }
+
+    @Override
+    public boolean asBoolean() {
+        return false;
     }
 
     @Override

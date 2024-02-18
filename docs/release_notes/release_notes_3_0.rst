@@ -2,12 +2,40 @@
 Release Notes 3.0.x
 ===================
 
+3.0.4 V8 v12.2
+--------------
+
+* Upgraded V8 to ``v12.2.281.16`` (2024-02-15)
+* Upgraded Node.js to ``v20.11.1`` `(2024-02-14) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.11.1>`_
+* Added proxy plugin system for converters
+* Added ``createTargetObject()``, ``getProxyPlugin()``, ``proxyDeleteProperty()``, ``toJSON()`` to ``IJavetDirectProxyHandler``
+* Added ``asBoolean()``, ``asDouble()``, ``asInt()``, ``asLong()``, ``asString()`` to ``IV8Value``
+* Added ``IClassProxyPlugin``, ``JavetProxyPluginArray``, ``JavetProxyPluginClass``, ``JavetProxyPluginDefault``, ``JavetProxyPluginList``, ``JavetProxyPluginMap``, ``JavetProxyPluginSet``
+* Added ``V8ValueBuiltInReflect``, ``JavetEntityObject``, ``JavetEntityPropertyDescriptor``
+* Added ``BindingContextStore``, ``ClassDescriptorStore``
+* Added ``createV8ValueStringObject()``, ``createV8ValueError()``, ``throwError()`` to ``V8Runtime``
+* Added ``V8ValueBooleanObject``, ``V8ValueDoubleObject``, ``V8ValueIntegerObject``, ``V8ValueLongObject``, ``V8ValueStringObject``
+* Added ``V8ValueErrorType``, ``V8ErrorTemplate``, ``JavetEntityError``
+* Added ``getErrorType()`` to ``V8ValueError``
+* Added ``getProxyPlugins()``, ``isProxyArrayEnabled()``, ``setProxyArrayEnabled()``, to ``JavetConverterConfig``
+* Added ``getProxyPlugin()``, ``proxyGetOwnPropertyDescriptor()`` to ``IJavetDirectProxyHandler``
+* Added ``getOwnPropertyDescriptor()`` to ``BaseJavetReflectionProxyHandler``
+* Added ``flat()``, ``shift()``, ``unshift()`` to ``IV8ValueArray``
+* Added ``asArray()``, ``clear()`` to ``V8ValueMap``
+* Added ``asArray()``, ``clear()`` to ``V8ValueSet``
+* Improved performance of ``JavetObjectConverter``
+* Fixed improper conversions in ``JavetBridgeConverter``
+* Fixed a memory leak in adding a V8 module with the same name
+* Swapped ``JavetScriptingError.getMessage()`` and ``JavetScriptingError.getDetailedMessage()``
+* Removed ``JavetProxySymbolIterableConverter``, ``JavetProxySymbolToPrimitiveConverter``
+* Removed ``executePrimitive()`` from ``IV8Executable``
+
 3.0.3 V8 v12.1
 --------------
 
 * Upgraded V8 to ``v12.1.285.26`` (2024-01-17)
 * Upgraded Node.js to ``v20.11.0`` `(2024-01-09) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.11.0>`_
-* Restore the reference lock
+* Restored the reference lock
 * Downgraded to Ubuntu 20.04 for better compatibility
 * Fixed a slight memory leak in closing the V8 runtime
 * Fixed a memory leak in dynamic proxy and dynamic object

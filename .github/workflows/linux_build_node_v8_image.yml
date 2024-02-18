@@ -21,9 +21,9 @@ on:
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
   DOCKERHUB_REPO_JAVET: ${{ secrets.DOCKERHUB_REPO_JAVET }}
-  JAVET_NODE_VERSION: 20.11.0
-  JAVET_V8_VERSION: 12.1.285.26
-  JAVET_VERSION: 3.0.3
+  JAVET_NODE_VERSION: 20.11.1
+  JAVET_V8_VERSION: 12.2.281.16
+  JAVET_VERSION: 3.0.4
 
 # if we skip a job using a job level `if` condition, then any dependent jobs also don't run.
 # we can skip a step of the job, using a step level `if` condition.
@@ -44,7 +44,7 @@ jobs:
 
       - name: Checkout the code
         if: inputs.skip_base_jvm == false
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build Ubuntu, Build Tools and JDK 8 Base Image
         if: inputs.skip_base_jvm == false
@@ -74,7 +74,7 @@ jobs:
 
       - name: Checkout the code
         if: inputs.skip_base_node == false
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build Node.js Base Image
         if: inputs.skip_base_node == false
@@ -106,7 +106,7 @@ jobs:
 
       - name: Checkout the code
         if: inputs.skip_base_v8 == false
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build V8 Base Image
         if: inputs.skip_base_v8 == false
@@ -136,7 +136,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
 
       - name: Checkout the code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build Gradle Base Image
         run: |

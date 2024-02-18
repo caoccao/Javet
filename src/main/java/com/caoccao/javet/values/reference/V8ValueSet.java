@@ -27,11 +27,34 @@ import com.caoccao.javet.values.virtual.V8VirtualValue;
 
 import java.util.Objects;
 
+/**
+ * The type V8 value set.
+ *
+ * @since 0.7.0
+ */
 @SuppressWarnings("unchecked")
 public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
+    /**
+     * The constant FUNCTION_ENTRIES.
+     *
+     * @since 0.7.0
+     */
     protected static final String FUNCTION_ENTRIES = "entries";
+    /**
+     * The constant FUNCTION_KEYS.
+     *
+     * @since 0.7.0
+     */
     protected static final String FUNCTION_KEYS = "keys";
 
+    /**
+     * Instantiates a new V8 value set.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param handle    the handle
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     V8ValueSet(V8Runtime v8Runtime, long handle) throws JavetException {
         super(v8Runtime, handle);
     }
@@ -41,6 +64,17 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
         try (V8VirtualValue virtualValue = new V8VirtualValue(checkV8Runtime(), null, key)) {
             v8Runtime.getV8Internal().setAdd(this, virtualValue.get());
         }
+    }
+
+    @Override
+    @CheckReturnValue
+    public V8ValueArray asArray() throws JavetException {
+        return checkV8Runtime().getV8Internal().setAsArray(this);
+    }
+
+    @Override
+    public void clear() throws JavetException {
+        checkV8Runtime().getV8Internal().setClear(this);
     }
 
     @Override

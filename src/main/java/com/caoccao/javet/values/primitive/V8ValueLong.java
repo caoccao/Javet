@@ -18,19 +18,72 @@ package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.values.IV8ValuePrimitiveValue;
+import com.caoccao.javet.values.reference.V8ValueLongObject;
 
+/**
+ * The type V8 value long.
+ *
+ * @since 0.7.0
+ */
 @SuppressWarnings("unchecked")
-public final class V8ValueLong extends V8ValuePrimitive<Long> {
+public final class V8ValueLong
+        extends V8ValueBigNumber<Long>
+        implements IV8ValuePrimitiveValue<V8ValueLongObject> {
+    /**
+     * Instantiates a new V8 value long.
+     *
+     * @param v8Runtime the V8 runtime
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public V8ValueLong(V8Runtime v8Runtime) throws JavetException {
         this(v8Runtime, 0L);
     }
 
+    /**
+     * Instantiates a new V8 value long.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param value     the value
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public V8ValueLong(V8Runtime v8Runtime, long value) throws JavetException {
         super(v8Runtime, value);
     }
 
+    /**
+     * Instantiates a new V8 value long.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param value     the value
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
     public V8ValueLong(V8Runtime v8Runtime, String value) throws JavetException {
         this(v8Runtime, Long.parseLong(value));
+    }
+
+    @Override
+    public boolean asBoolean() {
+        // 0n turns into false; other BigInts turn into true.
+        return value != 0L;
+    }
+
+    @Override
+    public double asDouble() {
+        return value.doubleValue();
+    }
+
+    @Override
+    public int asInt() {
+        return value.intValue();
+    }
+
+    @Override
+    public long asLong() {
+        return value;
     }
 
     @Override
@@ -38,6 +91,17 @@ public final class V8ValueLong extends V8ValuePrimitive<Long> {
         return this;
     }
 
+    @Override
+    public V8ValueLongObject toObject() throws JavetException {
+        return checkV8Runtime().createV8ValueLongObject(value);
+    }
+
+    /**
+     * To primitive long.
+     *
+     * @return the long
+     * @since 0.7.0
+     */
     public long toPrimitive() {
         return value;
     }

@@ -20,21 +20,19 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interception.BaseJavetDirectCallableInterceptor;
 import com.caoccao.javet.interfaces.IJavetUniFunction;
 import com.caoccao.javet.interop.V8Runtime;
-import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.converters.JavetProxyConverter;
 import com.caoccao.javet.interop.proxy.IJavetDirectProxyHandler;
+import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.StringUtils;
+import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.IV8ValueObject;
-import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -212,7 +210,7 @@ public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
         @Override
         public V8Value proxyGet(V8Value target, V8Value property, V8Value receiver) throws JavetException, Exception {
             V8Value v8Value = IJavetDirectProxyHandler.super.proxyGet(target, property, receiver);
-            if (v8Value.isUndefined()) {
+            if (v8Value == null) {
                 if (property instanceof V8ValueString) {
                     String childName = ((V8ValueString) property).getValue();
                     if (!StringUtils.isEmpty(childName)) {
@@ -251,16 +249,18 @@ public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
                                         this, JavetCallbackType.DirectCallNoThisAndResult,
                                         (NoThisAndResult<Exception>) (v8Values) -> {
                                             final String prefix = getName() + ".";
-                                            try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
-                                                V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray();
-                                                for (Package p : Stream.of(Package.getPackages())
-                                                        .filter((p) -> p.getName().startsWith(prefix))
-                                                        .filter((p) -> p.getName().substring(prefix.length()).contains("."))
-                                                        .collect(Collectors.toList())) {
-                                                    v8ValueArray.push(new JavetPackage(v8Runtime, p).toV8Value());
+                                            final List<Package> packages = Stream.of(Package.getPackages())
+                                                    .filter((p) -> p.getName().startsWith(prefix))
+                                                    .filter((p) -> p.getName().substring(prefix.length()).contains("."))
+                                                    .collect(Collectors.toList());
+                                            final List<V8Value> results = new ArrayList<>(packages.size());
+                                            try {
+                                                for (Package p : packages) {
+                                                    results.add(new JavetPackage(v8Runtime, p).toV8Value());
                                                 }
-                                                v8Scope.setEscapable();
-                                                return v8ValueArray;
+                                                return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
+                                            } finally {
+                                                JavetResourceUtils.safeClose(results);
                                             }
                                         })));
                 stringGetterMap.put(".name", (propertyName) -> v8Runtime.createV8ValueString(getName()));

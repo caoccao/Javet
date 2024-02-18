@@ -17,9 +17,11 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
+import com.caoccao.javet.enums.V8ValueErrorType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
 
@@ -108,6 +110,16 @@ public interface IV8Creatable {
     V8ValueBoolean createV8ValueBoolean(boolean booleanValue) throws JavetException;
 
     /**
+     * Create V8 value boolean object.
+     *
+     * @param booleanValue the boolean value
+     * @return the V8 value boolean object
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    V8ValueBooleanObject createV8ValueBooleanObject(boolean booleanValue) throws JavetException;
+
+    /**
      * Create V8 value data view.
      *
      * @param v8ValueArrayBuffer the V8 value array buffer
@@ -127,6 +139,28 @@ public interface IV8Creatable {
      * @since 0.8.5
      */
     V8ValueDouble createV8ValueDouble(double doubleValue) throws JavetException;
+
+    /**
+     * Create V8 value double object.
+     *
+     * @param doubleValue the double value
+     * @return the V8 value double object
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    V8ValueDoubleObject createV8ValueDoubleObject(double doubleValue) throws JavetException;
+
+    /**
+     * Create V8 value error by type and message.
+     *
+     * @param v8ValueErrorType the V8 value error type
+     * @param message          the message
+     * @return the V8 value error
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    @CheckReturnValue
+    V8ValueError createV8ValueError(V8ValueErrorType v8ValueErrorType, String message) throws JavetException;
 
     /**
      * Create V8 value function.
@@ -161,6 +195,16 @@ public interface IV8Creatable {
     V8ValueInteger createV8ValueInteger(int integerValue) throws JavetException;
 
     /**
+     * Create V8 value int object.
+     *
+     * @param intValue the int value
+     * @return the V8 value integer object
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    V8ValueIntegerObject createV8ValueIntegerObject(int intValue) throws JavetException;
+
+    /**
      * Create V8 value long.
      *
      * @param longValue the long value
@@ -169,6 +213,16 @@ public interface IV8Creatable {
      * @since 0.7.4
      */
     V8ValueLong createV8ValueLong(long longValue) throws JavetException;
+
+    /**
+     * Create V8 value long object.
+     *
+     * @param longValue the long value
+     * @return the V8 value long object
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    V8ValueLongObject createV8ValueLongObject(long longValue) throws JavetException;
 
     /**
      * Create V8 value map.
@@ -223,13 +277,13 @@ public interface IV8Creatable {
     /**
      * Create V8 value proxy.
      *
-     * @param v8ValueObject the V8 value object
+     * @param v8Value the V8 value
      * @return the V8 value proxy
      * @throws JavetException the javet exception
      * @since 0.9.6
      */
     @CheckReturnValue
-    V8ValueProxy createV8ValueProxy(V8ValueObject v8ValueObject) throws JavetException;
+    V8ValueProxy createV8ValueProxy(V8Value v8Value) throws JavetException;
 
     /**
      * Create V8 value set.
@@ -250,6 +304,16 @@ public interface IV8Creatable {
      * @since 0.8.5
      */
     V8ValueString createV8ValueString(String str) throws JavetException;
+
+    /**
+     * Create V8 value string object from string.
+     *
+     * @param str the str
+     * @return the V8 value string object
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    V8ValueStringObject createV8ValueStringObject(String str) throws JavetException;
 
     /**
      * Create V8 value symbol.

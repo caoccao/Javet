@@ -31,8 +31,7 @@ import java.util.Objects;
  * @since 1.1.5
  */
 @SuppressWarnings("unchecked")
-public final class V8ValueBigInteger extends V8ValuePrimitive<BigInteger> {
-
+public final class V8ValueBigInteger extends V8ValueBigNumber<BigInteger> {
     private static final int BYTE_COUNT_PER_WORD = 8;
 
     /**
@@ -156,6 +155,27 @@ public final class V8ValueBigInteger extends V8ValuePrimitive<BigInteger> {
             }
         }
         return longArray;
+    }
+
+    @Override
+    public boolean asBoolean() {
+        // 0n turns into false; other BigInts turn into true.
+        return !BigInteger.ZERO.equals(value);
+    }
+
+    @Override
+    public double asDouble() {
+        return value.doubleValue();
+    }
+
+    @Override
+    public int asInt() {
+        return value.intValue();
+    }
+
+    @Override
+    public long asLong() {
+        return value.longValue();
     }
 
     /**

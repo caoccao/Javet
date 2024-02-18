@@ -38,7 +38,7 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
             assertEquals(JavetError.CompilationFailure, e.getError());
             assertEquals(
                     "SyntaxError: Cannot use import statement outside a module",
-                    e.getScriptingError().getMessage());
+                    e.getScriptingError().getDetailedMessage());
         }
     }
 
@@ -50,7 +50,7 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
             assertEquals(JavetError.CompilationFailure, e.getError());
             assertEquals("SyntaxError: Invalid or unexpected token", e.getMessage());
             JavetScriptingError javetScriptingError = e.getScriptingError();
-            assertEquals("SyntaxError: Invalid or unexpected token", javetScriptingError.getMessage());
+            assertEquals("SyntaxError: Invalid or unexpected token", javetScriptingError.getDetailedMessage());
             assertEquals("undefined", javetScriptingError.getResourceName());
             assertEquals("1a2b", javetScriptingError.getSourceLine());
             assertEquals(1, javetScriptingError.getLineNumber());
@@ -79,7 +79,8 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
             assertEquals(JavetError.CompilationFailure, e.getError());
             JavetScriptingError javetScriptingError = e.getScriptingError();
             assertEquals("SyntaxError: Unexpected identifier 'a'", e.getMessage());
-            assertEquals("SyntaxError: Unexpected identifier 'a'", javetScriptingError.getMessage());
+            assertEquals("Unexpected identifier 'a'", javetScriptingError.getMessage());
+            assertEquals("SyntaxError: Unexpected identifier 'a'", javetScriptingError.getDetailedMessage());
             assertEquals("undefined", javetScriptingError.getResourceName());
             assertEquals("a a a a;", javetScriptingError.getSourceLine());
             assertEquals(2, javetScriptingError.getLineNumber());
@@ -108,7 +109,7 @@ public class TestJavetCompilationException extends BaseTestJavetRuntime {
             assertEquals(JavetError.CompilationFailure, e.getError());
             assertEquals("SyntaxError: Unexpected token '='", e.getMessage());
             JavetScriptingError javetScriptingError = e.getScriptingError();
-            assertEquals("SyntaxError: Unexpected token '='", javetScriptingError.getMessage());
+            assertEquals("SyntaxError: Unexpected token '='", javetScriptingError.getDetailedMessage());
             assertEquals("undefined", javetScriptingError.getResourceName());
             assertEquals("a ==== 2;", javetScriptingError.getSourceLine());
             assertEquals(2, javetScriptingError.getLineNumber());

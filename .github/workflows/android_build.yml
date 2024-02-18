@@ -8,9 +8,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 20.11.0
-  JAVET_V8_VERSION: 12.1.285.26
-  JAVET_VERSION: 3.0.3
+  JAVET_NODE_VERSION: 20.11.1
+  JAVET_V8_VERSION: 12.2.281.16
+  JAVET_VERSION: 3.0.4
   ROOT: /home/runner/work/Javet
 
 jobs:
@@ -21,14 +21,14 @@ jobs:
     steps:
 
     - name: Checkout the code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Ubuntu
       run: |
         sudo apt-get install -y execstack gcc-multilib
 
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11' 
 
@@ -61,19 +61,17 @@ jobs:
         gclient sync -D
         cd v8
         python3 tools/dev/v8gen.py arm.release -- 'target_os="android"' 'target_cpu="arm"' 'v8_target_cpu="arm"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-        sed -i 's/char\[\]/char/g' src/wasm/wasm-engine.cc
-        sed -i 's/source_url_ = String::cast(script->name())->ToCString();/std::unique_ptr<char[]> source_url = String::cast(script->name())->ToCString(); source_url_ = {source_url.release(), source_url.get_deleter()};/' src/wasm/wasm-engine.cc
         ninja -C out.gn/arm.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
         ninja -C out.gn/arm.release v8_monolith
 
     - name: Setup JDK 11
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: corretto
         java-version: 11
 
     - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v1.13
+      uses: jwlawson/actions-setup-cmake@v2.0
       with:
         cmake-version: '3.23.x'
 
@@ -83,7 +81,7 @@ jobs:
         sh ./build-android.sh -DV8_DIR=${{ env.ROOT }}/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=arm
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: javet-android-v8-arm-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/armeabi-v7a/*.so
@@ -95,14 +93,14 @@ jobs:
     steps:
 
     - name: Checkout the code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Ubuntu
       run: |
         sudo apt-get install -y execstack gcc-multilib
 
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11' 
 
@@ -135,19 +133,17 @@ jobs:
         gclient sync -D
         cd v8
         python3 tools/dev/v8gen.py arm64.release -- 'target_os="android"' 'target_cpu="arm64"' 'v8_target_cpu="arm64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-        sed -i 's/char\[\]/char/g' src/wasm/wasm-engine.cc
-        sed -i 's/source_url_ = String::cast(script->name())->ToCString();/std::unique_ptr<char[]> source_url = String::cast(script->name())->ToCString(); source_url_ = {source_url.release(), source_url.get_deleter()};/' src/wasm/wasm-engine.cc
         ninja -C out.gn/arm64.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
         ninja -C out.gn/arm64.release v8_monolith
 
     - name: Setup JDK 11
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: corretto
         java-version: 11
 
     - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v1.13
+      uses: jwlawson/actions-setup-cmake@v2.0
       with:
         cmake-version: '3.23.x'
 
@@ -157,7 +153,7 @@ jobs:
         sh ./build-android.sh -DV8_DIR=${{ env.ROOT }}/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=arm64
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: javet-android-v8-arm64-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/arm64-v8a/*.so
@@ -169,14 +165,14 @@ jobs:
     steps:
 
     - name: Checkout the code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Ubuntu
       run: |
         sudo apt-get install -y execstack gcc-multilib
 
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11' 
 
@@ -209,19 +205,17 @@ jobs:
         gclient sync -D
         cd v8
         python3 tools/dev/v8gen.py ia32.release -- 'target_os="android"' 'target_cpu="x86"' 'v8_target_cpu="x86"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-        sed -i 's/char\[\]/char/g' src/wasm/wasm-engine.cc
-        sed -i 's/source_url_ = String::cast(script->name())->ToCString();/std::unique_ptr<char[]> source_url = String::cast(script->name())->ToCString(); source_url_ = {source_url.release(), source_url.get_deleter()};/' src/wasm/wasm-engine.cc
         ninja -C out.gn/ia32.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
         ninja -C out.gn/ia32.release v8_monolith
 
     - name: Setup JDK 11
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: corretto
         java-version: 11
 
     - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v1.13
+      uses: jwlawson/actions-setup-cmake@v2.0
       with:
         cmake-version: '3.23.x'
 
@@ -231,7 +225,7 @@ jobs:
         sh ./build-android.sh -DV8_DIR=${{ env.ROOT }}/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=x86
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: javet-android-v8-x86-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/x86/*.so
@@ -243,14 +237,14 @@ jobs:
     steps:
 
     - name: Checkout the code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Ubuntu
       run: |
         sudo apt-get install -y execstack gcc-multilib
 
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11' 
 
@@ -283,19 +277,17 @@ jobs:
         gclient sync -D
         cd v8
         python3 tools/dev/v8gen.py x64.release -- 'target_os="android"' 'target_cpu="x64"' 'v8_target_cpu="x64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-        sed -i 's/char\[\]/char/g' src/wasm/wasm-engine.cc
-        sed -i 's/source_url_ = String::cast(script->name())->ToCString();/std::unique_ptr<char[]> source_url = String::cast(script->name())->ToCString(); source_url_ = {source_url.release(), source_url.get_deleter()};/' src/wasm/wasm-engine.cc
         ninja -C out.gn/x64.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
         ninja -C out.gn/x64.release v8_monolith
 
     - name: Setup JDK 11
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: corretto
         java-version: 11
 
     - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v1.13
+      uses: jwlawson/actions-setup-cmake@v2.0
       with:
         cmake-version: '3.23.x'
 
@@ -305,7 +297,7 @@ jobs:
         sh ./build-android.sh -DV8_DIR=${{ env.ROOT }}/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=x86_64
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: javet-android-v8-x86_64-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/x86_64/*.so
@@ -318,21 +310,21 @@ jobs:
     steps:
 
     - name: Checkout the code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup JDK 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: corretto
         java-version: 17
 
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11' 
 
     - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2
+      uses: gradle/gradle-build-action@v3
       with:
         gradle-version: 8.2
 
@@ -344,25 +336,25 @@ jobs:
         mkdir -p android/javet-android/src/main/jniLibs/x86_64
 
     - name: Download Javet arm
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: javet-android-v8-arm-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/armeabi-v7a
 
     - name: Download Javet arm64
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: javet-android-v8-arm64-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/arm64-v8a
 
     - name: Download Javet x86
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: javet-android-v8-x86-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/x86
 
     - name: Download Javet x86_64
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: javet-android-v8-x86_64-${{ env.JAVET_VERSION }}
         path: android/javet-android/src/main/jniLibs/x86_64
@@ -375,27 +367,27 @@ jobs:
         gradle build --debug
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: javet-android-${{ env.JAVET_VERSION }}
         path: android/javet-android/build/outputs/aar/javet*release.aar
 
     - name: Delete Javet arm
-      uses: geekyeggo/delete-artifact@v2
+      uses: geekyeggo/delete-artifact@v4
       with:
         name: javet-android-v8-arm-${{ env.JAVET_VERSION }}
 
     - name: Delete Javet arm64
-      uses: geekyeggo/delete-artifact@v2
+      uses: geekyeggo/delete-artifact@v4
       with:
         name: javet-android-v8-arm64-${{ env.JAVET_VERSION }}
 
     - name: Delete Javet x86
-      uses: geekyeggo/delete-artifact@v2
+      uses: geekyeggo/delete-artifact@v4
       with:
         name: javet-android-v8-x86-${{ env.JAVET_VERSION }}
 
     - name: Delete Javet x86_64
-      uses: geekyeggo/delete-artifact@v2
+      uses: geekyeggo/delete-artifact@v4
       with:
         name: javet-android-v8-x86_64-${{ env.JAVET_VERSION }}

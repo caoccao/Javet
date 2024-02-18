@@ -16,6 +16,11 @@
 
 package com.caoccao.javet.enums;
 
+/**
+ * The enum V8 value internal type.
+ *
+ * @since 0.9.13
+ */
 public enum V8ValueInternalType {
     Undefined(0, "Undefined"),
     Null(1, "Null"),
@@ -88,14 +93,33 @@ public enum V8ValueInternalType {
         this.name = name;
     }
 
+    /**
+     * Parse V8 value internal type.
+     *
+     * @param id the id
+     * @return the V8 value internal type
+     * @since 0.9.13
+     */
     public static V8ValueInternalType parse(int id) {
         return ALL_TYPES[id];
     }
 
+    /**
+     * Gets id.
+     *
+     * @return the id
+     * @since 0.9.13
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Gets name.
+     *
+     * @return the name
+     * @since 0.9.13
+     */
     public String getName() {
         return name;
     }

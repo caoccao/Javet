@@ -3,7 +3,7 @@ Javet
 
 |Maven Central| |Discord| |Donate|
 
-|Linux x86_64 Build| |MacOS x86_64 Build| |Android Build|
+|Linux x86_64 Build| |MacOS x86_64 Build| |MacOS arm64 Build| |Android Build|
 
 .. |Maven Central| image:: https://img.shields.io/maven-central/v/com.caoccao.javet/javet?style=for-the-badge
     :target: https://central.sonatype.com/search?q=g:com.caoccao.javet
@@ -20,12 +20,15 @@ Javet
 .. |MacOS x86_64 Build| image:: https://github.com/caoccao/Javet/actions/workflows/macos_x86_64_build.yml/badge.svg
     :target: https://github.com/caoccao/Javet/actions/workflows/macos_x86_64_build.yml
 
+.. |MacOS arm64 Build| image:: https://github.com/caoccao/Javet/actions/workflows/macos_arm64_build.yml/badge.svg
+    :target: https://github.com/caoccao/Javet/actions/workflows/macos_arm64_build.yml
+
 .. |Android Build| image:: https://github.com/caoccao/Javet/actions/workflows/android_build.yml/badge.svg
     :target: https://github.com/caoccao/Javet/actions/workflows/android_build.yml
 
 `Javet <https://github.com/caoccao/Javet/>`_ is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.
 
-If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_, or visit https://sjtucaocao.medium.com/ or https://caoccao.blogspot.com/. And the official support channel is at `discord <https://discord.gg/R4vvKU96gw>`_.
+If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_, or visit https://blog.caoccao.com/ or https://caoccao.blogspot.com/. And the official support channel is at `discord <https://discord.gg/R4vvKU96gw>`_.
 
 💖 If you like my work, please `donate <https://opencollective.com/javet>`_ to support me. If you have a retired Mac OS (x86_64) device and are fine with mailing it to me, that will be great because I don't have such device to support the community. Thank you for supporting Javet.
 
@@ -41,7 +44,7 @@ arm         ✔️        ❌      ❌       ❌
 arm64       ✔️        ✔️       ✔️        ❌
 =========== ======= ======= ======= =======
 
-* Node.js ``v20.11.0`` + V8 ``v12.1.285.26``
+* Node.js ``v20.11.1`` + V8 ``v12.2.281.16``
 * Dynamic switch between Node.js and V8 mode (`Which mode do you prefer? <https://github.com/caoccao/Javet/discussions/92>`_)
 * Polyfill V8 mode with `Javenode <https://github.com/caoccao/Javenode>`_
 * V8 API exposure in JVM
@@ -68,21 +71,21 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>3.0.3</version>
+        <version>3.0.4</version>
     </dependency>
 
     <!-- Linux (arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-linux-arm64</artifactId>
-        <version>3.0.3</version>
+        <version>3.0.4</version>
     </dependency>
 
     <!-- Mac OS (x86_64 and arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-macos</artifactId>
-        <version>3.0.3</version>
+        <version>3.0.4</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -90,20 +93,20 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:3.0.3") // Linux and Windows (x86_64)
-    implementation("com.caoccao.javet:javet-linux-arm64:3.0.3") // Linux (arm64)
-    implementation("com.caoccao.javet:javet-macos:3.0.3") // Mac OS (x86_64 and arm64)
-    implementation("com.caoccao.javet:javet-android:3.0.3") // Android (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet:3.0.4") // Linux and Windows (x86_64)
+    implementation("com.caoccao.javet:javet-linux-arm64:3.0.4") // Linux (arm64)
+    implementation("com.caoccao.javet:javet-macos:3.0.4") // Mac OS (x86_64 and arm64)
+    implementation("com.caoccao.javet:javet-android:3.0.4") // Android (arm, arm64, x86 and x86_64)
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:3.0.3' // Linux and Windows (x86_64)
-    implementation 'com.caoccao.javet:javet-linux-arm64:3.0.3' // Linux (arm64)
-    implementation 'com.caoccao.javet:javet-macos:3.0.3' // Mac OS (x86_64 and arm64)
-    implementation 'com.caoccao.javet:javet-android:3.0.3' // Android (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet:3.0.4' // Linux and Windows (x86_64)
+    implementation 'com.caoccao.javet:javet-linux-arm64:3.0.4' // Linux (arm64)
+    implementation 'com.caoccao.javet:javet-macos:3.0.4' // Mac OS (x86_64 and arm64)
+    implementation 'com.caoccao.javet:javet-android:3.0.4' // Android (arm, arm64, x86 and x86_64)
 
 Hello Javet
 -----------
@@ -133,10 +136,10 @@ License
 Blog
 ====
 
-* `Performance Comparison of GraalJS, Javet and Nashorn <https://medium.com/towardsdev/performance-comparison-of-graaljs-javet-and-nashorn-7bae6925826a>`_
-* `How to Elegantly Expose JsonNode in V8 <https://medium.com/stackademic/how-to-elegantly-expose-jsonnode-in-v8-638aff9da549>`_
-* `How to Compromise V8 on JVM <https://sjtucaocao.medium.com/how-to-compromise-v8-on-jvm-ceb385572461>`_
-* `Is TypeScript a Good Choice for a Script Engine? <https://sjtucaocao.medium.com/is-typescript-a-good-choice-for-a-script-engine-01fe69921ace>`_
+* `Performance Comparison of GraalJS, Javet and Nashorn <https://blog.caoccao.com/performance-comparison-of-graaljs-javet-and-nashorn-7bae6925826a>`_
+* `How to Elegantly Expose JsonNode in V8 <https://blog.caoccao.com/how-to-elegantly-expose-jsonnode-in-v8-638aff9da549>`_
+* `How to Compromise V8 on JVM <https://blog.caoccao.com/how-to-compromise-v8-on-jvm-ceb385572461>`_
+* `Is TypeScript a Good Choice for a Script Engine? <https://blog.caoccao.com/is-typescript-a-good-choice-for-a-script-engine-01fe69921ace>`_
 
 Documents
 =========

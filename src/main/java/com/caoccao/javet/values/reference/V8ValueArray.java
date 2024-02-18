@@ -39,13 +39,21 @@ import java.util.Objects;
 public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     protected static final String FUNCTION_KEYS = "keys";
     protected static final String FUNCTION_NEXT = "next";
-    protected static final String FUNCTION_POP = "pop";
-    protected static final String FUNCTION_PUSH = "push";
     protected static final String PROPERTY_DONE = "done";
     protected static final String PROPERTY_VALUE = "value";
 
     V8ValueArray(V8Runtime v8Runtime, long handle) throws JavetException {
         super(v8Runtime, handle);
+    }
+
+    @Override
+    public int asInt() throws JavetException {
+        if (getLength() == 1) {
+            try (V8Value v8Value = get(0)) {
+                return v8Value.asInt();
+            }
+        }
+        return 0;
     }
 
     @Override
@@ -153,16 +161,5 @@ public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
     @Override
     public V8ValueReferenceType getType() {
         return V8ValueReferenceType.Array;
-    }
-
-    @Override
-    @CheckReturnValue
-    public <T extends V8Value> T pop() throws JavetException {
-        return invoke(FUNCTION_POP);
-    }
-
-    @Override
-    public int push(Object... objects) throws JavetException {
-        return invokeInteger(FUNCTION_PUSH, objects);
     }
 }

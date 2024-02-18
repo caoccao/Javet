@@ -16,17 +16,20 @@
 
 package com.caoccao.javet.values.reference;
 
+import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.values.IV8ValuePrimitiveValue;
 
 /**
  * The type V8 value symbol.
  *
  * @since 0.9.11
  */
-public class V8ValueSymbol extends V8ValueObject {
-
+public class V8ValueSymbol
+        extends V8ValueObject
+        implements IV8ValuePrimitiveValue<V8ValueSymbolObject> {
     /**
      * The constant FUNCTION_TO_STRING.
      *
@@ -34,20 +37,23 @@ public class V8ValueSymbol extends V8ValueObject {
      */
     protected static final String FUNCTION_TO_STRING = "toString";
     /**
-     * The constant PROPERTY_DESCRIPTION.
+     * The Description.
      *
-     * @since 0.9.11
+     * @since 3.0.4
      */
-    protected static final String PROPERTY_DESCRIPTION = "description";
+    protected String description;
 
     /**
      * Instantiates a new V8 value symbol.
      *
-     * @param handle the handle
+     * @param v8Runtime the v 8 runtime
+     * @param handle    the handle
+     * @throws JavetException the javet exception
      * @since 0.9.11
      */
     V8ValueSymbol(V8Runtime v8Runtime, long handle) throws JavetException {
         super(v8Runtime, handle);
+        description = null;
     }
 
     /**
@@ -58,12 +64,28 @@ public class V8ValueSymbol extends V8ValueObject {
      * @since 0.9.11
      */
     public String getDescription() throws JavetException {
-        return getPropertyString(PROPERTY_DESCRIPTION);
+        if (description == null) {
+            description = checkV8Runtime().getV8Internal().symbolDescription(this);
+        }
+        return description;
     }
 
     @Override
     public V8ValueReferenceType getType() {
         return V8ValueReferenceType.Symbol;
+    }
+
+    /**
+     * Convert to V8 value symbol object.
+     *
+     * @return the V8 value symbol object
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    @CheckReturnValue
+    @Override
+    public V8ValueSymbolObject toObject() throws JavetException {
+        return checkV8Runtime().getV8Internal().symbolToObject(this);
     }
 
     @Override

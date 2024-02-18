@@ -75,6 +75,12 @@ public class MockDirectProxyObjectHandler implements IJavetDirectProxyHandler<IO
     }
 
     @Override
+    public V8Value proxyGetOwnPropertyDescriptor(V8Value target, V8Value property) throws JavetException, IOException {
+        ++callCount;
+        return IJavetDirectProxyHandler.super.proxyGetOwnPropertyDescriptor(target, property);
+    }
+
+    @Override
     public Map<String, IJavetUniFunction<String, ? extends V8Value, IOException>> proxyGetStringGetterMap() {
         if (stringGetterMap == null) {
             stringGetterMap = new HashMap<>();

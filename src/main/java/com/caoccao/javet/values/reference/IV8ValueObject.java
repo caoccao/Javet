@@ -25,10 +25,7 @@ import com.caoccao.javet.interfaces.IJavetUniConsumer;
 import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.primitive.V8ValueNull;
-import com.caoccao.javet.values.primitive.V8ValuePrimitive;
-import com.caoccao.javet.values.primitive.V8ValueString;
-import com.caoccao.javet.values.primitive.V8ValueUndefined;
+import com.caoccao.javet.values.primitive.*;
 
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
@@ -382,7 +379,15 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 1.1.5
      */
     default BigInteger getBigInteger(Object key) throws JavetException {
-        return getPrimitive(key);
+        try (V8Value v8Value = get(key)) {
+            if (v8Value instanceof V8ValueBigInteger) {
+                return ((V8ValueBigInteger) v8Value).getValue();
+            }
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /**
@@ -510,26 +515,6 @@ public interface IV8ValueObject extends IV8ValueReference {
      */
     @CheckReturnValue
     IV8ValueArray getOwnPropertyNames() throws JavetException;
-
-    /**
-     * Gets property value as primitive by key object.
-     *
-     * @param <R> the type parameter
-     * @param <T> the type parameter
-     * @param key the key
-     * @return the property value as primitive
-     * @throws JavetException the javet exception
-     * @since 0.7.0
-     */
-    default <R, T extends V8ValuePrimitive<R>> R getPrimitive(Object key) throws JavetException {
-        try (V8Value v8Value = get(key)) {
-            return ((T) v8Value).getValue();
-        } catch (JavetException e) {
-            throw e;
-        } catch (Throwable ignored) {
-        }
-        return null;
-    }
 
     /**
      * Gets private property value by name string.
@@ -888,7 +873,15 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.7.0
      */
     default ZonedDateTime getZonedDateTime(Object key) throws JavetException {
-        return getPrimitive(key);
+        try (V8Value v8Value = get(key)) {
+            if (v8Value instanceof V8ValueZonedDateTime) {
+                return ((V8ValueZonedDateTime) v8Value).getValue();
+            }
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /**
@@ -992,6 +985,27 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     /**
+     * Invoke function and return a big integer by function name and objects as arguments.
+     *
+     * @param functionName the function name
+     * @param objects      the objects
+     * @return the big integer
+     * @throws JavetException the javet exception
+     * @since 3.0.4
+     */
+    default BigInteger invokeBigInteger(String functionName, Object... objects) throws JavetException {
+        try (V8Value v8Value = invokeExtended(functionName, true, objects)) {
+            if (v8Value instanceof V8ValueBigInteger) {
+                return ((V8ValueBigInteger) v8Value).getValue();
+            }
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
+    }
+
+    /**
      * Invoke function and return a boolean by function name and objects as arguments.
      *
      * @param functionName the function name
@@ -1001,7 +1015,13 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.7.0
      */
     default Boolean invokeBoolean(String functionName, Object... objects) throws JavetException {
-        return invokePrimitive(functionName, objects);
+        try (V8Value v8Value = invokeExtended(functionName, true, objects)) {
+            return v8Value.asBoolean();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     /**
@@ -1014,7 +1034,13 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.7.0
      */
     default Double invokeDouble(String functionName, Object... objects) throws JavetException {
-        return invokePrimitive(functionName, objects);
+        try (V8Value v8Value = invokeExtended(functionName, true, objects)) {
+            return v8Value.asDouble();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     /**
@@ -1064,7 +1090,7 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     /**
-     * Invoke function and return a integer by function name and objects as arguments.
+     * Invoke function and return an integer by function name and objects as arguments.
      *
      * @param functionName the function name
      * @param objects      the objects
@@ -1073,7 +1099,13 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.7.0
      */
     default Integer invokeInteger(String functionName, Object... objects) throws JavetException {
-        return invokePrimitive(functionName, objects);
+        try (V8Value v8Value = invokeExtended(functionName, true, objects)) {
+            return v8Value.asInt();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     /**
@@ -1086,7 +1118,13 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.7.0
      */
     default Long invokeLong(String functionName, Object... objects) throws JavetException {
-        return invokePrimitive(functionName, objects);
+        try (V8Value v8Value = invokeExtended(functionName, true, objects)) {
+            return v8Value.asLong();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     /**
@@ -1110,28 +1148,6 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     /**
-     * Invoke function and return a primitive by function name and objects as arguments.
-     *
-     * @param <R>          the type parameter
-     * @param <T>          the type parameter
-     * @param functionName the function name
-     * @param objects      the objects
-     * @return the primitive value
-     * @throws JavetException the javet exception
-     * @since 0.7.0
-     */
-    default <R, T extends V8ValuePrimitive<R>> R invokePrimitive(
-            String functionName, Object... objects) throws JavetException {
-        try (V8Value v8Value = invokeExtended(functionName, true, objects)) {
-            return ((T) v8Value).getValue();
-        } catch (JavetException e) {
-            throw e;
-        } catch (Throwable t) {
-            return null;
-        }
-    }
-
-    /**
      * Invoke function and return a string by function name and objects as arguments.
      *
      * @param functionName the function name
@@ -1141,7 +1157,16 @@ public interface IV8ValueObject extends IV8ValueReference {
      * @since 0.7.0
      */
     default String invokeString(String functionName, Object... objects) throws JavetException {
-        return invokePrimitive(functionName, objects);
+        try (V8Value v8Value = invokeExtended(functionName, true, objects)) {
+            if (v8Value.isNullOrUndefined()) {
+                return null;
+            }
+            return v8Value.asString();
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /**
@@ -1168,6 +1193,27 @@ public interface IV8ValueObject extends IV8ValueReference {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     default void invokeVoid(String functionName, V8Value... v8Values) throws JavetException {
         invokeExtended(functionName, false, v8Values);
+    }
+
+    /**
+     * Invoke function and return a zoned date time by function name and objects as arguments.
+     *
+     * @param functionName the function name
+     * @param objects      the objects
+     * @return the zoned date time
+     * @throws JavetException the javet exception
+     * @since 0.7.0
+     */
+    default ZonedDateTime invokeZonedDateTime(String functionName, Object... objects) throws JavetException {
+        try (V8Value v8Value = invokeExtended(functionName, true, objects)) {
+            if (v8Value instanceof V8ValueZonedDateTime) {
+                return ((V8ValueZonedDateTime) v8Value).getValue();
+            }
+        } catch (JavetException e) {
+            throw e;
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /**

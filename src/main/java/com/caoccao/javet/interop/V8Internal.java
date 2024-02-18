@@ -23,6 +23,7 @@ import com.caoccao.javet.enums.V8ValueInternalType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.*;
 import com.caoccao.javet.values.reference.*;
 
 import java.util.Objects;
@@ -58,6 +59,10 @@ public final class V8Internal {
         return v8Runtime.batchObjectGet(iV8ValueObject, v8ValueKeys, v8ValueValues, length);
     }
 
+    public V8ValueBoolean booleanObjectValueOf(V8ValueBooleanObject v8ValueBooleanObject) {
+        return v8Runtime.booleanObjectValueOf(v8ValueBooleanObject);
+    }
+
     public void clearWeak(IV8ValueReference iV8ValueReference) throws JavetException {
         v8Runtime.clearWeak(iV8ValueReference);
     }
@@ -86,6 +91,10 @@ public final class V8Internal {
         return v8Runtime.contextSetLength(iV8Context, length);
     }
 
+    public V8ValueNumber<?> doubleObjectValueOf(V8ValueDoubleObject v8ValueDoubleObject) {
+        return v8Runtime.doubleObjectValueOf(v8ValueDoubleObject);
+    }
+
     public boolean equals(IV8ValueReference iV8ValueReference1, IV8ValueReference iV8ValueReference2)
             throws JavetException {
         return v8Runtime.equals(iV8ValueReference1, iV8ValueReference2);
@@ -93,7 +102,7 @@ public final class V8Internal {
 
     @CheckReturnValue
     public <T extends V8Value> T functionCall(
-            IV8ValueObject iV8ValueObject, IV8ValueObject receiver, boolean returnResult, V8Value... v8Values)
+            IV8ValueObject iV8ValueObject, V8Value receiver, boolean returnResult, V8Value... v8Values)
             throws JavetException {
         return v8Runtime.functionCall(iV8ValueObject, receiver, returnResult, v8Values);
     }
@@ -189,8 +198,25 @@ public final class V8Internal {
         return v8Runtime.hasInternalType(iV8ValueObject, internalType);
     }
 
+    public V8ValueInteger integerObjectValueOf(V8ValueIntegerObject v8ValueIntegerObject) throws JavetException {
+        return v8Runtime.integerObjectValueOf(v8ValueIntegerObject);
+    }
+
     public boolean isWeak(IV8ValueReference iV8ValueReference) {
         return v8Runtime.isWeak(iV8ValueReference);
+    }
+
+    public V8ValueLong longObjectValueOf(V8ValueLongObject v8ValueLongObject) throws JavetException {
+        return v8Runtime.longObjectValueOf(v8ValueLongObject);
+    }
+
+    @CheckReturnValue
+    public V8ValueArray mapAsArray(IV8ValueMap iV8ValueMap) throws JavetException {
+        return v8Runtime.mapAsArray(iV8ValueMap);
+    }
+
+    public void mapClear(IV8ValueMap iV8ValueMap) {
+        v8Runtime.mapClear(iV8ValueMap);
     }
 
     public boolean mapDelete(IV8ValueMap iV8ValueMap, V8Value key) throws JavetException {
@@ -563,20 +589,29 @@ public final class V8Internal {
         return v8Runtime.scriptRun(iV8Script, resultRequired);
     }
 
-    public void setAdd(IV8ValueSet iV8ValueKeySet, V8Value value) throws JavetException {
-        v8Runtime.setAdd(iV8ValueKeySet, value);
+    public void setAdd(IV8ValueSet iV8ValueSet, V8Value key) throws JavetException {
+        v8Runtime.setAdd(iV8ValueSet, key);
+    }
+
+    @CheckReturnValue
+    public V8ValueArray setAsArray(IV8ValueSet iV8ValueSet) throws JavetException {
+        return v8Runtime.setAsArray(iV8ValueSet);
+    }
+
+    public void setClear(IV8ValueSet iV8ValueSet) {
+        v8Runtime.setClear(iV8ValueSet);
     }
 
     public boolean setDelete(IV8ValueSet iV8ValueSet, V8Value key) throws JavetException {
         return v8Runtime.setDelete(iV8ValueSet, key);
     }
 
-    public int setGetSize(IV8ValueSet iV8ValueKeySet) throws JavetException {
-        return v8Runtime.setGetSize(iV8ValueKeySet);
+    public int setGetSize(IV8ValueSet iV8ValueSet) throws JavetException {
+        return v8Runtime.setGetSize(iV8ValueSet);
     }
 
-    public boolean setHas(IV8ValueSet iV8ValueSet, V8Value value) throws JavetException {
-        return v8Runtime.setHas(iV8ValueSet, value);
+    public boolean setHas(IV8ValueSet iV8ValueSet, V8Value key) throws JavetException {
+        return v8Runtime.setHas(iV8ValueSet, key);
     }
 
     public void setWeak(IV8ValueReference iV8ValueReference) {
@@ -585,6 +620,22 @@ public final class V8Internal {
 
     public boolean strictEquals(IV8ValueObject iV8ValueObject1, IV8ValueObject iV8ValueObject2) {
         return v8Runtime.strictEquals(iV8ValueObject1, iV8ValueObject2);
+    }
+
+    public V8ValueString stringObjectValueOf(V8ValueStringObject v8ValueStringObject) {
+        return v8Runtime.stringObjectValueOf(v8ValueStringObject);
+    }
+
+    public String symbolDescription(V8ValueSymbol v8ValueSymbol) {
+        return v8Runtime.symbolDescription(v8ValueSymbol);
+    }
+
+    public V8ValueSymbol symbolObjectValueOf(V8ValueSymbolObject v8ValueSymbolObject) {
+        return v8Runtime.symbolObjectValueOf(v8ValueSymbolObject);
+    }
+
+    public V8ValueSymbolObject symbolToObject(V8ValueSymbol v8ValueSymbol) {
+        return v8Runtime.symbolToObject(v8ValueSymbol);
     }
 
     public String toString(IV8ValueReference iV8ValueReference) throws JavetException {

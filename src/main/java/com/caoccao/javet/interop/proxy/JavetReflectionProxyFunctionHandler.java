@@ -47,26 +47,24 @@ public class JavetReflectionProxyFunctionHandler<T, E extends Exception>
     /**
      * Instantiates a new Javet reflection proxy function handler.
      *
-     * @param v8Runtime               the V8 runtime
-     * @param reflectionObjectFactory the reflection object factory
-     * @param targetObject            the target object
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
      * @since 1.1.7
      */
     public JavetReflectionProxyFunctionHandler(
             V8Runtime v8Runtime,
-            IJavetReflectionObjectFactory reflectionObjectFactory,
             T targetObject) {
-        super(v8Runtime, reflectionObjectFactory, targetObject);
+        super(v8Runtime, targetObject);
     }
 
     @Override
-    public V8Value apply(V8Value target, V8Value thisObject, V8ValueArray arguments) throws JavetException {
+    public V8Value apply(V8Value target, V8Value thisObject, V8ValueArray arguments) throws JavetException, E {
         if (!classDescriptor.getApplyFunctions().isEmpty()) {
             V8Value[] v8Values = null;
             try {
                 v8Values = arguments.toArray();
                 return v8Runtime.toV8Value(execute(
-                        reflectionObjectFactory,
+                        v8Runtime.getConverter().getConfig().getReflectionObjectFactory(),
                         targetObject,
                         null,
                         classDescriptor.getApplyFunctions(),
@@ -84,7 +82,7 @@ public class JavetReflectionProxyFunctionHandler<T, E extends Exception>
                 }
             }
         }
-        return v8Runtime.createV8ValueUndefined();
+        return super.apply(target, thisObject, arguments);
     }
 
     @Override
@@ -100,6 +98,9 @@ public class JavetReflectionProxyFunctionHandler<T, E extends Exception>
                     new JavetCallbackContext(
                             PROXY_FUNCTION_NAME_GET, this, JavetCallbackType.DirectCallNoThisAndResult,
                             (NoThisAndResult<?>) (v8Values) -> get(v8Values[0], v8Values[1], v8Values[2])),
+                    new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_GET_OWN_PROPERTY_DESCRIPTOR, this, JavetCallbackType.DirectCallNoThisAndResult,
+                            (NoThisAndResult<?>) (v8Values) -> getOwnPropertyDescriptor(v8Values[0], v8Values[1])),
                     new JavetCallbackContext(
                             PROXY_FUNCTION_NAME_HAS, this, JavetCallbackType.DirectCallNoThisAndResult,
                             (NoThisAndResult<?>) (v8Values) -> has(v8Values[0], v8Values[1])),

@@ -301,6 +301,12 @@ namespace Javet {
             const V8LocalContext& v8Context,
             const jstring mString) noexcept;
 
+        static inline V8LocalStringObject ToV8StringObject(
+            const V8LocalContext& v8Context,
+            const V8LocalString v8LocalString) noexcept {
+            return v8::StringObject::New(v8Context->GetIsolate(), v8LocalString).As<v8::StringObject>();
+        }
+
         V8LocalValue ToV8Value(
             JNIEnv* jniEnv,
             const V8LocalContext& v8Context,

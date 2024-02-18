@@ -18,11 +18,18 @@ package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.reference.V8ValueBooleanObject;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueBoolean extends BaseTestJavetRuntime {
+    @Test
+    public void testAsInt() throws JavetException {
+        assertEquals(0, v8Runtime.createV8ValueBoolean(false).asInt());
+        assertEquals(1, v8Runtime.createV8ValueBoolean(true).asInt());
+    }
+
     @Test
     public void testBoolean() throws JavetException {
         try (V8ValueBoolean v8ValueBoolean = v8Runtime.getExecutor("1 == 1").execute()) {
@@ -45,8 +52,33 @@ public class TestV8ValueBoolean extends BaseTestJavetRuntime {
 
     @Test
     public void testBooleanObject() throws JavetException {
-        assertTrue(v8Runtime.getExecutor("Boolean(true)").executeBoolean());
-        assertFalse(v8Runtime.getExecutor("Boolean(false)").executeBoolean());
+        try (V8ValueBoolean v8ValueBoolean1 = v8Runtime.createV8ValueBoolean(true)) {
+            try (V8ValueBooleanObject v8ValueBooleanObject = v8ValueBoolean1.toObject()) {
+                try (V8ValueBoolean v8ValueBoolean2 = v8ValueBooleanObject.valueOf()) {
+                    assertTrue(v8ValueBoolean2.getValue());
+                }
+            }
+        }
+        try (V8ValueBooleanObject v8ValueBooleanObject = v8Runtime.createV8ValueBooleanObject(false)) {
+            try (V8ValueBoolean v8ValueBoolean = v8ValueBooleanObject.valueOf()) {
+                assertFalse(v8ValueBoolean.getValue());
+            }
+        }
+        try (V8ValueBooleanObject v8ValueBooleanObject = v8Runtime.getExecutor("new Boolean(true)").execute()) {
+            try (V8ValueBoolean v8ValueBoolean = v8ValueBooleanObject.valueOf()) {
+                assertTrue(v8ValueBoolean.getValue());
+            }
+        }
+        assertTrue(v8Runtime.getExecutor("true").executeBoolean());
+        assertTrue(v8Runtime.getExecutor("new Boolean(true)").executeBoolean());
+        assertEquals(1, v8Runtime.getExecutor("true").executeDouble(), DELTA);
+        assertEquals(1, v8Runtime.getExecutor("new Boolean(true)").executeDouble(), DELTA);
+        assertEquals(1, v8Runtime.getExecutor("true").executeInteger());
+        assertEquals(1, v8Runtime.getExecutor("new Boolean(true)").executeInteger());
+        assertEquals(1L, v8Runtime.getExecutor("true").executeLong());
+        assertEquals(1L, v8Runtime.getExecutor("new Boolean(true)").executeLong());
+        assertEquals("true", v8Runtime.getExecutor("true").executeString());
+        assertEquals("true", v8Runtime.getExecutor("new Boolean(true)").executeString());
     }
 
     @Test
@@ -56,5 +88,13 @@ public class TestV8ValueBoolean extends BaseTestJavetRuntime {
         assertFalse(v8ValueBoolean.equals(null));
         assertFalse(v8ValueBoolean.equals(v8Runtime.createV8ValueBoolean(false)));
         assertFalse(v8ValueBoolean.equals(v8Runtime.createV8ValueUndefined()));
+    }
+
+    @Test
+    public void testIfTrue() throws JavetException {
+        assertTrue(v8Runtime.createV8ValueBoolean(true).asBoolean());
+        assertFalse(v8Runtime.createV8ValueBoolean(false).asBoolean());
+        assertTrue(v8Runtime.getExecutor("true").execute().asBoolean());
+        assertFalse(v8Runtime.getExecutor("false").execute().asBoolean());
     }
 }

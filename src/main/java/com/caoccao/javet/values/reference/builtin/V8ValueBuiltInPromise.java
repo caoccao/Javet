@@ -27,6 +27,7 @@ import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public class V8ValueBuiltInPromise extends V8ValueFunction {
+    public static final String NAME = "Promise";
 
     public static final String FUNCTION_ALL = "all";
     public static final String FUNCTION_ALL_SETTLED = "allSettled";

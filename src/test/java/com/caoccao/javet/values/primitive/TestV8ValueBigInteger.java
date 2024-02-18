@@ -27,6 +27,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueBigInteger extends BaseTestJavetRuntime {
     @Test
+    public void testAsInt() throws JavetException {
+        assertEquals(0, v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(0)).asInt());
+        assertEquals(1, v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(1)).asInt());
+    }
+
+    @Test
     public void testBigIntNegative() throws JavetException {
         Random random = new Random();
         BigInteger baseBigInteger = BigInteger.valueOf(2L).pow(65).multiply(BigInteger.valueOf(-1L));
@@ -84,5 +90,11 @@ public class TestV8ValueBigInteger extends BaseTestJavetRuntime {
             v8Runtime.getGlobalObject().set("a", v8ValueBigInteger);
             assertEquals(l, v8Runtime.getGlobalObject().getLong("a"));
         }
+    }
+
+    @Test
+    public void testIfTrue() throws JavetException {
+        assertTrue(v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(1)).asBoolean());
+        assertFalse(v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(0)).asBoolean());
     }
 }

@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.enums.V8ValueErrorType;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
@@ -182,6 +183,12 @@ public class V8Scope implements IV8Creatable, IJavetClosable {
     }
 
     @Override
+    public V8ValueBooleanObject createV8ValueBooleanObject(boolean booleanValue) throws JavetException {
+        Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
+        return v8Runtime.createV8ValueBooleanObject(booleanValue);
+    }
+
+    @Override
     public V8ValueDataView createV8ValueDataView(V8ValueArrayBuffer v8ValueArrayBuffer) throws JavetException {
         Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
         return add(v8Runtime.createV8ValueDataView(v8ValueArrayBuffer));
@@ -191,6 +198,18 @@ public class V8Scope implements IV8Creatable, IJavetClosable {
     public V8ValueDouble createV8ValueDouble(double doubleValue) throws JavetException {
         Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
         return v8Runtime.createV8ValueDouble(doubleValue);
+    }
+
+    @Override
+    public V8ValueDoubleObject createV8ValueDoubleObject(double doubleValue) throws JavetException {
+        Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
+        return v8Runtime.createV8ValueDoubleObject(doubleValue);
+    }
+
+    @Override
+    public V8ValueError createV8ValueError(V8ValueErrorType v8ValueErrorType, String message) throws JavetException {
+        Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
+        return v8Runtime.createV8ValueError(v8ValueErrorType, message);
     }
 
     @Override
@@ -212,9 +231,21 @@ public class V8Scope implements IV8Creatable, IJavetClosable {
     }
 
     @Override
+    public V8ValueIntegerObject createV8ValueIntegerObject(int intValue) throws JavetException {
+        Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
+        return v8Runtime.createV8ValueIntegerObject(intValue);
+    }
+
+    @Override
     public V8ValueLong createV8ValueLong(long longValue) throws JavetException {
         Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
         return v8Runtime.createV8ValueLong(longValue);
+    }
+
+    @Override
+    public V8ValueLongObject createV8ValueLongObject(long longValue) throws JavetException {
+        Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
+        return v8Runtime.createV8ValueLongObject(longValue);
     }
 
     @Override
@@ -242,9 +273,9 @@ public class V8Scope implements IV8Creatable, IJavetClosable {
     }
 
     @Override
-    public V8ValueProxy createV8ValueProxy(V8ValueObject v8ValueObject) throws JavetException {
+    public V8ValueProxy createV8ValueProxy(V8Value v8Value) throws JavetException {
         Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
-        return add(v8Runtime.createV8ValueProxy(v8ValueObject));
+        return add(v8Runtime.createV8ValueProxy(v8Value));
     }
 
     @Override
@@ -257,6 +288,12 @@ public class V8Scope implements IV8Creatable, IJavetClosable {
     public V8ValueString createV8ValueString(String str) throws JavetException {
         Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
         return v8Runtime.createV8ValueString(str);
+    }
+
+    @Override
+    public V8ValueStringObject createV8ValueStringObject(String str) throws JavetException {
+        Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
+        return v8Runtime.createV8ValueStringObject(Objects.requireNonNull(str));
     }
 
     @Override
