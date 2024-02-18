@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="FAQ" href="../faq/index.html" /><link rel="prev" title="Release Notes" href="index.html" />
 
     <link rel="shortcut icon" href="../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Release Notes 3.0.x - Javet 3.0.3 documentation</title>
+        <title>Release Notes 3.0.x - Javet 3.0.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Javet 3.0.3 documentation</div></a>
+      <a href="../index.html"><div class="brand">Javet 3.0.4 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.0.3 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.0.4 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -200,6 +200,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../reference/converters/proxy_converter.html">Proxy Converter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/converters/bridge_converter.html">Bridge Converter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/converters/custom_converter.html">Custom Converter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/converters/proxy_plugins.html">Proxy Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/resource_management/index.html">Resource Management</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Resource Management</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -304,12 +305,41 @@
         <article role="main">
           <section id="release-notes-3-0-x">
 <h1>Release Notes 3.0.x<a class="headerlink" href="#release-notes-3-0-x" title="Link to this heading">#</a></h1>
+<section id="v8-v12-2">
+<h2>3.0.4 V8 v12.2<a class="headerlink" href="#v8-v12-2" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Upgraded V8 to <code class="docutils literal notranslate"><span class="pre">v12.2.281.16</span></code> (2024-02-15)</p></li>
+<li><p>Upgraded Node.js to <code class="docutils literal notranslate"><span class="pre">v20.11.1</span></code> <a class="reference external" href="https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.11.1">(2024-02-14)</a></p></li>
+<li><p>Added proxy plugin system for converters</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">createTargetObject()</span></code>, <code class="docutils literal notranslate"><span class="pre">getProxyPlugin()</span></code>, <code class="docutils literal notranslate"><span class="pre">proxyDeleteProperty()</span></code>, <code class="docutils literal notranslate"><span class="pre">toJSON()</span></code> to <code class="docutils literal notranslate"><span class="pre">IJavetDirectProxyHandler</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">asBoolean()</span></code>, <code class="docutils literal notranslate"><span class="pre">asDouble()</span></code>, <code class="docutils literal notranslate"><span class="pre">asInt()</span></code>, <code class="docutils literal notranslate"><span class="pre">asLong()</span></code>, <code class="docutils literal notranslate"><span class="pre">asString()</span></code> to <code class="docutils literal notranslate"><span class="pre">IV8Value</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">IClassProxyPlugin</span></code>, <code class="docutils literal notranslate"><span class="pre">JavetProxyPluginArray</span></code>, <code class="docutils literal notranslate"><span class="pre">JavetProxyPluginClass</span></code>, <code class="docutils literal notranslate"><span class="pre">JavetProxyPluginDefault</span></code>, <code class="docutils literal notranslate"><span class="pre">JavetProxyPluginList</span></code>, <code class="docutils literal notranslate"><span class="pre">JavetProxyPluginMap</span></code>, <code class="docutils literal notranslate"><span class="pre">JavetProxyPluginSet</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">V8ValueBuiltInReflect</span></code>, <code class="docutils literal notranslate"><span class="pre">JavetEntityObject</span></code>, <code class="docutils literal notranslate"><span class="pre">JavetEntityPropertyDescriptor</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">BindingContextStore</span></code>, <code class="docutils literal notranslate"><span class="pre">ClassDescriptorStore</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">createV8ValueStringObject()</span></code>, <code class="docutils literal notranslate"><span class="pre">createV8ValueError()</span></code>, <code class="docutils literal notranslate"><span class="pre">throwError()</span></code> to <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">V8ValueBooleanObject</span></code>, <code class="docutils literal notranslate"><span class="pre">V8ValueDoubleObject</span></code>, <code class="docutils literal notranslate"><span class="pre">V8ValueIntegerObject</span></code>, <code class="docutils literal notranslate"><span class="pre">V8ValueLongObject</span></code>, <code class="docutils literal notranslate"><span class="pre">V8ValueStringObject</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">V8ValueErrorType</span></code>, <code class="docutils literal notranslate"><span class="pre">V8ErrorTemplate</span></code>, <code class="docutils literal notranslate"><span class="pre">JavetEntityError</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">getErrorType()</span></code> to <code class="docutils literal notranslate"><span class="pre">V8ValueError</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">getProxyPlugins()</span></code>, <code class="docutils literal notranslate"><span class="pre">isProxyArrayEnabled()</span></code>, <code class="docutils literal notranslate"><span class="pre">setProxyArrayEnabled()</span></code>, to <code class="docutils literal notranslate"><span class="pre">JavetConverterConfig</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">getProxyPlugin()</span></code>, <code class="docutils literal notranslate"><span class="pre">proxyGetOwnPropertyDescriptor()</span></code> to <code class="docutils literal notranslate"><span class="pre">IJavetDirectProxyHandler</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">getOwnPropertyDescriptor()</span></code> to <code class="docutils literal notranslate"><span class="pre">BaseJavetReflectionProxyHandler</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">flat()</span></code>, <code class="docutils literal notranslate"><span class="pre">shift()</span></code>, <code class="docutils literal notranslate"><span class="pre">unshift()</span></code> to <code class="docutils literal notranslate"><span class="pre">IV8ValueArray</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">asArray()</span></code>, <code class="docutils literal notranslate"><span class="pre">clear()</span></code> to <code class="docutils literal notranslate"><span class="pre">V8ValueMap</span></code></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">asArray()</span></code>, <code class="docutils literal notranslate"><span class="pre">clear()</span></code> to <code class="docutils literal notranslate"><span class="pre">V8ValueSet</span></code></p></li>
+<li><p>Improved performance of <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code></p></li>
+<li><p>Fixed improper conversions in <code class="docutils literal notranslate"><span class="pre">JavetBridgeConverter</span></code></p></li>
+<li><p>Fixed a memory leak in adding a V8 module with the same name</p></li>
+<li><p>Swapped <code class="docutils literal notranslate"><span class="pre">JavetScriptingError.getMessage()</span></code> and <code class="docutils literal notranslate"><span class="pre">JavetScriptingError.getDetailedMessage()</span></code></p></li>
+<li><p>Removed <code class="docutils literal notranslate"><span class="pre">JavetProxySymbolIterableConverter</span></code>, <code class="docutils literal notranslate"><span class="pre">JavetProxySymbolToPrimitiveConverter</span></code></p></li>
+<li><p>Removed <code class="docutils literal notranslate"><span class="pre">executePrimitive()</span></code> from <code class="docutils literal notranslate"><span class="pre">IV8Executable</span></code></p></li>
+</ul>
+</section>
 <section id="v8-v12-1">
 <h2>3.0.3 V8 v12.1<a class="headerlink" href="#v8-v12-1" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Upgraded V8 to <code class="docutils literal notranslate"><span class="pre">v12.1.285.26</span></code> (2024-01-17)</p></li>
 <li><p>Upgraded Node.js to <code class="docutils literal notranslate"><span class="pre">v20.11.0</span></code> <a class="reference external" href="https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.11.0">(2024-01-09)</a></p></li>
-<li><p>Restore the reference lock</p></li>
+<li><p>Restored the reference lock</p></li>
 <li><p>Downgraded to Ubuntu 20.04 for better compatibility</p></li>
 <li><p>Fixed a slight memory leak in closing the V8 runtime</p></li>
 <li><p>Fixed a memory leak in dynamic proxy and dynamic object</p></li>
@@ -414,6 +444,7 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Release Notes 3.0.x</a><ul>
+<li><a class="reference internal" href="#v8-v12-2">3.0.4 V8 v12.2</a></li>
 <li><a class="reference internal" href="#v8-v12-1">3.0.3 V8 v12.1</a></li>
 <li><a class="reference internal" href="#v8-v12-0">3.0.2 V8 v12.0</a></li>
 <li><a class="reference internal" href="#v8-v11-9">3.0.1 V8 v11.9</a></li>
@@ -429,7 +460,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=d980231b"></script>
+</div><script src="../_static/documentation_options.js?v=70919b1b"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>

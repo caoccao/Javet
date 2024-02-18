@@ -17,6 +17,7 @@ com.caoccao.javet.interop.loader
 com.caoccao.javet.interop.monitoring
 com.caoccao.javet.interop.options
 com.caoccao.javet.interop.proxy
+com.caoccao.javet.interop.proxy.plugins
 com.caoccao.javet.node.modules
 com.caoccao.javet.utils
 com.caoccao.javet.utils.receivers
