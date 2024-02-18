@@ -22,7 +22,6 @@ import com.caoccao.javet.enums.V8ProxyMode;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
-import com.caoccao.javet.interop.binding.IClassProxyPlugin;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.proxy.*;
 import com.caoccao.javet.utils.JavetResourceUtils;
@@ -33,7 +32,6 @@ import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueProxy;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * The type Javet proxy converter converts most of Java objects to
@@ -110,25 +108,24 @@ public class JavetProxyConverter extends JavetObjectConverter {
                     default:
                         V8Value v8ValueTarget = null;
                         try {
-                            Optional<IClassProxyPlugin> optionalClassProxyPlugin;
                             if (object instanceof IJavetDirectProxyHandler<?>) {
-                                optionalClassProxyPlugin = Optional.ofNullable(
-                                        ((IJavetDirectProxyHandler<?>) object).getProxyPlugin());
+                                IJavetDirectProxyHandler<?> javetDirectProxyHandler = (IJavetDirectProxyHandler<?>) object;
+                                javetDirectProxyHandler.setV8Runtime(v8Runtime);
+                                v8ValueTarget = javetDirectProxyHandler.createTargetObject();
                             } else {
-                                optionalClassProxyPlugin = getConfig().getProxyPlugins().stream()
+                                v8ValueTarget = getConfig().getProxyPlugins().stream()
                                         .filter(p -> p.isProxyable(objectClass))
-                                        .findFirst();
+                                        .findFirst()
+                                        .map(p -> p.getTargetObjectConstructor(objectClass))
+                                        .map(f -> {
+                                            try {
+                                                return f.invoke(v8Runtime, object);
+                                            } catch (Throwable ignored) {
+                                            }
+                                            return null;
+                                        })
+                                        .orElse(null);
                             }
-                            v8ValueTarget = optionalClassProxyPlugin
-                                    .map(p -> p.getTargetObjectConstructor(objectClass))
-                                    .map(f -> {
-                                        try {
-                                            return f.invoke(v8Runtime, object);
-                                        } catch (Throwable ignored) {
-                                        }
-                                        return null;
-                                    })
-                                    .orElse(null);
                             v8ValueProxy = v8Scope.createV8ValueProxy(v8ValueTarget);
                         } finally {
                             JavetResourceUtils.safeClose(v8ValueTarget);

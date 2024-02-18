@@ -50,6 +50,25 @@ import java.util.Optional;
  */
 public interface IJavetDirectProxyHandler<E extends Exception> {
     /**
+     * Create target object for the proxy target.
+     *
+     * @return the V8 value
+     * @since 3.0.4
+     */
+    default V8Value createTargetObject() {
+        return Optional.ofNullable(getProxyPlugin())
+                .map(p -> p.getTargetObjectConstructor(getClass()))
+                .map(f -> {
+                    try {
+                        return f.invoke(getV8Runtime(), this);
+                    } catch (Throwable ignored) {
+                    }
+                    return null;
+                })
+                .orElse(null);
+    }
+
+    /**
      * Gets proxy plugin.
      *
      * @return the proxy plugin

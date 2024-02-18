@@ -8,7 +8,7 @@ Release Notes 3.0.x
 * Upgraded V8 to ``v12.2.281.16`` (2024-02-15)
 * Upgraded Node.js to ``v20.11.1`` `(2024-02-14) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.11.1>`_
 * Added proxy plugin system for converters
-* Added ``toJSON()``, ``proxyDeleteProperty()`` to ``IJavetDirectProxyHandler``
+* Added ``createTargetObject()``, ``getProxyPlugin()``, ``proxyDeleteProperty()``, ``toJSON()`` to ``IJavetDirectProxyHandler``
 * Added ``asBoolean()``, ``asDouble()``, ``asInt()``, ``asLong()``, ``asString()`` to ``IV8Value``
 * Added ``IClassProxyPlugin``, ``JavetProxyPluginArray``, ``JavetProxyPluginClass``, ``JavetProxyPluginDefault``, ``JavetProxyPluginList``, ``JavetProxyPluginMap``, ``JavetProxyPluginSet``
 * Added ``V8ValueBuiltInReflect``, ``JavetEntityObject``, ``JavetEntityPropertyDescriptor``
