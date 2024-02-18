@@ -11,6 +11,7 @@ Converters
     proxy_converter
     bridge_converter
     custom_converter
+    proxy_plugins
 
 Comparisons
 ===========
