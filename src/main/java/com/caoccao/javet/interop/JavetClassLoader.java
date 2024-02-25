@@ -36,7 +36,6 @@ import java.util.Objects;
  * @since 0.8.0
  */
 final class JavetClassLoader extends ClassLoader {
-    private static final String ERROR_NODE_JS_IS_NOT_SUPPORTED_ON_ANDROID = "Node.js is not supported on Android.";
     private static final String JAVET_LIB_LOADER_CLASS_NAME = JavetLibLoader.class.getName();
     private static final String METHOD_LOAD = "load";
     private static final String METHOD_SET_LIB_LOADING_LISTENER = "setLibLoadingListener";
@@ -66,9 +65,7 @@ final class JavetClassLoader extends ClassLoader {
     IV8Native getNative() throws JavetException {
         if (JavetOSUtils.IS_ANDROID) {
             if (jsRuntimeType.isNode()) {
-                throw new JavetException(
-                        JavetError.LibraryNotLoaded,
-                        SimpleMap.of(JavetError.PARAMETER_REASON, ERROR_NODE_JS_IS_NOT_SUPPORTED_ON_ANDROID));
+                return new NodeNative();
             }
             return new V8Native();
         } else {
@@ -95,11 +92,6 @@ final class JavetClassLoader extends ClassLoader {
      */
     void load() throws JavetException {
         if (JavetOSUtils.IS_ANDROID) {
-            if (jsRuntimeType.isNode()) {
-                throw new JavetException(
-                        JavetError.LibraryNotLoaded,
-                        SimpleMap.of(JavetError.PARAMETER_REASON, ERROR_NODE_JS_IS_NOT_SUPPORTED_ON_ANDROID));
-            }
             JavetLibLoader javetLibLoader = new JavetLibLoader(jsRuntimeType);
             javetLibLoader.load();
         } else {
