@@ -24,6 +24,7 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8ScriptOrigin;
 import com.caoccao.javet.node.modules.NodeModuleModule;
 import com.caoccao.javet.node.modules.NodeModuleProcess;
+import com.caoccao.javet.utils.JavetOSUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8Module;
 import com.caoccao.javet.values.reference.V8Script;
@@ -220,13 +221,15 @@ public interface IV8Executor extends IV8Executable {
         getV8ScriptOrigin().setResourceName(resourceName);
         V8Runtime v8Runtime = getV8Runtime();
         if (v8Runtime.getJSRuntimeType().isNode()) {
-            NodeRuntime nodeRuntime = (NodeRuntime) v8Runtime;
-            File resourceFile = new File(resourceName);
-            File parentFile = resourceFile.getParentFile();
-            nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_DIRNAME, parentFile.getAbsolutePath());
-            nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_FILENAME, resourceFile.getAbsolutePath());
-            nodeRuntime.getNodeModule(NodeModuleModule.class).setRequireRootDirectory(parentFile.getAbsoluteFile());
-            nodeRuntime.getNodeModule(NodeModuleProcess.class).setWorkingDirectory(parentFile.getAbsolutePath());
+            if (!JavetOSUtils.IS_ANDROID) {
+                NodeRuntime nodeRuntime = (NodeRuntime) v8Runtime;
+                File resourceFile = new File(resourceName);
+                File parentFile = resourceFile.getParentFile();
+                nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_DIRNAME, parentFile.getAbsolutePath());
+                nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_FILENAME, resourceFile.getAbsolutePath());
+                nodeRuntime.getNodeModule(NodeModuleModule.class).setRequireRootDirectory(parentFile.getAbsoluteFile());
+                nodeRuntime.getNodeModule(NodeModuleProcess.class).setWorkingDirectory(parentFile.getAbsolutePath());
+            }
         }
         return this;
     }
