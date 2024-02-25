@@ -117,27 +117,35 @@ if(DEFINED NODE_DIR)
     list(APPEND importLibraries
         ada base64 brotli cares histogram llhttp nghttp2 nghttp3 ngtcp2 openssl simdutf torque_base uvwasi
         v8_base_without_compiler v8_compiler v8_init v8_initializers
-        v8_libbase v8_libplatform v8_snapshot v8_turboshaft v8_zlib zlib zlib_adler32_simd zlib_inflate_chunk_simd)
-    if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)")
+        v8_libbase v8_libplatform v8_snapshot v8_turboshaft v8_zlib zlib)
+    # base64
+    if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)" OR CMAKE_ANDROID_ARCH STREQUAL "arm64")
         list(APPEND importLibraries base64_neon64)
-    else()
+    elseif(NOT CMAKE_ANDROID_ARCH STREQUAL "arm")
         list(APPEND importLibraries base64_avx base64_avx2 base64_avx512 base64_sse41 base64_sse42 base64_ssse3)
     endif()
+    # node, uv
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         list(APPEND importLibraries libnode libuv)
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)")
-        list(APPEND importLibraries node uv)
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android")
-        list(APPEND importLibraries node node_text_start uv)
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    else()
         list(APPEND importLibraries node uv)
     endif()
-    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
-        list(APPEND importLibraries zlib_arm_crc32)
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)")
-        list(APPEND importLibraries zlib_arm_crc32)
-    # else()
-    #     list(APPEND importLibraries zlib_crc32_simd)
+    # node_text_start
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        list(APPEND importLibraries node_text_start)
+    endif()
+    # zlib
+    if(CMAKE_SYSTEM_NAME STREQUAL "Android")
+        if(CMAKE_ANDROID_ARCH STREQUAL "arm64")
+            list(APPEND importLibraries zlib_adler32_simd zlib_arm_crc32)
+        elseif(CMAKE_ANDROID_ARCH MATCHES "(x86|x86_64)")
+            list(APPEND importLibraries zlib_adler32_simd zlib_inflate_chunk_simd)
+        endif()
+    else()
+        list(APPEND importLibraries zlib_adler32_simd zlib_inflate_chunk_simd)
+        if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)")
+            list(APPEND importLibraries zlib_arm_crc32)
+        endif()
     endif()
     add_definitions(-DENABLE_NODE)
     set(JAVET_LIB_TYPE "node")
@@ -246,6 +254,20 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
                 -llog -static-libgcc -static-libstdc++ "${libgcc}")
             target_link_libraries(JavetStatic PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
                 -llog -static-libgcc -static-libstdc++ "${libgcc}")
+        endif()
+        if(DEFINED NODE_DIR)
+            list(APPEND includeDirs
+                ${NODE_DIR}/out.${CMAKE_ANDROID_ARCH}/Release/obj/gen/generate-bytecode-output-root
+                ${NODE_DIR}/out.${CMAKE_ANDROID_ARCH}/Release/obj/gen/inspector-generated-output-root
+                ${NODE_DIR}/out.${CMAKE_ANDROID_ARCH}/Release/obj/gen)
+            foreach(importLibrary ${importLibraries})
+                set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out.${CMAKE_ANDROID_ARCH}/Release/lib${importLibrary}.a)
+            endforeach(importLibrary)
+            list(REMOVE_ITEM importLibraries v8_init)
+            target_link_libraries(Javet PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
+                v8_init -llog -static-libgcc -static-libstdc++ "${libgcc}")
+            target_link_libraries(JavetStatic PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
+                v8_init -llog -static-libgcc -static-libstdc++ "${libgcc}")
         endif()
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|x86_64)")
         set(JAVET_LIB_SYSTEM "macos")
