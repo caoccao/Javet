@@ -104,10 +104,6 @@ namespace Javet {
             return v8Locker ? v8Locker : std::make_shared<v8::Locker>(v8Isolate);
         }
 
-        inline auto GetSharedV8LockerForInspector() const noexcept {
-            return v8LockerForInspector ? v8LockerForInspector : std::make_shared<v8::Locker>(v8Isolate);
-        }
-
         /*
          * Unique V8 locker is for explicit mode.
          * Application manages the lock.
@@ -185,7 +181,6 @@ namespace Javet {
         std::unique_ptr<v8::SnapshotCreator> v8SnapshotCreator;
         std::unique_ptr<v8::StartupData, std::function<void(v8::StartupData*)>> v8StartupData;
         std::shared_ptr<v8::Locker> v8Locker;
-        std::shared_ptr<v8::Locker> v8LockerForInspector;
         V8PersistentContext v8PersistentContext;
     };
 }
