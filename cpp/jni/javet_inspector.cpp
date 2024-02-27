@@ -154,7 +154,7 @@ namespace Javet {
         }
 
         void JavetInspectorChannel::sendNotification(std::unique_ptr<v8_inspector::StringBuffer> message) {
-            auto v8Locker = v8Runtime->GetUniqueV8Locker();
+            // The lock is not required.
             V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
             auto stdStringMessagePointer = ConvertFromStringBufferToStdStringPointer(v8Runtime->v8Isolate, message.get());
             LOG_DEBUG("Sending notification: " << *stdStringMessagePointer.get());
@@ -165,7 +165,7 @@ namespace Javet {
         }
 
         void JavetInspectorChannel::sendResponse(int callId, std::unique_ptr<v8_inspector::StringBuffer> message) {
-            auto v8Locker = v8Runtime->GetUniqueV8Locker();
+            // The lock is not required.
             V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
             auto stdStringMessagePointer = ConvertFromStringBufferToStdStringPointer(v8Runtime->v8Isolate, message.get());
             LOG_DEBUG("Sending response: " << *stdStringMessagePointer.get());
