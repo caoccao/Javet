@@ -14,8 +14,28 @@ env:
   ROOT: /home/runner/work/Javet
 
 jobs:
-  build_javet_arm:
-    name: Build Javet arm
+  build_javet_lib:
+    strategy:
+      matrix:
+        include:
+          - v8_release: arm
+            v8_arch: arm
+            android_arch: arm
+            android_abi: armeabi-v7a
+          - v8_release: arm64
+            v8_arch: arm64
+            android_arch: arm64
+            android_abi: arm64-v8a
+          - v8_release: ia32
+            v8_arch: x86
+            android_arch: x86
+            android_abi: x86
+          - v8_release: x64
+            v8_arch: x64
+            android_arch: x86_64
+            android_abi: x86_64
+
+    name: Build Javet ${{ matrix.android_arch }}
     runs-on: ubuntu-latest
 
     steps:
@@ -60,9 +80,9 @@ jobs:
         echo 'target_os = ["android"]' >> .gclient
         gclient sync -D
         cd v8
-        python3 tools/dev/v8gen.py arm.release -- 'target_os="android"' 'target_cpu="arm"' 'v8_target_cpu="arm"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-        ninja -C out.gn/arm.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
-        ninja -C out.gn/arm.release v8_monolith
+        python3 tools/dev/v8gen.py ${{ matrix.v8_release }}.release -- 'target_os="android"' 'target_cpu="${{ matrix.v8_arch }}"' 'v8_target_cpu="${{ matrix.v8_arch }}"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
+        ninja -C out.gn/${{ matrix.v8_release }}.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
+        ninja -C out.gn/${{ matrix.v8_release }}.release v8_monolith
 
     - name: Setup JDK 11
       uses: actions/setup-java@v4
@@ -78,232 +98,16 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
-        sh ./build-android.sh -DV8_DIR=${{ env.ROOT }}/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=arm
+        sh ./build-android.sh -DV8_DIR=${{ env.ROOT }}/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=${{ matrix.android_arch }}
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: javet-android-v8-arm-${{ env.JAVET_VERSION }}
-        path: android/javet-android/src/main/jniLibs/armeabi-v7a/*.so
-
-  build_javet_arm64:
-    name: Build Javet arm64
-    runs-on: ubuntu-latest
-
-    steps:
-
-    - name: Checkout the code
-      uses: actions/checkout@v4
-
-    - name: Setup Ubuntu
-      run: |
-        sudo apt-get install -y execstack gcc-multilib
-
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11' 
-
-    - name: Setup Android NDK
-      id: setup-ndk
-      uses: nttld/setup-ndk@v1
-      with:
-        ndk-version: r25b
-        local-cache: false
-
-    - name: Setup Path
-      run: |
-        echo "${{ env.ROOT }}/google/depot_tools" >> $GITHUB_PATH
-
-    - name: Build V8
-      run: |
-        cd ${{ env.ROOT }}
-        mkdir google
-        cd google
-        git clone --depth=10 --branch=main https://chromium.googlesource.com/chromium/tools/depot_tools.git
-        cd depot_tools
-        git checkout remotes/origin/main
-        cd ..
-        fetch v8
-        cd v8
-        git checkout ${{ env.JAVET_V8_VERSION }}
-        ./build/install-build-deps.sh
-        cd ..
-        echo 'target_os = ["android"]' >> .gclient
-        gclient sync -D
-        cd v8
-        python3 tools/dev/v8gen.py arm64.release -- 'target_os="android"' 'target_cpu="arm64"' 'v8_target_cpu="arm64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-        ninja -C out.gn/arm64.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
-        ninja -C out.gn/arm64.release v8_monolith
-
-    - name: Setup JDK 11
-      uses: actions/setup-java@v4
-      with:
-        distribution: corretto
-        java-version: 11
-
-    - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v2.0
-      with:
-        cmake-version: '3.23.x'
-
-    - name: Build Javet JNI
-      run: |
-        cd ${{ env.ROOT }}/Javet/cpp
-        sh ./build-android.sh -DV8_DIR=${{ env.ROOT }}/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=arm64
-
-    - name: Upload the Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: javet-android-v8-arm64-${{ env.JAVET_VERSION }}
-        path: android/javet-android/src/main/jniLibs/arm64-v8a/*.so
-
-  build_javet_x86:
-    name: Build Javet x86
-    runs-on: ubuntu-latest
-
-    steps:
-
-    - name: Checkout the code
-      uses: actions/checkout@v4
-
-    - name: Setup Ubuntu
-      run: |
-        sudo apt-get install -y execstack gcc-multilib
-
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11' 
-
-    - name: Setup Android NDK
-      id: setup-ndk
-      uses: nttld/setup-ndk@v1
-      with:
-        ndk-version: r25b
-        local-cache: false
-
-    - name: Setup Path
-      run: |
-        echo "${{ env.ROOT }}/google/depot_tools" >> $GITHUB_PATH
-
-    - name: Build V8
-      run: |
-        cd ${{ env.ROOT }}
-        mkdir google
-        cd google
-        git clone --depth=10 --branch=main https://chromium.googlesource.com/chromium/tools/depot_tools.git
-        cd depot_tools
-        git checkout remotes/origin/main
-        cd ..
-        fetch v8
-        cd v8
-        git checkout ${{ env.JAVET_V8_VERSION }}
-        ./build/install-build-deps.sh
-        cd ..
-        echo 'target_os = ["android"]' >> .gclient
-        gclient sync -D
-        cd v8
-        python3 tools/dev/v8gen.py ia32.release -- 'target_os="android"' 'target_cpu="x86"' 'v8_target_cpu="x86"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-        ninja -C out.gn/ia32.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
-        ninja -C out.gn/ia32.release v8_monolith
-
-    - name: Setup JDK 11
-      uses: actions/setup-java@v4
-      with:
-        distribution: corretto
-        java-version: 11
-
-    - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v2.0
-      with:
-        cmake-version: '3.23.x'
-
-    - name: Build Javet JNI
-      run: |
-        cd ${{ env.ROOT }}/Javet/cpp
-        sh ./build-android.sh -DV8_DIR=${{ env.ROOT }}/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=x86
-
-    - name: Upload the Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: javet-android-v8-x86-${{ env.JAVET_VERSION }}
-        path: android/javet-android/src/main/jniLibs/x86/*.so
-
-  build_javet_x86_64:
-    name: Build Javet x86_64
-    runs-on: ubuntu-latest
-
-    steps:
-
-    - name: Checkout the code
-      uses: actions/checkout@v4
-
-    - name: Setup Ubuntu
-      run: |
-        sudo apt-get install -y execstack gcc-multilib
-
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11' 
-
-    - name: Setup Android NDK
-      id: setup-ndk
-      uses: nttld/setup-ndk@v1
-      with:
-        ndk-version: r25b
-        local-cache: false
-
-    - name: Setup Path
-      run: |
-        echo "${{ env.ROOT }}/google/depot_tools" >> $GITHUB_PATH
-
-    - name: Build V8
-      run: |
-        cd ${{ env.ROOT }}
-        mkdir google
-        cd google
-        git clone --depth=10 --branch=main https://chromium.googlesource.com/chromium/tools/depot_tools.git
-        cd depot_tools
-        git checkout remotes/origin/main
-        cd ..
-        fetch v8
-        cd v8
-        git checkout ${{ env.JAVET_V8_VERSION }}
-        ./build/install-build-deps.sh
-        cd ..
-        echo 'target_os = ["android"]' >> .gclient
-        gclient sync -D
-        cd v8
-        python3 tools/dev/v8gen.py x64.release -- 'target_os="android"' 'target_cpu="x64"' 'v8_target_cpu="x64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-        ninja -C out.gn/x64.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
-        ninja -C out.gn/x64.release v8_monolith
-
-    - name: Setup JDK 11
-      uses: actions/setup-java@v4
-      with:
-        distribution: corretto
-        java-version: 11
-
-    - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v2.0
-      with:
-        cmake-version: '3.23.x'
-
-    - name: Build Javet JNI
-      run: |
-        cd ${{ env.ROOT }}/Javet/cpp
-        sh ./build-android.sh -DV8_DIR=${{ env.ROOT }}/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=x86_64
-
-    - name: Upload the Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: javet-android-v8-x86_64-${{ env.JAVET_VERSION }}
-        path: android/javet-android/src/main/jniLibs/x86_64/*.so
+        name: javet-android-v8-${{ matrix.android_arch }}-${{ env.JAVET_VERSION }}
+        path: android/javet-android/src/main/jniLibs/${{ matrix.android_abi }}/*.so
 
   build_javet_aar:
-    needs: [build_javet_arm, build_javet_arm64, build_javet_x86, build_javet_x86_64]
+    needs: [build_javet_lib]
     name: Build Javet Jar
     runs-on: ubuntu-latest
 
