@@ -68,7 +68,7 @@ jobs:
         cd ${{ env.ROOT }}
         git clone https://github.com/nodejs/node.git
         cd node
-        git checkout ${{ env.JAVET_NODE_VERSION }}
+        git checkout v${{ env.JAVET_NODE_VERSION }}
         git apply < ../Javet/scripts/patches/android/node/android_configure.py.patch
         git apply < ../Javet/scripts/patches/android/node/common.gypi.patch
         git apply < ../Javet/scripts/patches/android/node/configure.py.patch
