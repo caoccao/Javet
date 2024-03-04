@@ -1,14 +1,13 @@
-name: Android Build
+name: Android V8 Build
 
 concurrency:
-  group: android_build_${{ github.ref }}
+  group: android_v8_build_${{ github.ref }}
   cancel-in-progress: true
 
 on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 20.11.1
   JAVET_V8_VERSION: 12.2.281.16
   JAVET_VERSION: 3.1.0
   ROOT: /home/runner/work/Javet
@@ -108,7 +107,7 @@ jobs:
 
   build_javet_aar:
     needs: [build_javet_lib]
-    name: Build Javet Jar
+    name: Build Javet AAR
     runs-on: ubuntu-latest
 
     steps:
@@ -173,7 +172,7 @@ jobs:
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: javet-android-${{ env.JAVET_VERSION }}
+        name: javet-android-v8-${{ env.JAVET_VERSION }}
         path: android/javet-android/build/outputs/aar/javet*release.aar
 
     - name: Delete Javet arm
