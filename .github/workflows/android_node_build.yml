@@ -76,7 +76,7 @@ jobs:
         git apply < ../Javet/scripts/patches/android/node/push_registers_asm.cc.patch
         git apply < ../Javet/scripts/patches/android/node/trap-handler.h.patch
         git apply < ../Javet/scripts/patches/android/node/test_crypto_clienthello.cc.patch
-        ./android-configure ${HOME}/coding/public/android-ndk-r25b 24 ${{ matrix.android_arch }}
+        ./android-configure ${{ steps.setup-ndk.outputs.ndk-path }} 24 ${{ matrix.android_arch }}
         make -j `nproc`
 
     - name: Setup JDK 11
