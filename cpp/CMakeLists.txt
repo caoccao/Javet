@@ -137,7 +137,7 @@ if(DEFINED NODE_DIR)
     # zlib
     if(CMAKE_SYSTEM_NAME STREQUAL "Android")
         if(CMAKE_ANDROID_ARCH STREQUAL "arm64")
-            list(APPEND importLibraries zlib_adler32_simd zlib_arm_crc32)
+            list(APPEND importLibraries zlib_arm_crc32)
         elseif(CMAKE_ANDROID_ARCH MATCHES "(x86|x86_64)")
             list(APPEND importLibraries zlib_adler32_simd zlib_inflate_chunk_simd)
         endif()
