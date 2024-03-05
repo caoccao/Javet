@@ -78,6 +78,7 @@ jobs:
         git apply < ../Javet/scripts/patches/android/node/test_crypto_clienthello.cc.patch
         ./android-configure ${{ steps.setup-ndk.outputs.ndk-path }} 24 ${{ matrix.android_arch }}
         make -j4
+        mv out out.${{ matrix.android_arch }}
 
     - name: Setup JDK 11
       uses: actions/setup-java@v4
@@ -93,7 +94,7 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
-        sh ./build-android.sh -DNODE_DIR=${{ env.ROOT }}/node/out -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=${{ matrix.android_arch }}
+        sh ./build-android.sh -DNODE_DIR=${{ env.ROOT }}/node -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=${{ matrix.android_arch }}
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
