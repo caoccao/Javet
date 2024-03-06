@@ -346,8 +346,8 @@ public final class JavetLibLoader {
                     }
                     purge(libPath);
                     File libFile = new File(rootLibPath, getLibFileName()).getAbsoluteFile();
-                    deployLibFile(resourceFileName, libFile);
                     libFilePath = libFile.getAbsolutePath();
+                    deployLibFile(resourceFileName, libFile);
                 } else {
                     File libPath = libLoadingListener.getLibPath(jsRuntimeType);
                     Objects.requireNonNull(libPath, "Lib path cannot be null");
