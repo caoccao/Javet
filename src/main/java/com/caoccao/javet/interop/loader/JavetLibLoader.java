@@ -20,10 +20,7 @@ import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
-import com.caoccao.javet.utils.JavetDefaultLogger;
-import com.caoccao.javet.utils.JavetOSUtils;
-import com.caoccao.javet.utils.SimpleMap;
-import com.caoccao.javet.utils.StringUtils;
+import com.caoccao.javet.utils.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -383,7 +380,7 @@ public final class JavetLibLoader {
             if (rootLibPath.exists()) {
                 if (rootLibPath.isDirectory()) {
                     File[] files = rootLibPath.listFiles();
-                    if (files != null && files.length > 0) {
+                    if (ArrayUtils.isNotEmpty(files)) {
                         for (File libFileOrPath : files) {
                             if (libFileOrPath.lastModified() + MIN_LAST_MODIFIED_GAP_IN_MILLIS > System.currentTimeMillis()) {
                                 continue;
