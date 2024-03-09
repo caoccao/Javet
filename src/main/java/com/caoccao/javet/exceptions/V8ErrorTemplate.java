@@ -76,11 +76,22 @@ public final class V8ErrorTemplate {
     /**
      * TypeError: ${value} is not a function.
      *
+     * @param functionName the function name
+     * @return the message
+     * @since 3.1.0
+     */
+    public static String typeErrorValueIsNotAFunction(String functionName) {
+        return Objects.requireNonNull(functionName) + " is not a function";
+    }
+
+    /**
+     * TypeError: ${value} is not a function.
+     *
      * @param v8Value the V8 value
      * @return the message
      * @since 3.0.4
      */
     public static String typeErrorValueIsNotAFunction(V8Value v8Value) {
-        return V8ValueUtils.asString(v8Value) + " is not a function";
+        return typeErrorValueIsNotAFunction(V8ValueUtils.asString(v8Value));
     }
 }

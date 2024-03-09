@@ -18,8 +18,7 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.*;
-import com.caoccao.javet.exceptions.JavetError;
-import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.*;
 import com.caoccao.javet.interfaces.IEnumBitset;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
@@ -2551,8 +2550,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     <T extends V8Value> T objectInvoke(
             IV8ValueObject iV8ValueObject, String functionName, boolean returnResult, V8Value... v8Values)
             throws JavetException {
-        return (T) v8Native.objectInvoke(
-                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), functionName, returnResult, v8Values);
+        Object result = v8Native.objectInvoke(
+                handle,
+                iV8ValueObject.getHandle(),
+                iV8ValueObject.getType().getId(),
+                functionName,
+                returnResult,
+                v8Values);
+        if (result == null) {
+            String message = MessageFormat.format(
+                    "{0}: {1}",
+                    V8ValueErrorType.TypeError.getName(),
+                    V8ErrorTemplate.typeErrorValueIsNotAFunction(functionName));
+            throw new JavetExecutionException(new JavetScriptingError(message, message, null), null);
+        }
+        return (T) result;
     }
 
     /**

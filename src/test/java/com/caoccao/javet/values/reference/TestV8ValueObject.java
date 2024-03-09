@@ -423,6 +423,11 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                 new Integer[]{1, 2, 3, 4, 5, 6},
                 result.toArray(new Integer[0]),
                 "invokeObject() should work transparently without resource leak");
+        assertEquals(
+                "TypeError: unknownFunction is not a function",
+                assertThrows(
+                        JavetExecutionException.class,
+                        () -> v8Runtime.getGlobalObject().invokeVoid("unknownFunction")).getMessage());
     }
 
     @Test
@@ -433,6 +438,11 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             assertEquals(4, v8ValueArray.getLength());
             assertEquals(4, v8ValueArray.getInteger(3));
             assertEquals("1,2,3,4", v8ValueArray.toString());
+            assertEquals(
+                    "TypeError: unknownFunction is not a function",
+                    assertThrows(
+                            JavetExecutionException.class,
+                            () -> v8ValueArray.invokeVoid("unknownFunction")).getMessage());
         }
     }
 

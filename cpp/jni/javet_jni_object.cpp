@@ -231,7 +231,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectGet
         [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context, jbooleanArray mPrimitiveFlags) -> jobject {
             return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
         },
-            [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context) -> jobject { return nullptr; });
+        [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context) -> jobject { return nullptr; });
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetBoolean
@@ -256,7 +256,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetBool
             jniEnv->SetBooleanArrayRegion(mPrimitiveFlags, 0, 1, Javet::V8ValueObject::defaultPrimitiveFlags);
             return false;
         },
-            [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context) -> jboolean { return false; });
+        [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context) -> jboolean { return false; });
 }
 
 JNIEXPORT jdouble JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetDouble
@@ -281,7 +281,7 @@ JNIEXPORT jdouble JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetDoubl
             jniEnv->SetBooleanArrayRegion(mPrimitiveFlags, 0, 1, Javet::V8ValueObject::defaultPrimitiveFlags);
             return 0;
         },
-            [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context) -> jdouble { return 0; });
+        [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context) -> jdouble { return 0; });
 }
 
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetIdentityHash
@@ -315,7 +315,7 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetInteger
             jniEnv->SetBooleanArrayRegion(mPrimitiveFlags, 0, 1, Javet::V8ValueObject::defaultPrimitiveFlags);
             return 0;
         },
-            [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context) -> jint { return 0; });
+        [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context) -> jint { return 0; });
 }
 
 JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetLong
@@ -340,7 +340,7 @@ JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetLong
             jniEnv->SetBooleanArrayRegion(mPrimitiveFlags, 0, 1, Javet::V8ValueObject::defaultPrimitiveFlags);
             return 0;
         },
-            [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context) -> jlong { return 0; });
+        [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context) -> jlong { return 0; });
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetPrivateProperty
@@ -501,7 +501,7 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetStrin
             return nullptr;
         },
         [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context, jbooleanArray mPrimitiveFlags) -> jstring { return nullptr; },
-            [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context) -> jstring { return nullptr; });
+        [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context) -> jstring { return nullptr; });
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectHas
@@ -608,6 +608,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectInvoke
             if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context)) {
                 return nullptr;
             }
+            return nullptr;
         }
         else {
             auto v8Function = v8MaybeLocalValue.ToLocalChecked();
@@ -628,6 +629,9 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectInvoke
                 else if (mResultRequired && !v8MaybeLocalValueResult.IsEmpty()) {
                     return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8MaybeLocalValueResult.ToLocalChecked());
                 }
+            }
+            else {
+                return nullptr;
             }
         }
     }
