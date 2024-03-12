@@ -143,6 +143,7 @@ Blog
 * `How to Elegantly Expose JsonNode in V8 <https://blog.caoccao.com/how-to-elegantly-expose-jsonnode-in-v8-638aff9da549>`_
 * `How to Compromise V8 on JVM <https://blog.caoccao.com/how-to-compromise-v8-on-jvm-ceb385572461>`_
 * `Is TypeScript a Good Choice for a Script Engine? <https://blog.caoccao.com/is-typescript-a-good-choice-for-a-script-engine-01fe69921ace>`_
+* `Run TypeScript Directly in Java <https://blog.caoccao.com/run-typescript-directly-in-java-82b7003b44b8>`_
 
 Documents
 =========
