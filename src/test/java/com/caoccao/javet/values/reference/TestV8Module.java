@@ -275,7 +275,19 @@ public class TestV8Module extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testJavetBuiltInModuleResolver() throws JavetException {
+    public void testJavetBuiltInModuleResolverWithDefault() throws JavetException {
+        if (v8Runtime.getJSRuntimeType().isNode()) {
+            v8Runtime.setV8ModuleResolver(new JavetBuiltInModuleResolver());
+            v8Runtime.getExecutor(
+                            "import fs from 'node:fs';\n" +
+                                    "globalThis.a = fs.existsSync('/path-not-found');")
+                    .setModule(true).executeVoid();
+            assertFalse(v8Runtime.getGlobalObject().getBoolean("a"));
+        }
+    }
+
+    @Test
+    public void testJavetBuiltInModuleResolverWithoutDefault() throws JavetException {
         if (v8Runtime.getJSRuntimeType().isNode()) {
             v8Runtime.setV8ModuleResolver(new JavetBuiltInModuleResolver());
             v8Runtime.getExecutor(
