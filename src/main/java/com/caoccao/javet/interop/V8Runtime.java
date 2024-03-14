@@ -3352,6 +3352,19 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Get resource name from a script.
+     *
+     * @param iV8Script the V8 script
+     * @return the resource name
+     * @throws JavetException the javet exception
+     * @since 3.1.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    String scriptGetResourceName(IV8Script iV8Script) throws JavetException {
+        return v8Native.scriptGetResourceName(handle, iV8Script.getHandle(), iV8Script.getType().getId());
+    }
+
+    /**
      * Run a script.
      *
      * @param <T>            the type parameter

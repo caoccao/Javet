@@ -376,6 +376,8 @@ public interface IV8Native {
 
     byte[] scriptGetCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    String scriptGetResourceName(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     Object scriptRun(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
 
     void setAdd(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);

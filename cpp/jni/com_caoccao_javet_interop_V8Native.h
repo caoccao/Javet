@@ -1273,6 +1273,14 @@ JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_scriptGetCa
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    scriptGetResourceName
+ * Signature: (JJI)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_scriptGetResourceName
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    scriptRun
  * Signature: (JJIZ)Ljava/lang/Object;
  */

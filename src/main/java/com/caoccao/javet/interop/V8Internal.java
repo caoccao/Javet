@@ -584,6 +584,10 @@ public final class V8Internal {
         return v8Runtime.scriptGetCachedData(iV8Script);
     }
 
+    public String scriptGetResourceName(IV8Script iV8Script) throws JavetException {
+        return v8Runtime.scriptGetResourceName(iV8Script);
+    }
+
     public <T extends V8Value> T scriptRun(
             IV8Script iV8Script, boolean resultRequired) throws JavetException {
         return v8Runtime.scriptRun(iV8Script, resultRequired);

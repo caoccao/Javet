@@ -571,6 +571,9 @@ class V8Native implements IV8Native {
     public native byte[] scriptGetCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native String scriptGetResourceName(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native Object scriptRun(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
 
     @Override
