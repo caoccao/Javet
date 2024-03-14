@@ -324,7 +324,7 @@ public final class V8Internal {
     }
 
     @CheckReturnValue
-    public V8ValueObject moduleGetNamespace(IV8Module iV8Module) throws JavetException {
+    public V8Value moduleGetNamespace(IV8Module iV8Module) throws JavetException {
         return v8Runtime.moduleGetNamespace(iV8Module);
     }
 

@@ -2187,8 +2187,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
-    V8ValueObject moduleGetNamespace(IV8Module iV8Module) throws JavetException {
-        return (V8ValueObject) v8Native.moduleGetNamespace(
+    V8Value moduleGetNamespace(IV8Module iV8Module) throws JavetException {
+        return (V8Value) v8Native.moduleGetNamespace(
                 handle, iV8Module.getHandle(), iV8Module.getType().getId());
     }
 

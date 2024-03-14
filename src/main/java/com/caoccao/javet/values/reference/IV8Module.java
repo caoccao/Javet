@@ -119,14 +119,15 @@ public interface IV8Module
     /**
      * Gets namespace.
      * <p>
-     * The module's status must be at least kInstantiated. Otherwise, core dump will take place.
+     * The module's status must be at least kInstantiated.
+     * Otherwise, undefined is returned.
      *
      * @return the namespace
      * @throws JavetException the javet exception
      * @since 0.8.0
      */
     @CheckReturnValue
-    V8ValueObject getNamespace() throws JavetException;
+    V8Value getNamespace() throws JavetException;
 
     /**
      * Gets resource name.

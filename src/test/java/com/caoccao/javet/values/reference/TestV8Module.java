@@ -88,8 +88,9 @@ public class TestV8Module extends BaseTestJavetRuntime {
             assertEquals(V8Module.Evaluated, v8Module.getStatus());
             assertNull(v8Module.getException());
             assertEquals(1, v8Runtime.getExecutor("Object.a").executeInteger());
-            try (V8ValueObject v8ValueObject = v8Module.getNamespace()) {
-                assertNotNull(v8ValueObject);
+            try (V8Value v8Value = v8Module.getNamespace()) {
+                assertNotNull(v8Value);
+                assertFalse(v8Value.isUndefined());
             }
         }
     }
@@ -215,9 +216,9 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 assertTrue(v8ValuePromise.isFulfilled());
                 assertTrue(v8ValuePromise.getResult().isUndefined());
             }
-            try (V8ValueObject v8ValueObject = v8Module1.getNamespace()) {
-                assertNotNull(v8ValueObject);
-                try (V8ValueFunction v8ValueFunction = v8ValueObject.get("test1")) {
+            try (V8Value v8Value = v8Module1.getNamespace()) {
+                assertNotNull(v8Value);
+                try (V8ValueFunction v8ValueFunction = ((V8ValueObject) v8Value).get("test1")) {
                     assertEquals(codeString1.substring(7), v8ValueFunction.toString());
                 }
             }
@@ -233,9 +234,9 @@ public class TestV8Module extends BaseTestJavetRuntime {
                     assertTrue(v8ValuePromise.isFulfilled());
                     assertTrue(v8ValuePromise.getResult().isUndefined());
                 }
-                try (V8ValueObject v8ValueObject = v8Module2.getNamespace()) {
-                    assertNotNull(v8ValueObject);
-                    try (V8ValueFunction v8ValueFunction = v8ValueObject.get("test2")) {
+                try (V8Value v8Value = v8Module2.getNamespace()) {
+                    assertNotNull(v8Value);
+                    try (V8ValueFunction v8ValueFunction = ((V8ValueObject) v8Value).get("test2")) {
                         assertEquals(codeString1.substring(7), v8ValueFunction.toString());
                     }
                 }

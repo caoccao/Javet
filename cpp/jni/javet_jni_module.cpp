@@ -189,7 +189,11 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetExcep
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetNamespace
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalModule->GetModuleNamespace());
+    if (v8LocalModule->GetStatus() != v8::Module::Status::kUninstantiated
+        && v8LocalModule->GetStatus() != v8::Module::Status::kInstantiating) {
+        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalModule->GetModuleNamespace());
+    }
+    return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
 }
 
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetScriptId
