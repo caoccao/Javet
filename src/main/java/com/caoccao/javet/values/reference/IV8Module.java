@@ -140,6 +140,7 @@ public interface IV8Module
      * Gets script id.
      * <p>
      * The module must be a SourceTextModule and must not have a kErrored status.
+     * Otherwise, -1 is returned.
      *
      * @return the script id
      * @throws JavetException the javet exception

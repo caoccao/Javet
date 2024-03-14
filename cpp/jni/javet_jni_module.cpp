@@ -195,7 +195,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetNames
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetScriptId
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    return (jint)v8LocalModule->ScriptId();
+    if (v8LocalModule->IsSourceTextModule() && v8LocalModule->GetStatus() != v8::Module::Status::kErrored) {
+        return v8LocalModule->ScriptId();
+    }
+    return -1;
 }
 
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetStatus

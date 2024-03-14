@@ -8,5 +8,5 @@ Release Notes 3.1.x
 * Added support for Android Node.js mode
 * Added ``default`` to built-in Node.js modules for ESM
 * Fixed inspector locking issue
-* Rewrote ``getResourceName()`` for ``IV8Script``
-* Removed ``setResourceName()`` from ``IV8Script``
+* Revised ``IV8Module.getScriptId()``, ``IV8Script.getResourceName()``
+* Removed ``IV8Script.setResourceName()``
