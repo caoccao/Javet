@@ -132,7 +132,9 @@ if(DEFINED NODE_DIR)
     endif()
     # node_text_start
     if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-        list(APPEND importLibraries node_text_start)
+        if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
+            list(APPEND importLibraries node_text_start)
+        endif()
     endif()
     # zlib
     if(CMAKE_SYSTEM_NAME STREQUAL "Android")
