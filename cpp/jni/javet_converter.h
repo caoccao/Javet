@@ -345,6 +345,15 @@ namespace Javet {
 #endif
         }
 
+        static inline V8InternalModule ToV8InternalModule(
+            const V8LocalModule& v8LocalModule) noexcept {
+#ifdef ENABLE_NODE
+            return V8InternalModule::cast(*v8::Utils::OpenHandle(*v8LocalModule));
+#else
+            return *V8InternalModule::cast(*v8::Utils::OpenHandle(*v8LocalModule));
+#endif
+        }
+
         static inline V8InternalScript ToV8InternalScript(
             const V8LocalScript& v8LocalScript) noexcept {
 #ifdef ENABLE_NODE

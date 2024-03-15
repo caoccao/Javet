@@ -345,6 +345,9 @@ class V8Native implements IV8Native {
     public native Object moduleGetNamespace(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native String moduleGetResourceName(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native int moduleGetScriptId(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override

@@ -69,18 +69,18 @@ public class TestV8Module extends BaseTestJavetRuntime {
 
     @Test
     public void testExecute() throws JavetException {
-        IV8Executor iV8Executor = v8Runtime.getExecutor(
-                "Object.a = 1").setResourceName("./test.js");
+        final String moduleName = "./test.js";
+        IV8Executor iV8Executor = v8Runtime.getExecutor("Object.a = 1").setResourceName(moduleName);
         try (V8Module v8Module = iV8Executor.compileV8Module()) {
             assertTrue(v8Module.isSourceTextModule());
             assertFalse(v8Module.isSyntheticModule());
             assertEquals(V8Module.Uninstantiated, v8Module.getStatus());
-            assertTrue(v8Runtime.containsV8Module(v8Module.getResourceName()));
+            assertEquals(moduleName, v8Module.getResourceName());
+            assertTrue(v8Runtime.containsV8Module(moduleName));
             assertEquals(1, v8Runtime.getV8ModuleCount());
             if (v8Runtime.getJSRuntimeType().isV8()) {
                 assertTrue(3 <= v8Module.getScriptId() && v8Module.getScriptId() <= 4);
             }
-            assertEquals("./test.js", v8Module.getResourceName());
             try (V8ValuePromise v8ValuePromise = v8Module.execute()) {
                 assertTrue(v8ValuePromise.isFulfilled());
                 assertTrue(v8ValuePromise.getResult().isUndefined());
@@ -326,6 +326,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
 
     @Test
     public void testSyntheticModule() throws JavetException {
+        final String moduleName = "test.js";
         if (v8Runtime.getJSRuntimeType().isNode()) {
             v8Runtime.getExecutor("process.on('unhandledRejection', (reason, promise) => {\n" +
                             "  globalThis.reason = reason.toString();\n" +
@@ -341,7 +342,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
             });
         }
         v8Runtime.setV8ModuleResolver((v8Runtime, resourceName, v8ModuleReferrer) -> {
-            if ("test.js".equals(resourceName)) {
+            if (moduleName.equals(resourceName)) {
                 try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject();
                      V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
                     v8ValueObject.set("a", 1);
@@ -353,9 +354,10 @@ public class TestV8Module extends BaseTestJavetRuntime {
                         v8ValueBuiltInObject.freeze(v8ValueObject);
                     }
                     v8ValueArray.push(1);
-                    V8Module v8Module = v8Runtime.createV8Module("test.js", v8ValueObject);
+                    V8Module v8Module = v8Runtime.createV8Module(moduleName, v8ValueObject);
                     assertFalse(v8Module.isSourceTextModule());
                     assertTrue(v8Module.isSyntheticModule());
+                    assertEquals(moduleName, v8Module.getResourceName());
                     return v8Module;
                 }
             }

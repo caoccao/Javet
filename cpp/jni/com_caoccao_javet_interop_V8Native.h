@@ -745,6 +745,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetNames
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    moduleGetResourceName
+ * Signature: (JJI)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetResourceName
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    moduleGetScriptId
  * Signature: (JJI)I
  */

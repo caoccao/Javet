@@ -328,6 +328,10 @@ public final class V8Internal {
         return v8Runtime.moduleGetNamespace(iV8Module);
     }
 
+    public String moduleGetResourceName(IV8Module iV8Module) throws JavetException {
+        return v8Runtime.moduleGetResourceName(iV8Module);
+    }
+
     public int moduleGetScriptId(IV8Module iV8Module) throws JavetException {
         return v8Runtime.moduleGetScriptId(iV8Module);
     }

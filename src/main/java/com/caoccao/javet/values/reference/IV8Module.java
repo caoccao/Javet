@@ -133,9 +133,10 @@ public interface IV8Module
      * Gets resource name.
      *
      * @return the resource name
+     * @throws JavetException the javet exception
      * @since 0.8.0
      */
-    String getResourceName();
+    String getResourceName() throws JavetException;
 
     /**
      * Gets script id.
@@ -184,14 +185,6 @@ public interface IV8Module
      * @since 3.0.1
      */
     boolean isSyntheticModule() throws JavetException;
-
-    /**
-     * Sets resource name.
-     *
-     * @param resourceName the resource name
-     * @since 0.8.0
-     */
-    void setResourceName(String resourceName);
 
     @Override
     default <T, V extends V8Value> T toObject(V v8Value) throws JavetException {

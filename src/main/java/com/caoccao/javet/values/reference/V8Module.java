@@ -22,8 +22,6 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
-import java.util.Objects;
-
 /**
  * The type V8 module.
  *
@@ -90,7 +88,10 @@ public class V8Module extends V8ValueReference implements IV8Module {
     }
 
     @Override
-    public String getResourceName() {
+    public String getResourceName() throws JavetException {
+        if (resourceName == null) {
+            resourceName = checkV8Runtime().getV8Internal().moduleGetResourceName(this);
+        }
         return resourceName;
     }
 
@@ -128,11 +129,6 @@ public class V8Module extends V8ValueReference implements IV8Module {
             syntheticModule = checkV8Runtime().getV8Internal().moduleIsSyntheticModule(this);
         }
         return syntheticModule;
-    }
-
-    @Override
-    public void setResourceName(String resourceName) {
-        this.resourceName = Objects.requireNonNull(resourceName);
     }
 
     @Override

@@ -619,7 +619,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         V8Module v8Module = null;
         if (resultRequired && result instanceof V8Module) {
             v8Module = (V8Module) result;
-            v8Module.setResourceName(v8ScriptOrigin.getResourceName());
             addV8Module(v8Module);
         }
         return v8Module;
@@ -777,7 +776,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         V8Module v8Module = (V8Module) v8Native.moduleCreate(
                 handle, moduleName, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId());
         if (v8Module != null) {
-            v8Module.setResourceName(moduleName);
             addV8Module(v8Module);
         }
         return v8Module;
@@ -2190,6 +2188,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     V8Value moduleGetNamespace(IV8Module iV8Module) throws JavetException {
         return (V8Value) v8Native.moduleGetNamespace(
                 handle, iV8Module.getHandle(), iV8Module.getType().getId());
+    }
+
+    /**
+     * Gets the resource name from a module.
+     *
+     * @param iV8Module the V8 module
+     * @return the resource name
+     * @throws JavetException the javet exception
+     * @since 3.1.0
+     */
+    String moduleGetResourceName(IV8Module iV8Module) throws JavetException {
+        return v8Native.moduleGetResourceName(handle, iV8Module.getHandle(), iV8Module.getType().getId());
     }
 
     /**

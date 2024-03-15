@@ -232,6 +232,8 @@ public interface IV8Native {
 
     Object moduleGetNamespace(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    String moduleGetResourceName(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     int moduleGetScriptId(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     int moduleGetStatus(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
