@@ -2176,6 +2176,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Gets an idendity hash from a module
+     *
+     * @param iV8Module the V8 module
+     * @return the identity hash
+     * @throws JavetException the javet exception
+     */
+    @SuppressWarnings("RedundantThrows")
+    int moduleGetIdentityHash(IV8Module iV8Module) throws JavetException {
+        return v8Native.moduleGetIdentityHash(handle, iV8Module.getHandle(), iV8Module.getType().getId());
+    }
+
+    /**
      * Gets the namespace from a module.
      *
      * @param iV8Module the V8 module

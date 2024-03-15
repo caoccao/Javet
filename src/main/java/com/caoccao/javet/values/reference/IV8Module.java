@@ -117,6 +117,19 @@ public interface IV8Module
     V8ValueError getException() throws JavetException;
 
     /**
+     * Returns the identity hash for this object. The current implementation
+     * uses an inline property on the object to store the identity hash.
+     * <p>
+     * The return value will never be 0. Also, it is not guaranteed to be
+     * unique.
+     *
+     * @return the identity hash
+     * @throws JavetException the javet exception
+     * @since 3.1.0
+     */
+    int getIdentityHash() throws JavetException;
+
+    /**
      * Gets namespace.
      * <p>
      * The module's status must be at least kInstantiated.

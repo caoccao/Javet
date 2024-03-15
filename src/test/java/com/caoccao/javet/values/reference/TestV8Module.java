@@ -77,6 +77,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
             assertEquals(V8Module.Uninstantiated, v8Module.getStatus());
             assertEquals(moduleName, v8Module.getResourceName());
             assertTrue(v8Runtime.containsV8Module(moduleName));
+            assertTrue(v8Module.getIdentityHash() != 0);
             assertEquals(1, v8Runtime.getV8ModuleCount());
             if (v8Runtime.getJSRuntimeType().isV8()) {
                 assertTrue(3 <= v8Module.getScriptId() && v8Module.getScriptId() <= 4);
@@ -358,6 +359,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
                     assertFalse(v8Module.isSourceTextModule());
                     assertTrue(v8Module.isSyntheticModule());
                     assertEquals(moduleName, v8Module.getResourceName());
+                    assertTrue(v8Module.getIdentityHash() != 0);
                     return v8Module;
                 }
             }

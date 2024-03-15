@@ -82,6 +82,11 @@ public class V8Module extends V8ValueReference implements IV8Module {
     }
 
     @Override
+    public int getIdentityHash() throws JavetException {
+        return checkV8Runtime().getV8Internal().moduleGetIdentityHash(this);
+    }
+
+    @Override
     @CheckReturnValue
     public V8Value getNamespace() throws JavetException {
         return checkV8Runtime().getV8Internal().moduleGetNamespace(this);

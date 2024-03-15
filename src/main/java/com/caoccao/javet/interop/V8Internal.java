@@ -323,6 +323,10 @@ public final class V8Internal {
         return v8Runtime.moduleGetException(iV8Module);
     }
 
+    public int moduleGetIdentityHash(IV8Module iV8Module) throws JavetException {
+        return v8Runtime.moduleGetIdentityHash(iV8Module);
+    }
+
     @CheckReturnValue
     public V8Value moduleGetNamespace(IV8Module iV8Module) throws JavetException {
         return v8Runtime.moduleGetNamespace(iV8Module);
