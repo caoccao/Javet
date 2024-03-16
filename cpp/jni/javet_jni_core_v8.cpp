@@ -420,7 +420,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterGCProlo
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jstring mMessage) {
-    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE_WITH_UNIQUE_LOCKER(v8RuntimeHandle);
     char const* umMessage = jniEnv->GetStringUTFChars(mMessage, nullptr);
     std::string message(umMessage, jniEnv->GetStringUTFLength(mMessage));
     v8Runtime->v8Inspector->send(message);

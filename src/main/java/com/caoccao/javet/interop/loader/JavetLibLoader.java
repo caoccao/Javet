@@ -20,10 +20,7 @@ import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
-import com.caoccao.javet.utils.JavetDefaultLogger;
-import com.caoccao.javet.utils.JavetOSUtils;
-import com.caoccao.javet.utils.SimpleMap;
-import com.caoccao.javet.utils.StringUtils;
+import com.caoccao.javet.utils.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -48,7 +45,7 @@ public final class JavetLibLoader {
      *
      * @since 0.8.0
      */
-    public static final String LIB_VERSION = "3.0.4";
+    public static final String LIB_VERSION = "3.1.0";
     private static final String ANDROID_ABI_ARM = "armeabi-v7a";
     private static final String ANDROID_ABI_ARM64 = "arm64-v8a";
     private static final String ANDROID_ABI_X86 = "x86";
@@ -346,8 +343,8 @@ public final class JavetLibLoader {
                     }
                     purge(libPath);
                     File libFile = new File(rootLibPath, getLibFileName()).getAbsoluteFile();
-                    deployLibFile(resourceFileName, libFile);
                     libFilePath = libFile.getAbsolutePath();
+                    deployLibFile(resourceFileName, libFile);
                 } else {
                     File libPath = libLoadingListener.getLibPath(jsRuntimeType);
                     Objects.requireNonNull(libPath, "Lib path cannot be null");
@@ -383,7 +380,7 @@ public final class JavetLibLoader {
             if (rootLibPath.exists()) {
                 if (rootLibPath.isDirectory()) {
                     File[] files = rootLibPath.listFiles();
-                    if (files != null && files.length > 0) {
+                    if (ArrayUtils.isNotEmpty(files)) {
                         for (File libFileOrPath : files) {
                             if (libFileOrPath.lastModified() + MIN_LAST_MODIFIED_GAP_IN_MILLIS > System.currentTimeMillis()) {
                                 continue;

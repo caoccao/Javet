@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: com.caoccao.javet
+

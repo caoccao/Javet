@@ -342,7 +342,13 @@ class V8Native implements IV8Native {
     public native Object moduleGetException(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native int moduleGetIdentityHash(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
     public native Object moduleGetNamespace(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native String moduleGetResourceName(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native int moduleGetScriptId(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -569,6 +575,9 @@ class V8Native implements IV8Native {
 
     @Override
     public native byte[] scriptGetCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    @Override
+    public native String scriptGetResourceName(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native Object scriptRun(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);

@@ -737,10 +737,26 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetExcep
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    moduleGetIdentityHash
+ * Signature: (JJI)I
+ */
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetIdentityHash
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    moduleGetNamespace
  * Signature: (JJI)Ljava/lang/Object;
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetNamespace
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    moduleGetResourceName
+ * Signature: (JJI)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetResourceName
   (JNIEnv *, jobject, jlong, jlong, jint);
 
 /*
@@ -1269,6 +1285,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_scriptExecute
  * Signature: (JJI)[B
  */
 JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_scriptGetCachedData
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    scriptGetResourceName
+ * Signature: (JJI)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_scriptGetResourceName
   (JNIEnv *, jobject, jlong, jlong, jint);
 
 /*

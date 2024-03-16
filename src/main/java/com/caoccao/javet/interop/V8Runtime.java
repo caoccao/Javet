@@ -18,8 +18,7 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.*;
-import com.caoccao.javet.exceptions.JavetError;
-import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.exceptions.*;
 import com.caoccao.javet.interfaces.IEnumBitset;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
@@ -620,7 +619,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         V8Module v8Module = null;
         if (resultRequired && result instanceof V8Module) {
             v8Module = (V8Module) result;
-            v8Module.setResourceName(v8ScriptOrigin.getResourceName());
             addV8Module(v8Module);
         }
         return v8Module;
@@ -778,7 +776,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         V8Module v8Module = (V8Module) v8Native.moduleCreate(
                 handle, moduleName, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId());
         if (v8Module != null) {
-            v8Module.setResourceName(moduleName);
             addV8Module(v8Module);
         }
         return v8Module;
@@ -2179,6 +2176,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Gets an idendity hash from a module
+     *
+     * @param iV8Module the V8 module
+     * @return the identity hash
+     * @throws JavetException the javet exception
+     */
+    @SuppressWarnings("RedundantThrows")
+    int moduleGetIdentityHash(IV8Module iV8Module) throws JavetException {
+        return v8Native.moduleGetIdentityHash(handle, iV8Module.getHandle(), iV8Module.getType().getId());
+    }
+
+    /**
      * Gets the namespace from a module.
      *
      * @param iV8Module the V8 module
@@ -2188,9 +2197,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
-    V8ValueObject moduleGetNamespace(IV8Module iV8Module) throws JavetException {
-        return (V8ValueObject) v8Native.moduleGetNamespace(
+    V8Value moduleGetNamespace(IV8Module iV8Module) throws JavetException {
+        return (V8Value) v8Native.moduleGetNamespace(
                 handle, iV8Module.getHandle(), iV8Module.getType().getId());
+    }
+
+    /**
+     * Gets the resource name from a module.
+     *
+     * @param iV8Module the V8 module
+     * @return the resource name
+     * @throws JavetException the javet exception
+     * @since 3.1.0
+     */
+    String moduleGetResourceName(IV8Module iV8Module) throws JavetException {
+        return v8Native.moduleGetResourceName(handle, iV8Module.getHandle(), iV8Module.getType().getId());
     }
 
     /**
@@ -2551,8 +2572,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     <T extends V8Value> T objectInvoke(
             IV8ValueObject iV8ValueObject, String functionName, boolean returnResult, V8Value... v8Values)
             throws JavetException {
-        return (T) v8Native.objectInvoke(
-                handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), functionName, returnResult, v8Values);
+        Object result = v8Native.objectInvoke(
+                handle,
+                iV8ValueObject.getHandle(),
+                iV8ValueObject.getType().getId(),
+                functionName,
+                returnResult,
+                v8Values);
+        if (result == null) {
+            String message = MessageFormat.format(
+                    "{0}: {1}",
+                    V8ValueErrorType.TypeError.getName(),
+                    V8ErrorTemplate.typeErrorValueIsNotAFunction(functionName));
+            throw new JavetExecutionException(new JavetScriptingError(message, message, null), null);
+        }
+        return (T) result;
     }
 
     /**
@@ -3337,6 +3371,19 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     byte[] scriptGetCachedData(IV8Script iV8Script) throws JavetException {
         return v8Native.scriptGetCachedData(handle, iV8Script.getHandle(), iV8Script.getType().getId());
+    }
+
+    /**
+     * Get resource name from a script.
+     *
+     * @param iV8Script the V8 script
+     * @return the resource name
+     * @throws JavetException the javet exception
+     * @since 3.1.0
+     */
+    @SuppressWarnings("RedundantThrows")
+    String scriptGetResourceName(IV8Script iV8Script) throws JavetException {
+        return v8Native.scriptGetResourceName(handle, iV8Script.getHandle(), iV8Script.getType().getId());
     }
 
     /**

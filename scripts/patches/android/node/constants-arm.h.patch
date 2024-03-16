@@ -1,0 +1,18 @@
+diff --git a/deps/v8/src/codegen/arm/constants-arm.h b/deps/v8/src/codegen/arm/constants-arm.h
+index 5b8636d3b9..ff6dea9a58 100644
+--- a/deps/v8/src/codegen/arm/constants-arm.h
++++ b/deps/v8/src/codegen/arm/constants-arm.h
+@@ -179,7 +179,13 @@ constexpr int U = 1 << 23;  // Positive (or negative) offset/index.
+ constexpr int P =
+     1 << 24;  // Offset/pre-indexed addressing (or post-indexed addressing).
+ constexpr int I = 1 << 25;  // Immediate shifter operand (or not).
++#ifdef B0
++#undef B0
++// ensure safe undef
++#define B0 undefined
++#else
+ constexpr int B0 = 1 << 0;
++#endif
+ constexpr int B4 = 1 << 4;
+ constexpr int B5 = 1 << 5;
+ constexpr int B6 = 1 << 6;

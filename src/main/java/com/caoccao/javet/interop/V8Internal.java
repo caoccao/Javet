@@ -323,9 +323,17 @@ public final class V8Internal {
         return v8Runtime.moduleGetException(iV8Module);
     }
 
+    public int moduleGetIdentityHash(IV8Module iV8Module) throws JavetException {
+        return v8Runtime.moduleGetIdentityHash(iV8Module);
+    }
+
     @CheckReturnValue
-    public V8ValueObject moduleGetNamespace(IV8Module iV8Module) throws JavetException {
+    public V8Value moduleGetNamespace(IV8Module iV8Module) throws JavetException {
         return v8Runtime.moduleGetNamespace(iV8Module);
+    }
+
+    public String moduleGetResourceName(IV8Module iV8Module) throws JavetException {
+        return v8Runtime.moduleGetResourceName(iV8Module);
     }
 
     public int moduleGetScriptId(IV8Module iV8Module) throws JavetException {
@@ -582,6 +590,10 @@ public final class V8Internal {
 
     public byte[] scriptGetCachedData(IV8Script iV8Script) throws JavetException {
         return v8Runtime.scriptGetCachedData(iV8Script);
+    }
+
+    public String scriptGetResourceName(IV8Script iV8Script) throws JavetException {
+        return v8Runtime.scriptGetResourceName(iV8Script);
     }
 
     public <T extends V8Value> T scriptRun(

@@ -186,16 +186,60 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetExcep
     return nullptr;
 }
 
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetIdentityHash
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    return v8LocalModule->GetIdentityHash();
+}
+
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetNamespace
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalModule->GetModuleNamespace());
+    if (v8LocalModule->GetStatus() != v8::Module::Status::kUninstantiated
+        && v8LocalModule->GetStatus() != v8::Module::Status::kInstantiating) {
+        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalModule->GetModuleNamespace());
+    }
+    return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
+}
+
+JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetResourceName
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
+    auto v8InternalModule = Javet::Converter::ToV8InternalModule(v8LocalModule);
+    V8LocalValue v8LocalObjectName;
+    if (v8LocalModule->IsSourceTextModule()) {
+        auto v8InternalSourceTextModule = V8InternalSourceTextModule::cast(v8InternalModule);
+#ifdef ENABLE_NODE
+        auto v8InternalScript = v8InternalSourceTextModule.GetScript();
+#else
+        auto v8InternalScript = *((*v8InternalSourceTextModule).GetScript());
+#endif
+        auto v8InternalObjectNameOrSourceURL = v8InternalScript.GetNameOrSourceURL();
+        v8LocalObjectName = v8::Utils::ToLocal(v8::internal::handle(v8InternalObjectNameOrSourceURL, v8InternalIsolate));
+    }
+    else if (v8LocalModule->IsSyntheticModule()) {
+#ifdef ENABLE_NODE
+        auto v8InternalSyntheticModule = V8InternalSyntheticModule::cast(v8InternalModule);
+#else
+        auto v8InternalSyntheticModule = *V8InternalSyntheticModule::cast(v8InternalModule);
+#endif
+        auto v8InternalStringName = v8InternalSyntheticModule.name();
+        v8LocalObjectName = v8::Utils::ToLocal(v8::internal::handle(v8InternalStringName, v8InternalIsolate));
+    }
+    if (!v8LocalObjectName.IsEmpty()) {
+        return Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalObjectName);
+    }
+    return nullptr;
 }
 
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetScriptId
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    return (jint)v8LocalModule->ScriptId();
+    if (v8LocalModule->IsSourceTextModule() && v8LocalModule->GetStatus() != v8::Module::Status::kErrored) {
+        return v8LocalModule->ScriptId();
+    }
+    return -1;
 }
 
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetStatus

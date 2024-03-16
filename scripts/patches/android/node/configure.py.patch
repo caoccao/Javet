@@ -1,0 +1,14 @@
+diff --git a/configure.py b/configure.py
+index 84b016cd85..48d645209a 100755
+--- a/configure.py
++++ b/configure.py
+@@ -1275,8 +1275,7 @@ def configure_node(o):
+ 
+   # Enable branch protection for arm64
+   if target_arch == 'arm64':
+-    o['cflags']+=['-msign-return-address=all']
+-    o['variables']['arm_fpu'] = options.arm_fpu or 'neon'
++    pass
+ 
+   if options.node_snapshot_main is not None:
+     if options.shared:

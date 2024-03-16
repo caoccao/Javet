@@ -1,0 +1,184 @@
+name: Android Node Build
+
+concurrency:
+  group: android_node_build_${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+
+env:
+  JAVET_NODE_VERSION: 20.11.1
+  JAVET_VERSION: 3.1.0
+  ROOT: /home/runner/work/Javet
+
+jobs:
+  build_javet_lib:
+    strategy:
+      matrix:
+        include:
+          - android_arch: arm
+            android_abi: armeabi-v7a
+          - android_arch: arm64
+            android_abi: arm64-v8a
+          - android_arch: x86
+            android_abi: x86
+          - android_arch: x86_64
+            android_abi: x86_64
+
+    name: Build Javet ${{ matrix.android_arch }}
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout the code
+      uses: actions/checkout@v4
+
+    - name: Setup Ubuntu
+      run: |
+        sudo apt-get install -y execstack gcc-multilib g++-multilib
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11' 
+
+    - name: Setup Android NDK
+      id: setup-ndk
+      uses: nttld/setup-ndk@v1
+      with:
+        ndk-version: r25b
+        local-cache: false
+
+    - name: Setup Path
+      run: |
+        echo "${{ env.ROOT }}/google/depot_tools" >> $GITHUB_PATH
+
+    - name: Build Node.js
+      run: |
+        cd ${{ env.ROOT }}
+        git clone https://github.com/nodejs/node.git
+        cd node
+        git checkout v${{ env.JAVET_NODE_VERSION }}
+        git apply < ../Javet/scripts/patches/android/node/android_configure.py.patch
+        git apply < ../Javet/scripts/patches/android/node/common.gypi.patch
+        git apply < ../Javet/scripts/patches/android/node/configure.py.patch
+        git apply < ../Javet/scripts/patches/android/node/constants-arm.h.patch
+        git apply < ../Javet/scripts/patches/android/node/push_registers_asm.cc.patch
+        git apply < ../Javet/scripts/patches/android/node/trap-handler.h.patch
+        git apply < ../Javet/scripts/patches/android/node/test_crypto_clienthello.cc.patch
+        ./android-configure ${{ steps.setup-ndk.outputs.ndk-path }} 24 ${{ matrix.android_arch }}
+        make -j4
+        mv out out.${{ matrix.android_arch }}
+
+    - name: Setup JDK 11
+      uses: actions/setup-java@v4
+      with:
+        distribution: corretto
+        java-version: 11
+
+    - name: Setup Cmake
+      uses: jwlawson/actions-setup-cmake@v2.0
+      with:
+        cmake-version: '3.23.x'
+
+    - name: Build Javet JNI
+      run: |
+        cd ${{ env.ROOT }}/Javet/cpp
+        sh ./build-android.sh -DNODE_DIR=${{ env.ROOT }}/node -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=${{ matrix.android_arch }}
+
+    - name: Upload the Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: javet-android-node-${{ matrix.android_arch }}-${{ env.JAVET_VERSION }}
+        path: android/javet-android/src/main/jniLibs/${{ matrix.android_abi }}/*.so
+
+  build_javet_aar:
+    needs: [build_javet_lib]
+    name: Build Javet AAR
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout the code
+      uses: actions/checkout@v4
+
+    - name: Setup JDK 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: corretto
+        java-version: 17
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11' 
+
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v3
+      with:
+        gradle-version: 8.5
+
+    - name: Prepare JNI Libs
+      run: |
+        mkdir -p android/javet-android/src/main/jniLibs/armeabi-v7a
+        mkdir -p android/javet-android/src/main/jniLibs/arm64-v8a
+        mkdir -p android/javet-android/src/main/jniLibs/x86
+        mkdir -p android/javet-android/src/main/jniLibs/x86_64
+
+    - name: Download Javet arm
+      uses: actions/download-artifact@v4
+      with:
+        name: javet-android-node-arm-${{ env.JAVET_VERSION }}
+        path: android/javet-android/src/main/jniLibs/armeabi-v7a
+
+    - name: Download Javet arm64
+      uses: actions/download-artifact@v4
+      with:
+        name: javet-android-node-arm64-${{ env.JAVET_VERSION }}
+        path: android/javet-android/src/main/jniLibs/arm64-v8a
+
+    - name: Download Javet x86
+      uses: actions/download-artifact@v4
+      with:
+        name: javet-android-node-x86-${{ env.JAVET_VERSION }}
+        path: android/javet-android/src/main/jniLibs/x86
+
+    - name: Download Javet x86_64
+      uses: actions/download-artifact@v4
+      with:
+        name: javet-android-node-x86_64-${{ env.JAVET_VERSION }}
+        path: android/javet-android/src/main/jniLibs/x86_64
+
+    - name: Build the Artifact
+      run: |
+        cd ${{ env.ROOT }}/Javet/scripts/python
+        python3 patch_android_build.py
+        cd ${{ env.ROOT }}/Javet/android
+        gradle build --debug
+
+    - name: Upload the Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: javet-android-node-${{ env.JAVET_VERSION }}
+        path: android/javet-android/build/outputs/aar/javet*release.aar
+
+    - name: Delete Javet arm
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: javet-android-node-arm-${{ env.JAVET_VERSION }}
+
+    - name: Delete Javet arm64
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: javet-android-node-arm64-${{ env.JAVET_VERSION }}
+
+    - name: Delete Javet x86
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: javet-android-node-x86-${{ env.JAVET_VERSION }}
+
+    - name: Delete Javet x86_64
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: javet-android-node-x86_64-${{ env.JAVET_VERSION }}

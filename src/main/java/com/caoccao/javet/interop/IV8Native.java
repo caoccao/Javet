@@ -230,7 +230,11 @@ public interface IV8Native {
 
     Object moduleGetException(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    int moduleGetIdentityHash(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
     Object moduleGetNamespace(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    String moduleGetResourceName(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     int moduleGetScriptId(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
@@ -375,6 +379,8 @@ public interface IV8Native {
             int scriptId, boolean isWASM);
 
     byte[] scriptGetCachedData(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
+
+    String scriptGetResourceName(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object scriptRun(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
 

@@ -33,17 +33,10 @@ public interface IV8Script
      * Gets resource name.
      *
      * @return the resource name
+     * @throws JavetException the javet exception
      * @since 0.8.0
      */
-    String getResourceName();
-
-    /**
-     * Sets resource name.
-     *
-     * @param resourceName the resource name
-     * @since 0.8.0
-     */
-    void setResourceName(String resourceName);
+    String getResourceName() throws JavetException;
 
     @Override
     default <T, V extends V8Value> T toObject(V v8Value) throws JavetException {

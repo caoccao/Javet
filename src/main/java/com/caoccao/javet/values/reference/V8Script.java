@@ -22,8 +22,6 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
-import java.util.Objects;
-
 /**
  * The type V8 script.
  *
@@ -63,19 +61,16 @@ public class V8Script extends V8ValueReference implements IV8Script {
     }
 
     @Override
-    public String getResourceName() {
+    public String getResourceName() throws JavetException {
+        if (resourceName == null) {
+            return checkV8Runtime().getV8Internal().scriptGetResourceName(this);
+        }
         return resourceName;
     }
 
     @Override
     public V8ValueReferenceType getType() {
         return V8ValueReferenceType.Script;
-    }
-
-    @Override
-    public void setResourceName(String resourceName) {
-        Objects.requireNonNull(resourceName);
-        this.resourceName = resourceName;
     }
 
     @Override

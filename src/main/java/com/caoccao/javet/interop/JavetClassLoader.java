@@ -30,27 +30,42 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.Objects;
 
-class JavetClassLoader extends ClassLoader {
-    protected static final String ERROR_NODE_JS_IS_NOT_SUPPORTED_ON_ANDROID = "Node.js is not supported on Android.";
-    protected static final String JAVET_LIB_LOADER_CLASS_NAME = JavetLibLoader.class.getName();
-    protected static final String METHOD_LOAD = "load";
-    protected static final String METHOD_SET_LIB_LOADING_LISTENER = "setLibLoadingListener";
-    protected static final String NODE_NATIVE_CLASS_NAME = NodeNative.class.getName();
-    protected static final String V8_NATIVE_CLASS_NAME = V8Native.class.getName();
-    protected JSRuntimeType jsRuntimeType;
+/**
+ * The type Javet class loader.
+ *
+ * @since 0.8.0
+ */
+final class JavetClassLoader extends ClassLoader {
+    private static final String JAVET_LIB_LOADER_CLASS_NAME = JavetLibLoader.class.getName();
+    private static final String METHOD_LOAD = "load";
+    private static final String METHOD_SET_LIB_LOADING_LISTENER = "setLibLoadingListener";
+    private static final String NODE_NATIVE_CLASS_NAME = NodeNative.class.getName();
+    private static final String V8_NATIVE_CLASS_NAME = V8Native.class.getName();
+    private final JSRuntimeType jsRuntimeType;
 
+    /**
+     * Instantiates a new Javet class loader.
+     *
+     * @param parent        the parent
+     * @param jsRuntimeType the js runtime type
+     * @since 0.8.0
+     */
     JavetClassLoader(ClassLoader parent, JSRuntimeType jsRuntimeType) {
         super(parent);
-        Objects.requireNonNull(jsRuntimeType);
-        this.jsRuntimeType = jsRuntimeType;
+        this.jsRuntimeType = Objects.requireNonNull(jsRuntimeType);
     }
 
+    /**
+     * Gets the V8 native interface.
+     *
+     * @return the V8 native interface
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     IV8Native getNative() throws JavetException {
         if (JavetOSUtils.IS_ANDROID) {
             if (jsRuntimeType.isNode()) {
-                throw new JavetException(
-                        JavetError.LibraryNotLoaded,
-                        SimpleMap.of(JavetError.PARAMETER_REASON, ERROR_NODE_JS_IS_NOT_SUPPORTED_ON_ANDROID));
+                return new NodeNative();
             }
             return new V8Native();
         } else {
@@ -69,13 +84,14 @@ class JavetClassLoader extends ClassLoader {
         }
     }
 
+    /**
+     * Load the library.
+     *
+     * @throws JavetException the javet exception
+     * @since 0.8.0
+     */
     void load() throws JavetException {
         if (JavetOSUtils.IS_ANDROID) {
-            if (jsRuntimeType.isNode()) {
-                throw new JavetException(
-                        JavetError.LibraryNotLoaded,
-                        SimpleMap.of(JavetError.PARAMETER_REASON, ERROR_NODE_JS_IS_NOT_SUPPORTED_ON_ANDROID));
-            }
             JavetLibLoader javetLibLoader = new JavetLibLoader(jsRuntimeType);
             javetLibLoader.load();
         } else {

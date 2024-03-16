@@ -37,6 +37,8 @@
 #include <src/objects/js-function-inl.h>
 #include <src/objects/shared-function-info-inl.h>
 #include <src/objects/string-set-inl.h>
+#include <src/objects/source-text-module-inl.h>
+#include <src/objects/synthetic-module-inl.h>
 #include <src/strings/string-builder-inl.h>
 #include <src/handles/handles-inl.h>
 #include <src/flags/flags.h>
@@ -76,6 +78,8 @@ using V8InternalScriptOrModule = v8::internal::ScriptOrModule;
 using V8InternalSharedFunctionInfo = v8::internal::SharedFunctionInfo;
 using V8InternalString = v8::internal::String;
 using V8InternalStringSet = v8::internal::StringSet;
+using V8InternalSourceTextModule = v8::internal::SourceTextModule;
+using V8InternalSyntheticModule = v8::internal::SyntheticModule;
 using V8InternalWriteBarrierMode = v8::internal::WriteBarrierMode;
 
 template<typename T>

@@ -1,0 +1,52 @@
+diff --git a/deps/v8/src/heap/base/asm/x64/push_registers_asm.cc b/deps/v8/src/heap/base/asm/x64/push_registers_asm.cc
+index 1781a5816a..0a2889d04d 100644
+--- a/deps/v8/src/heap/base/asm/x64/push_registers_asm.cc
++++ b/deps/v8/src/heap/base/asm/x64/push_registers_asm.cc
+@@ -16,6 +16,7 @@
+ // GN toolchain (e.g. ChromeOS) and not provide them.
+ // _WIN64 Defined as 1 when the compilation target is 64-bit ARM or x64.
+ // Otherwise, undefined.
++#if defined(V8_TARGET_ARCH_ARM64) || defined(V8_TARGET_ARCH_X64)
+ #ifdef _WIN64
+ 
+ // We maintain 16-byte alignment at calls. There is an 8-byte return address
+@@ -104,3 +105,39 @@ asm(
+     "  ret                                              \n");
+ 
+ #endif  // !_WIN64
++#else
++asm(
++#ifdef _WIN32
++    ".globl _PushAllRegistersAndIterateStack            \n"
++    "_PushAllRegistersAndIterateStack:                  \n"
++#else   // !_WIN32
++    ".globl PushAllRegistersAndIterateStack             \n"
++    ".type PushAllRegistersAndIterateStack, %function   \n"
++    ".hidden PushAllRegistersAndIterateStack            \n"
++    "PushAllRegistersAndIterateStack:                   \n"
++#endif  // !_WIN32
++    // [ IterateStackCallback ]
++    // [ StackVisitor*        ]
++    // [ Stack*               ]
++    // [ ret                  ]
++    // ebp is callee-saved. Maintain proper frame pointer for debugging.
++    "  push %ebp                                        \n"
++    "  movl %esp, %ebp                                  \n"
++    "  push %ebx                                        \n"
++    "  push %esi                                        \n"
++    "  push %edi                                        \n"
++    // Save 3rd parameter (IterateStackCallback).
++    "  movl 28(%esp), %ecx                              \n"
++    // Pass 3rd parameter as esp (stack pointer).
++    "  push %esp                                        \n"
++    // Pass 2nd parameter (StackVisitor*).
++    "  push 28(%esp)                                    \n"
++    // Pass 1st parameter (Stack*).
++    "  push 28(%esp)                                    \n"
++    "  call *%ecx                                       \n"
++    // Pop the callee-saved registers.
++    "  addl $24, %esp                                   \n"
++    // Restore rbp as it was used as frame pointer.
++    "  pop %ebp                                         \n"
++    "  ret                                              \n");
++#endif

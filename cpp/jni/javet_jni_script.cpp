@@ -109,6 +109,20 @@ JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_scriptGetCa
     return nullptr;
 }
 
+JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_scriptGetResourceName
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    if (IS_V8_SCRIPT(v8ValueType)) {
+        RUNTIME_AND_SCRIPT_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+        if (!v8LocalScript.IsEmpty()) {
+            auto v8ValueResourceName = v8LocalScript->GetResourceName();
+            if (!v8ValueResourceName->IsUndefined()) {
+                return Javet::Converter::ToJavaString(jniEnv, v8Context, v8ValueResourceName);
+            }
+        }
+    }
+    return nullptr;
+}
+
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_scriptRun
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jboolean mResultRequired) {
     RUNTIME_AND_SCRIPT_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);

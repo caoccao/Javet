@@ -1,0 +1,13 @@
+diff --git a/common.gypi b/common.gypi
+index db09a8a33d..2660cbaa5c 100644
+--- a/common.gypi
++++ b/common.gypi
+@@ -444,7 +444,7 @@
+         'ldflags': [ '-rdynamic' ],
+         'target_conditions': [
+           # The 1990s toolchain on SmartOS can't handle thin archives.
+-          ['_type=="static_library" and OS=="solaris"', {
++          ['_type=="static_library"', {
+             'standalone_static_library': 1,
+           }],
+           ['OS=="openbsd"', {

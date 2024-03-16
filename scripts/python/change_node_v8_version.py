@@ -75,7 +75,7 @@ class ChangeNodeVersion(ChangeVersion):
       'README.rst', '\n',
       re.compile(r'Node\.js ``v(?P<version>\d+\.\d+\.\d+)``'))
     self._update(
-      '.github/workflows/android_build.yml', '\n',
+      '.github/workflows/android_node_build.yml', '\n',
       re.compile(r'JAVET_NODE_VERSION: (?P<version>\d+\.\d+\.\d+)$'))
     self._update(
       '.github/workflows/linux_x86_64_build.yml', '\n',
@@ -116,7 +116,7 @@ class ChangeV8Version(ChangeVersion):
       'README.rst', '\n',
       re.compile(r'V8 ``v(?P<version>\d+\.\d+\.\d+\.\d+)``'))
     self._update(
-      '.github/workflows/android_build.yml', '\n',
+      '.github/workflows/android_v8_build.yml', '\n',
       re.compile(r'JAVET_V8_VERSION: (?P<version>\d+\.\d+\.\d+\.\d+)$'))
     self._update(
       '.github/workflows/linux_x86_64_build.yml', '\n',
@@ -160,7 +160,7 @@ class ChangeV8Version(ChangeVersion):
 def main():
   change_node_version = ChangeNodeVersion('20.11.1')
   change_node_version.update()
-  change_v8_version = ChangeV8Version('12.2.281.16')
+  change_v8_version = ChangeV8Version('12.3.219.10')
   change_v8_version.update()
   return 0
 

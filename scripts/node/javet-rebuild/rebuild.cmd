@@ -1,5 +1,5 @@
 @echo off
-SET NODE_LIB_FILE="..\..\..\..\..\..\build\libs\libjavet-node-windows-x86_64.v.3.0.4.lib"
+SET NODE_LIB_FILE="..\..\..\..\..\..\build\libs\libjavet-node-windows-x86_64.v.3.1.0.lib"
 cd %NODE_MODULE_ROOT%
 call node-gyp clean
 call node-gyp configure --module_name=%NODE_MODULE_NAME% --module_path=%NODE_MODULE_PATH% --node_lib_file=%NODE_LIB_FILE%

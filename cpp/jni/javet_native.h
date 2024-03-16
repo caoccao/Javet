@@ -42,6 +42,14 @@
     auto v8Context = v8Runtime->GetV8LocalContext(); \
     auto v8ContextScope = v8Runtime->GetV8ContextScope(v8Context);
 
+#define RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE_WITH_UNIQUE_LOCKER(v8RuntimeHandle) \
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
+    auto v8Locker = v8Runtime->GetUniqueV8Locker(); \
+    auto v8IsolateScope = v8Runtime->GetV8IsolateScope(); \
+    V8HandleScope v8HandleScope(v8Runtime->v8Isolate); \
+    auto v8Context = v8Runtime->GetV8LocalContext(); \
+    auto v8ContextScope = v8Runtime->GetV8ContextScope(v8Context);
+
 #define RUNTIME_AND_DATA_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8DataHandle) \
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
     auto v8PersistentDataPointer = TO_V8_PERSISTENT_DATA_POINTER(v8DataHandle); \

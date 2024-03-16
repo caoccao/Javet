@@ -18,6 +18,7 @@ package com.caoccao.javet.exceptions;
 
 import com.caoccao.javet.interfaces.IJavetEntityError;
 import com.caoccao.javet.interop.converters.JavetObjectConverter;
+import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.values.V8Value;
 
 import java.util.Map;
@@ -94,6 +95,27 @@ public final class JavetScriptingError {
         this.sourceLine = sourceLine;
         this.startColumn = startColumn;
         this.startPosition = startPosition;
+    }
+
+    /**
+     * Instantiates a new Javet scripting error.
+     *
+     * @param message         the message
+     * @param detailedMessage the detailed message
+     * @param stack           the stack
+     * @since 3.1.0
+     */
+    public JavetScriptingError(String message, String detailedMessage, String stack) {
+        this.detailedMessage = detailedMessage;
+        this.endColumn = 0;
+        this.endPosition = 0;
+        this.lineNumber = 0;
+        this.message = message;
+        this.resourceName = StringUtils.EMPTY;
+        this.sourceLine = StringUtils.EMPTY;
+        this.stack = stack;
+        this.startColumn = 0;
+        this.startPosition = 0;
     }
 
     /**

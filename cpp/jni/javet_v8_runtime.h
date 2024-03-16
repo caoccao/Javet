@@ -169,10 +169,6 @@ namespace Javet {
         virtual ~V8Runtime();
 
     private:
-        std::unique_ptr<v8::SnapshotCreator> v8SnapshotCreator;
-        std::unique_ptr<v8::StartupData, std::function<void(v8::StartupData*)>> v8StartupData;
-        std::shared_ptr<v8::Locker> v8Locker;
-        V8PersistentContext v8PersistentContext;
 #ifdef ENABLE_NODE
         // The following Node objects must be live as long as V8 context lives.
         std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator;
@@ -182,6 +178,10 @@ namespace Javet {
 #else
         std::shared_ptr<V8ArrayBufferAllocator> v8ArrayBufferAllocator;
 #endif
+        std::unique_ptr<v8::SnapshotCreator> v8SnapshotCreator;
+        std::unique_ptr<v8::StartupData, std::function<void(v8::StartupData*)>> v8StartupData;
+        std::shared_ptr<v8::Locker> v8Locker;
+        V8PersistentContext v8PersistentContext;
     };
 }
 
