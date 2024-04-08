@@ -115,6 +115,9 @@ namespace Javet {
             if (!jniEnv->CallStaticBooleanMethod(jclassV8Host, jmethodIDV8HostIsLibraryReloadable)) {
                 v8::V8::Dispose();
                 v8::V8::DisposePlatform();
+#ifdef ENABLE_NODE
+                node::TearDownOncePerProcess();
+#endif
                 GlobalV8Platform.reset();
 #ifndef ENABLE_NODE
                 GlobalV8ArrayBufferAllocator.reset();
@@ -143,18 +146,19 @@ namespace Javet {
 #ifdef ENABLE_NODE
                 uv_setup_args(0, nullptr);
                 std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
-                std::vector<std::string> execArgs;
-                std::vector<std::string> errors;
                 auto flags = static_cast<node::ProcessInitializationFlags::Flags>(
                     node::ProcessInitializationFlags::kNoFlags
                     | node::ProcessInitializationFlags::kNoStdioInitialization
                     | node::ProcessInitializationFlags::kNoDefaultSignalHandling
                     | node::ProcessInitializationFlags::kNoInitializeV8
                     | node::ProcessInitializationFlags::kNoInitializeNodeV8Platform
+#ifndef ENABLE_I18N
+                    | node::ProcessInitializationFlags::kNoICU
+#endif
                     | node::ProcessInitializationFlags::kNoInitializeCppgc);
-                int exitCode = node::InitializeNodeWithArgs(&args, &execArgs, &errors, flags);
-                if (exitCode != 0) {
-                    LOG_ERROR("Failed to call node::InitializeNodeWithArgs().");
+                std::unique_ptr<node::InitializationResult> result = node::InitializeOncePerProcess(args, flags);
+                if (result->exit_code() != 0) {
+                    LOG_ERROR("Failed to call node::InitializeOncePerProcess().");
                 }
                 Javet::V8Native::GlobalV8Platform = node::MultiIsolatePlatform::Create(4);
 #else
@@ -174,7 +178,7 @@ namespace Javet {
             }
 #endif
             LOG_INFO("V8::Initialize() ends.");
+            }
         }
     }
-}
 

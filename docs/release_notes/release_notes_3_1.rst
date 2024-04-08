@@ -2,6 +2,11 @@
 Release Notes 3.1.x
 ===================
 
+3.1.1 V8 v12.4
+--------------
+
+* Updated Node.js to new process initialization and teardown functions
+
 3.1.0 V8 v12.3
 --------------
 
