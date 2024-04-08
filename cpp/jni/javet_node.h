@@ -24,10 +24,12 @@
 #pragma warning(disable: 4267)
 #pragma warning(disable: 4275)
 #pragma warning(disable: 4819)
+#pragma warning(disable: 4996)
 #define NODE_WANT_INTERNALS 1
 #include <node.h>
 #include <uv.h>
 #include <env-inl.h>
+#include <crypto/crypto_util.h>
 #include <node_snapshot_builder.h>
 // Hack Begins (The hack is for resolving the conflicts between Node.js and V8)
 #define BASE_TRACE_EVENT_COMMON_TRACE_EVENT_COMMON_H_
@@ -57,6 +59,7 @@
 #pragma warning(default: 4267)
 #pragma warning(default: 4275)
 #pragma warning(default: 4819)
+#pragma warning(default: 4996)
 
 #ifdef _WIN32
 #pragma comment(lib, "Crypt32.lib")

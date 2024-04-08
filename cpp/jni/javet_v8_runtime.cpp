@@ -200,6 +200,9 @@ namespace Javet {
             V8HandleScope v8HandleScope(v8Isolate);
             // node::FreeEnvironment is not thread-safe.
             std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
+            nodeEnvironment->set_stopping(true);
+            nodeEnvironment->set_can_call_into_js(false);
+            nodeEnvironment->stop_sub_worker_contexts();
             nodeEnvironment.reset();
         }
         // node::FreeIsolateData is thread-safe.
@@ -334,14 +337,17 @@ namespace Javet {
             }
             // node::CreateEnvironment is not thread-safe.
             std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
+            auto flags = static_cast<node::EnvironmentFlags::Flags>(
+                node::EnvironmentFlags::kOwnsProcessState
+                | node::EnvironmentFlags::kNoCreateInspector);
             nodeEnvironment.reset(node::CreateEnvironment(
                 nodeIsolateData.get(),
                 v8LocalContext,
                 args,
                 execArgs,
-                node::EnvironmentFlags::kOwnsProcessState));
-            // node::LoadEnvironment is thread-safe.
+                flags));
             nodeEnvironment->set_trace_sync_io(false);
+            // node::LoadEnvironment is thread-safe.
             auto v8MaybeLocalValue = node::LoadEnvironment(
                 nodeEnvironment.get(),
                 "const publicRequire = require('module').createRequire(process.cwd() + '/');"
@@ -407,6 +413,7 @@ namespace Javet {
             // node::CreateIsolateData is thread-safe.
             nodeIsolateData.reset(node::CreateIsolateData(v8Isolate, &uvLoop, v8PlatformPointer, nodeArrayBufferAllocator.get()));
             // nodeIsolateData->set_is_building_snapshot(createSnapshotEnabled);
+            node::crypto::InitCryptoOnce(v8Isolate);
         }
         v8Isolate->SetModifyCodeGenerationFromStringsCallback(nullptr);
 #else
