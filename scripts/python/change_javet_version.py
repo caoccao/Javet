@@ -41,7 +41,10 @@ class ChangeJavetVersion(object):
       'build.gradle.kts', '\n',
       re.compile(r'^        const val JAVET = "(?P<version>\d+\.\d+\.\d+)"$'))
     self._update(
-      '.github/workflows/android_build.yml', '\n',
+      '.github/workflows/android_node_build.yml', '\n',
+      re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)'))
+    self._update(
+      '.github/workflows/android_v8_build.yml', '\n',
       re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)'))
     self._update(
       '.github/workflows/linux_x86_64_build.yml', '\n',
@@ -180,7 +183,7 @@ class ChangeJavetVersion(object):
       logging.info('  Updated.')
 
 def main():
-  change_javet_version = ChangeJavetVersion('3.1.0')
+  change_javet_version = ChangeJavetVersion('3.1.1')
   change_javet_version.update()
   return 0
 
