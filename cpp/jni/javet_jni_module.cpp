@@ -77,11 +77,17 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleCreate
                     }
                 }
             }
+#ifndef ENABLE_NODE
             v8::MemorySpan<const V8LocalString> exportNamesMemorySpan(exportNames.begin(), exportNames.end());
+#endif
             auto v8LocalModule = v8::Module::CreateSyntheticModule(
                 v8Context->GetIsolate(),
                 Javet::Converter::ToV8String(jniEnv, v8Context, mModuleName),
+#ifdef ENABLE_NODE
+                exportNames,
+#else
                 exportNamesMemorySpan,
+#endif
                 Javet::Callback::JavetSyntheticModuleEvaluationStepsCallback);
             std::string stringKey("module:{}" + std::to_string(v8LocalModule->GetIdentityHash()));
             auto v8LocalStringKey = Javet::Converter::ToV8String(v8Context, stringKey.c_str());
