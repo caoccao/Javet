@@ -5,7 +5,9 @@ Release Notes 3.1.x
 3.1.1 V8 v12.4
 --------------
 
+* Upgraded V8 to ``v12.4.254.9`` (2024-04-04)
 * Updated Node.js to new process initialization and teardown functions
+* Added crypto initialization to Node.js
 
 3.1.0 V8 v12.3
 --------------

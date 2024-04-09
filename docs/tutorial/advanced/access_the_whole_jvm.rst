@@ -2,7 +2,7 @@
 Access the Whole JVM
 ====================
 
-The built-in ``JavetJVMInterceptor`` allows JavaScript to access the whole JVM in both Node.js mode and V8 mode.  ``JavetJVMInterceptor`` injects a global object ``javet`` which exposes some API for accessing Java packages and classes.
+The built-in ``JavetJVMInterceptor`` allows JavaScript to access the whole JVM in both Node.js mode and V8 mode.  ``JavetJVMInterceptor`` injects a global object ``javet`` which exposes some API for accessing Java packages and classes, actually making Java as a script without compilation.
 
 Let's see how to play with it.
 
@@ -103,6 +103,6 @@ As the tutorial leaves a couple of Java objects in the V8 runtime and a couple o
 Summary
 =======
 
-``JavetJVMInterceptor`` gives V8 the capability of dynamically execute arbitrary Java code at runtime without compilation. That opens door to another project called `JavetShell <https://github.com/caoccao/JavetShell>`_ which is a console or application that provides Node.js flavored console interactions. That is usually used at a hotfix solution without re-compiling, re-deploying the Java applications.
+``JavetJVMInterceptor`` gives V8 the capability of dynamically executing arbitrary Java code at runtime without compilation. That opens door to another project called `JavetShell <https://github.com/caoccao/JavetShell>`_ which is a Console or Android application that provides Node.js flavored REPL interactions. That is usually used as a hotfix solution without re-compiling, re-deploying the Java applications.
 
 Please refer to the :extsource3:`source code <../../../src/test/java/com/caoccao/javet/tutorial/TestAccessTheWholeJVM.java>` for details.
