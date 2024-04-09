@@ -116,7 +116,7 @@ public enum V8AllocationSpace {
     LAST_GROWABLE_PAGED_SPACE(MAP_SPACE.getIndex()),
     ;
 
-    private int index;
+    private final int index;
 
     V8AllocationSpace(int index) {
         this.index = index;

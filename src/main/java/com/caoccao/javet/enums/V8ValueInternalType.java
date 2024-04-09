@@ -16,6 +16,8 @@
 
 package com.caoccao.javet.enums;
 
+import java.util.stream.Stream;
+
 /**
  * The enum V8 value internal type.
  *
@@ -77,12 +79,11 @@ public enum V8ValueInternalType {
     WasmModuleObject(52, "WasmModuleObject"),
     ModuleNamespaceObject(53, "ModuleNamespaceObject");
 
-    private static final V8ValueInternalType[] ALL_TYPES = new V8ValueInternalType[54];
+    private static final int LENGTH = values().length;
+    private static final V8ValueInternalType[] TYPES = new V8ValueInternalType[LENGTH];
 
     static {
-        for (V8ValueInternalType type : values()) {
-            ALL_TYPES[type.getId()] = type;
-        }
+        Stream.of(values()).forEach(v -> TYPES[v.getId()] = v);
     }
 
     private final int id;
@@ -101,7 +102,7 @@ public enum V8ValueInternalType {
      * @since 0.9.13
      */
     public static V8ValueInternalType parse(int id) {
-        return ALL_TYPES[id];
+        return id >= 0 && id < LENGTH ? TYPES[id] : Undefined;
     }
 
     /**

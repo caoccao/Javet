@@ -16,8 +16,11 @@
 
 package com.caoccao.javet.enums;
 
+import java.util.stream.Stream;
+
 /**
  * The enum V8 context type.
+ *
  * @since 2.0.1
  */
 public enum V8ContextType {
@@ -32,12 +35,11 @@ public enum V8ContextType {
     Script(8, "Script"),
     With(9, "With");
 
-    private static final V8ContextType[] ALL_TYPES = new V8ContextType[10];
+    private static final int LENGTH = values().length;
+    private static final V8ContextType[] TYPES = new V8ContextType[LENGTH];
 
     static {
-        for (V8ContextType type : values()) {
-            ALL_TYPES[type.getId()] = type;
-        }
+        Stream.of(values()).forEach(v -> TYPES[v.getId()] = v);
     }
 
     private final int id;
@@ -49,7 +51,7 @@ public enum V8ContextType {
     }
 
     public static V8ContextType parse(int id) {
-        return ALL_TYPES[id];
+        return id >= 0 && id < LENGTH ? TYPES[id] : Await;
     }
 
     public int getId() {

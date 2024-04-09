@@ -18,6 +18,7 @@ package com.caoccao.javet.enums;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * The enum V8 value error type.
@@ -35,14 +36,15 @@ public enum V8ValueErrorType {
     WasmRuntimeError(7, "RuntimeError"),
     UnknownError(8, "UnknownError");
 
-    private static final V8ValueErrorType[] ALL_TYPES = new V8ValueErrorType[9];
-    private static final Map<String, V8ValueErrorType> TYPE_MAP = new HashMap<>();
+    private static final int LENGTH = values().length;
+    private static final Map<String, V8ValueErrorType> NAME_MAP = new HashMap<>();
+    private static final V8ValueErrorType[] TYPES = new V8ValueErrorType[LENGTH];
 
     static {
-        for (V8ValueErrorType type : values()) {
-            ALL_TYPES[type.getId()] = type;
-            TYPE_MAP.put(type.getName(), type);
-        }
+        Stream.of(values()).forEach(v -> {
+            TYPES[v.getId()] = v;
+            NAME_MAP.put(v.getName(), v);
+        });
     }
 
     private final int id;
@@ -61,7 +63,7 @@ public enum V8ValueErrorType {
      * @since 3.0.4
      */
     public static V8ValueErrorType parse(int id) {
-        return ALL_TYPES[id];
+        return id >= 0 && id < LENGTH ? TYPES[id] : UnknownError;
     }
 
     /**
@@ -72,7 +74,7 @@ public enum V8ValueErrorType {
      * @since 3.0.4
      */
     public static V8ValueErrorType parse(String name) {
-        return TYPE_MAP.getOrDefault(name, V8ValueErrorType.UnknownError);
+        return NAME_MAP.getOrDefault(name, V8ValueErrorType.UnknownError);
     }
 
     /**

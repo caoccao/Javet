@@ -67,7 +67,7 @@ public enum V8GCCallbackFlags implements IEnumBitset {
      */
     GCCallbackScheduleIdleGarbageCollection(1 << 6);
 
-    private int value;
+    private final int value;
 
     V8GCCallbackFlags(int value) {
         this.value = value;
