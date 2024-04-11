@@ -5,6 +5,7 @@ Release Notes 3.1.x
 3.1.1 V8 v12.4
 --------------
 
+* Upgraded Node.js to ``v20.12.2`` `(2024-04-10) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.12.2>`_
 * Upgraded V8 to ``v12.4.254.9`` (2024-04-04)
 * Updated Node.js to new process initialization and teardown functions
 * Added crypto initialization to Node.js

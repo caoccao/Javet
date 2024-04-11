@@ -323,7 +323,6 @@ namespace Javet {
                 args,
                 execArgs,
                 flags));
-            nodeEnvironment->set_trace_sync_io(false);
             // node::LoadEnvironment is thread-safe.
             auto v8MaybeLocalValue = node::LoadEnvironment(
                 nodeEnvironment.get(),
