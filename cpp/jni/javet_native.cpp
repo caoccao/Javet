@@ -146,17 +146,18 @@ namespace Javet {
 #ifdef ENABLE_NODE
                 uv_setup_args(0, nullptr);
                 std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
-                auto flags = static_cast<node::ProcessInitializationFlags::Flags>(
-                    node::ProcessInitializationFlags::kNoFlags
-                    | node::ProcessInitializationFlags::kNoStdioInitialization
-                    | node::ProcessInitializationFlags::kNoDefaultSignalHandling
-                    | node::ProcessInitializationFlags::kNoInitializeV8
-                    | node::ProcessInitializationFlags::kNoInitializeNodeV8Platform
+                std::unique_ptr<node::InitializationResult> result = node::InitializeOncePerProcess(
+                    args, {
+                        node::ProcessInitializationFlags::kNoFlags,
+                        node::ProcessInitializationFlags::kNoStdioInitialization,
+                        node::ProcessInitializationFlags::kNoDefaultSignalHandling,
+                        node::ProcessInitializationFlags::kNoInitializeV8,
+                        node::ProcessInitializationFlags::kNoInitializeNodeV8Platform,
 #ifndef ENABLE_I18N
-                    | node::ProcessInitializationFlags::kNoICU
+                        node::ProcessInitializationFlags::kNoICU,
 #endif
-                    | node::ProcessInitializationFlags::kNoInitializeCppgc);
-                std::unique_ptr<node::InitializationResult> result = node::InitializeOncePerProcess(args, flags);
+                        node::ProcessInitializationFlags::kNoInitializeCppgc,
+                    });
                 if (result->exit_code() != 0) {
                     LOG_ERROR("Failed to call node::InitializeOncePerProcess().");
                 }
@@ -175,10 +176,10 @@ namespace Javet {
             if (!GlobalV8ArrayBufferAllocator) {
                 GlobalV8ArrayBufferAllocator = std::shared_ptr<V8ArrayBufferAllocator>();
                 GlobalV8ArrayBufferAllocator.reset(V8ArrayBufferAllocator::NewDefaultAllocator());
-            }
+        }
 #endif
             LOG_INFO("V8::Initialize() ends.");
-            }
         }
     }
+}
 

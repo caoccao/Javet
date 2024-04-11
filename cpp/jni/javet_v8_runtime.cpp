@@ -133,19 +133,26 @@ namespace Javet {
     }
 
     void V8Runtime::CloseV8Context() noexcept {
-        auto internalV8Locker = GetSharedV8Locker();
-        auto v8IsolateScope = GetV8IsolateScope();
-        V8HandleScope v8HandleScope(v8Isolate);
-        auto v8LocalContext = GetV8LocalContext();
-        Unregister(v8LocalContext);
-        v8GlobalObject.Reset();
-        v8::SealHandleScope v8SealHandleScope(v8Isolate);
+        v8Locker.reset();
+        {
+            auto internalV8Locker = GetUniqueV8Locker();
+            auto v8IsolateScope = GetV8IsolateScope();
+            V8HandleScope v8HandleScope(v8Isolate);
+            auto v8LocalContext = GetV8LocalContext();
+            Unregister(v8LocalContext);
+            v8GlobalObject.Reset();
+        }
 #ifdef ENABLE_NODE
         int errorCode = 0;
         {
+            auto internalV8Locker = GetUniqueV8Locker();
+            auto v8IsolateScope = GetV8IsolateScope();
+            V8HandleScope v8HandleScope(v8Isolate);
+            auto v8LocalContext = GetV8LocalContext();
             auto v8ContextScope = GetV8ContextScope(v8LocalContext);
             errorCode = node::SpinEventLoop(nodeEnvironment.get()).FromMaybe(1);
         }
+        v8GlobalContext.Reset();
         if (errorCode != 0) {
             LOG_ERROR("node::EmitProcessExit() returns " << errorCode << ".");
         }
@@ -155,14 +162,16 @@ namespace Javet {
             if (errorCode != 0) {
                 LOG_ERROR("node::Stop() returns " << errorCode << ".");
             }
-            auto internalV8Locker = GetUniqueV8Locker();
             std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
+            auto internalV8Locker = GetUniqueV8Locker();
+            auto v8IsolateScope = GetV8IsolateScope();
             LOG_DEBUG("nodeEnvironment.reset() begin");
             nodeEnvironment.reset();
             LOG_DEBUG("nodeEnvironment.reset() end");
         }
+#else
+        v8GlobalContext.Reset();
 #endif
-        v8PersistentContext.Reset();
     }
 
     void V8Runtime::CloseV8Isolate() noexcept {
@@ -171,7 +180,7 @@ namespace Javet {
             v8Inspector.reset();
         }
         v8GlobalObject.Reset();
-        v8PersistentContext.Reset();
+        v8GlobalContext.Reset();
         v8Locker.reset();
 #ifdef ENABLE_NODE
         // node::FreeIsolateData is thread-safe.
@@ -219,7 +228,7 @@ namespace Javet {
                 auto v8LocalContext = GetV8LocalContext();
                 auto v8ContextScope = GetV8ContextScope(v8LocalContext);
                 // Backup context and global object (Begin)
-                v8PersistentContext.Reset();
+                v8GlobalContext.Reset();
                 v8GlobalObject.Reset();
                 // Backup context and global object (End)
                 nodeIsolateData->Serialize(v8SnapshotCreator.get());
@@ -243,7 +252,7 @@ namespace Javet {
                 auto v8LocalContext = v8MaybeLocalContext.ToLocalChecked();
                 auto v8ContextScope = GetV8ContextScope(v8LocalContext);
                 // Restore context and global object (Begin)
-                v8PersistentContext.Reset(v8Isolate, v8LocalContext);
+                v8GlobalContext.Reset(v8Isolate, v8LocalContext);
                 v8GlobalObject.Reset(
                     v8Isolate, v8LocalContext->Global()->GetPrototype()->ToObject(v8LocalContext).ToLocalChecked());
                 // Restore context and global object (End)
@@ -251,7 +260,7 @@ namespace Javet {
 #else
             // Backup context and global object (Begin)
             auto v8LocalContext = GetV8LocalContext();
-            v8PersistentContext.Reset();
+            v8GlobalContext.Reset();
             v8GlobalObject.Reset();
             // Backup context and global object (End)
             v8SnapshotCreator->SetDefaultContext(v8LocalContext);
@@ -265,7 +274,7 @@ namespace Javet {
                 delete[] newV8StartupData.data;
             }
             // Restore context and global object (Begin)
-            v8PersistentContext.Reset(v8Isolate, v8LocalContext);
+            v8GlobalContext.Reset(v8Isolate, v8LocalContext);
             v8GlobalObject.Reset(
                 v8Isolate, v8LocalContext->Global()->GetPrototype()->ToObject(v8LocalContext).ToLocalChecked());
             // Restore context and global object (End)
@@ -301,8 +310,8 @@ namespace Javet {
                         }
                         args.push_back(umConsoleArgument);
                     }
-        }
-    }
+                }
+            }
             // node::CreateEnvironment is not thread-safe.
             std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
             auto flags = static_cast<node::EnvironmentFlags::Flags>(
@@ -321,7 +330,7 @@ namespace Javet {
                 "const publicRequire = require('module').createRequire(process.cwd() + '/');"
                 "globalThis.require = publicRequire;"
             );
-}
+        }
 #else
         auto v8ObjectTemplate = v8::ObjectTemplate::New(v8Isolate);
         if (mRuntimeOptions != nullptr) {
@@ -335,10 +344,10 @@ namespace Javet {
         auto v8ContextScope = GetV8ContextScope(v8LocalContext);
 #endif
         Register(v8LocalContext);
-        v8PersistentContext.Reset(v8Isolate, v8LocalContext);
+        v8GlobalContext.Reset(v8Isolate, v8LocalContext);
         v8GlobalObject.Reset(
             v8Isolate, v8LocalContext->Global()->GetPrototype()->ToObject(v8LocalContext).ToLocalChecked());
-}
+    }
 
     void V8Runtime::CreateV8Isolate(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept {
         bool createSnapshotEnabled = false;
@@ -355,7 +364,7 @@ namespace Javet {
                 v8StartupData->raw_size = snapshotBlobSize;
                 memcpy((void*)v8StartupData->data, (void*)snapshotBlobElements, snapshotBlobSize);
                 jniEnv->ReleaseByteArrayElements(snapshotBlob, snapshotBlobElements, JNI_ABORT);
-    }
+            }
         }
 #ifdef ENABLE_NODE
         int errorCode = uv_loop_init(&uvLoop);
@@ -428,11 +437,11 @@ namespace Javet {
             return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, this, v8Context, v8TryCatch);
         }
         return externalV8Value;
-        }
+    }
 
     V8Runtime::~V8Runtime() {
         CloseV8Context();
         CloseV8Isolate();
     }
-    }
+}
 

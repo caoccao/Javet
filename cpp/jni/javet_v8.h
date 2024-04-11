@@ -83,6 +83,11 @@ using V8MaybeLocalProxy = v8::MaybeLocal<v8::Proxy>;
 using V8MaybeLocalString = v8::MaybeLocal<v8::String>;
 using V8MaybeLocalValue = v8::MaybeLocal<v8::Value>;
 
+// Global
+
+using V8GlobalContext = v8::Global<v8::Context>;
+using V8GlobalObject = v8::Global<v8::Object>;
+
 // Persistent
 
 using V8PersistentArray = v8::Persistent<v8::Array>;
