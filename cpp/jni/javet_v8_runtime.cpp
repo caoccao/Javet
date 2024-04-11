@@ -84,7 +84,6 @@ namespace Javet {
 #endif
         v8SnapshotCreator(nullptr), v8StartupData(nullptr, [](v8::StartupData* x) { if (x->raw_size > 0) { delete[] x->data; } }), v8Locker(nullptr) {
 #ifdef ENABLE_NODE
-        purgeEventLoopBeforeClose = false;
         this->nodeArrayBufferAllocator = nodeArrayBufferAllocator;
 #else
         this->v8ArrayBufferAllocator = v8ArrayBufferAllocator;
@@ -142,35 +141,10 @@ namespace Javet {
         v8GlobalObject.Reset();
         v8::SealHandleScope v8SealHandleScope(v8Isolate);
 #ifdef ENABLE_NODE
-        if (!purgeEventLoopBeforeClose) {
-            auto v8ContextScope = GetV8ContextScope(v8LocalContext);
-            if (!nodeEnvironment->is_stopping()) {
-                bool hasMoreTasks;
-                // nodeEnvironment->performance_state()->Mark(node::performance::NODE_PERFORMANCE_MILESTONE_LOOP_START);
-                do {
-                    if (nodeEnvironment->is_stopping()) { break; }
-                    uv_run(&uvLoop, UV_RUN_DEFAULT);
-                    if (nodeEnvironment->is_stopping()) { break; }
-                    // DrainTasks is thread-safe.
-                    v8PlatformPointer->DrainTasks(v8Isolate);
-                    hasMoreTasks = uv_loop_alive(&uvLoop);
-                    if (!hasMoreTasks && !nodeEnvironment->is_stopping()) {
-                        // node::EmitProcessBeforeExit is thread-safe.
-                        if (node::EmitProcessBeforeExit(nodeEnvironment.get()).IsNothing()) { break; }
-                        // Do not call { V8HandleScope innerHandleScope(v8Isolate); if (nodeEnvironment->RunSnapshotSerializeCallback().IsEmpty()) { break; } }
-                        hasMoreTasks = uv_loop_alive(&uvLoop);
-                    }
-                } while (hasMoreTasks && !nodeEnvironment->is_stopping());
-                // nodeEnvironment->performance_state()->Mark(node::performance::NODE_PERFORMANCE_MILESTONE_LOOP_EXIT);
-            }
-        }
         int errorCode = 0;
-        if (!nodeEnvironment->is_stopping()) {
-            // Do not call nodeEnvironment->set_snapshot_serialize_callback(V8LocalFunction());
-            // Do not call nodeEnvironment->PrintInfoForSnapshotIfDebug();
-            // Do not call nodeEnvironment->ForEachRealm([](node::Realm* realm) { realm->VerifyNoStrongBaseObjects(); });
-            // node::EmitExit is thread-safe.
-            errorCode = node::EmitProcessExit(nodeEnvironment.get()).FromMaybe(0);
+        {
+            auto v8ContextScope = GetV8ContextScope(v8LocalContext);
+            errorCode = node::SpinEventLoop(nodeEnvironment.get()).FromMaybe(1);
         }
         if (errorCode != 0) {
             LOG_ERROR("node::EmitProcessExit() returns " << errorCode << ".");
@@ -181,6 +155,11 @@ namespace Javet {
             if (errorCode != 0) {
                 LOG_ERROR("node::Stop() returns " << errorCode << ".");
             }
+            auto internalV8Locker = GetUniqueV8Locker();
+            std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
+            LOG_DEBUG("nodeEnvironment.reset() begin");
+            nodeEnvironment.reset();
+            LOG_DEBUG("nodeEnvironment.reset() end");
         }
 #endif
         v8PersistentContext.Reset();
@@ -193,22 +172,11 @@ namespace Javet {
         }
         v8GlobalObject.Reset();
         v8PersistentContext.Reset();
+        v8Locker.reset();
 #ifdef ENABLE_NODE
-        if (v8Isolate != nullptr && nodeEnvironment.get() != nullptr) {
-            auto internalV8Locker = GetSharedV8Locker();
-            auto v8IsolateScope = GetV8IsolateScope();
-            V8HandleScope v8HandleScope(v8Isolate);
-            // node::FreeEnvironment is not thread-safe.
-            std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
-            nodeEnvironment->set_stopping(true);
-            nodeEnvironment->set_can_call_into_js(false);
-            nodeEnvironment->stop_sub_worker_contexts();
-            nodeEnvironment.reset();
-        }
         // node::FreeIsolateData is thread-safe.
         nodeIsolateData.reset();
 #endif
-        v8Locker.reset();
         // Isolate must be the last one to be disposed.
         if (v8Isolate != nullptr) {
 #ifdef ENABLE_NODE
@@ -333,8 +301,8 @@ namespace Javet {
                         }
                         args.push_back(umConsoleArgument);
                     }
-                }
-            }
+        }
+    }
             // node::CreateEnvironment is not thread-safe.
             std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
             auto flags = static_cast<node::EnvironmentFlags::Flags>(
@@ -353,7 +321,7 @@ namespace Javet {
                 "const publicRequire = require('module').createRequire(process.cwd() + '/');"
                 "globalThis.require = publicRequire;"
             );
-        }
+}
 #else
         auto v8ObjectTemplate = v8::ObjectTemplate::New(v8Isolate);
         if (mRuntimeOptions != nullptr) {
@@ -370,7 +338,7 @@ namespace Javet {
         v8PersistentContext.Reset(v8Isolate, v8LocalContext);
         v8GlobalObject.Reset(
             v8Isolate, v8LocalContext->Global()->GetPrototype()->ToObject(v8LocalContext).ToLocalChecked());
-    }
+}
 
     void V8Runtime::CreateV8Isolate(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept {
         bool createSnapshotEnabled = false;
@@ -387,7 +355,7 @@ namespace Javet {
                 v8StartupData->raw_size = snapshotBlobSize;
                 memcpy((void*)v8StartupData->data, (void*)snapshotBlobElements, snapshotBlobSize);
                 jniEnv->ReleaseByteArrayElements(snapshotBlob, snapshotBlobElements, JNI_ABORT);
-            }
+    }
         }
 #ifdef ENABLE_NODE
         int errorCode = uv_loop_init(&uvLoop);
@@ -460,11 +428,11 @@ namespace Javet {
             return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, this, v8Context, v8TryCatch);
         }
         return externalV8Value;
-    }
+        }
 
     V8Runtime::~V8Runtime() {
         CloseV8Context();
         CloseV8Isolate();
     }
-}
+    }
 

@@ -129,11 +129,8 @@ public class TestNodeRuntime extends BaseTestJavet {
     @Test
     public void testPurgeEventLoopBeforeClose() throws JavetException {
         nodeRuntime.getExecutor(
-                "const log = () => console.log('test');" +
-                        "setTimeout(log, 1000);").executeVoid();
-        assertFalse(nodeRuntime.isPurgeEventLoopBeforeClose());
-        nodeRuntime.setPurgeEventLoopBeforeClose(true);
-        assertTrue(nodeRuntime.isPurgeEventLoopBeforeClose());
+                "const log = () => console.log('Event loop is purged before close.');" +
+                        "setTimeout(log, 10);").executeVoid();
     }
 
     @Test

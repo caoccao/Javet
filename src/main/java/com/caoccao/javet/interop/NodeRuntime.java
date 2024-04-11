@@ -158,16 +158,6 @@ public class NodeRuntime extends V8Runtime {
         return nodeModuleMap.size();
     }
 
-    /**
-     * Is purge event loop before close.
-     *
-     * @return true: purge, false: not purge
-     * @since 1.1.4
-     */
-    public boolean isPurgeEventLoopBeforeClose() {
-        return ((INodeNative) v8Native).isPurgeEventLoopBeforeClose(handle);
-    }
-
     @Override
     void removeAllReferences() throws JavetException {
         removeNodeModules();
@@ -199,15 +189,5 @@ public class NodeRuntime extends V8Runtime {
             JavetResourceUtils.safeClose(nodeModuleMap.values());
             nodeModuleMap.clear();
         }
-    }
-
-    /**
-     * Sets purge event loop before close.
-     *
-     * @param purgeEventLoopBeforeClose the purge event loop before close
-     * @since 1.1.4
-     */
-    public void setPurgeEventLoopBeforeClose(boolean purgeEventLoopBeforeClose) {
-        ((INodeNative) v8Native).setPurgeEventLoopBeforeClose(handle, purgeEventLoopBeforeClose);
     }
 }
