@@ -35,6 +35,7 @@
  // Scope
 
 using V8ContextScope = v8::Context::Scope;
+using V8EscapableHandleScope = v8::EscapableHandleScope;
 using V8HandleScope = v8::HandleScope;
 using V8IsolateScope = v8::Isolate::Scope;
 

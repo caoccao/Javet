@@ -21,7 +21,7 @@ Benefits
 Limitations
 -----------
 
-* **Not all modules supported**: Only a subset of the built-in Node.js modules are currently supported in snapshots, so some applications might not be suitable for snapshotting.
+* **Node.js mode not supported**: Snapshot is only available in the V8 mode. There are some technical difficulties to be resolved in the Node.js mode.
 * **Dynamic code updates not possible**: Once a snapshot is created, it's static and cannot be updated with new code without creating a new snapshot.
 * **V8 version dependent**: The snapshot created from a particular version of V8 only works in that version of V8. If you want to support a new version of V8, you will have to create a new snapshot in that new version of V8.
 
@@ -87,7 +87,6 @@ It's simple to create a snapshot or provide an existing snapshot in Javet via th
 
 .. note:: 
 
-    * Snapshot is only available in the V8 mode. There are some technical difficulties to be resolved in the Node.js mode.
     * Both ``setCreateSnapshotEnabled()`` and ``setSnapshotBlob()`` can be used together so that you may create a V8 runtime by an existing snapshot, then create a new snapshot from that V8 runtime.
 
 Create a Snapshot via mksnapshot
