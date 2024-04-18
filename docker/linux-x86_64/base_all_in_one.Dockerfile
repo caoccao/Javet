@@ -39,22 +39,22 @@ RUN ln -sf /usr/lib/cmake/bin/cmake /bin/cmake
 RUN rm cmake-3.25.1-linux-x86_64.sh
 
 # Prepare V8
-RUN mkdir google
-WORKDIR /google
-RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-WORKDIR /google/depot_tools
-RUN git checkout remotes/origin/main
+RUN mkdir -p /google/depot_tools && \
+    git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git /google/depot_tools && \
+    cd /google/depot_tools && \
+    git checkout remotes/origin/main && \
+    export PATH=/google/depot_tools:$PATH && \
+    cd /google && \
+    fetch v8 && \
+    cd /google/v8 && \
+    git checkout ${JAVET_V8_VERSION} && \
+    sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh && \
+    ./build/install-build-deps.sh && \
+    sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh && \
+    cd /google && \
+    gclient sync && \
+    echo V8 preparation is completed.
 ENV PATH=/google/depot_tools:$PATH
-WORKDIR /google
-RUN fetch v8
-WORKDIR /google/v8
-RUN git checkout ${JAVET_V8_VERSION}
-RUN sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh
-RUN ./build/install-build-deps.sh
-RUN sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh
-WORKDIR /google
-RUN gclient sync
-RUN echo V8 preparation is completed.
 
 # Build V8
 WORKDIR /google/v8
