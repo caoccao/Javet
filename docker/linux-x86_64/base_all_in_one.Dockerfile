@@ -15,11 +15,11 @@
 
 # Usage: docker build -t sjtucaocao/javet:3.1.1 -f docker/linux-x86_64/base_all_in_one.Dockerfile .
 
-ARG JAVET_NODE_VERSION=20.12.2
-ARG JAVET_V8_VERSION=12.4.254.9
-
 FROM ubuntu:20.04
 WORKDIR /
+
+ARG JAVET_NODE_VERSION=20.12.2
+ARG JAVET_V8_VERSION=12.4.254.9
 
 # Update Ubuntu
 ENV DEBIAN_FRONTEND=noninteractive
