@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="Javet Performance" href="performance.html" />
 
-    <link rel="shortcut icon" href="../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Debug with Chrome Developer Tools - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Debug with Chrome Developer Tools - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,17 +304,17 @@
         </div>
         <article role="main">
           <section id="debug-with-chrome-developer-tools">
-<h1>Debug with Chrome Developer Tools<a class="headerlink" href="#debug-with-chrome-developer-tools" title="Link to this heading">#</a></h1>
+<h1>Debug with Chrome Developer Tools<a class="headerlink" href="#debug-with-chrome-developer-tools" title="Link to this heading">¶</a></h1>
 <p><a class="reference external" href="https://developers.google.com/web/tools/chrome-devtools">Chrome DevTools</a> (aka. CDT) is a set of web developer tools built directly into the Google Chrome browser. DevTools can help you edit pages on-the-fly and diagnose problems quickly, which ultimately helps you build better websites, faster.</p>
 <section id="cdt-shell">
-<h2>CDT Shell<a class="headerlink" href="#cdt-shell" title="Link to this heading">#</a></h2>
+<h2>CDT Shell<a class="headerlink" href="#cdt-shell" title="Link to this heading">¶</a></h2>
 <p>Javet ships a demo <a class="reference external" href="https://github.com/caoccao/Javet/tree/main/1/2/../../src/test/java/com/caoccao/javet/tutorial/cdt/TestCDT.java">CDT Shell</a> application to demonstrate how to work with CDT to perform a live debugging.</p>
 <section id="run-cdt-shell">
-<h3>1. Run CDT Shell<a class="headerlink" href="#run-cdt-shell" title="Link to this heading">#</a></h3>
+<h3>1. Run CDT Shell<a class="headerlink" href="#run-cdt-shell" title="Link to this heading">¶</a></h3>
 <p>Run CDT Shell as a normal Java console application and an interactive console will appear working just like a node console does.</p>
 </section>
 <section id="run-script-in-cdt-shell">
-<h3>2. Run Script in CDT Shell<a class="headerlink" href="#run-script-in-cdt-shell" title="Link to this heading">#</a></h3>
+<h3>2. Run Script in CDT Shell<a class="headerlink" href="#run-script-in-cdt-shell" title="Link to this heading">¶</a></h3>
 <p>Run arbitrary code in the console just like what can be done in a node console.</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3</span>
 <span class="kc">undefined</span>
@@ -326,20 +326,20 @@
 </div>
 </section>
 <section id="open-cdt">
-<h3>3. Open CDT<a class="headerlink" href="#open-cdt" title="Link to this heading">#</a></h3>
+<h3>3. Open CDT<a class="headerlink" href="#open-cdt" title="Link to this heading">¶</a></h3>
 <p>Open <a class="reference external" href="chrome://inspect/">chrome://inspect/</a> in Chrome, wait a few seconds and Javet will appear as a remote target.</p>
 <img alt="Remote Target Javet" src="../_images/chome_developer_tools_devices_remote_target_javet.png" />
 </section>
 <section id="debug-as-usual">
-<h3>4. Debug as Usual<a class="headerlink" href="#debug-as-usual" title="Link to this heading">#</a></h3>
+<h3>4. Debug as Usual<a class="headerlink" href="#debug-as-usual" title="Link to this heading">¶</a></h3>
 <p>Click <code class="docutils literal notranslate"><span class="pre">inspect</span></code>. Voilà, DevTools is up. As the screenshot shows, live evaluation and auto-completion work successfully. Enjoy the live debugging.</p>
 <img alt="Remote Target Javet" src="../_images/chome_developer_tools_console.png" />
 </section>
 </section>
 <section id="chrome-developer-tools-internals">
-<h2>Chrome Developer Tools Internals<a class="headerlink" href="#chrome-developer-tools-internals" title="Link to this heading">#</a></h2>
+<h2>Chrome Developer Tools Internals<a class="headerlink" href="#chrome-developer-tools-internals" title="Link to this heading">¶</a></h2>
 <section id="handshake">
-<h3>Handshake<a class="headerlink" href="#handshake" title="Link to this heading">#</a></h3>
+<h3>Handshake<a class="headerlink" href="#handshake" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>CDT Shell listens to port 9229 by default because CDT constantly queries <a class="reference external" href="http://127.0.0.1:9229/json/list">http://127.0.0.1:9229/json/list</a> for a list of remote targets. CDT Shell tells CDT that it is a node flavored remote target via <a class="reference external" href="http://127.0.0.1:9229/json/list">http://127.0.0.1:9229/json/list</a> and the websocket address is <code class="docutils literal notranslate"><span class="pre">ws://127.0.0.1:9229/javet</span></code>.</p></li>
 <li><p>CDT queries <a class="reference external" href="http://127.0.0.1:9229/json/version">http://127.0.0.1:9229/json/version</a> for protocol version. CDT Shell currently uses v1.3. The complete protocol API docs are available at <a class="reference external" href="https://chromedevtools.github.io/devtools-protocol/">https://chromedevtools.github.io/devtools-protocol/</a>.</p></li>
@@ -373,7 +373,7 @@
 </section>
 </section>
 <section id="customization">
-<h2>Customization<a class="headerlink" href="#customization" title="Link to this heading">#</a></h2>
+<h2>Customization<a class="headerlink" href="#customization" title="Link to this heading">¶</a></h2>
 <p>Yes, please feel free to customize the debugging server in your environment. CDT Shell is created as a showcase for further customization. Here are some tips.</p>
 <ul>
 <li><p>Integrate with your HTTP and WebSocket servers. CDT Shell currently uses embedded Jetty. Be careful, HTTP and WebSocket servers need to be hosted together, otherwise, CDT refuses to communicate with the WebSocket server.</p></li>
@@ -391,13 +391,13 @@
 </ul>
 </section>
 <section id="faqs">
-<h2>FAQs<a class="headerlink" href="#faqs" title="Link to this heading">#</a></h2>
+<h2>FAQs<a class="headerlink" href="#faqs" title="Link to this heading">¶</a></h2>
 <section id="does-it-support-node-js-mode">
-<h3>Does it Support Node.js Mode?<a class="headerlink" href="#does-it-support-node-js-mode" title="Link to this heading">#</a></h3>
+<h3>Does it Support Node.js Mode?<a class="headerlink" href="#does-it-support-node-js-mode" title="Link to this heading">¶</a></h3>
 <p>Yes, Javet V8 inspector supports the Node.js Mode as well as the V8 mode though the built-in Node.js inspector is disabled because of some other issues. Please visit <a class="reference internal" href="../faq/development/why_is_the_inspector_disabled_in_node_js_mode.html"><span class="doc">Why is the Inspector Disabled in Node.js Mode?</span></a> for more details.</p>
 </section>
 <section id="is-there-a-live-demo">
-<h3>Is There a Live Demo?<a class="headerlink" href="#is-there-a-live-demo" title="Link to this heading">#</a></h3>
+<h3>Is There a Live Demo?<a class="headerlink" href="#is-there-a-live-demo" title="Link to this heading">¶</a></h3>
 <p>Yes, <a class="reference external" href="https://github.com/caoccao/JavetShell">JavetShell</a> provides a live demo via either a jar file or a docker image.</p>
 </section>
 </section>
@@ -424,7 +424,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -478,8 +478,8 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+</div><script src="../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../_static/tabs.js?v=3ee01567"></script>

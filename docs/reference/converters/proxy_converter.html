@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Bridge Converter" href="bridge_converter.html" /><link rel="prev" title="Object Converter" href="object_converter.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Proxy Converter - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Proxy Converter - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,12 +304,12 @@
         </div>
         <article role="main">
           <section id="proxy-converter">
-<h1>Proxy Converter<a class="headerlink" href="#proxy-converter" title="Link to this heading">#</a></h1>
+<h1>Proxy Converter<a class="headerlink" href="#proxy-converter" title="Link to this heading">¶</a></h1>
 <p>Can I inject arbitrary Java objects and call all the API in JavaScript? Yes, <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> is designed for that. In general, the user experience is very much close to the one provided by GraalJS. As <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> opens almost the whole JVM to V8, it is very dangerous to allow end users to touch that V8 runtime, so <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> is not enabled by default. Here are the steps on how to enable that.</p>
 <section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
 <section id="preparation">
-<h3>Preparation<a class="headerlink" href="#preparation" title="Link to this heading">#</a></h3>
+<h3>Preparation<a class="headerlink" href="#preparation" title="Link to this heading">¶</a></h3>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Step 1: Create an instance of JavetProxyConverter.</span>
 <span class="n">JavetProxyConverter</span><span class="w"> </span><span class="n">javetProxyConverter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavetProxyConverter</span><span class="p">();</span>
 <span class="c1">// Step 2: Set the V8Runtime converter to JavetProxyConverter.</span>
@@ -318,7 +318,7 @@
 </div>
 </section>
 <section id="instance-file">
-<h3>Instance: File<a class="headerlink" href="#instance-file" title="Link to this heading">#</a></h3>
+<h3>Instance: File<a class="headerlink" href="#instance-file" title="Link to this heading">¶</a></h3>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">File</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">&quot;/tmp/i-am-not-accessible&quot;</span><span class="p">);</span>
 <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;file&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="p">);</span>
 <span class="n">assertEquals</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">getObject</span><span class="p">(</span><span class="s">&quot;file&quot;</span><span class="p">));</span>
@@ -334,7 +334,7 @@
 </div>
 </section>
 <section id="instance-list">
-<h3>Instance: List<a class="headerlink" href="#instance-list" title="Link to this heading">#</a></h3>
+<h3>Instance: List<a class="headerlink" href="#instance-list" title="Link to this heading">¶</a></h3>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">javetProxyConverter</span><span class="p">.</span><span class="na">getConfig</span><span class="p">().</span><span class="na">setProxyListEnabled</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
 <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleList</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;y&quot;</span><span class="p">);</span>
 <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;list&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="p">);</span>
@@ -377,7 +377,7 @@
 </div>
 </section>
 <section id="instance-map">
-<h3>Instance: Map<a class="headerlink" href="#instance-map" title="Link to this heading">#</a></h3>
+<h3>Instance: Map<a class="headerlink" href="#instance-map" title="Link to this heading">¶</a></h3>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">javetProxyConverter</span><span class="p">.</span><span class="na">getConfig</span><span class="p">().</span><span class="na">setProxyMapEnabled</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
 <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleMap</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;y&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;2&quot;</span><span class="p">);</span>
 <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;map&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">map</span><span class="p">);</span>
@@ -407,7 +407,7 @@
 </div>
 </section>
 <section id="instance-path">
-<h3>Instance: Path<a class="headerlink" href="#instance-path" title="Link to this heading">#</a></h3>
+<h3>Instance: Path<a class="headerlink" href="#instance-path" title="Link to this heading">¶</a></h3>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Path</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">&quot;/tmp/i-am-not-accessible&quot;</span><span class="p">).</span><span class="na">toPath</span><span class="p">();</span>
 <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;path&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">path</span><span class="p">);</span>
 <span class="n">assertEquals</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">getObject</span><span class="p">(</span><span class="s">&quot;path&quot;</span><span class="p">));</span>
@@ -422,7 +422,7 @@
 </div>
 </section>
 <section id="instance-set">
-<h3>Instance: Set<a class="headerlink" href="#instance-set" title="Link to this heading">#</a></h3>
+<h3>Instance: Set<a class="headerlink" href="#instance-set" title="Link to this heading">¶</a></h3>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">javetProxyConverter</span><span class="p">.</span><span class="na">getConfig</span><span class="p">().</span><span class="na">setProxySetEnabled</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
 <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleSet</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;y&quot;</span><span class="p">);</span>
 <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;set&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">set</span><span class="p">);</span>
@@ -451,7 +451,7 @@
 </div>
 </section>
 <section id="static-stringbuilder">
-<h3>Static: StringBuilder<a class="headerlink" href="#static-stringbuilder" title="Link to this heading">#</a></h3>
+<h3>Static: StringBuilder<a class="headerlink" href="#static-stringbuilder" title="Link to this heading">¶</a></h3>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;StringBuilder&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">StringBuilder</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
 <span class="n">assertEquals</span><span class="p">(</span><span class="s">&quot;abc def&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span>
 <span class="w">        </span><span class="s">&quot;function main() {\n&quot;</span><span class="w"> </span><span class="o">+</span>
@@ -464,7 +464,7 @@
 </div>
 </section>
 <section id="static-pattern">
-<h3>Static: Pattern<a class="headerlink" href="#static-pattern" title="Link to this heading">#</a></h3>
+<h3>Static: Pattern<a class="headerlink" href="#static-pattern" title="Link to this heading">¶</a></h3>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;Pattern&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Pattern</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
 <span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;let p = Pattern.compile(&#39;^\\\\d+$&#39;); p;&quot;</span><span class="p">).</span><span class="na">executeObject</span><span class="p">()</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">Pattern</span><span class="p">);</span>
 <span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;p.matcher(&#39;123&#39;).matches();&quot;</span><span class="p">).</span><span class="na">executeBoolean</span><span class="p">());</span>
@@ -476,7 +476,7 @@
 </div>
 </section>
 <section id="static-enum">
-<h3>Static: Enum<a class="headerlink" href="#static-enum" title="Link to this heading">#</a></h3>
+<h3>Static: Enum<a class="headerlink" href="#static-enum" title="Link to this heading">¶</a></h3>
 <p>Static class usually does not have an instance. The dynamic proxy based converter is smart enough to handle that.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;JavetErrorType&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">JavetErrorType</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
 <span class="n">assertEquals</span><span class="p">(</span><span class="n">JavetErrorType</span><span class="p">.</span><span class="na">Converter</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;JavetErrorType.Converter&quot;</span><span class="p">).</span><span class="na">executeObject</span><span class="p">());</span>
@@ -493,7 +493,7 @@
 </div>
 </section>
 <section id="static-interface">
-<h3>Static: Interface<a class="headerlink" href="#static-interface" title="Link to this heading">#</a></h3>
+<h3>Static: Interface<a class="headerlink" href="#static-interface" title="Link to this heading">¶</a></h3>
 <p>Sometimes an interface or annotation class can be injected for enabling Java reflection in V8.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;AutoCloseable&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">AutoCloseable</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
 <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;IJavetClosable&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">IJavetClosable</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
@@ -508,7 +508,7 @@
 </div>
 </section>
 <section id="dynamic-anonymous-function">
-<h3>Dynamic: Anonymous Function<a class="headerlink" href="#dynamic-anonymous-function" title="Link to this heading">#</a></h3>
+<h3>Dynamic: Anonymous Function<a class="headerlink" href="#dynamic-anonymous-function" title="Link to this heading">¶</a></h3>
 <p>This feature is quite special as it allows implementing Java interfaces in JavaScript via anonymous functions, also known as lambda expressions.</p>
 <ol class="arabic simple">
 <li><p>Define a simple interface <code class="docutils literal notranslate"><span class="pre">IStringJoiner</span></code> for joining two strings.</p></li>
@@ -567,7 +567,7 @@
 </div>
 </section>
 <section id="dynamic-anonymous-object-for-interface">
-<h3>Dynamic: Anonymous Object for Interface<a class="headerlink" href="#dynamic-anonymous-object-for-interface" title="Link to this heading">#</a></h3>
+<h3>Dynamic: Anonymous Object for Interface<a class="headerlink" href="#dynamic-anonymous-object-for-interface" title="Link to this heading">¶</a></h3>
 <p>This feature is similar to the dynamic anonymous function, but is an enhanced version because it allows implementing all methods exposed by a Java interface.</p>
 <ol class="arabic simple">
 <li><p>Define a simple interface <code class="docutils literal notranslate"><span class="pre">IStringUtils</span></code> for joining two strings.</p></li>
@@ -633,7 +633,7 @@
 <p>Voilà aussi! It works again.</p>
 </section>
 <section id="dynamic-anonymous-object-for-class">
-<h3>Dynamic: Anonymous Object for Class<a class="headerlink" href="#dynamic-anonymous-object-for-class" title="Link to this heading">#</a></h3>
+<h3>Dynamic: Anonymous Object for Class<a class="headerlink" href="#dynamic-anonymous-object-for-class" title="Link to this heading">¶</a></h3>
 <p>This feature is similar to the dynamic anonymous object for interface, but it allows implementing all methods exposed by a non-final Java class.</p>
 <ol class="arabic simple">
 <li><p>Add <code class="docutils literal notranslate"><span class="pre">ByteBuddy</span></code> to the dependency. You may skip this step if your project has already referenced <code class="docutils literal notranslate"><span class="pre">ByteBuddy</span></code>.</p></li>
@@ -707,7 +707,7 @@
 </section>
 </section>
 <section id="features">
-<h2>Features<a class="headerlink" href="#features" title="Link to this heading">#</a></h2>
+<h2>Features<a class="headerlink" href="#features" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Any Java objects generated inside V8 are automatically handled by the converter.</p></li>
 <li><p>Getters and setters (<code class="docutils literal notranslate"><span class="pre">get</span></code>, <code class="docutils literal notranslate"><span class="pre">is</span></code>, <code class="docutils literal notranslate"><span class="pre">set</span></code> and <code class="docutils literal notranslate"><span class="pre">put</span></code>) are smartly handled.</p></li>
@@ -757,7 +757,7 @@
 </table>
 </div>
 <section id="v8convert-mode">
-<h3>&#64;V8Convert::mode<a class="headerlink" href="#v8convert-mode" title="Link to this heading">#</a></h3>
+<h3>&#64;V8Convert::mode<a class="headerlink" href="#v8convert-mode" title="Link to this heading">¶</a></h3>
 <p>It tells the converter how to treat the annotated class.</p>
 <ul class="simple">
 <li><p>Transparent - Transparent mode maps the Java objects directly to V8 and ignores any annotations. It is the default mode.</p></li>
@@ -766,20 +766,20 @@
 </ul>
 </section>
 <section id="v8property-name">
-<h3>&#64;V8Property::name<a class="headerlink" href="#v8property-name" title="Link to this heading">#</a></h3>
+<h3>&#64;V8Property::name<a class="headerlink" href="#v8property-name" title="Link to this heading">¶</a></h3>
 <p>It tells the converter to bind the property to an alias name.</p>
 </section>
 <section id="v8function-name">
-<h3>&#64;V8Function::name<a class="headerlink" href="#v8function-name" title="Link to this heading">#</a></h3>
+<h3>&#64;V8Function::name<a class="headerlink" href="#v8function-name" title="Link to this heading">¶</a></h3>
 <p>It tells the converter to bind the function to an alias name.</p>
 </section>
 </section>
 <section id="how-does-javetproxyconverter-work">
-<h2>How does JavetProxyConverter Work?<a class="headerlink" href="#how-does-javetproxyconverter-work" title="Link to this heading">#</a></h2>
+<h2>How does JavetProxyConverter Work?<a class="headerlink" href="#how-does-javetproxyconverter-work" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> creates a JavaScript proxy per Java object. For now, the proxy intercepts <code class="docutils literal notranslate"><span class="pre">get</span></code>, <code class="docutils literal notranslate"><span class="pre">has</span></code> and <code class="docutils literal notranslate"><span class="pre">set</span></code> to achieve the complete virtualization of Java objects in JavaScript runtime.</p>
 </section>
 <section id="how-to-customize-javetproxyconverter">
-<h2>How to Customize JavetProxyConverter?<a class="headerlink" href="#how-to-customize-javetproxyconverter" title="Link to this heading">#</a></h2>
+<h2>How to Customize JavetProxyConverter?<a class="headerlink" href="#how-to-customize-javetproxyconverter" title="Link to this heading">¶</a></h2>
 <p>It is recommended to subclass <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> and override few internal API to achieve complete customization.</p>
 </section>
 </section>
@@ -813,7 +813,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -874,8 +874,8 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Reference" href="../../reference/index.html" /><link rel="prev" title="Migration Guides" href="index.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Migrate from J2V8 - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Migrate from J2V8 - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,10 +304,10 @@
         </div>
         <article role="main">
           <section id="migrate-from-j2v8">
-<h1>Migrate from J2V8<a class="headerlink" href="#migrate-from-j2v8" title="Link to this heading">#</a></h1>
+<h1>Migrate from J2V8<a class="headerlink" href="#migrate-from-j2v8" title="Link to this heading">¶</a></h1>
 <p>How to migrate from J2V8 to Javet is a frequently asked question, especially when people are evaluating Javet. I created Javet in Jan, 2021 for various reasons (<a class="reference internal" href="../../faq/background/what_is_the_motivation.html"><span class="doc">What is the Motivation?</span></a>, <a class="reference internal" href="../../faq/background/history_with_j2v8.html"><span class="doc">History with J2V8</span></a>). After the first release v0.7.0 was published, I started migrating from J2V8 to Javet. It was quite smooth, though it took a week.</p>
 <section id="why-migrate-from-j2v8-to-javet">
-<h2>Why Migrate from J2V8 to Javet?<a class="headerlink" href="#why-migrate-from-j2v8-to-javet" title="Link to this heading">#</a></h2>
+<h2>Why Migrate from J2V8 to Javet?<a class="headerlink" href="#why-migrate-from-j2v8-to-javet" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Its Linux, Mac OS and Windows releases have been abandoned for years.</p></li>
 <li><p>Its type hierarchy is inconsistent because primitive types are out of the hierarchy so that tedious <code class="docutils literal notranslate"><span class="pre">if-else</span></code> sentences have to be repeated all over the code base.</p></li>
@@ -318,9 +318,9 @@
 </ul>
 </section>
 <section id="migration-guides">
-<h2>Migration Guides<a class="headerlink" href="#migration-guides" title="Link to this heading">#</a></h2>
+<h2>Migration Guides<a class="headerlink" href="#migration-guides" title="Link to this heading">¶</a></h2>
 <section id="v8-v8runtime">
-<h3>V8 ⟶ V8Runtime<a class="headerlink" href="#v8-v8runtime" title="Link to this heading">#</a></h3>
+<h3>V8 ⟶ V8Runtime<a class="headerlink" href="#v8-v8runtime" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">V8</span></code> in J2V8 is <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> in Javet.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">V8</span></code> in J2V8 carries 2 roles: 1 as the V8 runtime and 1 as the global object (<code class="docutils literal notranslate"><span class="pre">globalThis</span></code> or <code class="docutils literal notranslate"><span class="pre">global</span></code>). In Javet,  <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> no longer inherits from <code class="docutils literal notranslate"><span class="pre">V8Value</span></code> so that it literally represents the V8 runtime. <code class="docutils literal notranslate"><span class="pre">V8Runtime.getGlobalObject()</span></code> is dedicated to the global object.</p></li>
@@ -328,14 +328,14 @@
 </ul>
 </section>
 <section id="primitive-types">
-<h3>Primitive Types<a class="headerlink" href="#primitive-types" title="Link to this heading">#</a></h3>
+<h3>Primitive Types<a class="headerlink" href="#primitive-types" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Primitive types in Javet inherit from <code class="docutils literal notranslate"><span class="pre">V8ValuePrimitive</span></code> ⟶ <code class="docutils literal notranslate"><span class="pre">V8Value</span></code> ⟶ <code class="docutils literal notranslate"><span class="pre">V8Data</span></code>.</p></li>
 <li><p>The Javet type hierarchy is consistent so that <code class="docutils literal notranslate"><span class="pre">V8Value</span></code> in all supported API can represent all V8 types. This is hard in J2V8 because <code class="docutils literal notranslate"><span class="pre">Object</span></code> has to be used to represent all types, however, by using <code class="docutils literal notranslate"><span class="pre">Object</span></code> the type check during compilation doesn't work at all and that is a rich source of runtime bugs or even segfaults.</p></li>
 </ul>
 </section>
 <section id="registerjavamethod-v8function">
-<h3>registerJavaMethod() ⟶ &#64;V8Function<a class="headerlink" href="#registerjavamethod-v8function" title="Link to this heading">#</a></h3>
+<h3>registerJavaMethod() ⟶ &#64;V8Function<a class="headerlink" href="#registerjavamethod-v8function" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>It is quite painful to register many functions in J2V8. Javet makes that a declarative one instead of the imperative one. Just decorate the target function with <code class="docutils literal notranslate"><span class="pre">&#64;V8Function</span></code>, then call <code class="docutils literal notranslate"><span class="pre">V8ValueObject.bind(javaObject)</span></code> to bind that Java object, it's done.</p></li>
 <li><p>In addition, Javet provides <code class="docutils literal notranslate"><span class="pre">&#64;V8Property</span></code> which allows registering getters and setters in the same manner. That feature has never been delivered by J2V8.</p></li>
@@ -344,7 +344,7 @@
 <p>Please refer to <a class="reference internal" href="../../reference/v8_values/v8_function.html"><span class="doc">V8 Function</span></a> for more details.</p>
 </section>
 <section id="v8locker">
-<h3>V8Locker<a class="headerlink" href="#v8locker" title="Link to this heading">#</a></h3>
+<h3>V8Locker<a class="headerlink" href="#v8locker" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Javet introduced <strong>Implicit Mode</strong> which allows applications to eliminate <code class="docutils literal notranslate"><span class="pre">V8Locker</span></code> from the code base and still be able to share the same <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> among multiple threads, because Javet does the synchronization automatically. That frees application developers from the tedious <code class="docutils literal notranslate"><span class="pre">acquire()</span></code> and <code class="docutils literal notranslate"><span class="pre">release()</span></code> calls, and gets the rid of the runtime exceptions caused by multiple threads.</p></li>
 <li><p>Javet also has <strong>Explicit Mode</strong> for performance sensitive scenarios.</p></li>
@@ -352,7 +352,7 @@
 <p>Please refer to <a class="reference internal" href="../../reference/resource_management/lock.html"><span class="doc">Know the Lock</span></a> for more details.</p>
 </section>
 <section id="type-conversion">
-<h3>Type Conversion<a class="headerlink" href="#type-conversion" title="Link to this heading">#</a></h3>
+<h3>Type Conversion<a class="headerlink" href="#type-conversion" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Javet has built-in <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code> which covers the majority cases on type conversion so that the arguments of Javet API can be of any type and the converter just does the conversion transparently. That frees application developers from writing tedious type conversion code everywhere.</p></li>
 <li><p>Javet also provides <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> which allows injecting arbitrary Java objects in V8 and polyfilling Java interfaces with JavaScript functions or objects. Especially the polyfilling feature implies hotfixing business logic without restarting the JVM.</p></li>
@@ -360,7 +360,7 @@
 <p>Please refer to <a class="reference internal" href="../advanced/object_converter.html"><span class="doc">Object Converter</span></a> for more details.</p>
 </section>
 <section id="node-js-and-v8">
-<h3>Node.js and V8<a class="headerlink" href="#node-js-and-v8" title="Link to this heading">#</a></h3>
+<h3>Node.js and V8<a class="headerlink" href="#node-js-and-v8" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Javet provides both Node.js mode and V8 mode for various usages. Each mode stays at a dedicated classloader so that both modes don't cross each other, and are completely isolated. If the application only uses one mode, it doesn't need to pay extra amount of memory for the other mode because the other mode is not loaded at all. Of course, both modes can be unloaded as well without shutting down the JVM.</p></li>
 <li><p>In Node.js mode, all node modules can be directly used including the native modules. Please refer to <a class="reference internal" href="../../reference/resource_management/modularization.html"><span class="doc">Modularization</span></a> for more detail.</p></li>
@@ -369,7 +369,7 @@
 <p>Please refer to <a class="reference internal" href="../../development/design.html"><span class="doc">Javet Design</span></a> for more details.</p>
 </section>
 <section id="es6-module">
-<h3>ES6 Module<a class="headerlink" href="#es6-module" title="Link to this heading">#</a></h3>
+<h3>ES6 Module<a class="headerlink" href="#es6-module" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Javet supports <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">{</span> <span class="pre">***</span> <span class="pre">}</span> <span class="pre">from</span> <span class="pre">'***.js'</span></code> and exposes module resolve event for applications to specify where to locate the modules.</p></li>
 </ul>
@@ -377,7 +377,7 @@
 </section>
 </section>
 <section id="blessing">
-<h2>Blessing<a class="headerlink" href="#blessing" title="Link to this heading">#</a></h2>
+<h2>Blessing<a class="headerlink" href="#blessing" title="Link to this heading">¶</a></h2>
 <p>In case this migration guide couldn't cover all your use cases, please contact the maintainer at <a class="reference external" href="https://discord.gg/R4vvKU96gw">discord</a>. Wish you a successful migration!</p>
 </section>
 </section>
@@ -411,7 +411,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -460,8 +460,8 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Why Node.js Crashes When being Closed?" href="why_node_js_crashes_when_being_closed.html" /><link rel="prev" title="Can I Debug Javet in Chrome DevTools?" href="can_i_debug_javet_in_chrome_dev_tools.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>SIGSEGV at createV8Runtime() in V8 Mode on AWS - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>SIGSEGV at createV8Runtime() in V8 Mode on AWS - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,9 +304,9 @@
         </div>
         <article role="main">
           <section id="sigsegv-at-createv8runtime-in-v8-mode-on-aws">
-<h1>SIGSEGV at createV8Runtime() in V8 Mode on AWS<a class="headerlink" href="#sigsegv-at-createv8runtime-in-v8-mode-on-aws" title="Link to this heading">#</a></h1>
+<h1>SIGSEGV at createV8Runtime() in V8 Mode on AWS<a class="headerlink" href="#sigsegv-at-createv8runtime-in-v8-mode-on-aws" title="Link to this heading">¶</a></h1>
 <section id="symptoms">
-<h2>Symptoms<a class="headerlink" href="#symptoms" title="Link to this heading">#</a></h2>
+<h2>Symptoms<a class="headerlink" href="#symptoms" title="Link to this heading">¶</a></h2>
 <p>Sometimes creating multiple Javet engines meets SIGSEGV at <code class="docutils literal notranslate"><span class="pre">createV8Runtime()</span></code> in V8 mode on AWS.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">com.caoccao.javet.enums.JSRuntimeType</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">com.caoccao.javet.interop.V8Runtime</span><span class="p">;</span>
@@ -354,14 +354,14 @@
 </div>
 </section>
 <section id="analysis">
-<h2>Analysis<a class="headerlink" href="#analysis" title="Link to this heading">#</a></h2>
+<h2>Analysis<a class="headerlink" href="#analysis" title="Link to this heading">¶</a></h2>
 <p>The root cause seems that the V8 memory protection key is not properly initialized in very few VM environments with specific CPU models. The changes were committed on May 26, 2023. That causes Javet v3.0.0+ to have this issue.</p>
 <p>As the SIGSEGV only occurs on Linux x86_64 with small set of CPUs, the solution is expected to be only applied to Linux x86_64 build.</p>
 </section>
 <section id="solutions">
-<h2>Solutions<a class="headerlink" href="#solutions" title="Link to this heading">#</a></h2>
+<h2>Solutions<a class="headerlink" href="#solutions" title="Link to this heading">¶</a></h2>
 <section id="solution-1-enforce-the-initialization">
-<h3>Solution 1: Enforce the Initialization<a class="headerlink" href="#solution-1-enforce-the-initialization" title="Link to this heading">#</a></h3>
+<h3>Solution 1: Enforce the Initialization<a class="headerlink" href="#solution-1-enforce-the-initialization" title="Link to this heading">¶</a></h3>
 <p>Execute the following code in the main thread during the application initialization to force V8 to initialize.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">V8Runtime</span><span class="w"> </span><span class="n">v8Runtime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">V8Host</span><span class="p">.</span><span class="na">getV8Instance</span><span class="p">().</span><span class="na">createV8Runtime</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 <span class="p">}</span>
@@ -372,7 +372,7 @@
 <p>A full cycle of V8Runtime ensures <code class="docutils literal notranslate"><span class="pre">ThreadIsolation</span></code>'s initialization is performed successfully.</p>
 </section>
 <section id="solution-2-set-environment-variable-javet-disable-pku">
-<h3>Solution 2: Set Environment Variable JAVET_DISABLE_PKU<a class="headerlink" href="#solution-2-set-environment-variable-javet-disable-pku" title="Link to this heading">#</a></h3>
+<h3>Solution 2: Set Environment Variable JAVET_DISABLE_PKU<a class="headerlink" href="#solution-2-set-environment-variable-javet-disable-pku" title="Link to this heading">¶</a></h3>
 <p>Add an environment variable <code class="docutils literal notranslate"><span class="pre">JAVET_DISABLE_PKU</span></code> before the application is started.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">JAVET_DISABLE_PKU</span><span class="o">=</span><span class="m">1</span>
 </pre></div>
@@ -412,7 +412,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -456,8 +456,8 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

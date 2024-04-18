@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="What is the Motivation?" href="what_is_the_motivation.html" /><link rel="prev" title="Background" href="index.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>History with J2V8 - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>History with J2V8 - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,16 +304,16 @@
         </div>
         <article role="main">
           <section id="history-with-j2v8">
-<h1>History with J2V8<a class="headerlink" href="#history-with-j2v8" title="Link to this heading">#</a></h1>
+<h1>History with J2V8<a class="headerlink" href="#history-with-j2v8" title="Link to this heading">¶</a></h1>
 <section id="j2v8-issues">
-<h2>J2V8 Issues<a class="headerlink" href="#j2v8-issues" title="Link to this heading">#</a></h2>
+<h2>J2V8 Issues<a class="headerlink" href="#j2v8-issues" title="Link to this heading">¶</a></h2>
 <p>J2V8 is an excellent project on embedding V8 in Java. However, J2V8 community hasn't been active since 2017.</p>
 <p>The last Windows version 4.6.0 was released in 2016 and the last Linux version 4.8.0 was released in 2017. The V8 in Windows v4.6.0 doesn't even fully support ES6.</p>
 <p>The latest community activities were around Android versions. The Node.js API was dropped. The Windows build has been seriously broken for years. The Linux build is nearly broken. There are serious memory leak issues which are hard to be fixed under the current architecture.</p>
 <p>Its API has stopped evolving for years. Many new features I expect just don't get any chances to be implemented. Obviously, if the build system was broken and couldn't be easily fixed, almost no one would like to contribute. That includes me. When I was trying to fix the build system for Windows and Linux, I had to admit that's so, so, so, challenging. Why is that? I think it's not merely J2V8 community's problem because in the meanwhile V8, Node.js and ECMAScript move forward rapidly causing many unexpected challenges. Someone or some team needs to look after J2V8 from time to time. Unfortunately, the reality is cruel.</p>
 </section>
 <section id="j2v8-latest-version">
-<h2>J2V8 Latest Version<a class="headerlink" href="#j2v8-latest-version" title="Link to this heading">#</a></h2>
+<h2>J2V8 Latest Version<a class="headerlink" href="#j2v8-latest-version" title="Link to this heading">¶</a></h2>
 <p>I managed to unofficially build the latest <a class="reference external" href="https://github.com/caoccao/Javet/releases/tag/0.6.2.0">J2V8 v6.2.0</a>.</p>
 <ul class="simple">
 <li><p>V8 is upgraded to v8.3.110.9 which was released in May, 2020.</p></li>
@@ -348,14 +348,14 @@
 <p>With this kind of performance improvement, what are the reasons of sticking to <code class="docutils literal notranslate"><span class="pre">v4.6.0</span></code>?</p>
 </section>
 <section id="why-windows-and-linux-only">
-<h2>Why Windows and Linux only?<a class="headerlink" href="#why-windows-and-linux-only" title="Link to this heading">#</a></h2>
+<h2>Why Windows and Linux only?<a class="headerlink" href="#why-windows-and-linux-only" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>I don't own a decent Mac device. To be more precisely, I have Mac Mini and MacBook Air, but they are too old (building V8 would take many hours). And I have no plan on buying a new one in the near future. Call for donation? Don't be joking. So there's no MacOS release.</p></li>
 <li><p>I don't intend to support Android for now.</p></li>
 </ul>
 </section>
 <section id="why-not-automate-the-j2v8-build-system">
-<h2>Why not Automate the J2V8 Build System?<a class="headerlink" href="#why-not-automate-the-j2v8-build-system" title="Link to this heading">#</a></h2>
+<h2>Why not Automate the J2V8 Build System?<a class="headerlink" href="#why-not-automate-the-j2v8-build-system" title="Link to this heading">¶</a></h2>
 <p>TL;DR: It's too hard.</p>
 <ul class="simple">
 <li><p>V8 is evolving rapidly. v8.3.110.9 is a relatively easy one to be mastered. I didn't move forward well with v8.9.213 which placed a different set of <em>solvable</em> challenges to me. I plan to revisit the latest V8 in near future.</p></li>
@@ -373,7 +373,7 @@
 <p>With these uncertainties, to me, automating the build system is something with ROI closing to 0. Supposing I achieved it in a particular version of V8, let's say <code class="docutils literal notranslate"><span class="pre">v8.3.110.9</span></code>, it would for sure break in <code class="docutils literal notranslate"><span class="pre">v8.9.x</span></code>. Later, I managed to build <code class="docutils literal notranslate"><span class="pre">v8.9.255</span></code> which has been embeded into Javet.</p>
 </section>
 <section id="why-not-deploy-j2v8-to-maven-repository">
-<h2>Why not Deploy J2V8 to Maven Repository?<a class="headerlink" href="#why-not-deploy-j2v8-to-maven-repository" title="Link to this heading">#</a></h2>
+<h2>Why not Deploy J2V8 to Maven Repository?<a class="headerlink" href="#why-not-deploy-j2v8-to-maven-repository" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>I don't have the permission to its official repository.</p></li>
 <li><p>There has been no Windows / Linux releases deployed since 2016 / 2017. I really don't know who to contact with.</p></li>
@@ -411,7 +411,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -453,8 +453,8 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

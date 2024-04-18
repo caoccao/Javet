@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Know the Lock" href="lock.html" /><link rel="prev" title="Resource Management" href="index.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Load and Unload - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Load and Unload - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,13 +304,13 @@
         </div>
         <article role="main">
           <section id="load-and-unload">
-<h1>Load and Unload<a class="headerlink" href="#load-and-unload" title="Link to this heading">#</a></h1>
+<h1>Load and Unload<a class="headerlink" href="#load-and-unload" title="Link to this heading">¶</a></h1>
 <p>As documented in <a class="reference internal" href="../../development/design.html"><span class="doc">Javet Design</span></a>, Javet supports loading and unloading the JNI libraries during runtime in both Node.js and V8 modes.</p>
 <section id="can-javet-native-library-be-loaded-or-unloaded-on-demand">
-<h2>Can Javet Native Library be Loaded or Unloaded On-demand?<a class="headerlink" href="#can-javet-native-library-be-loaded-or-unloaded-on-demand" title="Link to this heading">#</a></h2>
+<h2>Can Javet Native Library be Loaded or Unloaded On-demand?<a class="headerlink" href="#can-javet-native-library-be-loaded-or-unloaded-on-demand" title="Link to this heading">¶</a></h2>
 <p>Yes, Javet supports that.</p>
 <section id="unload">
-<h3>Unload<a class="headerlink" href="#unload" title="Link to this heading">#</a></h3>
+<h3>Unload<a class="headerlink" href="#unload" title="Link to this heading">¶</a></h3>
 <p>Assuming the JNI library per mode is already loaded, here are the step-by-step on how to unload it.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Step 1: Set library reloadable. Why? Because Javet defaults that switch to false.</span>
 <span class="n">V8Host</span><span class="p">.</span><span class="na">setLibraryReloadable</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
@@ -325,7 +325,7 @@
 <p>How does <code class="docutils literal notranslate"><span class="pre">unloadLibrary()</span></code> work? There is no API that allows unloading a JNI library explicitly. The only way is GC will automatically unload the library if all references to that library are garbage collectable. So, application is supposed to close all V8 values, V8 runtimes prior to calling <code class="docutils literal notranslate"><span class="pre">unloadLibrary()</span></code>.</p>
 </section>
 <section id="load">
-<h3>Load<a class="headerlink" href="#load" title="Link to this heading">#</a></h3>
+<h3>Load<a class="headerlink" href="#load" title="Link to this heading">¶</a></h3>
 <p>Assuming the JNI library per mode is already unloaded, here are the step-by-step on how to load it again.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Step 1: Get V8Host per JS runtime type.</span>
 <span class="n">V8Host</span><span class="w"> </span><span class="n">v8Host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">V8Host</span><span class="p">.</span><span class="na">getInstance</span><span class="p">(</span><span class="n">jsRuntimeType</span><span class="p">);</span>
@@ -344,7 +344,7 @@
 </section>
 </section>
 <section id="can-javet-native-library-be-deployed-to-a-custom-location">
-<h2>Can Javet Native Library be Deployed to a Custom Location?<a class="headerlink" href="#can-javet-native-library-be-deployed-to-a-custom-location" title="Link to this heading">#</a></h2>
+<h2>Can Javet Native Library be Deployed to a Custom Location?<a class="headerlink" href="#can-javet-native-library-be-deployed-to-a-custom-location" title="Link to this heading">¶</a></h2>
 <p>Yes. By default, the native library is deployed to system temp which might not be accessible in some cases. Here is a simple way of telling Javet where to deploy the library.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">JavetLibLoader</span><span class="p">.</span><span class="na">setLibLoadingListener</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">IJavetLibLoadingListener</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nd">@Override</span>
@@ -377,7 +377,7 @@
 </div>
 </section>
 <section id="can-javet-native-library-deployment-be-skipped">
-<h2>Can Javet Native Library Deployment be Skipped?<a class="headerlink" href="#can-javet-native-library-deployment-be-skipped" title="Link to this heading">#</a></h2>
+<h2>Can Javet Native Library Deployment be Skipped?<a class="headerlink" href="#can-javet-native-library-deployment-be-skipped" title="Link to this heading">¶</a></h2>
 <p>Yes. In some cases, the native library can be directly deployed to system library path to avoid dynamic deployment. That brings better performance and less jar file size. Here is a sample way of telling Javet to skip the deployment.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">JavetLibLoader</span><span class="p">.</span><span class="na">setLibLoadingListener</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">IJavetLibLoadingListener</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nd">@Override</span>
@@ -393,7 +393,7 @@
 </div>
 </section>
 <section id="can-already-loaded-in-another-classloader-be-suppressed">
-<h2>Can <em>already loaded in another classloader</em> be Suppressed?<a class="headerlink" href="#can-already-loaded-in-another-classloader-be-suppressed" title="Link to this heading">#</a></h2>
+<h2>Can <em>already loaded in another classloader</em> be Suppressed?<a class="headerlink" href="#can-already-loaded-in-another-classloader-be-suppressed" title="Link to this heading">¶</a></h2>
 <p>In some cases, the applications are hosted by some other classloaders (e.g. Mavin plug-in host, Osgi, etc.) that actively load and unload the applications on demand. That causes the Javet native library to be loaded repeatedly. However, JVM only allows one memory copy of a particular JNI library regardless of at which classloader it stays.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">java</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">UnsatisfiedLinkError</span><span class="p">:</span> <span class="n">Native</span> <span class="n">Library</span> <span class="o">***</span><span class="n">libjavet</span><span class="o">***</span> <span class="n">already</span> <span class="n">loaded</span> <span class="ow">in</span> <span class="n">another</span> <span class="n">classloader</span>
 </pre></div>
@@ -413,7 +413,7 @@
 </div>
 </section>
 <section id="can-javet-lib-loading-listener-take-environment-variables">
-<h2>Can Javet Lib Loading Listener Take Environment Variables?<a class="headerlink" href="#can-javet-lib-loading-listener-take-environment-variables" title="Link to this heading">#</a></h2>
+<h2>Can Javet Lib Loading Listener Take Environment Variables?<a class="headerlink" href="#can-javet-lib-loading-listener-take-environment-variables" title="Link to this heading">¶</a></h2>
 <p>Yes. In some cases, it is inconvenient to inject a listener. No worry, <code class="docutils literal notranslate"><span class="pre">JavetLibLoadingListener</span></code> can take <code class="docutils literal notranslate"><span class="pre">javet.lib.loading.path</span></code>,  <code class="docutils literal notranslate"><span class="pre">javet.lib.loading.type</span></code> and <code class="docutils literal notranslate"><span class="pre">javet.lib.loading.suppress.error</span></code> so that applications can inject custom lib loading mechanism without implementing a new listener.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the Javet library from /abc with auto-deployment</span>
 java<span class="w"> </span>...<span class="w"> </span>-Djavet.lib.loading.path<span class="o">=</span>/abc
@@ -434,7 +434,7 @@ java<span class="w"> </span>...<span class="w"> </span>-Djavet.lib.loading.suppr
 </div>
 </section>
 <section id="can-javet-libraries-be-removed-from-the-jar-file">
-<h2>Can Javet Libraries be Removed from the Jar File?<a class="headerlink" href="#can-javet-libraries-be-removed-from-the-jar-file" title="Link to this heading">#</a></h2>
+<h2>Can Javet Libraries be Removed from the Jar File?<a class="headerlink" href="#can-javet-libraries-be-removed-from-the-jar-file" title="Link to this heading">¶</a></h2>
 <p>Yes, <code class="docutils literal notranslate"><span class="pre">javet-core</span></code> is available without the libraries. Just update <code class="docutils literal notranslate"><span class="pre">javet</span></code> or <code class="docutils literal notranslate"><span class="pre">javet-macos</span></code> to <code class="docutils literal notranslate"><span class="pre">javet-core</span></code> in the <a class="reference internal" href="../../tutorial/basic/installation.html"><span class="doc">Installation</span></a>.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
@@ -472,7 +472,7 @@ java<span class="w"> </span>...<span class="w"> </span>-Djavet.lib.loading.suppr
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -519,8 +519,8 @@ java<span class="w"> </span>...<span class="w"> </span>-Djavet.lib.loading.suppr
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Migration Guides" href="../migration_guides/index.html" /><link rel="prev" title="Access the Whole JVM" href="access_the_whole_jvm.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Expose JsonNode in V8 - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Expose JsonNode in V8 - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,10 +304,10 @@
         </div>
         <article role="main">
           <section id="expose-jsonnode-in-v8">
-<h1>Expose JsonNode in V8<a class="headerlink" href="#expose-jsonnode-in-v8" title="Link to this heading">#</a></h1>
+<h1>Expose JsonNode in V8<a class="headerlink" href="#expose-jsonnode-in-v8" title="Link to this heading">¶</a></h1>
 <p>With the <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> it's possible to expose <code class="docutils literal notranslate"><span class="pre">JsonNode</span></code> directly in V8. However, how to elegantly expose the <code class="docutils literal notranslate"><span class="pre">JsonNode</span></code> in V8 needs to be considered wisely.</p>
 <section id="approaches">
-<h2>2 Approaches<a class="headerlink" href="#approaches" title="Link to this heading">#</a></h2>
+<h2>2 Approaches<a class="headerlink" href="#approaches" title="Link to this heading">¶</a></h2>
 <p>There are generally 2 approaches: Java flavor and JS flavor. Let's take a simple performance test to see how they work and what is the difference between them in terms of performance.</p>
 <p>The test is simple: keep incrementing the leaf node of the following JSON structure and measure the time elapsed.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -320,7 +320,7 @@
 </pre></div>
 </div>
 <section id="java-flavor-direct-exposure">
-<h3>Java Flavor (Direct Exposure)<a class="headerlink" href="#java-flavor-direct-exposure" title="Link to this heading">#</a></h3>
+<h3>Java Flavor (Direct Exposure)<a class="headerlink" href="#java-flavor-direct-exposure" title="Link to this heading">¶</a></h3>
 <p>The Java flavor leverages the built-in capabilities of the <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> to inject a <code class="docutils literal notranslate"><span class="pre">JsonNode</span></code> directly in V8. Obviously, the following JS code is quite verbose because it is the same way of playing with Jackson API in Java.</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">testJavaFlavor</span><span class="p">(</span><span class="nx">node</span><span class="p">,</span><span class="w"> </span><span class="nx">rounds</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">let</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">rounds</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -342,7 +342,7 @@
 </div>
 </section>
 <section id="js-flavor-wrapped-exposure">
-<h3>JS Flavor (Wrapped Exposure)<a class="headerlink" href="#js-flavor-wrapped-exposure" title="Link to this heading">#</a></h3>
+<h3>JS Flavor (Wrapped Exposure)<a class="headerlink" href="#js-flavor-wrapped-exposure" title="Link to this heading">¶</a></h3>
 <p>The JS flavor relies on a wrapper class recognized by the <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> to inject a wrapped <code class="docutils literal notranslate"><span class="pre">JsonNode</span></code> in V8. In return, the following JS code is neat and pure JS flavored.</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">testJSFlavor</span><span class="p">(</span><span class="nx">node</span><span class="p">,</span><span class="w"> </span><span class="nx">rounds</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">let</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">rounds</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -428,7 +428,7 @@
 </section>
 </section>
 <section id="test">
-<h2>Test<a class="headerlink" href="#test" title="Link to this heading">#</a></h2>
+<h2>Test<a class="headerlink" href="#test" title="Link to this heading">¶</a></h2>
 <p>After the 2 JS functions are executed in V8, the actual test will simply be calling these 2 functions with 2 types of inputs. The test method is as follows.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span>
 <span class="w">        </span><span class="n">V8Runtime</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">,</span>
@@ -494,7 +494,7 @@ Time elapsed: 5214ms
 </div>
 </section>
 <section id="conclusion">
-<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">#</a></h2>
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">¶</a></h2>
 <p>The JS flavored approach is strongly recommended.</p>
 <ul class="simple">
 <li><p>The JS code is neat.</p></li>
@@ -535,7 +535,7 @@ Time elapsed: 5214ms
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -579,8 +579,8 @@ Time elapsed: 5214ms
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

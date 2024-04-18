@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Modularization" href="modularization.html" /><link rel="prev" title="Know the Lock" href="lock.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Memory Management - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Memory Management - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,19 +304,19 @@
         </div>
         <article role="main">
           <section id="memory-management">
-<h1>Memory Management<a class="headerlink" href="#memory-management" title="Link to this heading">#</a></h1>
+<h1>Memory Management<a class="headerlink" href="#memory-management" title="Link to this heading">¶</a></h1>
 <section id="challenges-in-memory-management">
-<h2>3 Challenges in Memory Management<a class="headerlink" href="#challenges-in-memory-management" title="Link to this heading">#</a></h2>
+<h2>3 Challenges in Memory Management<a class="headerlink" href="#challenges-in-memory-management" title="Link to this heading">¶</a></h2>
 <section id="jvm-gc">
-<h3>JVM GC<a class="headerlink" href="#jvm-gc" title="Link to this heading">#</a></h3>
+<h3>JVM GC<a class="headerlink" href="#jvm-gc" title="Link to this heading">¶</a></h3>
 <p>JVM is known to have a GC that manages memory automatically. However, that doesn't cover the objects in JNI native implementation. Once <code class="docutils literal notranslate"><span class="pre">NewGlobalRef(javaObject)</span></code> is called, that <code class="docutils literal notranslate"><span class="pre">javaObject</span></code> lives forever in JVM until <code class="docutils literal notranslate"><span class="pre">DeleteGlobalRef(javaObject)</span></code> is called.</p>
 </section>
 <section id="c-runtime">
-<h3>C++ Runtime<a class="headerlink" href="#c-runtime" title="Link to this heading">#</a></h3>
+<h3>C++ Runtime<a class="headerlink" href="#c-runtime" title="Link to this heading">¶</a></h3>
 <p>Smart pointers in C++ cannot easily work across JNI to JVM, in other words, raw pointers are directly referenced in JVM as <code class="docutils literal notranslate"><span class="pre">long</span></code>. C++ runtime has no idea when to free the memory of those raw pointers unless JVM tells C++ runtime to release via JNI.</p>
 </section>
 <section id="v8-gc">
-<h3>V8 GC<a class="headerlink" href="#v8-gc" title="Link to this heading">#</a></h3>
+<h3>V8 GC<a class="headerlink" href="#v8-gc" title="Link to this heading">¶</a></h3>
 <p>V8 generally categorizes objects in memory to 3 types.</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">v8::Local</span></code> - It lives within the local scope of a C++ function call.</p></li>
@@ -327,10 +327,10 @@
 </section>
 </section>
 <section id="recommended-options">
-<h2>Recommended Options<a class="headerlink" href="#recommended-options" title="Link to this heading">#</a></h2>
+<h2>Recommended Options<a class="headerlink" href="#recommended-options" title="Link to this heading">¶</a></h2>
 <p>Javet directly borrows the way V8 manages objects in JVM. The rule is simple in the following 2 Options.</p>
 <section id="automatic-management-with-try-with-resource">
-<h3>Automatic Management with try-with-resource<a class="headerlink" href="#automatic-management-with-try-with-resource" title="Link to this heading">#</a></h3>
+<h3>Automatic Management with try-with-resource<a class="headerlink" href="#automatic-management-with-try-with-resource" title="Link to this heading">¶</a></h3>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create an object and wrap it with try resource.</span>
 <span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">V8ValueObject</span><span class="w"> </span><span class="n">v8ValueObject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="c1">// Do whatever you want to do with this object</span>
@@ -341,7 +341,7 @@
 </div>
 </section>
 <section id="automatically-manage-with-weak-reference">
-<h3>Automatically Manage with Weak Reference<a class="headerlink" href="#automatically-manage-with-weak-reference" title="Link to this heading">#</a></h3>
+<h3>Automatically Manage with Weak Reference<a class="headerlink" href="#automatically-manage-with-weak-reference" title="Link to this heading">¶</a></h3>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create an object.</span>
 <span class="n">V8ValueObject</span><span class="w"> </span><span class="n">v8ValueObject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">();</span>
 <span class="c1">// Do whatever you want to do with this object</span>
@@ -360,7 +360,7 @@
 </div>
 </section>
 <section id="how-to-escape-from-try-with-resource">
-<h3>How to Escape from try-with-resource?<a class="headerlink" href="#how-to-escape-from-try-with-resource" title="Link to this heading">#</a></h3>
+<h3>How to Escape from try-with-resource?<a class="headerlink" href="#how-to-escape-from-try-with-resource" title="Link to this heading">¶</a></h3>
 <p>Sometimes V8 objects to be returned to V8 cannot be closed, but if there is an exception thrown between V8 object creation and return, those V8 objects are not closed. In that case, memory leak will take place. So, how to escape from that case? Javet introduces <code class="docutils literal notranslate"><span class="pre">V8Scope</span></code> to prevent memory leak when exception is thrown.</p>
 <blockquote>
 <div><ul class="simple">
@@ -370,7 +370,7 @@
 </ul>
 </div></blockquote>
 <section id="usage-1-without-v8-runtime">
-<h4>Usage 1 without V8 Runtime<a class="headerlink" href="#usage-1-without-v8-runtime" title="Link to this heading">#</a></h4>
+<h4>Usage 1 without V8 Runtime<a class="headerlink" href="#usage-1-without-v8-runtime" title="Link to this heading">¶</a></h4>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">V8Scope</span><span class="w"> </span><span class="n">v8Scope</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">V8Scope</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">V8ValueObject</span><span class="w"> </span><span class="n">v8ValueObject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Scope</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">());</span>
 <span class="w">    </span><span class="c1">// v8ValueObject will be closed automatically if there is an exception thrown.</span>
@@ -382,7 +382,7 @@
 </div>
 </section>
 <section id="usage-2-with-v8-runtime">
-<h4>Usage 2 with V8 Runtime<a class="headerlink" href="#usage-2-with-v8-runtime" title="Link to this heading">#</a></h4>
+<h4>Usage 2 with V8 Runtime<a class="headerlink" href="#usage-2-with-v8-runtime" title="Link to this heading">¶</a></h4>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">V8Scope</span><span class="w"> </span><span class="n">v8Scope</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getV8Scope</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">V8ValueObject</span><span class="w"> </span><span class="n">v8ValueObject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Scope</span><span class="p">.</span><span class="na">createV8ValueObject</span><span class="p">();</span>
 <span class="w">    </span><span class="c1">// v8ValueObject will be closed automatically if there is an exception thrown.</span>
@@ -396,7 +396,7 @@
 </section>
 </section>
 <section id="alternative-option-arraybuffer">
-<h2>Alternative Option: ArrayBuffer<a class="headerlink" href="#alternative-option-arraybuffer" title="Link to this heading">#</a></h2>
+<h2>Alternative Option: ArrayBuffer<a class="headerlink" href="#alternative-option-arraybuffer" title="Link to this heading">¶</a></h2>
 <p>The ArrayBuffer object is used to represent a generic, fixed-length raw binary data buffer.</p>
 <p>It is an array of bytes, often referred to in other languages as a &quot;byte array&quot;.You cannot directly manipulate the contents of an ArrayBuffer; instead, you create one of the typed array objects or a DataView object which represents the buffer in a specific format, and use that to read and write the contents of the buffer.</p>
 <p>Javet offers complete support to all the typed arrays as well as <code class="docutils literal notranslate"><span class="pre">DataView</span></code> as following. There is a <code class="docutils literal notranslate"><span class="pre">java.nio.ByteBuffer</span></code> inside every typed array and <code class="docutils literal notranslate"><span class="pre">DataView</span></code>. That <code class="docutils literal notranslate"><span class="pre">ByteBuffer</span></code> directly links to the corresponding backing store of V8 typed array. In other words, Javet and V8 can both access the same address to achieve zero memory copy. Please consider using typed array in performance sensitive scenarios.</p>
@@ -495,12 +495,12 @@
 <p>Please refer to <a class="reference external" href="https://github.com/caoccao/Javet/tree/main/1/2/3/../../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueTypedArray.java">TestV8ValueTypedArray</a> and <a class="reference external" href="https://github.com/caoccao/Javet/tree/main/1/2/3/../../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueDataView.java">TestV8ValueDataView</a> for sample code snippets.</p>
 </section>
 <section id="gc">
-<h2>GC<a class="headerlink" href="#gc" title="Link to this heading">#</a></h2>
+<h2>GC<a class="headerlink" href="#gc" title="Link to this heading">¶</a></h2>
 <section id="automatic-gc">
-<h3>Automatic GC<a class="headerlink" href="#automatic-gc" title="Link to this heading">#</a></h3>
+<h3>Automatic GC<a class="headerlink" href="#automatic-gc" title="Link to this heading">¶</a></h3>
 <p>Javet has built-in automatic GC in both Node.js mode and V8 mode. Why? In high frequency API calling area, V8 may not keep up with the GC pace that JVM performs. Sometimes, JVM is running out of heap memory whereas V8 holds many zombie objects that are referenced by Javet in JVM. In this case, JVM ignores those objects unless V8 releases them in V8 GC cycle.</p>
 <section id="passive-gc">
-<h4>Passive GC<a class="headerlink" href="#passive-gc" title="Link to this heading">#</a></h4>
+<h4>Passive GC<a class="headerlink" href="#passive-gc" title="Link to this heading">¶</a></h4>
 <p>So, how to notify V8 GC that Java heap memory pool is running out of space? Javet automates this via <code class="docutils literal notranslate"><span class="pre">V8Host</span></code> and <code class="docutils literal notranslate"><span class="pre">V8Notifier</span></code>. By default, this feature is disabled. Here is the step-by-step on how to enable this feature.</p>
 <ol class="arabic simple">
 <li><p>(Optional) Call <code class="docutils literal notranslate"><span class="pre">V8Host.setMemoryUsageThresholdRatio(double)</span></code> to set memory usage threshold ratio. This is optional because the default value is 0.7.</p></li>
@@ -517,7 +517,7 @@
 </ol>
 </section>
 <section id="aggressive-gc">
-<h4>Aggressive GC<a class="headerlink" href="#aggressive-gc" title="Link to this heading">#</a></h4>
+<h4>Aggressive GC<a class="headerlink" href="#aggressive-gc" title="Link to this heading">¶</a></h4>
 <p>Just get <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> from Javet engine pool that aggressively sends GC notification to idle engine in daemon thread. There is no performance overhead because:</p>
 <ul class="simple">
 <li><p>The engine performs GC when it is idle in a dedicated thread.</p></li>
@@ -527,22 +527,22 @@
 </section>
 </section>
 <section id="manual-gc">
-<h3>Manual GC<a class="headerlink" href="#manual-gc" title="Link to this heading">#</a></h3>
+<h3>Manual GC<a class="headerlink" href="#manual-gc" title="Link to this heading">¶</a></h3>
 <p>There are 3 ways of manually triggering GC in both Node.js mode and V8 mode.</p>
 <section id="v8runtime-await">
-<h4>V8Runtime.await()<a class="headerlink" href="#v8runtime-await" title="Link to this heading">#</a></h4>
+<h4>V8Runtime.await()<a class="headerlink" href="#v8runtime-await" title="Link to this heading">¶</a></h4>
 <p>This API represents a light-weighted way of giving V8 a hint to perform GC. It actually tells Node.js or V8 runtime to drain the message or task queue. As a side effect of the drain, a GC may occur based on the decision of Node.js or V8 runtime.</p>
 </section>
 <section id="v8runtime-idlenotificationdeadline-long-deadlineinmillis">
-<h4>V8Runtime.idleNotificationDeadline(long deadlineInMillis)<a class="headerlink" href="#v8runtime-idlenotificationdeadline-long-deadlineinmillis" title="Link to this heading">#</a></h4>
+<h4>V8Runtime.idleNotificationDeadline(long deadlineInMillis)<a class="headerlink" href="#v8runtime-idlenotificationdeadline-long-deadlineinmillis" title="Link to this heading">¶</a></h4>
 <p>This API explicitly tells Node.js or V8 runtime that the application expects a GC to happen in the given milliseconds. Be careful, Node.js or V8 runtime may disregard this instruction.</p>
 </section>
 <section id="v8runtime-lowmemorynotification">
-<h4>V8Runtime.lowMemoryNotification()<a class="headerlink" href="#v8runtime-lowmemorynotification" title="Link to this heading">#</a></h4>
+<h4>V8Runtime.lowMemoryNotification()<a class="headerlink" href="#v8runtime-lowmemorynotification" title="Link to this heading">¶</a></h4>
 <p>This API explicitly tells Node.js or V8 runtime to perform a GC immediately. It is also used in automatic GC aforementioned.</p>
 </section>
 <section id="system-gc-and-system-runfinalization">
-<h4>System.gc() and System.runFinalization()<a class="headerlink" href="#system-gc-and-system-runfinalization" title="Link to this heading">#</a></h4>
+<h4>System.gc() and System.runFinalization()<a class="headerlink" href="#system-gc-and-system-runfinalization" title="Link to this heading">¶</a></h4>
 <p>If <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> or  <code class="docutils literal notranslate"><span class="pre">JavetBridgeConverter</span></code> is used to inject JavaScript functions or objects to JVM, please be aware that those injected JavaScript functions and objects cannot be recycled by V8 garbage collector because they are referenced in JVM. They will be eventually recycled by JVM if their holding objects are recycled. The following code can explicitly recycle them.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">System</span><span class="p">.</span><span class="na">gc</span><span class="p">();</span>
 <span class="n">System</span><span class="p">.</span><span class="na">runFinalization</span><span class="p">();</span>
@@ -552,7 +552,7 @@
 </section>
 </section>
 <section id="v8-options-and-v8flags">
-<h2>V8 Options and V8Flags<a class="headerlink" href="#v8-options-and-v8flags" title="Link to this heading">#</a></h2>
+<h2>V8 Options and V8Flags<a class="headerlink" href="#v8-options-and-v8flags" title="Link to this heading">¶</a></h2>
 <p>Almost all <a class="reference external" href="https://docs.google.com/document/d/1DFsbyoPcdK1__fe1nBDz3Vtr50DCa8W2aj5I-dFpPlg">V8 options</a> can be set via <a class="reference external" href="../javadoc/com/caoccao/javet/interop/options/V8Flags.html">V8Flags</a> as follows.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Node.js Mode</span>
 <span class="n">V8Flags</span><span class="w"> </span><span class="n">v8Flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NodeRuntimeOptions</span><span class="p">.</span><span class="na">V8_FLAGS</span><span class="p">;</span>
@@ -583,7 +583,7 @@
 </div>
 </section>
 <section id="statistics">
-<h2>Statistics<a class="headerlink" href="#statistics" title="Link to this heading">#</a></h2>
+<h2>Statistics<a class="headerlink" href="#statistics" title="Link to this heading">¶</a></h2>
 <p>V8 exposes quite a few statistics for applications to analyze the memory usage, performance, etc. Javet selectively exposes some of those statistics via <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> or <code class="docutils literal notranslate"><span class="pre">V8Host</span></code>.</p>
 <ul class="simple">
 <li><p><a class="reference external" href="../javadoc/com/caoccao/javet/interop/V8Runtime.html#getV8HeapSpaceStatistics-com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics.AllocationSpace-">getV8HeapSpaceStatistics()</a></p></li>
@@ -629,7 +629,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -700,8 +700,8 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Snapshot" href="snapshot.html" /><link rel="prev" title="Memory Management" href="memory_management.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Modularization - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Modularization - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,12 +304,12 @@
         </div>
         <article role="main">
           <section id="modularization">
-<h1>Modularization<a class="headerlink" href="#modularization" title="Link to this heading">#</a></h1>
+<h1>Modularization<a class="headerlink" href="#modularization" title="Link to this heading">¶</a></h1>
 <p>JavaScript ECMAScript Modules (ESM), is the official standardized format for modularizing JavaScript code. It was introduced in ES6 (ECMAScript 2015) and aims to address the drawbacks of earlier module systems like CommonJS and AMD.</p>
 <section id="node-js-mode">
-<h2>Node.js Mode<a class="headerlink" href="#node-js-mode" title="Link to this heading">#</a></h2>
+<h2>Node.js Mode<a class="headerlink" href="#node-js-mode" title="Link to this heading">¶</a></h2>
 <section id="example">
-<h3>Example<a class="headerlink" href="#example" title="Link to this heading">#</a></h3>
+<h3>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h3>
 <p>In Node.js mode, Javet leaves Node.js with its own ways of handling modules. The coding experience is identical to the one in Node.js and applications can get all features supported by Javet, like function interception. Here is an example.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">JavetEnginePool</span><span class="o">&lt;</span><span class="n">NodeRuntime</span><span class="o">&gt;</span><span class="w"> </span><span class="n">javetEnginePool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavetEnginePool</span><span class="o">&lt;</span><span class="n">NodeRuntime</span><span class="o">&gt;</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">javetEnginePool</span><span class="p">.</span><span class="na">getConfig</span><span class="p">().</span><span class="na">setJSRuntimeType</span><span class="p">(</span><span class="n">JSRuntimeType</span><span class="p">.</span><span class="na">Node</span><span class="p">);</span>
@@ -329,7 +329,7 @@
 </div>
 </section>
 <section id="gaps-between-javet-node-js-mode-and-native-node-js">
-<h3>Gaps between Javet Node.js Mode and Native Node.js<a class="headerlink" href="#gaps-between-javet-node-js-mode-and-native-node-js" title="Link to this heading">#</a></h3>
+<h3>Gaps between Javet Node.js Mode and Native Node.js<a class="headerlink" href="#gaps-between-javet-node-js-mode-and-native-node-js" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <thead>
@@ -374,11 +374,11 @@
 <p>The exciting thing is: in Javet, applications may have multiple instances of Node.js pointing to different <code class="docutils literal notranslate"><span class="pre">node_modules</span></code> and potentially these Node.js instances can share the same piece of data.</p>
 </section>
 <section id="deal-with-native-modules">
-<h3>Deal with Native Modules<a class="headerlink" href="#deal-with-native-modules" title="Link to this heading">#</a></h3>
+<h3>Deal with Native Modules<a class="headerlink" href="#deal-with-native-modules" title="Link to this heading">¶</a></h3>
 <p>Node.js native modules usually cannot be dynamically loaded to Javet. E.g. sqlite3. That issue also bothers Electron. Electron folks created project <a class="reference external" href="https://github.com/electron/electron-rebuild">electron-rebuild</a> which rebuilds the native modules from source code and its own native symbols.</p>
 <p>Javet follows the same approach on Windows, and a simpler approach on Linux.</p>
 <section id="patch-elf-native-modules-on-linux">
-<h4>Patch ELF Native Modules on Linux<a class="headerlink" href="#patch-elf-native-modules-on-linux" title="Link to this heading">#</a></h4>
+<h4>Patch ELF Native Modules on Linux<a class="headerlink" href="#patch-elf-native-modules-on-linux" title="Link to this heading">¶</a></h4>
 <p>The native modules on Linux don't know the existence of Javet. When they look up Node.js symbols which are provided by Javet, they just fail with errors like the following.</p>
 <blockquote>
 <div><p>com.caoccao.javet.exceptions.JavetExecutionException: Error: /....../node_modules/sqlite3/lib/binding/napi-v3-linux-x64/node_sqlite3.node: undefined symbol: napi_create_error</p>
@@ -397,7 +397,7 @@ npm<span class="w"> </span>install
 <p>The <a class="reference external" href="https://github.com/caoccao/Javet/tree/main/1/2/3/../../../scripts/node/javet-rebuild/rebuild.sh">rebuild.sh</a> actually calls <a class="reference external" href="https://github.com/NixOS/patchelf">patchelf</a> to add Javet to the node module's dependency.</p>
 </section>
 <section id="rebuild-native-modules-on-windows">
-<h4>Rebuild Native Modules on Windows<a class="headerlink" href="#rebuild-native-modules-on-windows" title="Link to this heading">#</a></h4>
+<h4>Rebuild Native Modules on Windows<a class="headerlink" href="#rebuild-native-modules-on-windows" title="Link to this heading">¶</a></h4>
 <p>The native modules on Windows don't know the existence of Javet. Windows dynamic library loading API <code class="docutils literal notranslate"><span class="pre">LoadLibraryExW</span></code> throws the following error.</p>
 <blockquote>
 <div><p>A dynamic link library (DLL) initialization routine failed.</p>
@@ -455,7 +455,7 @@ libjavet-node-windows-x86_64.v.x.x.x.dll
 </div>
 </section>
 <section id="manual-patch-native-modules-on-windows">
-<h4>Manual Patch Native Modules on Windows<a class="headerlink" href="#manual-patch-native-modules-on-windows" title="Link to this heading">#</a></h4>
+<h4>Manual Patch Native Modules on Windows<a class="headerlink" href="#manual-patch-native-modules-on-windows" title="Link to this heading">¶</a></h4>
 <p>Apart from rebuilding the native modules on Windows, there is also a manual way of patching the native modules. Let's see how to patch <code class="docutils literal notranslate"><span class="pre">&#64;swc/core</span></code> which doesn't support <code class="docutils literal notranslate"><span class="pre">node-gyp</span></code>.</p>
 <ol class="arabic simple">
 <li><p>Download <a class="reference external" href="https://www.mzrst.com/">PPEE (Puppy, Professional PE file Explorer)</a>.</p></li>
@@ -468,7 +468,7 @@ libjavet-node-windows-x86_64.v.x.x.x.dll
 </section>
 </section>
 <section id="dynamically-import-built-in-modules">
-<h3>Dynamically Import Built-in Modules<a class="headerlink" href="#dynamically-import-built-in-modules" title="Link to this heading">#</a></h3>
+<h3>Dynamically Import Built-in Modules<a class="headerlink" href="#dynamically-import-built-in-modules" title="Link to this heading">¶</a></h3>
 <p>The Node.js module resolution callback doesn't allow the embedder to relay the calls as a default callback. If the embedder sets its own callback, the Node.js built-in modules will not be reachable any more.</p>
 <p>There is workaround: create a new module that calls <cite>require</cite> internally by registering <cite>JavetBuiltInModuleResolver</cite> as the module resolver.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">setV8ModuleResolver</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">JavetBuiltInModuleResolver</span><span class="p">());</span>
@@ -483,10 +483,10 @@ libjavet-node-windows-x86_64.v.x.x.x.dll
 </section>
 </section>
 <section id="v8-mode">
-<h2>V8 Mode<a class="headerlink" href="#v8-mode" title="Link to this heading">#</a></h2>
+<h2>V8 Mode<a class="headerlink" href="#v8-mode" title="Link to this heading">¶</a></h2>
 <p>In V8 mode, there is no out-of-box support to ES6 dynamic import. But, Javet provides complete support on top of V8. There are 2 ways of playing around with the ES6 dynamic import: Pre-load and On-demand.</p>
 <section id="pre-load">
-<h3>Pre-load<a class="headerlink" href="#pre-load" title="Link to this heading">#</a></h3>
+<h3>Pre-load<a class="headerlink" href="#pre-load" title="Link to this heading">¶</a></h3>
 <p>Javet stores compiled modules in a map with key = module path, value = compiled module. When V8 meets a new module to be imported, Javet will look up the map and return the compiled module to V8. So, in order to simulate dynamic import, application needs to compile those required modules before the final execution.</p>
 <p>For instance: The dependency is as following.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Application
@@ -531,7 +531,7 @@ libjavet-node-windows-x86_64.v.x.x.x.dll
 </div>
 </section>
 <section id="on-demand">
-<h3>On-demand<a class="headerlink" href="#on-demand" title="Link to this heading">#</a></h3>
+<h3>On-demand<a class="headerlink" href="#on-demand" title="Link to this heading">¶</a></h3>
 <p>Obviously, pre-loading modules requires application to analyze the code for complete dependency. That is too heavy in most of the cases. Luckily, Javet also supports registering a module resolver which is called back when the modules are being imported. With the module resolver, application doesn't need to analyze the code for dependency. Of course, application is responsible for security check.</p>
 <p>Here is an example. Assuming <code class="docutils literal notranslate"><span class="pre">test.js</span></code> depends on <code class="docutils literal notranslate"><span class="pre">module.js</span></code>, the code looks like the following.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Step 1: Create a V8 runtime from V8 host in try-with-resource.</span>
@@ -558,7 +558,7 @@ libjavet-node-windows-x86_64.v.x.x.x.dll
 </section>
 </section>
 <section id="synthetic-module">
-<h2>Synthetic Module<a class="headerlink" href="#synthetic-module" title="Link to this heading">#</a></h2>
+<h2>Synthetic Module<a class="headerlink" href="#synthetic-module" title="Link to this heading">¶</a></h2>
 <p>A synthetic module in V8 is a module that is created by the V8 JavaScript engine at runtime. Synthetic modules are typically used to implement new features in JavaScript, such as the module proposal for JSON imports.</p>
 <p>Synthetic modules have a number of advantages over traditional JavaScript modules. First, they can be created and evaluated at runtime, which allows for more flexibility and dynamism. Second, synthetic modules can be isolated from the rest of the code, which makes them more secure.</p>
 <p>Synthetic modules are implemented in V8 using a special type of module called a &quot;Module Record&quot;. Module Records are responsible for managing the exports and imports of a module. When a synthetic module is evaluated, V8 creates a new Module Record for the module. This Module Record is then used to resolve imports and exports.</p>
@@ -585,7 +585,7 @@ libjavet-node-windows-x86_64.v.x.x.x.dll
 </div>
 </section>
 <section id="internals">
-<h2>Internals<a class="headerlink" href="#internals" title="Link to this heading">#</a></h2>
+<h2>Internals<a class="headerlink" href="#internals" title="Link to this heading">¶</a></h2>
 <p>How Javet and V8 work internally for supporting modules can be found at <a class="reference internal" href="../../development/design.html"><span class="doc">Javet Design</span></a>.</p>
 <img alt="Javet Module System" src="../../_images/javet_module_system.png" />
 <p>Please note that the way Javet handles dynamic import in V8 mode can be applied to Node.js mode. That means all Node.js modules can be virtualized by Javet.</p>
@@ -621,7 +621,7 @@ libjavet-node-windows-x86_64.v.x.x.x.dll
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -677,8 +677,8 @@ libjavet-node-windows-x86_64.v.x.x.x.dll
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

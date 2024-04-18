@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Troubleshooting" href="../troubleshooting/index.html" /><link rel="prev" title="Modularization" href="modularization.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Snapshot - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Snapshot - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,16 +304,16 @@
         </div>
         <article role="main">
           <section id="snapshot">
-<h1>Snapshot<a class="headerlink" href="#snapshot" title="Link to this heading">#</a></h1>
+<h1>Snapshot<a class="headerlink" href="#snapshot" title="Link to this heading">¶</a></h1>
 <p>A V8 snapshot is a way to speed up the startup time of JavaScript applications built with the V8 JavaScript engine, which powers Chrome, Node.js, and many other popular platforms. Think of it like pre-cooking a meal so you don't have to start from scratch when you're hungry.</p>
 <section id="how-snapshot-works">
-<h2>How Snapshot Works<a class="headerlink" href="#how-snapshot-works" title="Link to this heading">#</a></h2>
+<h2>How Snapshot Works<a class="headerlink" href="#how-snapshot-works" title="Link to this heading">¶</a></h2>
 <ol class="arabic simple">
 <li><p><strong>Creating the Snapshot</strong>: During development or deployment, you can take a snapshot of the V8 heap, which is where JavaScript objects and data are stored in memory. This snapshot captures the initial state of your application, including all the built-in JavaScript functions and any custom code you've written.</p></li>
 <li><p><strong>Embedding the Snapshot</strong>: When you launch your application, the V8 engine can load the pre-made snapshot instead of having to compile and execute all the JavaScript code from scratch. This significantly reduces the startup time, making your application launch faster and feel more responsive.</p></li>
 </ol>
 <section id="benefits">
-<h3>Benefits<a class="headerlink" href="#benefits" title="Link to this heading">#</a></h3>
+<h3>Benefits<a class="headerlink" href="#benefits" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><strong>Faster Startup Times</strong>: This is the primary benefit, as applications can launch in milliseconds instead of seconds.</p></li>
 <li><p><strong>Reduced Memory Usage</strong>: Snapshots can sometimes be smaller than the equivalent compiled code, leading to lower memory usage.</p></li>
@@ -321,18 +321,18 @@
 </ul>
 </section>
 <section id="limitations">
-<h3>Limitations<a class="headerlink" href="#limitations" title="Link to this heading">#</a></h3>
+<h3>Limitations<a class="headerlink" href="#limitations" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li><p><strong>Not all modules supported</strong>: Only a subset of the built-in Node.js modules are currently supported in snapshots, so some applications might not be suitable for snapshotting.</p></li>
+<li><p><strong>Node.js mode not supported</strong>: Snapshot is only available in the V8 mode. There are some technical difficulties to be resolved in the Node.js mode.</p></li>
 <li><p><strong>Dynamic code updates not possible</strong>: Once a snapshot is created, it's static and cannot be updated with new code without creating a new snapshot.</p></li>
 <li><p><strong>V8 version dependent</strong>: The snapshot created from a particular version of V8 only works in that version of V8. If you want to support a new version of V8, you will have to create a new snapshot in that new version of V8.</p></li>
 </ul>
 </section>
 </section>
 <section id="how-to-create-a-snapshot">
-<h2>How to Create a Snapshot<a class="headerlink" href="#how-to-create-a-snapshot" title="Link to this heading">#</a></h2>
+<h2>How to Create a Snapshot<a class="headerlink" href="#how-to-create-a-snapshot" title="Link to this heading">¶</a></h2>
 <section id="create-a-snapshot-in-javet">
-<h3>Create a Snapshot in Javet<a class="headerlink" href="#create-a-snapshot-in-javet" title="Link to this heading">#</a></h3>
+<h3>Create a Snapshot in Javet<a class="headerlink" href="#create-a-snapshot-in-javet" title="Link to this heading">¶</a></h3>
 <p>It's simple to create a snapshot or provide an existing snapshot in Javet via the <code class="docutils literal notranslate"><span class="pre">V8RuntimeOptions</span></code>.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">setCreateSnapshotEnabled(boolean)</span></code>: Enable or disable the snapshot creation.</p></li>
@@ -389,13 +389,12 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p>Snapshot is only available in the V8 mode. There are some technical difficulties to be resolved in the Node.js mode.</p></li>
 <li><p>Both <code class="docutils literal notranslate"><span class="pre">setCreateSnapshotEnabled()</span></code> and <code class="docutils literal notranslate"><span class="pre">setSnapshotBlob()</span></code> can be used together so that you may create a V8 runtime by an existing snapshot, then create a new snapshot from that V8 runtime.</p></li>
 </ul>
 </div>
 </section>
 <section id="create-a-snapshot-via-mksnapshot">
-<h3>Create a Snapshot via mksnapshot<a class="headerlink" href="#create-a-snapshot-via-mksnapshot" title="Link to this heading">#</a></h3>
+<h3>Create a Snapshot via mksnapshot<a class="headerlink" href="#create-a-snapshot-via-mksnapshot" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">mksnapshot</span></code> is a powerful tool in the V8 development toolkit. If you are able to build <code class="docutils literal notranslate"><span class="pre">mksnapshot</span></code>, you may use it to create snapshots. Its usage is as follows:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Usage:<span class="w"> </span>mksnapshot<span class="w"> </span><span class="o">[</span>--startup-src<span class="o">=</span>file<span class="o">]</span><span class="w"> </span><span class="o">[</span>--startup-blob<span class="o">=</span>file<span class="o">]</span><span class="w"> </span><span class="o">[</span>--embedded-src<span class="o">=</span>file<span class="o">]</span>
 <span class="w">  </span><span class="o">[</span>--embedded-variant<span class="o">=</span>label<span class="o">]</span><span class="w"> </span><span class="o">[</span>--static-roots-src<span class="o">=</span>file<span class="o">]</span><span class="w"> </span><span class="o">[</span>--target-arch<span class="o">=</span>arch<span class="o">]</span>
@@ -460,7 +459,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -507,8 +506,8 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

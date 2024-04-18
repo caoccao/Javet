@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Expose JsonNode in V8" href="expose_json_node_in_v8.html" /><link rel="prev" title="Java and JavaScript Interop" href="java_and_javascript_interop.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Access the Whole JVM - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Access the Whole JVM - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,11 +304,11 @@
         </div>
         <article role="main">
           <section id="access-the-whole-jvm">
-<h1>Access the Whole JVM<a class="headerlink" href="#access-the-whole-jvm" title="Link to this heading">#</a></h1>
-<p>The built-in <code class="docutils literal notranslate"><span class="pre">JavetJVMInterceptor</span></code> allows JavaScript to access the whole JVM in both Node.js mode and V8 mode.  <code class="docutils literal notranslate"><span class="pre">JavetJVMInterceptor</span></code> injects a global object <code class="docutils literal notranslate"><span class="pre">javet</span></code> which exposes some API for accessing Java packages and classes.</p>
+<h1>Access the Whole JVM<a class="headerlink" href="#access-the-whole-jvm" title="Link to this heading">¶</a></h1>
+<p>The built-in <code class="docutils literal notranslate"><span class="pre">JavetJVMInterceptor</span></code> allows JavaScript to access the whole JVM in both Node.js mode and V8 mode.  <code class="docutils literal notranslate"><span class="pre">JavetJVMInterceptor</span></code> injects a global object <code class="docutils literal notranslate"><span class="pre">javet</span></code> which exposes some API for accessing Java packages and classes, actually making Java as a script without compilation.</p>
 <p>Let's see how to play with it.</p>
 <section id="play-with-stringbuilder">
-<h2>Play with StringBuilder<a class="headerlink" href="#play-with-stringbuilder" title="Link to this heading">#</a></h2>
+<h2>Play with StringBuilder<a class="headerlink" href="#play-with-stringbuilder" title="Link to this heading">¶</a></h2>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Step 1: Create a V8 runtime from V8 host in try-with-resource.</span>
 <span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">V8Runtime</span><span class="w"> </span><span class="n">v8Runtime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">V8Host</span><span class="p">.</span><span class="na">getV8Instance</span><span class="p">().</span><span class="na">createV8Runtime</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="c1">// Step 2: Create a proxy converter.</span>
@@ -346,7 +346,7 @@
 </div>
 </section>
 <section id="play-with-dynamic-interface">
-<h2>Play with Dynamic Interface<a class="headerlink" href="#play-with-dynamic-interface" title="Link to this heading">#</a></h2>
+<h2>Play with Dynamic Interface<a class="headerlink" href="#play-with-dynamic-interface" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code> allows implementing Java interfaces dynamically with JavaScript functions. As the following sample code snippet shows, the JavaScript function <code class="docutils literal notranslate"><span class="pre">()</span> <span class="pre">=&gt;</span> <span class="pre">{</span> <span class="pre">count++;</span> <span class="pre">}</span></code> can be executed by <code class="docutils literal notranslate"><span class="pre">java.lang.Thread</span></code> and still can access V8. Behind the scene, Javet finds out the constructor of <code class="docutils literal notranslate"><span class="pre">Thread</span></code> takes an interface <code class="docutils literal notranslate"><span class="pre">Runnable</span></code>, then dynamically implements that interface by injecting the JavaScript function.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Play with dynamic interface.</span>
 <span class="n">Thread</span><span class="w"> </span><span class="n">thread</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span>
@@ -362,7 +362,7 @@
 </div>
 </section>
 <section id="play-with-dynamic-object">
-<h2>Play with Dynamic Object<a class="headerlink" href="#play-with-dynamic-object" title="Link to this heading">#</a></h2>
+<h2>Play with Dynamic Object<a class="headerlink" href="#play-with-dynamic-object" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">JavetReflectionObjectFactory</span></code> allows implementing Java non-final objects dynamically with JavaScript objects. Be careful, it relies on library <code class="docutils literal notranslate"><span class="pre">byte-buddy</span></code>. Please refer to <a class="reference internal" href="../../reference/converters/proxy_converter.html"><span class="doc">Proxy Converter</span></a> for details. As the following sample code snippet shows, the JavaScript object <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">add:</span> <span class="pre">(a,</span> <span class="pre">b)</span> <span class="pre">=&gt;</span> <span class="pre">a</span> <span class="pre">+</span> <span class="pre">b</span> <span class="pre">}</span></code> replaces the corresponding Java object <code class="docutils literal notranslate"><span class="pre">DynamicClass</span></code> by Javet.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Play with dynamic object. (Optional)</span>
 <span class="n">IJavetAnonymous</span><span class="w"> </span><span class="n">anonymous</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IJavetAnonymous</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
@@ -379,7 +379,7 @@
 </div>
 </section>
 <section id="cleanup">
-<h2>Cleanup<a class="headerlink" href="#cleanup" title="Link to this heading">#</a></h2>
+<h2>Cleanup<a class="headerlink" href="#cleanup" title="Link to this heading">¶</a></h2>
 <p>As the tutorial leaves a couple of Java objects in the V8 runtime and a couple of JavaScript objects in the JVM, properly cleaning up both V8 and JVM sometimes is necessary. The following code snippet shows how to elegantly clean up both V8 and JVM before closing the V8 runtime. Of course, these steps are optional because both Javet and JVM will eventually ensure there is no resource leak via the garbage collectors.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Step 7: Dispose everything.</span>
 <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;java = sb = thread = undefined;&quot;</span><span class="p">).</span><span class="na">executeVoid</span><span class="p">();</span>
@@ -393,8 +393,8 @@
 </div>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">JavetJVMInterceptor</span></code> gives V8 the capability of dynamically execute arbitrary Java code at runtime without compilation. That opens door to another project called <a class="reference external" href="https://github.com/caoccao/JavetShell">JavetShell</a> which is a console or application that provides Node.js flavored console interactions. That is usually used at a hotfix solution without re-compiling, re-deploying the Java applications.</p>
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">JavetJVMInterceptor</span></code> gives V8 the capability of dynamically executing arbitrary Java code at runtime without compilation. That opens door to another project called <a class="reference external" href="https://github.com/caoccao/JavetShell">JavetShell</a> which is a Console or Android application that provides Node.js flavored REPL interactions. That is usually used as a hotfix solution without re-compiling, re-deploying the Java applications.</p>
 <p>Please refer to the <a class="reference external" href="https://github.com/caoccao/Javet/tree/main/1/2/3/../../../src/test/java/com/caoccao/javet/tutorial/TestAccessTheWholeJVM.java">source code</a> for details.</p>
 </section>
 </section>
@@ -428,7 +428,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -470,8 +470,8 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>
