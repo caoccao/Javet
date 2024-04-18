@@ -36,14 +36,13 @@ namespace Javet {
     public:
 #ifdef ENABLE_NODE
         node::MultiIsolatePlatform* v8PlatformPointer;
-        bool purgeEventLoopBeforeClose;
 #else
         V8Platform* v8PlatformPointer;
 #endif
         v8::Isolate* v8Isolate;
         jobject externalV8Runtime;
         jthrowable externalException;
-        V8PersistentObject v8GlobalObject;
+        V8GlobalObject v8GlobalObject;
         std::unique_ptr<Javet::Inspector::JavetInspector> v8Inspector;
 
 #ifdef ENABLE_NODE
@@ -117,7 +116,7 @@ namespace Javet {
         }
 
         inline V8LocalContext GetV8LocalContext() const noexcept {
-            return v8PersistentContext.Get(v8Isolate);
+            return v8GlobalContext.Get(v8Isolate);
         }
 
         inline auto GetV8IsolateScope() const noexcept {
@@ -181,7 +180,7 @@ namespace Javet {
         std::unique_ptr<v8::SnapshotCreator> v8SnapshotCreator;
         std::unique_ptr<v8::StartupData, std::function<void(v8::StartupData*)>> v8StartupData;
         std::shared_ptr<v8::Locker> v8Locker;
-        V8PersistentContext v8PersistentContext;
+        V8GlobalContext v8GlobalContext;
     };
 }
 

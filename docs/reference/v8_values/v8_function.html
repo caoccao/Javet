@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="V8 Promise" href="v8_promise.html" /><link rel="prev" title="V8 Collection" href="v8_collection.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>V8 Function - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>V8 Function - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,9 +304,9 @@
         </div>
         <article role="main">
           <section id="v8-function">
-<h1>V8 Function<a class="headerlink" href="#v8-function" title="Link to this heading">#</a></h1>
+<h1>V8 Function<a class="headerlink" href="#v8-function" title="Link to this heading">¶</a></h1>
 <section id="function-types">
-<h2>Function Types<a class="headerlink" href="#function-types" title="Link to this heading">#</a></h2>
+<h2>Function Types<a class="headerlink" href="#function-types" title="Link to this heading">¶</a></h2>
 <p>In general, there are 3 types of function exposed by Javet.</p>
 <ul class="simple">
 <li><p><strong>Native</strong> functions are V8 built-in functions.</p></li>
@@ -314,7 +314,7 @@
 <li><p><strong>User Defined</strong> functions are JavaScript backed functions. Basically, any function generated via JavaScript code execution is user defined function.</p></li>
 </ul>
 <section id="comparisons">
-<h3>Comparisons<a class="headerlink" href="#comparisons" title="Link to this heading">#</a></h3>
+<h3>Comparisons<a class="headerlink" href="#comparisons" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <thead>
@@ -355,20 +355,20 @@
 </section>
 </section>
 <section id="function-interception">
-<h2>Function Interception<a class="headerlink" href="#function-interception" title="Link to this heading">#</a></h2>
+<h2>Function Interception<a class="headerlink" href="#function-interception" title="Link to this heading">¶</a></h2>
 <p>Functions can be intercepted via Javet API. This is equivalent to the capability provided by Node.js. However, there is still a key difference between user defined functions and function interception: local scoped context is visible to user defined function, but invisible to function interceptor. Why? That's a long story related to how closure is implemented in V8 which is not the goal in this section. If local scoped context has to be required, please consider changing the function on the fly which is documented in next section.</p>
 <p><code class="docutils literal notranslate"><span class="pre">IV8ValueObject</span></code> exposes a set of <code class="docutils literal notranslate"><span class="pre">bindFunction()</span></code> that allow caller to register function interceptors in automatic or manual ways.</p>
 <section id="automatic-registration">
-<h3>Automatic Registration<a class="headerlink" href="#automatic-registration" title="Link to this heading">#</a></h3>
+<h3>Automatic Registration<a class="headerlink" href="#automatic-registration" title="Link to this heading">¶</a></h3>
 <section id="bind">
-<h4>bind()<a class="headerlink" href="#bind" title="Link to this heading">#</a></h4>
+<h4>bind()<a class="headerlink" href="#bind" title="Link to this heading">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">bind()</span></code> scans the input callback receiver for functions decorated by <code class="docutils literal notranslate"><span class="pre">&#64;V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;V8Property</span></code>. It allows registering many getters / setters and functions in one call.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">List</span><span class="o">&lt;</span><span class="n">JavetCallbackContext</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">bind</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">functionCallbackReceiver</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
 <section id="how-about-object-type-conversion">
-<h4>How about Object Type Conversion?<a class="headerlink" href="#how-about-object-type-conversion" title="Link to this heading">#</a></h4>
+<h4>How about Object Type Conversion?<a class="headerlink" href="#how-about-object-type-conversion" title="Link to this heading">¶</a></h4>
 <p>As V8 only accepts data represented by its own format, Java objects need to be converted to native <code class="docutils literal notranslate"><span class="pre">V8Value</span></code> objects. Creating native <code class="docutils literal notranslate"><span class="pre">V8Value</span></code> objects is tricky in the callback receiver. There are typically 2 options.</p>
 <ol class="arabic simple">
 <li><p><strong>Use Object Converter</strong> - Enhance the <a class="reference internal" href="../../tutorial/advanced/object_converter.html"><span class="doc">Object Converter</span></a> and it just works as a charm. This is the recommended option. Please refer to <code class="docutils literal notranslate"><span class="pre">generateArrayWithConverter()</span></code>.</p></li>
@@ -480,7 +480,7 @@
 </div>
 </section>
 <section id="can-this-be-passed-in">
-<h4>Can <strong>this</strong> be Passed in?<a class="headerlink" href="#can-this-be-passed-in" title="Link to this heading">#</a></h4>
+<h4>Can <strong>this</strong> be Passed in?<a class="headerlink" href="#can-this-be-passed-in" title="Link to this heading">¶</a></h4>
 <p>Yes, both <code class="docutils literal notranslate"><span class="pre">&#64;V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;V8Property</span></code> support <code class="docutils literal notranslate"><span class="pre">thisObjectRequired</span></code>. Just set it to <code class="docutils literal notranslate"><span class="pre">true</span></code> and specify the first argument as <code class="docutils literal notranslate"><span class="pre">this</span></code>.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8Property</span><span class="p">(</span><span class="n">thisObjectRequired</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
 <span class="kd">public</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="n">functionName</span><span class="p">(</span><span class="n">V8ValueObject</span><span class="w"> </span><span class="n">thisObject</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="p">{</span>
@@ -491,7 +491,7 @@
 <p>This feature is especially useful when <code class="docutils literal notranslate"><span class="pre">this</span></code> needs to be returned. Just simply return the input <code class="docutils literal notranslate"><span class="pre">this</span></code> object and there is no need to create a new V8 object.</p>
 </section>
 <section id="can-symbol-properties-be-intercepted">
-<h4>Can Symbol Properties be Intercepted?<a class="headerlink" href="#can-symbol-properties-be-intercepted" title="Link to this heading">#</a></h4>
+<h4>Can Symbol Properties be Intercepted?<a class="headerlink" href="#can-symbol-properties-be-intercepted" title="Link to this heading">¶</a></h4>
 <p>Yes, <code class="docutils literal notranslate"><span class="pre">&#64;V8Property</span></code> supports <code class="docutils literal notranslate"><span class="pre">symbolType</span></code>.</p>
 <ul class="simple">
 <li><p>None: Not a symbol. (default)</p></li>
@@ -515,7 +515,7 @@
 </div>
 </section>
 <section id="how-to-disable-properties-or-functions">
-<h4>How to Disable Properties or Functions?<a class="headerlink" href="#how-to-disable-properties-or-functions" title="Link to this heading">#</a></h4>
+<h4>How to Disable Properties or Functions?<a class="headerlink" href="#how-to-disable-properties-or-functions" title="Link to this heading">¶</a></h4>
 <p>As <code class="docutils literal notranslate"><span class="pre">&#64;V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;V8Property</span></code> are statically declared, there is no way of selectively disabling them. <code class="docutils literal notranslate"><span class="pre">&#64;V8BindingEnabler</span></code> is designed to give Javet a hint on which properties or functions are enabled. Here is a sample.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8Function</span>
 <span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">disabledFunction</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
@@ -564,12 +564,12 @@
 <p>C'est très bien. Now, the set of to be disabled function names can be updated automatically by the IDE refactor.</p>
 </section>
 <section id="how-to-unregister-properties-or-functions">
-<h4>How to Unregister Properties or Functions?<a class="headerlink" href="#how-to-unregister-properties-or-functions" title="Link to this heading">#</a></h4>
+<h4>How to Unregister Properties or Functions?<a class="headerlink" href="#how-to-unregister-properties-or-functions" title="Link to this heading">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">unbind()</span></code> follows the same way that <code class="docutils literal notranslate"><span class="pre">bind()</span></code> goes to unregister both properties and functions.</p>
 <p><code class="docutils literal notranslate"><span class="pre">unbindProperty()</span></code> and <code class="docutils literal notranslate"><span class="pre">unbindFunction()</span></code> provide precise way of unregistering single property or function.</p>
 </section>
 <section id="can-both-javascript-function-and-property-map-to-one-java-function">
-<h4>Can Both JavaScript Function and Property Map to One Java Function?<a class="headerlink" href="#can-both-javascript-function-and-property-map-to-one-java-function" title="Link to this heading">#</a></h4>
+<h4>Can Both JavaScript Function and Property Map to One Java Function?<a class="headerlink" href="#can-both-javascript-function-and-property-map-to-one-java-function" title="Link to this heading">¶</a></h4>
 <p>Yes, just simply decorate the Java function with both <code class="docutils literal notranslate"><span class="pre">&#64;V8Function</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;V8Property</span></code>.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">IJavetAnonymous</span><span class="w"> </span><span class="n">iJavetAnonymous1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IJavetAnonymous</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;testFunction&quot;</span><span class="p">)</span>
@@ -591,7 +591,7 @@
 </div>
 </section>
 <section id="can-2-java-functions-map-to-one-javascript-function-and-property">
-<h4>Can 2 Java Functions Map to One JavaScript Function and Property?<a class="headerlink" href="#can-2-java-functions-map-to-one-javascript-function-and-property" title="Link to this heading">#</a></h4>
+<h4>Can 2 Java Functions Map to One JavaScript Function and Property?<a class="headerlink" href="#can-2-java-functions-map-to-one-javascript-function-and-property" title="Link to this heading">¶</a></h4>
 <p>Yes, just simply give 2 Java functions the same name.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">IJavetAnonymous</span><span class="w"> </span><span class="n">iJavetAnonymous2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IJavetAnonymous</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nd">@V8Function</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;test&quot;</span><span class="p">)</span>
@@ -618,10 +618,10 @@
 </section>
 </section>
 <section id="manual-registration">
-<h3>Manual Registration<a class="headerlink" href="#manual-registration" title="Link to this heading">#</a></h3>
+<h3>Manual Registration<a class="headerlink" href="#manual-registration" title="Link to this heading">¶</a></h3>
 <p>Manual registration allows the applications to have full control over every step of the function interception.</p>
 <section id="boolean-bindfunction-string-functionname-javetcallbackcontext-javetcallbackcontext">
-<h4>boolean bindFunction(String functionName, JavetCallbackContext javetCallbackContext)<a class="headerlink" href="#boolean-bindfunction-string-functionname-javetcallbackcontext-javetcallbackcontext" title="Link to this heading">#</a></h4>
+<h4>boolean bindFunction(String functionName, JavetCallbackContext javetCallbackContext)<a class="headerlink" href="#boolean-bindfunction-string-functionname-javetcallbackcontext-javetcallbackcontext" title="Link to this heading">¶</a></h4>
 <p>This method is for binding a Java code based function in semi-manual way. The caller is expected to do the following steps.</p>
 <ul class="simple">
 <li><p>Create a callback receiver.</p></li>
@@ -641,7 +641,7 @@
 </div>
 </section>
 <section id="boolean-set-string-key-v8value-value">
-<h4>boolean set(String key, V8Value value)<a class="headerlink" href="#boolean-set-string-key-v8value-value" title="Link to this heading">#</a></h4>
+<h4>boolean set(String key, V8Value value)<a class="headerlink" href="#boolean-set-string-key-v8value-value" title="Link to this heading">¶</a></h4>
 <p>This method is for binding a Java code based function in complete manual way. The caller is expected to do the following steps.</p>
 <ul class="simple">
 <li><p>Create a callback receiver.</p></li>
@@ -669,7 +669,7 @@
 </div>
 </section>
 <section id="boolean-bindfunction-string-functionname-string-codestring">
-<h4>boolean bindFunction(String functionName, String codeString)<a class="headerlink" href="#boolean-bindfunction-string-functionname-string-codestring" title="Link to this heading">#</a></h4>
+<h4>boolean bindFunction(String functionName, String codeString)<a class="headerlink" href="#boolean-bindfunction-string-functionname-string-codestring" title="Link to this heading">¶</a></h4>
 <p>This method is for binding a JavaScript code based function.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">bindFunction</span><span class="p">(</span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;(x) =&gt; x + 1;&quot;</span><span class="p">);</span>
 <span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;b(1);&quot;</span><span class="p">).</span><span class="na">executeInteger</span><span class="p">());</span>
@@ -679,7 +679,7 @@
 </section>
 </section>
 <section id="type-mismatch">
-<h3>Type Mismatch<a class="headerlink" href="#type-mismatch" title="Link to this heading">#</a></h3>
+<h3>Type Mismatch<a class="headerlink" href="#type-mismatch" title="Link to this heading">¶</a></h3>
 <p>It is very easy to cause type mismatches in JavaScript. The Javet exception is so generic that applications may not be happy with it. So, how to customize the type mismatch exception? The recommended way is to declare the function signature to <code class="docutils literal notranslate"><span class="pre">(V8Value...</span> <span class="pre">v8Values)</span></code> or <code class="docutils literal notranslate"><span class="pre">(Object...</span> <span class="pre">objects)</span></code>.</p>
 <ul class="simple">
 <li><p>Javet doesn't throw exceptions under this signature in all cases.</p></li>
@@ -689,18 +689,18 @@
 </ul>
 </section>
 <section id="resource-management">
-<h3>Resource Management<a class="headerlink" href="#resource-management" title="Link to this heading">#</a></h3>
+<h3>Resource Management<a class="headerlink" href="#resource-management" title="Link to this heading">¶</a></h3>
 <p>In the function callback, Javet manages the lifecycle of the input arguments and the return value. So, <strong>DO NOT</strong> close the input arguments, and <strong>DO NOT</strong> apply <code class="docutils literal notranslate"><span class="pre">try-with-resource</span></code> to the return value.</p>
 </section>
 <section id="summary">
-<h3>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h3>
+<h3>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h3>
 <p>Obviously, the automatic registration is much better than the manual registration. Please use them wisely.</p>
 </section>
 </section>
 <section id="change-a-user-defined-javascript-function-on-the-fly">
-<h2>Change a User Defined JavaScript Function on the Fly<a class="headerlink" href="#change-a-user-defined-javascript-function-on-the-fly" title="Link to this heading">#</a></h2>
+<h2>Change a User Defined JavaScript Function on the Fly<a class="headerlink" href="#change-a-user-defined-javascript-function-on-the-fly" title="Link to this heading">¶</a></h2>
 <section id="why-is-changing-a-user-defined-javascript-function-important">
-<h3>Why is Changing a User Defined JavaScript Function Important?<a class="headerlink" href="#why-is-changing-a-user-defined-javascript-function-important" title="Link to this heading">#</a></h3>
+<h3>Why is Changing a User Defined JavaScript Function Important?<a class="headerlink" href="#why-is-changing-a-user-defined-javascript-function-important" title="Link to this heading">¶</a></h3>
 <p>Functions can be changed on the fly at JavaScript code level via Javet API. Why to choose this approach? Because sometimes local scoped context is required which is usually called closure. E.g:</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span>
@@ -714,7 +714,7 @@
 <p>Local const b is visible to the anonymous function at line 3, but invisible to the function interceptor. Javet provides a way of changing the function at JavaScript source code level so that local scoped context is still visible.</p>
 </section>
 <section id="how-to-change-a-user-defined-javascript-function-on-the-fly">
-<h3>How to Change a User Defined JavaScript Function on the Fly?<a class="headerlink" href="#how-to-change-a-user-defined-javascript-function-on-the-fly" title="Link to this heading">#</a></h3>
+<h3>How to Change a User Defined JavaScript Function on the Fly?<a class="headerlink" href="#how-to-change-a-user-defined-javascript-function-on-the-fly" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">getSourceCode()</span></code> and <code class="docutils literal notranslate"><span class="pre">setSourceCode(String</span> <span class="pre">sourceCode)</span></code> are designed for getting and setting the source code. <code class="docutils literal notranslate"><span class="pre">setSourceCode(String</span> <span class="pre">sourceCode)</span></code> actually performs the follow steps.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">setSourceCode</span><span class="p">(</span><span class="n">sourceCode</span><span class="p">):</span>
     <span class="n">existingSourceCode</span> <span class="o">=</span> <span class="n">v8Function</span><span class="o">.</span><span class="n">getSourceCode</span><span class="p">()</span>
@@ -762,7 +762,7 @@
 <img alt="Lifecycle of V8 Function" src="../../_images/lifecycle_of_v8_function.png" />
 </section>
 <section id="what-is-the-source-code-of-a-function-in-v8">
-<h3>What is the Source Code of a Function in V8?<a class="headerlink" href="#what-is-the-source-code-of-a-function-in-v8" title="Link to this heading">#</a></h3>
+<h3>What is the Source Code of a Function in V8?<a class="headerlink" href="#what-is-the-source-code-of-a-function-in-v8" title="Link to this heading">¶</a></h3>
 <p>When V8 calculates start position of a function, it does not include the keyword <code class="docutils literal notranslate"><span class="pre">function</span></code> and function name. E.g.</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">abc</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">,</span><span class="w"> </span><span class="nx">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// Source code is (a, b, c) { ... }</span>
 
@@ -773,7 +773,7 @@
 </section>
 </section>
 <section id="automatic-type-conversion">
-<h2>Automatic Type Conversion<a class="headerlink" href="#automatic-type-conversion" title="Link to this heading">#</a></h2>
+<h2>Automatic Type Conversion<a class="headerlink" href="#automatic-type-conversion" title="Link to this heading">¶</a></h2>
 <p>Javet is capable of automatically converting its internal <code class="docutils literal notranslate"><span class="pre">V8Value</span></code> to primitive types by inspecting the function signature. So, the following 4 functions are all the same and valid.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Option 1</span>
 <span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">echo</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">str</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -834,10 +834,10 @@
 <p>Can the default values be changed in terms of null safety? Yes, <a class="reference internal" href="../../tutorial/advanced/object_converter.html"><span class="doc">Object Converter</span></a> allows overriding the default values.</p>
 </section>
 <section id="call-vs-invoke">
-<h2>Call vs. Invoke<a class="headerlink" href="#call-vs-invoke" title="Link to this heading">#</a></h2>
+<h2>Call vs. Invoke<a class="headerlink" href="#call-vs-invoke" title="Link to this heading">¶</a></h2>
 <p>In one sentence, <code class="docutils literal notranslate"><span class="pre">call()</span></code> belongs to function and <code class="docutils literal notranslate"><span class="pre">invoke()</span></code> belongs to object.</p>
 <section id="call">
-<h3>Call<a class="headerlink" href="#call" title="Link to this heading">#</a></h3>
+<h3>Call<a class="headerlink" href="#call" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">call()</span></code> is almost equivalent to <code class="docutils literal notranslate"><span class="pre">Function.prototype.call()</span></code>. It allows the caller to specify receiver. Besides, Javet combines <code class="docutils literal notranslate"><span class="pre">Function.prototype.call()</span></code> and <code class="docutils literal notranslate"><span class="pre">Function.prototype.apply()</span></code> because Java is friendly to varargs.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">func</span><span class="p">.</span><span class="na">call</span><span class="p">(</span><span class="n">object</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="c1">// func.call(object, a, b, c); with V8 object returned</span>
 <span class="n">func</span><span class="p">.</span><span class="na">callVoid</span><span class="p">(</span><span class="n">object</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="c1">// func.call(object, a, b, c); without return</span>
@@ -848,7 +848,7 @@
 </div>
 </section>
 <section id="invoke">
-<h3>Invoke<a class="headerlink" href="#invoke" title="Link to this heading">#</a></h3>
+<h3>Invoke<a class="headerlink" href="#invoke" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">invoke()</span></code> takes function name and arguments, but not receiver because the object itself is the receiver. So the API is almost identical to <code class="docutils literal notranslate"><span class="pre">call()</span></code> except for the first argument.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">object</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="s">&quot;func&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="c1">// object.func(a, b, c); with V8 object returned</span>
 <span class="n">object</span><span class="p">.</span><span class="na">invokeVoid</span><span class="p">(</span><span class="s">&quot;func&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="c1">// object.func(a, b, c); without return</span>
@@ -859,7 +859,7 @@
 <p><code class="docutils literal notranslate"><span class="pre">invoke()</span></code> is heavily used in Javet so that the JNI implementation can be dramatically simplified. In few extreme cases, V8 doesn't expose its C++ API and <code class="docutils literal notranslate"><span class="pre">invoke()</span></code> appears to be the only way. So, feel free to invoke all kinds of JS API despite of the deficit of Javet built-in API.</p>
 </section>
 <section id="how-about-bind">
-<h3>How about Bind?<a class="headerlink" href="#how-about-bind" title="Link to this heading">#</a></h3>
+<h3>How about Bind?<a class="headerlink" href="#how-about-bind" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">Function.prototype.bind()</span></code> is simply a <code class="docutils literal notranslate"><span class="pre">set()</span></code> in Javet.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// func.bind(object); func(a, b, c); with return</span>
 <span class="n">object</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;func&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">func</span><span class="p">);</span><span class="w"> </span><span class="n">object</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="s">&quot;func&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span>
@@ -871,7 +871,7 @@
 </section>
 </section>
 <section id="context-and-scope-info">
-<h2>Context and Scope Info<a class="headerlink" href="#context-and-scope-info" title="Link to this heading">#</a></h2>
+<h2>Context and Scope Info<a class="headerlink" href="#context-and-scope-info" title="Link to this heading">¶</a></h2>
 <p>Below is the quote from the V8 source code for the context and scope info. Javet allows <code class="docutils literal notranslate"><span class="pre">getContext()</span></code>, <code class="docutils literal notranslate"><span class="pre">setContext()</span></code> and <code class="docutils literal notranslate"><span class="pre">copyScopeInfoFrom()</span></code> to borrow the context and scope info from another function. This simulates the live editing in the debug mode. Please note that <code class="docutils literal notranslate"><span class="pre">setScriptSource()</span></code> is required if the lexical context is different, otherwise a compilation error will be thrown.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -919,9 +919,9 @@ ScriptContextTable.</p>
 </div>
 </section>
 <section id="tips">
-<h2>Tips<a class="headerlink" href="#tips" title="Link to this heading">#</a></h2>
+<h2>Tips<a class="headerlink" href="#tips" title="Link to this heading">¶</a></h2>
 <section id="how-to-avoid-argument-type-mismatches">
-<h3>How to Avoid Argument Type Mismatches?<a class="headerlink" href="#how-to-avoid-argument-type-mismatches" title="Link to this heading">#</a></h3>
+<h3>How to Avoid Argument Type Mismatches?<a class="headerlink" href="#how-to-avoid-argument-type-mismatches" title="Link to this heading">¶</a></h3>
 <p>JavaScript function tolerates argument type or count mismatches because of its nature as a dynamic scripting language. But, Java is a strongly typed and static language. In the function callback from JavaScript to Java, argument type and count must conform with the corresponding Java method. Otherwise, the Java reflection API throws an exception. Javet performs throughout checks against those mismatches. The Javet checks sometimes cause unexpected behaviors in the applications. So, how to achieve the JavaScript flavored variable arguments?</p>
 <p>The solution is very simple: Declare varargs in Java.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@V8Function</span>
@@ -945,7 +945,7 @@ ScriptContextTable.</p>
 </div>
 </section>
 <section id="how-to-handle-argument-count-mismatches">
-<h3>How to Handle Argument Count Mismatches?<a class="headerlink" href="#how-to-handle-argument-count-mismatches" title="Link to this heading">#</a></h3>
+<h3>How to Handle Argument Count Mismatches?<a class="headerlink" href="#how-to-handle-argument-count-mismatches" title="Link to this heading">¶</a></h3>
 <p>Javet follows 2 simple rules for the argument count mismatches so that the Java callback function behaves the same as the JavaScript function does.</p>
 <ul class="simple">
 <li><p>Redundant parameters will be dropped.</p></li>
@@ -985,7 +985,7 @@ ScriptContextTable.</p>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -1068,8 +1068,8 @@ ScriptContextTable.</p>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

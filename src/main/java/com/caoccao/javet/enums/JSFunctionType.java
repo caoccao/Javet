@@ -16,6 +16,8 @@
 
 package com.caoccao.javet.enums;
 
+import java.util.stream.Stream;
+
 /**
  * The enum JS function type.
  *
@@ -47,6 +49,13 @@ public enum JSFunctionType {
      */
     Unknown(3, "Unknown");
 
+    private static final int LENGTH = values().length;
+    private static final JSFunctionType[] TYPES = new JSFunctionType[LENGTH];
+
+    static {
+        Stream.of(values()).forEach(v -> TYPES[v.getId()] = v);
+    }
+
     private final int id;
     private final String name;
 
@@ -63,16 +72,7 @@ public enum JSFunctionType {
      * @since 0.8.8
      */
     public static JSFunctionType parse(int id) {
-        switch (id) {
-            case 0:
-                return Native;
-            case 1:
-                return API;
-            case 2:
-                return UserDefined;
-            default:
-                return Unknown;
-        }
+        return id >= 0 && id < LENGTH ? TYPES[id] : Unknown;
     }
 
     /**
@@ -98,7 +98,7 @@ public enum JSFunctionType {
     /**
      * Is API.
      *
-     * @return the boolean
+     * @return true : API, false : not API
      * @since 0.8.8
      */
     public boolean isAPI() {
@@ -108,7 +108,7 @@ public enum JSFunctionType {
     /**
      * Is native.
      *
-     * @return the boolean
+     * @return true : native, false : not native
      * @since 0.8.8
      */
     public boolean isNative() {
@@ -118,7 +118,7 @@ public enum JSFunctionType {
     /**
      * Is user.
      *
-     * @return the boolean
+     * @return true : user defined, false : not user defined
      * @since 0.8.8
      */
     public boolean isUserDefined() {

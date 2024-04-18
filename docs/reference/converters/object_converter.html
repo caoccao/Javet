@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Proxy Converter" href="proxy_converter.html" /><link rel="prev" title="Primitive Converter" href="primitive_converter.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Object Converter - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Object Converter - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,7 +304,7 @@
         </div>
         <article role="main">
           <section id="object-converter">
-<h1>Object Converter<a class="headerlink" href="#object-converter" title="Link to this heading">#</a></h1>
+<h1>Object Converter<a class="headerlink" href="#object-converter" title="Link to this heading">¶</a></h1>
 <p>Javet has a built-in <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code> with the following features.</p>
 <ul class="simple">
 <li><p>It covers primitive types + Set + Map + Array.</p></li>
@@ -313,7 +313,7 @@
 <li><p>It allows registering custom objects.</p></li>
 </ul>
 <section id="from-java-to-javascript">
-<h2>From Java to JavaScript<a class="headerlink" href="#from-java-to-javascript" title="Link to this heading">#</a></h2>
+<h2>From Java to JavaScript<a class="headerlink" href="#from-java-to-javascript" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <thead>
@@ -378,7 +378,7 @@
 </div>
 </section>
 <section id="from-javascript-to-java">
-<h2>From JavaScript to Java<a class="headerlink" href="#from-javascript-to-java" title="Link to this heading">#</a></h2>
+<h2>From JavaScript to Java<a class="headerlink" href="#from-javascript-to-java" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <thead>
@@ -447,7 +447,7 @@
 <p>So, Javet doesn't natively support converting POJO objects because a POJO converter has to deal with reflection which is so slow that Javet leaves that to applications. However, if the POJO objects are owned by the application, it is possible to register custom objects with the built-in <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code>. Otherwise, designing a POJO converter is the alternative solution.</p>
 </section>
 <section id="register-custom-objects">
-<h2>Register Custom Objects<a class="headerlink" href="#register-custom-objects" title="Link to this heading">#</a></h2>
+<h2>Register Custom Objects<a class="headerlink" href="#register-custom-objects" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code> exposes <code class="docutils literal notranslate"><span class="pre">registerCustomObject()</span></code> for alien objects which match the following conditions.</p>
 <ul class="simple">
 <li><p>Default constructor without arguments</p></li>
@@ -459,7 +459,7 @@
 <p>If the target custom object is touchable, having it implement <code class="docutils literal notranslate"><span class="pre">IJavetMappable</span></code> can make things easier.</p>
 </div>
 <section id="enhance-the-custom-object">
-<h3>Enhance the Custom Object<a class="headerlink" href="#enhance-the-custom-object" title="Link to this heading">#</a></h3>
+<h3>Enhance the Custom Object<a class="headerlink" href="#enhance-the-custom-object" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Create a default constructor without arguments.</p></li>
 <li><p>Add a method with signature <code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">fromMap(Map&lt;String,</span> <span class="pre">Object&gt;</span> <span class="pre">map)</span></code></p></li>
@@ -499,7 +499,7 @@
 </div>
 </section>
 <section id="register-the-custom-object">
-<h3>Register the Custom Object<a class="headerlink" href="#register-the-custom-object" title="Link to this heading">#</a></h3>
+<h3>Register the Custom Object<a class="headerlink" href="#register-the-custom-object" title="Link to this heading">¶</a></h3>
 <p>As the default converter is <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code>, just follow the code snippet below to register a custom object.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">JavetObjectConverter</span><span class="w"> </span><span class="n">converter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">JavetObjectConverter</span><span class="p">)</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getConverter</span><span class="p">();</span>
 <span class="n">converter</span><span class="p">.</span><span class="na">registerCustomObject</span><span class="p">(</span><span class="n">CustomObject</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
@@ -511,7 +511,7 @@
 </div>
 </section>
 <section id="usage">
-<h3>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h3>
+<h3>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h3>
 <p>After the registration is completed, there is no additional steps any more. Just follow the regular pattern.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">CustomObject</span><span class="o">[]</span><span class="w"> </span><span class="n">customObjects</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">CustomObject</span><span class="o">[]</span><span class="p">{</span>
 <span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">CustomObject</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span>
@@ -532,14 +532,14 @@
 </div>
 </section>
 <section id="highlights">
-<h3>Highlights<a class="headerlink" href="#highlights" title="Link to this heading">#</a></h3>
+<h3>Highlights<a class="headerlink" href="#highlights" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>PROS: This is a built-in feature so there is no need to deal with a POJO converter.</p></li>
 <li><p>CONS: This is a little bit intrusive to the custom objects.</p></li>
 </ul>
 </section>
 <section id="how-does-it-work">
-<h3>How does It Work?<a class="headerlink" href="#how-does-it-work" title="Link to this heading">#</a></h3>
+<h3>How does It Work?<a class="headerlink" href="#how-does-it-work" title="Link to this heading">¶</a></h3>
 <p>As V8 supports private properties, <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code> sets the custom object class name to the V8 object in <code class="docutils literal notranslate"><span class="pre">toMap()</span></code> and gets the name from the V8 object in <code class="docutils literal notranslate"><span class="pre">fromMap()</span></code>. So it is the V8 object that carries the type information all the time and <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code> is free from memorizing the complicated relationship between the Java objects and V8 objects.</p>
 </section>
 </section>
@@ -574,7 +574,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -621,8 +621,8 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

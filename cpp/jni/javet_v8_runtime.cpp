@@ -84,7 +84,6 @@ namespace Javet {
 #endif
         v8SnapshotCreator(nullptr), v8StartupData(nullptr, [](v8::StartupData* x) { if (x->raw_size > 0) { delete[] x->data; } }), v8Locker(nullptr) {
 #ifdef ENABLE_NODE
-        purgeEventLoopBeforeClose = false;
         this->nodeArrayBufferAllocator = nodeArrayBufferAllocator;
 #else
         this->v8ArrayBufferAllocator = v8ArrayBufferAllocator;
@@ -134,44 +133,26 @@ namespace Javet {
     }
 
     void V8Runtime::CloseV8Context() noexcept {
-        auto internalV8Locker = GetSharedV8Locker();
-        auto v8IsolateScope = GetV8IsolateScope();
-        V8HandleScope v8HandleScope(v8Isolate);
-        auto v8LocalContext = GetV8LocalContext();
-        Unregister(v8LocalContext);
-        v8GlobalObject.Reset();
-        v8::SealHandleScope v8SealHandleScope(v8Isolate);
+        v8Locker.reset();
+        {
+            auto internalV8Locker = GetUniqueV8Locker();
+            auto v8IsolateScope = GetV8IsolateScope();
+            V8HandleScope v8HandleScope(v8Isolate);
+            auto v8LocalContext = GetV8LocalContext();
+            Unregister(v8LocalContext);
+            v8GlobalObject.Reset();
+        }
 #ifdef ENABLE_NODE
-        if (!purgeEventLoopBeforeClose) {
-            auto v8ContextScope = GetV8ContextScope(v8LocalContext);
-            if (!nodeEnvironment->is_stopping()) {
-                bool hasMoreTasks;
-                // nodeEnvironment->performance_state()->Mark(node::performance::NODE_PERFORMANCE_MILESTONE_LOOP_START);
-                do {
-                    if (nodeEnvironment->is_stopping()) { break; }
-                    uv_run(&uvLoop, UV_RUN_DEFAULT);
-                    if (nodeEnvironment->is_stopping()) { break; }
-                    // DrainTasks is thread-safe.
-                    v8PlatformPointer->DrainTasks(v8Isolate);
-                    hasMoreTasks = uv_loop_alive(&uvLoop);
-                    if (!hasMoreTasks && !nodeEnvironment->is_stopping()) {
-                        // node::EmitProcessBeforeExit is thread-safe.
-                        if (node::EmitProcessBeforeExit(nodeEnvironment.get()).IsNothing()) { break; }
-                        // Do not call { V8HandleScope innerHandleScope(v8Isolate); if (nodeEnvironment->RunSnapshotSerializeCallback().IsEmpty()) { break; } }
-                        hasMoreTasks = uv_loop_alive(&uvLoop);
-                    }
-                } while (hasMoreTasks && !nodeEnvironment->is_stopping());
-                // nodeEnvironment->performance_state()->Mark(node::performance::NODE_PERFORMANCE_MILESTONE_LOOP_EXIT);
-            }
-        }
         int errorCode = 0;
-        if (!nodeEnvironment->is_stopping()) {
-            // Do not call nodeEnvironment->set_snapshot_serialize_callback(V8LocalFunction());
-            // Do not call nodeEnvironment->PrintInfoForSnapshotIfDebug();
-            // Do not call nodeEnvironment->ForEachRealm([](node::Realm* realm) { realm->VerifyNoStrongBaseObjects(); });
-            // node::EmitExit is thread-safe.
-            errorCode = node::EmitProcessExit(nodeEnvironment.get()).FromMaybe(0);
+        {
+            auto internalV8Locker = GetUniqueV8Locker();
+            auto v8IsolateScope = GetV8IsolateScope();
+            V8HandleScope v8HandleScope(v8Isolate);
+            auto v8LocalContext = GetV8LocalContext();
+            auto v8ContextScope = GetV8ContextScope(v8LocalContext);
+            errorCode = node::SpinEventLoop(nodeEnvironment.get()).FromMaybe(1);
         }
+        v8GlobalContext.Reset();
         if (errorCode != 0) {
             LOG_ERROR("node::EmitProcessExit() returns " << errorCode << ".");
         }
@@ -181,9 +162,16 @@ namespace Javet {
             if (errorCode != 0) {
                 LOG_ERROR("node::Stop() returns " << errorCode << ".");
             }
+            std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
+            auto internalV8Locker = GetUniqueV8Locker();
+            auto v8IsolateScope = GetV8IsolateScope();
+            LOG_DEBUG("nodeEnvironment.reset() begin");
+            nodeEnvironment.reset();
+            LOG_DEBUG("nodeEnvironment.reset() end");
         }
+#else
+        v8GlobalContext.Reset();
 #endif
-        v8PersistentContext.Reset();
     }
 
     void V8Runtime::CloseV8Isolate() noexcept {
@@ -192,20 +180,12 @@ namespace Javet {
             v8Inspector.reset();
         }
         v8GlobalObject.Reset();
-        v8PersistentContext.Reset();
+        v8GlobalContext.Reset();
+        v8Locker.reset();
 #ifdef ENABLE_NODE
-        if (v8Isolate != nullptr && nodeEnvironment.get() != nullptr) {
-            auto internalV8Locker = GetSharedV8Locker();
-            auto v8IsolateScope = GetV8IsolateScope();
-            V8HandleScope v8HandleScope(v8Isolate);
-            // node::FreeEnvironment is not thread-safe.
-            std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
-            nodeEnvironment.reset();
-        }
         // node::FreeIsolateData is thread-safe.
         nodeIsolateData.reset();
 #endif
-        v8Locker.reset();
         // Isolate must be the last one to be disposed.
         if (v8Isolate != nullptr) {
 #ifdef ENABLE_NODE
@@ -240,50 +220,18 @@ namespace Javet {
     jbyteArray V8Runtime::CreateSnapshot(JNIEnv* jniEnv) noexcept {
         jbyteArray jbytes = nullptr;
         if (v8SnapshotCreator) {
-#ifdef ENABLE_NODE
-            v8::MaybeLocal<v8::Context> v8MaybeLocalContext;
-            {
-                auto v8IsolateScope = GetV8IsolateScope();
-                V8HandleScope v8HandleScope(v8Isolate);
-                auto v8LocalContext = GetV8LocalContext();
-                auto v8ContextScope = GetV8ContextScope(v8LocalContext);
-                // Backup context and global object (Begin)
-                v8PersistentContext.Reset();
-                v8GlobalObject.Reset();
-                // Backup context and global object (End)
-                nodeIsolateData->Serialize(v8SnapshotCreator.get());
-                nodeEnvironment->Serialize(v8SnapshotCreator.get());
-                v8SnapshotCreator->SetDefaultContext(v8LocalContext, { node::SerializeNodeContextInternalFields, nodeEnvironment.get() });
-                v8MaybeLocalContext = v8::MaybeLocal<v8::Context>(v8LocalContext);
-            }
-            // TODO: Unknown external reference
-            v8::StartupData newV8StartupData = v8SnapshotCreator->CreateBlob(v8::SnapshotCreator::FunctionCodeHandling::kKeep);
-            if (newV8StartupData.IsValid()) {
-                jbytes = jniEnv->NewByteArray(newV8StartupData.raw_size);
-                jboolean isCopy;
-                void* data = jniEnv->GetPrimitiveArrayCritical(jbytes, &isCopy);
-                memcpy(data, newV8StartupData.data, newV8StartupData.raw_size);
-                jniEnv->ReleasePrimitiveArrayCritical(jbytes, data, JNI_ABORT);
-                delete[] newV8StartupData.data;
-            }
-            {
-                auto v8IsolateScope = GetV8IsolateScope();
-                V8HandleScope v8HandleScope(v8Isolate);
-                auto v8LocalContext = v8MaybeLocalContext.ToLocalChecked();
-                auto v8ContextScope = GetV8ContextScope(v8LocalContext);
-                // Restore context and global object (Begin)
-                v8PersistentContext.Reset(v8Isolate, v8LocalContext);
-                v8GlobalObject.Reset(
-                    v8Isolate, v8LocalContext->Global()->GetPrototype()->ToObject(v8LocalContext).ToLocalChecked());
-                // Restore context and global object (End)
-            }
-#else
             // Backup context and global object (Begin)
             auto v8LocalContext = GetV8LocalContext();
-            v8PersistentContext.Reset();
+            v8GlobalContext.Reset();
             v8GlobalObject.Reset();
             // Backup context and global object (End)
+#ifdef ENABLE_NODE
+            nodeIsolateData->Serialize(v8SnapshotCreator.get());
+            nodeEnvironment->Serialize(v8SnapshotCreator.get());
+            v8SnapshotCreator->SetDefaultContext(v8LocalContext, { node::SerializeNodeContextInternalFields, nodeEnvironment.get() });
+#else
             v8SnapshotCreator->SetDefaultContext(v8LocalContext);
+#endif
             v8::StartupData newV8StartupData = v8SnapshotCreator->CreateBlob(v8::SnapshotCreator::FunctionCodeHandling::kKeep);
             if (newV8StartupData.IsValid()) {
                 jbytes = jniEnv->NewByteArray(newV8StartupData.raw_size);
@@ -294,11 +242,10 @@ namespace Javet {
                 delete[] newV8StartupData.data;
             }
             // Restore context and global object (Begin)
-            v8PersistentContext.Reset(v8Isolate, v8LocalContext);
+            v8GlobalContext.Reset(v8Isolate, v8LocalContext);
             v8GlobalObject.Reset(
                 v8Isolate, v8LocalContext->Global()->GetPrototype()->ToObject(v8LocalContext).ToLocalChecked());
             // Restore context and global object (End)
-#endif
         }
         return jbytes;
     }
@@ -334,18 +281,20 @@ namespace Javet {
             }
             // node::CreateEnvironment is not thread-safe.
             std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
+            auto flags = static_cast<node::EnvironmentFlags::Flags>(
+                node::EnvironmentFlags::kOwnsProcessState
+                | node::EnvironmentFlags::kNoCreateInspector);
             nodeEnvironment.reset(node::CreateEnvironment(
                 nodeIsolateData.get(),
                 v8LocalContext,
                 args,
                 execArgs,
-                node::EnvironmentFlags::kOwnsProcessState));
+                flags));
             // node::LoadEnvironment is thread-safe.
-            nodeEnvironment->set_trace_sync_io(false);
-            auto v8MaybeLocalValue = node::LoadEnvironment(
+            V8MaybeLocalValue v8MaybeLocalValue;
+            v8MaybeLocalValue = node::LoadEnvironment(
                 nodeEnvironment.get(),
-                "const publicRequire = require('module').createRequire(process.cwd() + '/');"
-                "globalThis.require = publicRequire;"
+                v8SnapshotCreator ? INIT_SCRIPT_WITH_SNAPSHOT : INIT_SCRIPT_WITHOUT_SNAPSHOT
             );
         }
 #else
@@ -361,7 +310,7 @@ namespace Javet {
         auto v8ContextScope = GetV8ContextScope(v8LocalContext);
 #endif
         Register(v8LocalContext);
-        v8PersistentContext.Reset(v8Isolate, v8LocalContext);
+        v8GlobalContext.Reset(v8Isolate, v8LocalContext);
         v8GlobalObject.Reset(
             v8Isolate, v8LocalContext->Global()->GetPrototype()->ToObject(v8LocalContext).ToLocalChecked());
     }
@@ -407,6 +356,7 @@ namespace Javet {
             // node::CreateIsolateData is thread-safe.
             nodeIsolateData.reset(node::CreateIsolateData(v8Isolate, &uvLoop, v8PlatformPointer, nodeArrayBufferAllocator.get()));
             // nodeIsolateData->set_is_building_snapshot(createSnapshotEnabled);
+            node::crypto::InitCryptoOnce(v8Isolate);
         }
         v8Isolate->SetModifyCodeGenerationFromStringsCallback(nullptr);
 #else

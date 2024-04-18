@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Where are ES6 API in V8 Mode?" href="where_are_es6_api_in_v8_mode.html" /><link rel="prev" title="Can Native Image be Supported?" href="can_native_image_be_supported.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>How to Think in Javet? - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>How to Think in Javet? - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,23 +304,23 @@
         </div>
         <article role="main">
           <section id="how-to-think-in-javet">
-<h1>How to Think in Javet?<a class="headerlink" href="#how-to-think-in-javet" title="Link to this heading">#</a></h1>
+<h1>How to Think in Javet?<a class="headerlink" href="#how-to-think-in-javet" title="Link to this heading">¶</a></h1>
 <p>There are folks migrating projects from other libraries (e.g. J2V8) to Javet. Some experienced certain challenges which from Javet perspective required <strong>Thinking in Javet</strong>. So, how?</p>
 <section id="v8runtime-and-v8valueglobalobject">
-<h2>V8Runtime and V8ValueGlobalObject<a class="headerlink" href="#v8runtime-and-v8valueglobalobject" title="Link to this heading">#</a></h2>
+<h2>V8Runtime and V8ValueGlobalObject<a class="headerlink" href="#v8runtime-and-v8valueglobalobject" title="Link to this heading">¶</a></h2>
 <p>In Javet, <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> and <code class="docutils literal notranslate"><span class="pre">V8ValueGlobalObject</span></code> are separate concepts.</p>
 <section id="v8runtime">
-<h3>V8Runtime<a class="headerlink" href="#v8runtime" title="Link to this heading">#</a></h3>
+<h3>V8Runtime<a class="headerlink" href="#v8runtime" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> is only a representative of the V8 isolate and V8 context. It has nothing to do with <code class="docutils literal notranslate"><span class="pre">globalThis</span></code> or <code class="docutils literal notranslate"><span class="pre">window</span></code>. However, in few other libraries these concepts are mixed up.</p>
 </section>
 <section id="v8valueglobalobject">
-<h3>V8ValueGlobalObject<a class="headerlink" href="#v8valueglobalobject" title="Link to this heading">#</a></h3>
+<h3>V8ValueGlobalObject<a class="headerlink" href="#v8valueglobalobject" title="Link to this heading">¶</a></h3>
 <p>As <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> no longer represents <code class="docutils literal notranslate"><span class="pre">globalThis</span></code> or <code class="docutils literal notranslate"><span class="pre">window</span></code>, <code class="docutils literal notranslate"><span class="pre">V8ValueGlobalObject</span></code> from <code class="docutils literal notranslate"><span class="pre">V8Runtime.getGlobalObject()</span></code> is the one.</p>
 <p>If you want to access global objects or call top level functions, <code class="docutils literal notranslate"><span class="pre">globalObject.get('...')</span></code> and <code class="docutils literal notranslate"><span class="pre">globalObject.invoke('...')</span></code> are the Javet ways.</p>
 </section>
 </section>
 <section id="executor-and-execute">
-<h2>Executor and Execute<a class="headerlink" href="#executor-and-execute" title="Link to this heading">#</a></h2>
+<h2>Executor and Execute<a class="headerlink" href="#executor-and-execute" title="Link to this heading">¶</a></h2>
 <p>In Javet, executing a script involves 2 steps.</p>
 <ol class="arabic simple">
 <li><p>Get an executor.</p></li>
@@ -330,12 +330,12 @@
 <p>Why? Javet intends to offer a builder pattern in the script execution. With an executor, application may do every other things before the actual execution. For instance: security check, enable / disable certain V8 features, hack the AST, set up interception, etc. The scope may be limited to that executor only. Also, the executor can be reused to avoid the duplicated resource loading overhead.</p>
 </section>
 <section id="declarative-function-and-property-interception">
-<h2>Declarative Function and Property Interception<a class="headerlink" href="#declarative-function-and-property-interception" title="Link to this heading">#</a></h2>
+<h2>Declarative Function and Property Interception<a class="headerlink" href="#declarative-function-and-property-interception" title="Link to this heading">¶</a></h2>
 <p>Javet offers an easy way of registering function and property interception in a declarative way. Just decorate a function of arbitrary object with <code class="docutils literal notranslate"><span class="pre">&#64;V8Function(name</span> <span class="pre">=</span> <span class="pre">&quot;...&quot;)</span></code> or <code class="docutils literal notranslate"><span class="pre">&#64;V8Property(name</span> <span class="pre">=</span> <span class="pre">&quot;...&quot;)</span></code>, Javet is able to register it and that function will be called back from V8. Application is free from managing those tedious things like resource leakage, object lifecycle, type conversion, etc. Javet just handles that behind the scene and everything goes smoothly.</p>
 <p>The coding experience is a little bit close to working with Spring Framework.</p>
 </section>
 <section id="learn-from-unit-test">
-<h2>Learn from Unit Test<a class="headerlink" href="#learn-from-unit-test" title="Link to this heading">#</a></h2>
+<h2>Learn from Unit Test<a class="headerlink" href="#learn-from-unit-test" title="Link to this heading">¶</a></h2>
 <p>Most of the Javet API is unit test covered. Learning from Javet unit test is an express and effective way to Thinking in Javet.</p>
 </section>
 </section>
@@ -369,7 +369,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -414,8 +414,8 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

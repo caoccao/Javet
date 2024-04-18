@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Resource Management" href="../resource_management/index.html" /><link rel="prev" title="Custom Converter" href="custom_converter.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Proxy Plugins - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Proxy Plugins - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,7 +304,7 @@
         </div>
         <article role="main">
           <section id="proxy-plugins">
-<h1>Proxy Plugins<a class="headerlink" href="#proxy-plugins" title="Link to this heading">#</a></h1>
+<h1>Proxy Plugins<a class="headerlink" href="#proxy-plugins" title="Link to this heading">¶</a></h1>
 <p>The proxy converter and its derived converters support proxy plugins that have the following features.</p>
 <ul class="simple">
 <li><p>Conversion for the particular Java types can be easily turned on or off by the plugins.</p></li>
@@ -312,7 +312,7 @@
 <li><p>The public Java fields and methods are available as well.</p></li>
 </ul>
 <section id="built-in-proxy-plugins">
-<h2>Built-in Proxy Plugins<a class="headerlink" href="#built-in-proxy-plugins" title="Link to this heading">#</a></h2>
+<h2>Built-in Proxy Plugins<a class="headerlink" href="#built-in-proxy-plugins" title="Link to this heading">¶</a></h2>
 <p>The built-in proxy plugins provide the basic support. They are turned off by default in the <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code>, and turned on by default in the <code class="docutils literal notranslate"><span class="pre">JavetBridgeConverter</span></code>. They can be easily turned on or off once the converter is created to allow fine-grained control over the conversion.</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
@@ -341,7 +341,7 @@
 </table>
 </div>
 <section id="javetproxyplugindefault">
-<h3>JavetProxyPluginDefault<a class="headerlink" href="#javetproxyplugindefault" title="Link to this heading">#</a></h3>
+<h3>JavetProxyPluginDefault<a class="headerlink" href="#javetproxyplugindefault" title="Link to this heading">¶</a></h3>
 <p>The default plugin maps all primitive types, <code class="docutils literal notranslate"><span class="pre">BigInteger</span></code>, <code class="docutils literal notranslate"><span class="pre">String</span></code> and <code class="docutils literal notranslate"><span class="pre">ZonedDateTime</span></code> to their corresponding JS types.</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
@@ -398,7 +398,7 @@
 </div>
 </section>
 <section id="javetproxypluginarray">
-<h3>JavetProxyPluginArray<a class="headerlink" href="#javetproxypluginarray" title="Link to this heading">#</a></h3>
+<h3>JavetProxyPluginArray<a class="headerlink" href="#javetproxypluginarray" title="Link to this heading">¶</a></h3>
 <p>The array plugin maps all primitive arrays and object arrays to the JS <code class="docutils literal notranslate"><span class="pre">array</span></code>.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">intArray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">};</span>
 <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;intArray&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">intArray</span><span class="p">);</span>
@@ -421,7 +421,7 @@
 </div>
 </section>
 <section id="javetproxypluginlist">
-<h3>JavetProxyPluginList<a class="headerlink" href="#javetproxypluginlist" title="Link to this heading">#</a></h3>
+<h3>JavetProxyPluginList<a class="headerlink" href="#javetproxypluginlist" title="Link to this heading">¶</a></h3>
 <p>The list plugin maps <code class="docutils literal notranslate"><span class="pre">List&lt;?&gt;</span></code> to the JS <code class="docutils literal notranslate"><span class="pre">array</span></code>.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleList</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;y&quot;</span><span class="p">);</span>
 <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;list&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="p">);</span>
@@ -442,7 +442,7 @@
 </div>
 </section>
 <section id="javetproxypluginmap">
-<h3>JavetProxyPluginMap<a class="headerlink" href="#javetproxypluginmap" title="Link to this heading">#</a></h3>
+<h3>JavetProxyPluginMap<a class="headerlink" href="#javetproxypluginmap" title="Link to this heading">¶</a></h3>
 <p>The map plugin maps <code class="docutils literal notranslate"><span class="pre">Map&lt;?,</span> <span class="pre">?&gt;</span></code> to the JS <code class="docutils literal notranslate"><span class="pre">object</span></code>.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleMap</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;y&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;2&quot;</span><span class="p">);</span>
 <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;map&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">map</span><span class="p">);</span>
@@ -465,7 +465,7 @@
 </div>
 </section>
 <section id="javetproxypluginset">
-<h3>JavetProxyPluginSet<a class="headerlink" href="#javetproxypluginset" title="Link to this heading">#</a></h3>
+<h3>JavetProxyPluginSet<a class="headerlink" href="#javetproxypluginset" title="Link to this heading">¶</a></h3>
 <p>The set plugin maps <code class="docutils literal notranslate"><span class="pre">Set&lt;?&gt;</span></code> to the JS <code class="docutils literal notranslate"><span class="pre">Set</span></code>.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleSet</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;y&quot;</span><span class="p">);</span>
 <span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;set&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">set</span><span class="p">);</span>
@@ -485,7 +485,7 @@
 </section>
 </section>
 <section id="add-or-remove-proxy-plugins">
-<h2>Add or Remove Proxy Plugins<a class="headerlink" href="#add-or-remove-proxy-plugins" title="Link to this heading">#</a></h2>
+<h2>Add or Remove Proxy Plugins<a class="headerlink" href="#add-or-remove-proxy-plugins" title="Link to this heading">¶</a></h2>
 <p>The proxy plugins are stored in the <code class="docutils literal notranslate"><span class="pre">JavetConverterConfig</span></code>.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Add a proxy plugin</span>
 <span class="n">converter</span><span class="p">.</span><span class="na">getConfig</span><span class="p">().</span><span class="na">getProxyPlugins</span><span class="p">().</span><span class="na">add</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">JavetProxyPluginList</span><span class="p">.</span><span class="na">getInstance</span><span class="p">());</span>
@@ -495,7 +495,7 @@
 </div>
 </section>
 <section id="create-a-new-proxy-plugin">
-<h2>Create a New Proxy Plugin<a class="headerlink" href="#create-a-new-proxy-plugin" title="Link to this heading">#</a></h2>
+<h2>Create a New Proxy Plugin<a class="headerlink" href="#create-a-new-proxy-plugin" title="Link to this heading">¶</a></h2>
 <p>There are typically two ways to create a new proxy plugin.</p>
 <ul class="simple">
 <li><p>Implement <code class="docutils literal notranslate"><span class="pre">IClassProxyPlugin</span></code> from scratch.</p></li>
@@ -534,7 +534,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -581,8 +581,8 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Javet Performance" href="performance.html" /><link rel="prev" title="Test Javet" href="test.html" />
 
-    <link rel="shortcut icon" href="../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Javet Design - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Javet Design - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,12 +304,12 @@
         </div>
         <article role="main">
           <section id="javet-design">
-<h1>Javet Design<a class="headerlink" href="#javet-design" title="Link to this heading">#</a></h1>
+<h1>Javet Design<a class="headerlink" href="#javet-design" title="Link to this heading">¶</a></h1>
 <section id="architecture">
-<h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">#</a></h2>
+<h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">¶</a></h2>
 <img alt="Javet Architecture" src="../_images/javet_architecture.png" />
 <section id="primitive-and-reference-types-in-javet">
-<h3>Primitive and Reference Types in Javet<a class="headerlink" href="#primitive-and-reference-types-in-javet" title="Link to this heading">#</a></h3>
+<h3>Primitive and Reference Types in Javet<a class="headerlink" href="#primitive-and-reference-types-in-javet" title="Link to this heading">¶</a></h3>
 <p>There is a vague boundary between V8 primitive and reference types. In Javet, the definition of primitive is a mixture of both V8 and Java primitive types as a trade-off in design.</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
@@ -344,7 +344,7 @@
 </section>
 </section>
 <section id="node-js-mode-vs-v8-mode">
-<h2>Node.js Mode vs. V8 Mode<a class="headerlink" href="#node-js-mode-vs-v8-mode" title="Link to this heading">#</a></h2>
+<h2>Node.js Mode vs. V8 Mode<a class="headerlink" href="#node-js-mode-vs-v8-mode" title="Link to this heading">¶</a></h2>
 <p>Javet supports both Node.js mode and V8 mode both of which can co-exist in one JVM. In other words, they can run side by side and don't interfere with each other.</p>
 <img alt="Javet Modes" src="../_images/javet_modes.png" />
 <p>As the diagram shows, both Node.js and V8 are lazy loaded in dedicated custom classloaders. Detailed comparisons are as following.</p>
@@ -397,7 +397,7 @@
 </ul>
 </section>
 <section id="module">
-<h2>Module<a class="headerlink" href="#module" title="Link to this heading">#</a></h2>
+<h2>Module<a class="headerlink" href="#module" title="Link to this heading">¶</a></h2>
 <p>Executing all scripts in global context is not recommended when project size increases. Javet provides complete support to applications so that V8 runtime context is aligned with the way Node or Chrome does. That brings the module system.</p>
 <p>Unfortunately, V8 has very limited support to the JS module system. However, that is not bad because V8 leaves all the possibilities to Javet. The typical challenges Javet faces are as following.</p>
 <ul class="simple">
@@ -406,7 +406,7 @@
 <li><p>Module Dependency</p></li>
 </ul>
 <section id="require-vs-import">
-<h3>require() vs. import()<a class="headerlink" href="#require-vs-import" title="Link to this heading">#</a></h3>
+<h3>require() vs. import()<a class="headerlink" href="#require-vs-import" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <thead>
@@ -435,17 +435,17 @@
 </div>
 </section>
 <section id="module-virtualization">
-<h3>Module Virtualization<a class="headerlink" href="#module-virtualization" title="Link to this heading">#</a></h3>
+<h3>Module Virtualization<a class="headerlink" href="#module-virtualization" title="Link to this heading">¶</a></h3>
 <p>Javet doesn't build <code class="docutils literal notranslate"><span class="pre">require()</span></code> in but allows applications to set an interceptor because Javet doesn't know how to locate the modules and doesn't want to know for security issues. So it's up to the applications to define their own ways of locating the modules.</p>
 <p>Javet provides complete support to ES6 <code class="docutils literal notranslate"><span class="pre">import()</span></code> because certain work inside JNI has to be in place as V8 only partially supports <code class="docutils literal notranslate"><span class="pre">import()</span></code>. So, in Javet the module is kind of virtualized, in other words, the module is represented by an arbitrary string that can be interpreted by applications during runtime. E.g. <code class="docutils literal notranslate"><span class="pre">module.js</span></code> may come from a file, a URL, a string in memory or whatever. Javet stores the compiled and evaluated module in a map with that string as key, and feeds V8 that module when V8 looks it up by that string.</p>
 <img alt="Javet Module System" src="../_images/javet_module_system.png" />
 </section>
 </section>
 <section id="engine-pool">
-<h2>Engine Pool<a class="headerlink" href="#engine-pool" title="Link to this heading">#</a></h2>
+<h2>Engine Pool<a class="headerlink" href="#engine-pool" title="Link to this heading">¶</a></h2>
 <img alt="Javet Engine Pool" src="../_images/javet_engine_pool.png" />
 <section id="v8-isolate-and-context-in-javet">
-<h3>V8 Isolate and Context in Javet<a class="headerlink" href="#v8-isolate-and-context-in-javet" title="Link to this heading">#</a></h3>
+<h3>V8 Isolate and Context in Javet<a class="headerlink" href="#v8-isolate-and-context-in-javet" title="Link to this heading">¶</a></h3>
 <p><a class="reference external" href="https://v8.dev/docs/embed">Getting started with embedding V8</a> is an excellent article that explains the concepts, design, insights of V8. In summary:</p>
 <ul class="simple">
 <li><p>An isolate is a VM instance with its own heap.</p></li>
@@ -458,7 +458,7 @@
 </ul>
 </section>
 <section id="javet-engine-pool">
-<h3>Javet Engine Pool<a class="headerlink" href="#javet-engine-pool" title="Link to this heading">#</a></h3>
+<h3>Javet Engine Pool<a class="headerlink" href="#javet-engine-pool" title="Link to this heading">¶</a></h3>
 <p>Multiple Javet engines are managed by Javet Engine Pool which works almost the same way as a typical DB connection pool. Javet Engine Pool is thread-safe. However, Javet Engine is <strong>NOT</strong> thread-safe because it is designed to be single-threaded and lock free for the following reasons.</p>
 <ul class="simple">
 <li><p>V8 isolate and V8 context are single-threaded. Thread context violation results in V8 core dump immediately.</p></li>
@@ -468,13 +468,13 @@
 </section>
 </section>
 <section id="interception">
-<h2>Interception<a class="headerlink" href="#interception" title="Link to this heading">#</a></h2>
+<h2>Interception<a class="headerlink" href="#interception" title="Link to this heading">¶</a></h2>
 <p>Javet allows intercepting almost all V8 API so that JS code actually interacts with Java code behind the scene.</p>
 <img alt="Javet Interception" src="../_images/javet_interception.png" />
 <p>Sample code is available at <a class="reference internal" href="../reference/v8_values/v8_function.html"><span class="doc">V8 Function</span></a>.</p>
 </section>
 <section id="cross-platform">
-<h2>Cross-platform<a class="headerlink" href="#cross-platform" title="Link to this heading">#</a></h2>
+<h2>Cross-platform<a class="headerlink" href="#cross-platform" title="Link to this heading">¶</a></h2>
 <p>Javet packages all the libraries in a single jar file and automatically loads corresponding library per OS and JS runtime.</p>
 <img alt="Javet Cross-platform" src="../_images/javet_cross_platform.png" />
 <ul class="simple">
@@ -483,12 +483,12 @@
 <li><p>Javet loads the library files using either default classloader or custom classloader.</p></li>
 </ul>
 <section id="multi-process-safety">
-<h3>Multi-process Safety<a class="headerlink" href="#multi-process-safety" title="Link to this heading">#</a></h3>
+<h3>Multi-process Safety<a class="headerlink" href="#multi-process-safety" title="Link to this heading">¶</a></h3>
 <p>Javet is multi-process safe because it deploys the library files to <code class="docutils literal notranslate"><span class="pre">system_temporary_directory/javet/pid</span></code> to avoid race conditions during initialization. Also, Javet purges legacy libraries (at least 1 minute old) at the beginning of the initialization.</p>
 </section>
 </section>
 <section id="memory-leak-detection">
-<h2>Memory Leak Detection<a class="headerlink" href="#memory-leak-detection" title="Link to this heading">#</a></h2>
+<h2>Memory Leak Detection<a class="headerlink" href="#memory-leak-detection" title="Link to this heading">¶</a></h2>
 <p>Javet native library keeps track of every <code class="docutils literal notranslate"><span class="pre">new</span></code> and <code class="docutils literal notranslate"><span class="pre">delete</span></code> in <code class="docutils literal notranslate"><span class="pre">JavetNativeMonitor</span></code>. Javet every unit test case fetches the tracking data, compares the <code class="docutils literal notranslate"><span class="pre">new</span></code> and <code class="docutils literal notranslate"><span class="pre">delete</span></code> count to verify unmanaged objects are properly allocated and freed.</p>
 <p>This feature is only turned on in debug version and there is zero performance overhead in release version.</p>
 </section>
@@ -523,7 +523,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -581,8 +581,8 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+</div><script src="../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../_static/tabs.js?v=3ee01567"></script>

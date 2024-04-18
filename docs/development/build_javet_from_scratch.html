@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Test Javet" href="test.html" /><link rel="prev" title="Build Javet with Docker" href="build_javet_with_docker.html" />
 
-    <link rel="shortcut icon" href="../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Build Javet from Scratch - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Build Javet from Scratch - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,12 +304,12 @@
         </div>
         <article role="main">
           <section id="build-javet-from-scratch">
-<h1>Build Javet from Scratch<a class="headerlink" href="#build-javet-from-scratch" title="Link to this heading">#</a></h1>
+<h1>Build Javet from Scratch<a class="headerlink" href="#build-javet-from-scratch" title="Link to this heading">¶</a></h1>
 <section id="build-v8">
-<h2>Build V8<a class="headerlink" href="#build-v8" title="Link to this heading">#</a></h2>
+<h2>Build V8<a class="headerlink" href="#build-v8" title="Link to this heading">¶</a></h2>
 <p>Please follow the <a class="reference external" href="https://v8.dev/docs/build">official guide</a> to build V8. If you face any issues, you may contact <a class="reference external" href="https://twitter.com/sjtucaocao">&#64;sjtucaocao</a>.</p>
 <section id="prepare-v8">
-<h3>Prepare V8<a class="headerlink" href="#prepare-v8" title="Link to this heading">#</a></h3>
+<h3>Prepare V8<a class="headerlink" href="#prepare-v8" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Clone the source code.</p></li>
 <li><p>Checkout a proper version.</p></li>
@@ -352,7 +352,7 @@
 </div>
 </section>
 <section id="build-v8-for-linux-arm64">
-<h3>Build V8 for Linux arm64<a class="headerlink" href="#build-v8-for-linux-arm64" title="Link to this heading">#</a></h3>
+<h3>Build V8 for Linux arm64<a class="headerlink" href="#build-v8-for-linux-arm64" title="Link to this heading">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">DEPOT_TOOLS_HOME</span><span class="si">}</span>:<span class="nv">$PATH</span>
 <span class="nb">cd</span><span class="w"> </span><span class="si">${</span><span class="nv">V8_HOME</span><span class="si">}</span>
 ninja<span class="w"> </span>-C<span class="w"> </span>out.gn/arm64.release<span class="w"> </span>v8_monolith
@@ -362,7 +362,7 @@ ninja<span class="w"> </span>-C<span class="w"> </span>out.gn/arm64.release<span
 </div>
 </section>
 <section id="build-v8-for-linux-x86-64">
-<h3>Build V8 for Linux x86_64<a class="headerlink" href="#build-v8-for-linux-x86-64" title="Link to this heading">#</a></h3>
+<h3>Build V8 for Linux x86_64<a class="headerlink" href="#build-v8-for-linux-x86-64" title="Link to this heading">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">DEPOT_TOOLS_HOME</span><span class="si">}</span>:<span class="nv">$PATH</span>
 <span class="nb">cd</span><span class="w"> </span><span class="si">${</span><span class="nv">V8_HOME</span><span class="si">}</span>
 ninja<span class="w"> </span>-C<span class="w"> </span>out.gn/x64.release<span class="w"> </span>v8_monolith
@@ -372,7 +372,7 @@ ninja<span class="w"> </span>-C<span class="w"> </span>out.gn/x64.release<span c
 </div>
 </section>
 <section id="build-v8-for-mac-os-arm64">
-<h3>Build V8 for Mac OS arm64<a class="headerlink" href="#build-v8-for-mac-os-arm64" title="Link to this heading">#</a></h3>
+<h3>Build V8 for Mac OS arm64<a class="headerlink" href="#build-v8-for-mac-os-arm64" title="Link to this heading">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">DEPOT_TOOLS_HOME</span><span class="si">}</span>:<span class="nv">$PATH</span>
 <span class="nb">cd</span><span class="w"> </span><span class="si">${</span><span class="nv">V8_HOME</span><span class="si">}</span>
 ninja<span class="w"> </span>-C<span class="w"> </span>out.gn/arm64.release<span class="w"> </span>v8_monolith
@@ -380,7 +380,7 @@ ninja<span class="w"> </span>-C<span class="w"> </span>out.gn/arm64.release<span
 </div>
 </section>
 <section id="build-v8-for-mac-os-x86-64">
-<h3>Build V8 for Mac OS x86_64<a class="headerlink" href="#build-v8-for-mac-os-x86-64" title="Link to this heading">#</a></h3>
+<h3>Build V8 for Mac OS x86_64<a class="headerlink" href="#build-v8-for-mac-os-x86-64" title="Link to this heading">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">DEPOT_TOOLS_HOME</span><span class="si">}</span>:<span class="nv">$PATH</span>
 <span class="nb">cd</span><span class="w"> </span><span class="si">${</span><span class="nv">V8_HOME</span><span class="si">}</span>
 ninja<span class="w"> </span>-C<span class="w"> </span>out.gn/x64.release<span class="w"> </span>v8_monolith
@@ -388,7 +388,7 @@ ninja<span class="w"> </span>-C<span class="w"> </span>out.gn/x64.release<span c
 </div>
 </section>
 <section id="build-v8-for-windows">
-<h3>Build V8 for Windows<a class="headerlink" href="#build-v8-for-windows" title="Link to this heading">#</a></h3>
+<h3>Build V8 for Windows<a class="headerlink" href="#build-v8-for-windows" title="Link to this heading">¶</a></h3>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
 <p>The patch script requires Python 3.</p>
@@ -404,7 +404,7 @@ gn<span class="w"> </span>gen<span class="w"> </span>--ide<span class="o">=</spa
 </div>
 </section>
 <section id="build-v8-for-android">
-<h3>Build V8 for Android<a class="headerlink" href="#build-v8-for-android" title="Link to this heading">#</a></h3>
+<h3>Build V8 for Android<a class="headerlink" href="#build-v8-for-android" title="Link to this heading">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">DEPOT_TOOLS_HOME</span><span class="si">}</span>:<span class="nv">$PATH</span>
 <span class="nb">cd</span><span class="w"> </span><span class="si">${</span><span class="nv">V8_HOME</span><span class="si">}</span>
 python3<span class="w"> </span>tools/dev/v8gen.py<span class="w"> </span>arm.release<span class="w"> </span>--<span class="w"> </span><span class="s1">&#39;target_os=&quot;android&quot;&#39;</span><span class="w"> </span><span class="s1">&#39;target_cpu=&quot;arm&quot;&#39;</span><span class="w"> </span><span class="s1">&#39;v8_target_cpu=&quot;arm&quot;&#39;</span><span class="w"> </span><span class="nv">v8_monolithic</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="nv">v8_use_external_startup_data</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="nv">is_component_build</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="nv">v8_enable_i18n_support</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="nv">v8_enable_pointer_compression</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="nv">v8_static_library</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="nv">symbol_level</span><span class="o">=</span><span class="m">0</span><span class="w"> </span><span class="nv">use_custom_libcxx</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="nv">v8_enable_sandbox</span><span class="o">=</span><span class="nb">false</span>
@@ -427,22 +427,22 @@ ninja<span class="w"> </span>-C<span class="w"> </span>out.gn/x64.release<span c
 </div>
 </section>
 <section id="why-patching-v8">
-<h3>Why Patching V8?<a class="headerlink" href="#why-patching-v8" title="Link to this heading">#</a></h3>
+<h3>Why Patching V8?<a class="headerlink" href="#why-patching-v8" title="Link to this heading">¶</a></h3>
 <p>A few ninja files set certain warnings as errors so that MSVC stops compilation. The patch is to turn off those errors.</p>
 </section>
 </section>
 <section id="build-node-js">
-<h2>Build Node.js<a class="headerlink" href="#build-node-js" title="Link to this heading">#</a></h2>
+<h2>Build Node.js<a class="headerlink" href="#build-node-js" title="Link to this heading">¶</a></h2>
 <p>Please follow <a class="reference external" href="https://github.com/nodejs/node/blob/master/BUILDING.md">Building Node.js</a> to build the static and LTS version of Node.js libraries.</p>
 <section id="prepare-node-js">
-<h3>Prepare Node.js<a class="headerlink" href="#prepare-node-js" title="Link to this heading">#</a></h3>
+<h3>Prepare Node.js<a class="headerlink" href="#prepare-node-js" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Clone the source code.</p></li>
 <li><p>Checkout a proper version.</p></li>
 </ul>
 </section>
 <section id="build-node-js-on-linux">
-<h3>Build Node.js on Linux<a class="headerlink" href="#build-node-js-on-linux" title="Link to this heading">#</a></h3>
+<h3>Build Node.js on Linux<a class="headerlink" href="#build-node-js-on-linux" title="Link to this heading">¶</a></h3>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
 <p>The patch script requires Python 3.</p>
@@ -456,7 +456,7 @@ make<span class="w"> </span>-j4
 </div>
 </section>
 <section id="why-patching-node-js">
-<h3>Why Patching Node.js?<a class="headerlink" href="#why-patching-node-js" title="Link to this heading">#</a></h3>
+<h3>Why Patching Node.js?<a class="headerlink" href="#why-patching-node-js" title="Link to this heading">¶</a></h3>
 <ul>
 <li><p>First patch: All static node libraries are <code class="docutils literal notranslate"><span class="pre">&lt;thin&gt;</span></code> libraries. The patch is to disable <code class="docutils literal notranslate"><span class="pre">&lt;thin&gt;</span></code>.</p></li>
 <li><p>Second patch: Many static node libraries are not compiled to <a class="reference external" href="https://en.wikipedia.org/wiki/Position-independent_code">position independent code</a> and link phase is broken with the following error. The patch is to set <code class="docutils literal notranslate"><span class="pre">-fPIC</span></code> to those make files.</p>
@@ -470,7 +470,7 @@ recompile with -fPIC</p>
 </ul>
 </section>
 <section id="build-node-js-on-mac-os">
-<h3>Build Node.js on Mac OS<a class="headerlink" href="#build-node-js-on-mac-os" title="Link to this heading">#</a></h3>
+<h3>Build Node.js on Mac OS<a class="headerlink" href="#build-node-js-on-mac-os" title="Link to this heading">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span><span class="si">${</span><span class="nv">NODE_HOME</span><span class="si">}</span>
 ./configure<span class="w"> </span>--enable-static<span class="w"> </span>--without-intl
 make<span class="w"> </span>-j4
@@ -478,7 +478,7 @@ make<span class="w"> </span>-j4
 </div>
 </section>
 <section id="build-node-js-on-windows">
-<h3>Build Node.js on Windows<a class="headerlink" href="#build-node-js-on-windows" title="Link to this heading">#</a></h3>
+<h3>Build Node.js on Windows<a class="headerlink" href="#build-node-js-on-windows" title="Link to this heading">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>%NODE_HOME%
 vcbuild.bat<span class="w"> </span>static<span class="w"> </span>without-intl<span class="w"> </span>vs2022
 </pre></div>
@@ -486,7 +486,7 @@ vcbuild.bat<span class="w"> </span>static<span class="w"> </span>without-intl<sp
 </section>
 </section>
 <section id="build-javet">
-<h2>Build Javet<a class="headerlink" href="#build-javet" title="Link to this heading">#</a></h2>
+<h2>Build Javet<a class="headerlink" href="#build-javet" title="Link to this heading">¶</a></h2>
 <p>Once Node.js and V8 are ready, please navigate to <code class="docutils literal notranslate"><span class="pre">${JAVET_HOME}/cpp</span></code>, make sure CMake is accessible and execute corresponding build script.</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
@@ -551,7 +551,7 @@ vcbuild.bat<span class="w"> </span>static<span class="w"> </span>without-intl<sp
 </div>
 </section>
 <section id="build-javet-jni-library-for-android">
-<h2>Build Javet JNI Library for Android<a class="headerlink" href="#build-javet-jni-library-for-android" title="Link to this heading">#</a></h2>
+<h2>Build Javet JNI Library for Android<a class="headerlink" href="#build-javet-jni-library-for-android" title="Link to this heading">¶</a></h2>
 <p>Once V8 are ready, please navigate to <code class="docutils literal notranslate"><span class="pre">./cpp</span></code>, make sure CMake is accessible and execute corresponding build script.</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
@@ -608,9 +608,9 @@ vcbuild.bat<span class="w"> </span>static<span class="w"> </span>without-intl<sp
 </div>
 </section>
 <section id="id1">
-<h2>Build Javet<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<h2>Build Javet<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <section id="build-javet-for-linux-mac-os-and-windows">
-<h3>Build Javet for Linux, Mac OS and Windows<a class="headerlink" href="#build-javet-for-linux-mac-os-and-windows" title="Link to this heading">#</a></h3>
+<h3>Build Javet for Linux, Mac OS and Windows<a class="headerlink" href="#build-javet-for-linux-mac-os-and-windows" title="Link to this heading">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span><span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>
 gradle<span class="w"> </span>build<span class="w"> </span><span class="nb">test</span>
 </pre></div>
@@ -618,7 +618,7 @@ gradle<span class="w"> </span>build<span class="w"> </span><span class="nb">test
 <p>After a while, <code class="docutils literal notranslate"><span class="pre">javet-*.*.*.jar</span></code> will be placed in folder <code class="docutils literal notranslate"><span class="pre">${JAVET_HOME}/build/libs</span></code>.</p>
 </section>
 <section id="build-javet-for-android">
-<h3>Build Javet for Android<a class="headerlink" href="#build-javet-for-android" title="Link to this heading">#</a></h3>
+<h3>Build Javet for Android<a class="headerlink" href="#build-javet-for-android" title="Link to this heading">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span><span class="si">${</span><span class="nv">JAVET_HOME</span><span class="si">}</span>/android
 gradle<span class="w"> </span>build
 </pre></div>
@@ -657,7 +657,7 @@ gradle<span class="w"> </span>build
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -720,8 +720,8 @@ gradle<span class="w"> </span>build
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+</div><script src="../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../_static/tabs.js?v=3ee01567"></script>

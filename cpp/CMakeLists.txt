@@ -110,6 +110,7 @@ if(DEFINED V8_DIR)
 endif()
 if(DEFINED NODE_DIR)
     list(APPEND includeDirs
+        ${NODE_DIR}/deps/openssl/openssl/include
         ${NODE_DIR}/deps/uv/include
         ${NODE_DIR}/deps/v8
         ${NODE_DIR}/deps/v8/include

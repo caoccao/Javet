@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Spring Integration" href="spring_integration.html" /><link rel="prev" title="Javet Engine Pool" href="engine_pool.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Node.js Mode and V8 Mode - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Node.js Mode and V8 Mode - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,9 +304,9 @@
         </div>
         <article role="main">
           <section id="node-js-mode-and-v8-mode">
-<h1>Node.js Mode and V8 Mode<a class="headerlink" href="#node-js-mode-and-v8-mode" title="Link to this heading">#</a></h1>
+<h1>Node.js Mode and V8 Mode<a class="headerlink" href="#node-js-mode-and-v8-mode" title="Link to this heading">¶</a></h1>
 <section id="co-existence">
-<h2>Co-existence<a class="headerlink" href="#co-existence" title="Link to this heading">#</a></h2>
+<h2>Co-existence<a class="headerlink" href="#co-existence" title="Link to this heading">¶</a></h2>
 <p>Javet support both Node.js mode and V8 mode both of which can co-exist in one JVM. This is an awesome feature with the following highlights.</p>
 <ul class="simple">
 <li><p>Latest V8 features are available in V8 mode.</p></li>
@@ -315,10 +315,10 @@
 </ul>
 </section>
 <section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
 <p>It's very simple to get into Node.js mode or V8 mode. E.g.</p>
 <section id="v8host">
-<h3>V8Host<a class="headerlink" href="#v8host" title="Link to this heading">#</a></h3>
+<h3>V8Host<a class="headerlink" href="#v8host" title="Link to this heading">¶</a></h3>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Node.js Mode</span>
 <span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">V8Runtime</span><span class="w"> </span><span class="n">v8Runtime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">V8Host</span><span class="p">.</span><span class="na">getNodeInstance</span><span class="p">().</span><span class="na">createV8Runtime</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="c1">// ...</span>
@@ -332,7 +332,7 @@
 </div>
 </section>
 <section id="pool">
-<h3>Pool<a class="headerlink" href="#pool" title="Link to this heading">#</a></h3>
+<h3>Pool<a class="headerlink" href="#pool" title="Link to this heading">¶</a></h3>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Node.js Mode</span>
 <span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">JavetEnginePool</span><span class="o">&lt;</span><span class="n">NodeRuntime</span><span class="o">&gt;</span><span class="w"> </span><span class="n">javetEnginePool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavetEnginePool</span><span class="o">&lt;</span><span class="n">NodeRuntime</span><span class="o">&gt;</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">javetEnginePool</span><span class="p">.</span><span class="na">getConfig</span><span class="p">().</span><span class="na">setJSRuntimeType</span><span class="p">(</span><span class="n">JSRuntimeType</span><span class="p">.</span><span class="na">Node</span><span class="p">);</span>
@@ -387,7 +387,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -430,8 +430,8 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

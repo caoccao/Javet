@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Primitive Converter" href="primitive_converter.html" /><link rel="prev" title="V8 Promise" href="../v8_values/v8_promise.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Converters - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Converters - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,7 +304,7 @@
         </div>
         <article role="main">
           <section id="converters">
-<h1>Converters<a class="headerlink" href="#converters" title="Link to this heading">#</a></h1>
+<h1>Converters<a class="headerlink" href="#converters" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="primitive_converter.html">Primitive Converter</a></li>
@@ -316,7 +316,7 @@
 </ul>
 </div>
 <section id="comparisons">
-<h2>Comparisons<a class="headerlink" href="#comparisons" title="Link to this heading">#</a></h2>
+<h2>Comparisons<a class="headerlink" href="#comparisons" title="Link to this heading">¶</a></h2>
 <embed>
   <table class="docutils" style="text-align: center;">
     <thead>
@@ -386,21 +386,21 @@
   </table>
 </embed></section>
 <section id="inside-converters">
-<h2>Inside Converters<a class="headerlink" href="#inside-converters" title="Link to this heading">#</a></h2>
+<h2>Inside Converters<a class="headerlink" href="#inside-converters" title="Link to this heading">¶</a></h2>
 <section id="binding-via-native">
-<h3>Binding via Native<a class="headerlink" href="#binding-via-native" title="Link to this heading">#</a></h3>
+<h3>Binding via Native<a class="headerlink" href="#binding-via-native" title="Link to this heading">¶</a></h3>
 <img alt="Javet Converter - Binding via Native" src="../../_images/javet_converter_binding_via_native.png" />
 </section>
 <section id="binding-via-proxy">
-<h3>Binding via Proxy<a class="headerlink" href="#binding-via-proxy" title="Link to this heading">#</a></h3>
+<h3>Binding via Proxy<a class="headerlink" href="#binding-via-proxy" title="Link to this heading">¶</a></h3>
 <img alt="Javet Converter - Binding via Proxy" src="../../_images/javet_converter_binding_via_proxy.png" />
 </section>
 <section id="null-safety">
-<h3>Null Safety<a class="headerlink" href="#null-safety" title="Link to this heading">#</a></h3>
+<h3>Null Safety<a class="headerlink" href="#null-safety" title="Link to this heading">¶</a></h3>
 <p>What if the object converter meets <code class="docutils literal notranslate"><span class="pre">null</span></code> or <code class="docutils literal notranslate"><span class="pre">undefined</span></code> when target type is primitive? This is a quite famous topic in Java because converting null to primitive type results in <code class="docutils literal notranslate"><span class="pre">java.lang.NullPointerException</span></code>. Luckily, Javet object converter is null safe by injecting default primitive values to <code class="docutils literal notranslate"><span class="pre">JavetConverterConfig</span></code> and these default primitive values can be overridden.</p>
 </section>
 <section id="functions-and-objects">
-<h3>Functions and Objects<a class="headerlink" href="#functions-and-objects" title="Link to this heading">#</a></h3>
+<h3>Functions and Objects<a class="headerlink" href="#functions-and-objects" title="Link to this heading">¶</a></h3>
 <p>There are few challenges in the object conversion.</p>
 <ul class="simple">
 <li><p>V8 functions cannot be easily represented by Java objects.</p></li>
@@ -412,16 +412,16 @@
 <p>If the source code is provided to a user defined function, Javet object converter will inject that function from the source code automatically. That makes sure Java object from V8 object can be smoothly converted back to V8 object at both property and function levels.</p>
 </section>
 <section id="circular-structure">
-<h3>Circular Structure<a class="headerlink" href="#circular-structure" title="Link to this heading">#</a></h3>
+<h3>Circular Structure<a class="headerlink" href="#circular-structure" title="Link to this heading">¶</a></h3>
 <p>It is inefficient and inconvenient for Javet to substantially detect circular structure during object conversion. Instead, Javet converter keeps increasing the depth of recursion and throws <code class="docutils literal notranslate"><span class="pre">JavetConverterException</span></code> when maximum depth is reach. Maximum depth can be changed before object conversion is started. This is a cheap operation with high performance.</p>
 <p>Please avoid setting maximum depth to an unrealistic number because JVM will throw <code class="docutils literal notranslate"><span class="pre">StackOverflowError</span></code> which brings considerable performance overhead. The thing worse than that is there will be memory leak because resource recycling logic written in <code class="docutils literal notranslate"><span class="pre">finally</span></code> block sometimes won't be called when stack overflow occurs. Attackers may easily drain the server resource in minutes by sending tiny circular structure data.</p>
 </section>
 <section id="when-does-the-config-take-effect">
-<h3>When does the Config Take Effect?<a class="headerlink" href="#when-does-the-config-take-effect" title="Link to this heading">#</a></h3>
+<h3>When does the Config Take Effect?<a class="headerlink" href="#when-does-the-config-take-effect" title="Link to this heading">¶</a></h3>
 <p>The config only takes effect when the actual conversion takes place. Once the binding between the JavaScript object and Java object is set, the config changes will no longer be applied to it by the converter. That behavior allows some fancy things to happen. E.g. a Java <code class="docutils literal notranslate"><span class="pre">Map</span></code> can be read-only in V8 when <code class="docutils literal notranslate"><span class="pre">setProxyMapEnabled(false)</span></code> is called whereas the next Java <code class="docutils literal notranslate"><span class="pre">Map</span></code> can be read-write in V8 when <code class="docutils literal notranslate"><span class="pre">setProxyMapEnabled(true)</span></code> is called.</p>
 </section>
 <section id="can-built-in-converter-be-ignored">
-<h3>Can Built-in Converter be Ignored?<a class="headerlink" href="#can-built-in-converter-be-ignored" title="Link to this heading">#</a></h3>
+<h3>Can Built-in Converter be Ignored?<a class="headerlink" href="#can-built-in-converter-be-ignored" title="Link to this heading">¶</a></h3>
 <p>Yes. One of the beauties of the built-in converter is it is convenient to bi-directionally convert arbitrary objects. However, sometimes applications want to take fine-grained control over every conversion. E.g. <code class="docutils literal notranslate"><span class="pre">a</span></code> needs to use <code class="docutils literal notranslate"><span class="pre">JavetObjectConverter</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code> needs to use <code class="docutils literal notranslate"><span class="pre">JavetProxyConverter</span></code>, etc.</p>
 <p>No worry. Applications may use any converter to convert Java objects to <code class="docutils literal notranslate"><span class="pre">V8Value</span></code> objects or vice versa. Javet API is able to accept <code class="docutils literal notranslate"><span class="pre">V8Value</span></code> and return <code class="docutils literal notranslate"><span class="pre">V8Value</span></code>. In this case, the built-in converter is ignored.</p>
 </section>
@@ -457,7 +457,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -505,8 +505,8 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

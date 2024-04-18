@@ -16,6 +16,8 @@
 
 package com.caoccao.javet.enums;
 
+import java.util.stream.Stream;
+
 public enum JSScopeType {
     Class(0, "Class"),
     Eval(1, "Eval"),
@@ -27,6 +29,13 @@ public enum JSScopeType {
     With(7, "With"),
     Unknown(8, "Unknown");
 
+    private static final int LENGTH = values().length;
+    private static final JSScopeType[] TYPES = new JSScopeType[LENGTH];
+
+    static {
+        Stream.of(values()).forEach(v -> TYPES[v.getId()] = v);
+    }
+
     private final int id;
     private final String name;
 
@@ -36,26 +45,7 @@ public enum JSScopeType {
     }
 
     public static JSScopeType parse(int id) {
-        switch (id) {
-            case 0:
-                return Class;
-            case 1:
-                return Eval;
-            case 2:
-                return Function;
-            case 3:
-                return Module;
-            case 4:
-                return Script;
-            case 5:
-                return Catch;
-            case 6:
-                return Block;
-            case 7:
-                return With;
-            default:
-                return Unknown;
-        }
+        return id >= 0 && id < LENGTH ? TYPES[id] : Unknown;
     }
 
     public int getId() {

@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Proxy Plugins" href="proxy_plugins.html" /><link rel="prev" title="Bridge Converter" href="bridge_converter.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Custom Converter - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Custom Converter - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,13 +304,13 @@
         </div>
         <article role="main">
           <section id="custom-converter">
-<h1>Custom Converter<a class="headerlink" href="#custom-converter" title="Link to this heading">#</a></h1>
+<h1>Custom Converter<a class="headerlink" href="#custom-converter" title="Link to this heading">¶</a></h1>
 <p>Sometimes the converters provided by Javet are not powerful enough. No problem. Javet allows defining custom converters. Here is a simple example about how to create a custom converter.</p>
 <section id="design-a-pojo-converter">
-<h2>Design a POJO Converter<a class="headerlink" href="#design-a-pojo-converter" title="Link to this heading">#</a></h2>
+<h2>Design a POJO Converter<a class="headerlink" href="#design-a-pojo-converter" title="Link to this heading">¶</a></h2>
 <p>A POJO converter usually is designed for the Java objects that are now owned by the application. So, it has to deal with reflection heavily. The following sample code runs in JDK 11. It's easy to tweak few API for JDK 8.</p>
 <section id="define-pojo-object">
-<h3>Define POJO Object<a class="headerlink" href="#define-pojo-object" title="Link to this heading">#</a></h3>
+<h3>Define POJO Object<a class="headerlink" href="#define-pojo-object" title="Link to this heading">¶</a></h3>
 <p>Let's say you have a Pojo that allows you to define a name-value pair.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Pojo</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
@@ -345,7 +345,7 @@
 </div>
 </section>
 <section id="create-pojoconverter">
-<h3>Create PojoConverter<a class="headerlink" href="#create-pojoconverter" title="Link to this heading">#</a></h3>
+<h3>Create PojoConverter<a class="headerlink" href="#create-pojoconverter" title="Link to this heading">¶</a></h3>
 <p>Then, create a generic PojoConverter.</p>
 <ul class="simple">
 <li><p>It is generic enough to cover all kinds of Pojo objects in a recursive way.</p></li>
@@ -410,7 +410,7 @@
 </div>
 </section>
 <section id="ready-go">
-<h3>Ready! Go!<a class="headerlink" href="#ready-go" title="Link to this heading">#</a></h3>
+<h3>Ready! Go!<a class="headerlink" href="#ready-go" title="Link to this heading">¶</a></h3>
 <p>Just write few lines of code to interact with Javet.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">TestPojo</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">JavetException</span><span class="w"> </span><span class="p">{</span>
@@ -464,7 +464,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -507,8 +507,8 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

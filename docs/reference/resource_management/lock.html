@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Memory Management" href="memory_management.html" /><link rel="prev" title="Load and Unload" href="load_and_unload.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Know the Lock - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Know the Lock - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,16 +304,16 @@
         </div>
         <article role="main">
           <section id="know-the-lock">
-<h1>Know the Lock<a class="headerlink" href="#know-the-lock" title="Link to this heading">#</a></h1>
+<h1>Know the Lock<a class="headerlink" href="#know-the-lock" title="Link to this heading">¶</a></h1>
 <section id="what-does-lock-mean-in-javet">
-<h2>What does Lock Mean in Javet?<a class="headerlink" href="#what-does-lock-mean-in-javet" title="Link to this heading">#</a></h2>
+<h2>What does Lock Mean in Javet?<a class="headerlink" href="#what-does-lock-mean-in-javet" title="Link to this heading">¶</a></h2>
 <p>V8 runtime runs in an isolated and single-threaded environment so that there is no race condition issue. How about playing V8 runtime in JVM among multiple threads? Yes, that is possible in 2 modes.</p>
 <section id="implicit-mode">
-<h3>1. Implicit Mode<a class="headerlink" href="#implicit-mode" title="Link to this heading">#</a></h3>
+<h3>1. Implicit Mode<a class="headerlink" href="#implicit-mode" title="Link to this heading">¶</a></h3>
 <p>Javet automatically handles the <code class="docutils literal notranslate"><span class="pre">lock()</span></code> and <code class="docutils literal notranslate"><span class="pre">unlock()</span></code> regardless of thread context switch. So, in most of the cases, applications just call regular API without calling a single line of locking API.</p>
 </section>
 <section id="explicit-mode">
-<h3>2. Explicit Mode<a class="headerlink" href="#explicit-mode" title="Link to this heading">#</a></h3>
+<h3>2. Explicit Mode<a class="headerlink" href="#explicit-mode" title="Link to this heading">¶</a></h3>
 <p>In the explicit mode, applications just need to surround the code block with a <code class="docutils literal notranslate"><span class="pre">V8Locker</span></code> protected by <code class="docutils literal notranslate"><span class="pre">try-with-resource</span></code>. Internally, Javet allocates a long-live V8 locker instead of creating ad-hoc V8 locker per API call to achieve better performance.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">V8Locker</span><span class="w"> </span><span class="n">v8Locker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getV8Locker</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="c1">// Do whatever you want to do.</span>
@@ -327,20 +327,20 @@
 </section>
 </section>
 <section id="comparisons">
-<h2>Comparisons<a class="headerlink" href="#comparisons" title="Link to this heading">#</a></h2>
+<h2>Comparisons<a class="headerlink" href="#comparisons" title="Link to this heading">¶</a></h2>
 <section id="performance">
-<h3>Performance<a class="headerlink" href="#performance" title="Link to this heading">#</a></h3>
+<h3>Performance<a class="headerlink" href="#performance" title="Link to this heading">¶</a></h3>
 <p>The implicit mode comes with a slight performance overhead in V8 because every native call is protected by a new V8 locker.</p>
 <p>The explicit mode is designed for performance sensitive work. In extreme performance test cases, the performance improvement may be up to 50% compared to the implicit mode.</p>
 </section>
 <section id="thread-safety">
-<h3>Thread-safety<a class="headerlink" href="#thread-safety" title="Link to this heading">#</a></h3>
+<h3>Thread-safety<a class="headerlink" href="#thread-safety" title="Link to this heading">¶</a></h3>
 <p>The implicit mode is thread-safe because its locking granularity is at API call level. Multiple threads are free to share the same V8 runtime in the concurrent scenarios. But, please be careful that JavaScript variables may be changed by other threads. It's better not to touch the same JavaScript variable among multiple threads, otherwise, Javet may crash. Yes, crash, because Javet doesn't perform this kind of check.</p>
 <p>The explicit mode is <strong>NOT</strong> thread-safe because it's designed for maximizing the performance in the single-threaded scenarios. Sharing V8 locker protected V8 runtime among multiple threads will result in Javet crash immediately.</p>
 </section>
 </section>
 <section id="coroutines-or-virtual-threads">
-<h2>Coroutines or Virtual Threads<a class="headerlink" href="#coroutines-or-virtual-threads" title="Link to this heading">#</a></h2>
+<h2>Coroutines or Virtual Threads<a class="headerlink" href="#coroutines-or-virtual-threads" title="Link to this heading">¶</a></h2>
 <p>Kotlin Coroutines and Java 21 Virtual Threads are incompatible with the V8 threading model. The V8 locking mechanism cannot handle the chaos from coroutines or virtual threads, because V8 sees the calls coming from the same OS thread and doesn't actually keep the calls in sequence. Calling Javet API in coroutines or virtual threads will result in the JVM crash, if an additional synchronization is absent.</p>
 </section>
 </section>
@@ -374,7 +374,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -422,8 +422,8 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Object Converter" href="object_converter.html" /><link rel="prev" title="Advanced" href="index.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Interact with Node.js - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Interact with Node.js - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,9 +304,9 @@
         </div>
         <article role="main">
           <section id="interact-with-node-js">
-<h1>Interact with Node.js<a class="headerlink" href="#interact-with-node-js" title="Link to this heading">#</a></h1>
+<h1>Interact with Node.js<a class="headerlink" href="#interact-with-node-js" title="Link to this heading">¶</a></h1>
 <section id="is-that-possible">
-<h2>Is That Possible?<a class="headerlink" href="#is-that-possible" title="Link to this heading">#</a></h2>
+<h2>Is That Possible?<a class="headerlink" href="#is-that-possible" title="Link to this heading">¶</a></h2>
 <p>In native Node.js, once a JavaScript server application (e.g. express server) is up, there is no normal way of interacting with the Node.js runtime via console. The reasons are quite simple:</p>
 <ul class="simple">
 <li><p>V8 is single-threaded.</p></li>
@@ -315,9 +315,9 @@
 <p>So, that almost closes the door to interacting with Node.js runtime from JVM. No worry, Javet is able to hijack the Node.js event loop to allow interaction from JVM. In other words, Java application can seamlessly interact with Node.js runtime as usual. That applies to all Javet API.</p>
 </section>
 <section id="how">
-<h2>How?<a class="headerlink" href="#how" title="Link to this heading">#</a></h2>
+<h2>How?<a class="headerlink" href="#how" title="Link to this heading">¶</a></h2>
 <section id="step-1-javascript-server">
-<h3>Step 1: JavaScript Server<a class="headerlink" href="#step-1-javascript-server" title="Link to this heading">#</a></h3>
+<h3>Step 1: JavaScript Server<a class="headerlink" href="#step-1-javascript-server" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Create a JavaScript server application. Here is a sample.</p></li>
 </ul>
@@ -349,7 +349,7 @@
 </div>
 </section>
 <section id="step-2-worker-thread-for-the-javascript-server">
-<h3>Step 2: Worker Thread for the JavaScript Server<a class="headerlink" href="#step-2-worker-thread-for-the-javascript-server" title="Link to this heading">#</a></h3>
+<h3>Step 2: Worker Thread for the JavaScript Server<a class="headerlink" href="#step-2-worker-thread-for-the-javascript-server" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Create a worker thread hosting that JavaScript server application.</p></li>
 <li><p>Call <code class="docutils literal notranslate"><span class="pre">NodeRuntime.await()</span></code> in that worker thread once the Node.js runtime is up.</p></li>
@@ -357,7 +357,7 @@
 </ul>
 </section>
 <section id="step-3-main-thread-for-the-interaction">
-<h3>Step 3: Main Thread for the Interaction<a class="headerlink" href="#step-3-main-thread-for-the-interaction" title="Link to this heading">#</a></h3>
+<h3>Step 3: Main Thread for the Interaction<a class="headerlink" href="#step-3-main-thread-for-the-interaction" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Start that worker thread.</p></li>
 <li><p>Wait for the Node.js runtime completely initialized.</p></li>
@@ -439,7 +439,7 @@ Call<span class="w"> </span><span class="c1">#9</span>
 </section>
 </section>
 <section id="what-if-node-js-hangs-during-close">
-<h2>What If Node.js Hangs during Close()?<a class="headerlink" href="#what-if-node-js-hangs-during-close" title="Link to this heading">#</a></h2>
+<h2>What If Node.js Hangs during Close()?<a class="headerlink" href="#what-if-node-js-hangs-during-close" title="Link to this heading">¶</a></h2>
 <p>If there are pending promises, timers (<code class="docutils literal notranslate"><span class="pre">setTimeout</span></code>, <code class="docutils literal notranslate"><span class="pre">setInterval</span></code>), etc., Node.js runtime will hang during <code class="docutils literal notranslate"><span class="pre">Close()</span></code>. <code class="docutils literal notranslate"><span class="pre">setPurgeEventLoopBeforeClose(true)</span></code> is designed to tell Javet to purge the event loop before <code class="docutils literal notranslate"><span class="pre">Close()</span></code> so that Node.js runtime can be gracefully closed.</p>
 </section>
 </section>
@@ -473,7 +473,7 @@ Call<span class="w"> </span><span class="c1">#9</span>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -518,8 +518,8 @@ Call<span class="w"> </span><span class="c1">#9</span>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

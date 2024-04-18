@@ -35,6 +35,7 @@
  // Scope
 
 using V8ContextScope = v8::Context::Scope;
+using V8EscapableHandleScope = v8::EscapableHandleScope;
 using V8HandleScope = v8::HandleScope;
 using V8IsolateScope = v8::Isolate::Scope;
 
@@ -82,6 +83,11 @@ using V8MaybeLocalPromiseResolver = v8::MaybeLocal<v8::Promise::Resolver>;
 using V8MaybeLocalProxy = v8::MaybeLocal<v8::Proxy>;
 using V8MaybeLocalString = v8::MaybeLocal<v8::String>;
 using V8MaybeLocalValue = v8::MaybeLocal<v8::Value>;
+
+// Global
+
+using V8GlobalContext = v8::Global<v8::Context>;
+using V8GlobalObject = v8::Global<v8::Object>;
 
 // Persistent
 

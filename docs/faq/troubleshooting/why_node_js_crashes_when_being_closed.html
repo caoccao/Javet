@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Development" href="../../development/index.html" /><link rel="prev" title="SIGSEGV at createV8Runtime() in V8 Mode on AWS" href="sigsegv_at_createv8runtime_in_v8_mode_on_aws.html" />
 
-    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Why Node.js Crashes When being Closed? - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Why Node.js Crashes When being Closed? - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,13 +304,13 @@
         </div>
         <article role="main">
           <section id="why-node-js-crashes-when-being-closed">
-<h1>Why Node.js Crashes When being Closed?<a class="headerlink" href="#why-node-js-crashes-when-being-closed" title="Link to this heading">#</a></h1>
+<h1>Why Node.js Crashes When being Closed?<a class="headerlink" href="#why-node-js-crashes-when-being-closed" title="Link to this heading">¶</a></h1>
 <section id="background">
-<h2>Background<a class="headerlink" href="#background" title="Link to this heading">#</a></h2>
+<h2>Background<a class="headerlink" href="#background" title="Link to this heading">¶</a></h2>
 <p>Some Javet users experience segfaults when using the Node.js mode. The segfaults occur when <code class="docutils literal notranslate"><span class="pre">NodeRuntime</span></code> is being closed. E.g. <a class="reference external" href="https://github.com/caoccao/Javet/issues/20">issue #20</a> and <a class="reference external" href="https://github.com/caoccao/Javet/issues/82">issue #82</a>.</p>
 </section>
 <section id="root-cause">
-<h2>Root Cause<a class="headerlink" href="#root-cause" title="Link to this heading">#</a></h2>
+<h2>Root Cause<a class="headerlink" href="#root-cause" title="Link to this heading">¶</a></h2>
 <p>The root cause is Node.js event loop is activated when Node.js is exiting. Let's see how <code class="docutils literal notranslate"><span class="pre">NodeRuntime.close()</span></code> works behind the scenes.</p>
 <ol class="arabic simple">
 <li><p>Close all Node.js modules</p></li>
@@ -323,10 +323,10 @@
 <p>Can Javet address that? Yes, but that implies hacking Node.js event loop. People choose Javet Node.js mode mostly because it is a genuine Node.js. So, no, Javet does not perform such hack.</p>
 </section>
 <section id="solution">
-<h2>Solution<a class="headerlink" href="#solution" title="Link to this heading">#</a></h2>
+<h2>Solution<a class="headerlink" href="#solution" title="Link to this heading">¶</a></h2>
 <p>Well, how to prevent that from happening? In fact, knowing how Javet works and following the Javet way, that won't happen.</p>
 <section id="event-unhandledrejection">
-<h3>Event unhandledRejection<a class="headerlink" href="#event-unhandledrejection" title="Link to this heading">#</a></h3>
+<h3>Event unhandledRejection<a class="headerlink" href="#event-unhandledrejection" title="Link to this heading">¶</a></h3>
 <p>Node.js provides a standard <a class="reference external" href="https://nodejs.org/docs/latest/api/process.html">solution</a>. Application can listen to event <code class="docutils literal notranslate"><span class="pre">unhandledRejection</span></code> to prevent that event from hitting Javet so that the segfaults will not take place.</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">process</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;process&#39;</span><span class="p">;</span>
 <span class="nx">process</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;unhandledRejection&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">reason</span><span class="p">,</span><span class="w"> </span><span class="nx">promise</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
@@ -336,11 +336,11 @@
 </div>
 </section>
 <section id="noderuntime-await">
-<h3>NodeRuntime.await()<a class="headerlink" href="#noderuntime-await" title="Link to this heading">#</a></h3>
+<h3>NodeRuntime.await()<a class="headerlink" href="#noderuntime-await" title="Link to this heading">¶</a></h3>
 <p>Application may call <code class="docutils literal notranslate"><span class="pre">NodeRuntime.await()</span></code> before closing the <code class="docutils literal notranslate"><span class="pre">NodeRuntime</span></code>. This call explicitly tells <code class="docutils literal notranslate"><span class="pre">NodeRuntime</span></code> to activate the event loop.</p>
 </section>
 <section id="noderuntime-lowmemorynotification">
-<h3>NodeRuntime.lowMemoryNotification()<a class="headerlink" href="#noderuntime-lowmemorynotification" title="Link to this heading">#</a></h3>
+<h3>NodeRuntime.lowMemoryNotification()<a class="headerlink" href="#noderuntime-lowmemorynotification" title="Link to this heading">¶</a></h3>
 <p>Application may call <code class="docutils literal notranslate"><span class="pre">NodeRuntime.lowMemoryNotification()</span></code> before closing the <code class="docutils literal notranslate"><span class="pre">NodeRuntime</span></code>. This call forces <code class="docutils literal notranslate"><span class="pre">NodeRuntime</span></code> to perform garbage collection. During the garbage collection, the callbacks can be safely handled by Javet without segfaults.</p>
 </section>
 </section>
@@ -375,7 +375,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -420,8 +420,8 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+</div><script src="../../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../_static/tabs.js?v=3ee01567"></script>

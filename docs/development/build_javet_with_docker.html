@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Build Javet from Scratch" href="build_javet_from_scratch.html" /><link rel="prev" title="Build Javet" href="build.html" />
 
-    <link rel="shortcut icon" href="../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Build Javet with Docker - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Build Javet with Docker - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,13 +304,13 @@
         </div>
         <article role="main">
           <section id="build-javet-with-docker">
-<h1>Build Javet with Docker<a class="headerlink" href="#build-javet-with-docker" title="Link to this heading">#</a></h1>
+<h1>Build Javet with Docker<a class="headerlink" href="#build-javet-with-docker" title="Link to this heading">¶</a></h1>
 <p>The Docker build supports building Javet for Linux, Windows and Android. As Docker supports Linux and Windows with WSL2, Javet for Linux and Android can also be built on Windows.</p>
 <p>Regarding the Docker build for Mac OS, contributors are welcome if you are interested. Or, you will have to wait for a long while.</p>
 <section id="build-environment">
-<h2>Build Environment<a class="headerlink" href="#build-environment" title="Link to this heading">#</a></h2>
+<h2>Build Environment<a class="headerlink" href="#build-environment" title="Link to this heading">¶</a></h2>
 <section id="linux-environment">
-<h3>Linux Environment<a class="headerlink" href="#linux-environment" title="Link to this heading">#</a></h3>
+<h3>Linux Environment<a class="headerlink" href="#linux-environment" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Ubuntu 20.04+</p></li>
 <li><p>Git</p></li>
@@ -318,7 +318,7 @@
 </ul>
 </section>
 <section id="windows-environment">
-<h3>Windows Environment<a class="headerlink" href="#windows-environment" title="Link to this heading">#</a></h3>
+<h3>Windows Environment<a class="headerlink" href="#windows-environment" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Latest Windows 10</p></li>
 <li><p>WSL2 + Ubuntu 20.04+</p></li>
@@ -327,14 +327,14 @@
 </ul>
 </section>
 <section id="docker-hub-and-github">
-<h3>Docker Hub and Github<a class="headerlink" href="#docker-hub-and-github" title="Link to this heading">#</a></h3>
+<h3>Docker Hub and Github<a class="headerlink" href="#docker-hub-and-github" title="Link to this heading">¶</a></h3>
 <p>Please make sure the network connection to the Docker Hub and Github is up and running. The Docker repository of the Javet images are available at <a class="reference external" href="https://hub.docker.com/r/docker/sjtucaocao">https://hub.docker.com/r/docker/sjtucaocao</a>.</p>
 </section>
 </section>
 <section id="build-javet-for-linux-on-linux-or-windows">
-<h2>Build Javet for Linux on Linux or Windows<a class="headerlink" href="#build-javet-for-linux-on-linux-or-windows" title="Link to this heading">#</a></h2>
+<h2>Build Javet for Linux on Linux or Windows<a class="headerlink" href="#build-javet-for-linux-on-linux-or-windows" title="Link to this heading">¶</a></h2>
 <section id="express-build">
-<h3>Express Build<a class="headerlink" href="#express-build" title="Link to this heading">#</a></h3>
+<h3>Express Build<a class="headerlink" href="#express-build" title="Link to this heading">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/caoccao/Javet.git
 <span class="nb">cd</span><span class="w"> </span>Javet
 docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </span>docker/linux-x86_64/build_artifact.Dockerfile<span class="w"> </span>.
@@ -349,7 +349,7 @@ docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </
 </div>
 </section>
 <section id="full-build-multi-staged">
-<h3>Full Build - Multi-staged<a class="headerlink" href="#full-build-multi-staged" title="Link to this heading">#</a></h3>
+<h3>Full Build - Multi-staged<a class="headerlink" href="#full-build-multi-staged" title="Link to this heading">¶</a></h3>
 <p>Please follow the instruction inside the following dockerfiles one by one to perform a full build.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">base_jvm.Dockerfile</span></code> - Build a base image with Linux, build tools and JVM.</p></li>
@@ -360,7 +360,7 @@ docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </
 </ul>
 </section>
 <section id="full-build-all-in-one">
-<h3>Full Build - All-in-one<a class="headerlink" href="#full-build-all-in-one" title="Link to this heading">#</a></h3>
+<h3>Full Build - All-in-one<a class="headerlink" href="#full-build-all-in-one" title="Link to this heading">¶</a></h3>
 <p>Please follow the instruction inside the following dockerfiles one by one to perform a full build.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">base_all_in_one.Dockerfile</span></code> - Build a base image.</p></li>
@@ -369,7 +369,7 @@ docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </
 </section>
 </section>
 <section id="build-javet-for-windows-on-windows">
-<h2>Build Javet for Windows on Windows<a class="headerlink" href="#build-javet-for-windows-on-windows" title="Link to this heading">#</a></h2>
+<h2>Build Javet for Windows on Windows<a class="headerlink" href="#build-javet-for-windows-on-windows" title="Link to this heading">¶</a></h2>
 <ol class="arabic simple">
 <li><p>Update daemon.json</p></li>
 </ol>
@@ -398,7 +398,7 @@ docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </
 </div>
 </section>
 <section id="build-javet-for-android-on-linux-or-windows">
-<h2>Build Javet for Android on Linux or Windows<a class="headerlink" href="#build-javet-for-android-on-linux-or-windows" title="Link to this heading">#</a></h2>
+<h2>Build Javet for Android on Linux or Windows<a class="headerlink" href="#build-javet-for-android-on-linux-or-windows" title="Link to this heading">¶</a></h2>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/caoccao/Javet.git
 <span class="nb">cd</span><span class="w"> </span>Javet
 docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </span>docker/android/build.Dockerfile<span class="w"> </span>.
@@ -413,7 +413,7 @@ docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </
 </div>
 </section>
 <section id="linux-arm64-docker-files-deprecated">
-<h2>Linux arm64 Docker Files Deprecated<a class="headerlink" href="#linux-arm64-docker-files-deprecated" title="Link to this heading">#</a></h2>
+<h2>Linux arm64 Docker Files Deprecated<a class="headerlink" href="#linux-arm64-docker-files-deprecated" title="Link to this heading">¶</a></h2>
 <p>The V8 build process has been significantly changed since v12. That results in the deprecation of the corresponding docker files.</p>
 </section>
 </section>
@@ -447,7 +447,7 @@ docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -499,8 +499,8 @@ docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+</div><script src="../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../_static/tabs.js?v=3ee01567"></script>

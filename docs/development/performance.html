@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Debug with Chrome Developer Tools" href="debug_with_chrome_developer_tools.html" /><link rel="prev" title="Javet Design" href="design.html" />
 
-    <link rel="shortcut icon" href="../_static/logo.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Javet Performance - Javet 3.1.0 documentation</title>
+    <link rel="shortcut icon" href="../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
+        <title>Javet Performance - Javet 3.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Javet 3.1.0 documentation</div></a>
+      <a href="../index.html"><div class="brand">Javet 3.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -304,11 +304,11 @@
         </div>
         <article role="main">
           <section id="javet-performance">
-<h1>Javet Performance<a class="headerlink" href="#javet-performance" title="Link to this heading">#</a></h1>
+<h1>Javet Performance<a class="headerlink" href="#javet-performance" title="Link to this heading">¶</a></h1>
 <p>In V8, a context is an execution environment that allows separate, unrelated, JavaScript applications to run in a single instance of V8.</p>
 <p>It's recommended to reset context if a new execution environment is required.</p>
 <section id="performance-comparisons-of-node-js-mode-and-v8-mode">
-<h2>Performance Comparisons of Node.js Mode and V8 Mode<a class="headerlink" href="#performance-comparisons-of-node-js-mode-and-v8-mode" title="Link to this heading">#</a></h2>
+<h2>Performance Comparisons of Node.js Mode and V8 Mode<a class="headerlink" href="#performance-comparisons-of-node-js-mode-and-v8-mode" title="Link to this heading">¶</a></h2>
 <p>Here is the performance test result from i7 10700K + Windows 10. Test case is just <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">+</span> <span class="pre">1</span> <span class="pre">=</span> <span class="pre">2</span></code>.</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
@@ -371,7 +371,7 @@
 </table>
 </div>
 <section id="highlights">
-<h3>Highlights<a class="headerlink" href="#highlights" title="Link to this heading">#</a></h3>
+<h3>Highlights<a class="headerlink" href="#highlights" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Node.js performs slightly better in <strong>Single Context</strong> mode mainly because the V8 embedded in Node.js is much older than the built-in V8.</p></li>
 <li><p>Built-in V8 dramatically outperforms Node.js in <strong>Ad-hoc</strong> mode mainly because Node.js comes with a huge overhead that seriously slows down the context and isolate creation and recycle.</p></li>
@@ -382,7 +382,7 @@
 </section>
 </section>
 <section id="java-vs-wasm-benchmarks">
-<h2>Java VS Wasm Benchmarks<a class="headerlink" href="#java-vs-wasm-benchmarks" title="Link to this heading">#</a></h2>
+<h2>Java VS Wasm Benchmarks<a class="headerlink" href="#java-vs-wasm-benchmarks" title="Link to this heading">¶</a></h2>
 <p>When to use Java bindings and when to use Wasm (WebAssembly) is quite a concern. The <a class="reference external" href="https://github.com/hanabi1224/Programming-Language-Benchmarks">Programming-Language-Benchmarks</a> provides decent <a class="reference external" href="https://programming-language-benchmarks.vercel.app/java-vs-wasm">benchmarks</a> between Java and Wasm.</p>
 <p>Here is a summary of the benchmarks generated on Jul 13, 2023.</p>
 <div class="table-wrapper docutils container">
@@ -470,7 +470,7 @@
 </ul>
 </section>
 <section id="javet-performance-improvements">
-<h2>Javet Performance Improvements<a class="headerlink" href="#javet-performance-improvements" title="Link to this heading">#</a></h2>
+<h2>Javet Performance Improvements<a class="headerlink" href="#javet-performance-improvements" title="Link to this heading">¶</a></h2>
 <p>The performance improvements among some major releases are listed at <a class="reference external" href="https://github.com/caoccao/JavetPerf">https://github.com/caoccao/JavetPerf</a>.</p>
 </section>
 </section>
@@ -504,7 +504,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023. caoccao.com Sam Cao
+                Copyright &#169; 2021-2024. caoccao.com Sam Cao
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -547,8 +547,8 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=725e530f"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+</div><script src="../_static/documentation_options.js?v=0f250114"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../_static/tabs.js?v=3ee01567"></script>

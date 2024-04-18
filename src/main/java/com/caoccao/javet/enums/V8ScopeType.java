@@ -16,6 +16,8 @@
 
 package com.caoccao.javet.enums;
 
+import java.util.stream.Stream;
+
 /**
  * The enum V8 scope type.
  *
@@ -32,12 +34,11 @@ public enum V8ScopeType {
     Eval(7, "Eval"),
     Module(8, "Module");
 
-    private static final V8ScopeType[] ALL_TYPES = new V8ScopeType[9];
+    private static final int LENGTH = values().length;
+    private static final V8ScopeType[] TYPES = new V8ScopeType[LENGTH];
 
     static {
-        for (V8ScopeType type : values()) {
-            ALL_TYPES[type.getId()] = type;
-        }
+        Stream.of(values()).forEach(v -> TYPES[v.getId()] = v);
     }
 
     private final int id;
@@ -49,7 +50,7 @@ public enum V8ScopeType {
     }
 
     public static V8ScopeType parse(int id) {
-        return ALL_TYPES[id];
+        return id >= 0 && id < LENGTH ? TYPES[id] : Global;
     }
 
     public int getId() {

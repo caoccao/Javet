@@ -16,6 +16,8 @@
 
 package com.caoccao.javet.enums;
 
+import java.util.stream.Stream;
+
 public enum V8ValueReferenceType {
     Invalid(0, "Invalid"),
     Object(1, "Object"),
@@ -56,12 +58,11 @@ public enum V8ValueReferenceType {
     BigInt64Array(42, "BigInt64Array"), // -2^63 to 2^63-1 	8 	64-bit two's complement signed integer 	bigint 	int64_t (signed long long)
     BigUint64Array(43, "BigUint64Array"); // 0 to 2^64-1 	8 	64-bit unsigned integer 	bigint 	uint64_t (unsigned long long)
 
-    private static final V8ValueReferenceType[] ALL_TYPES = new V8ValueReferenceType[44];
+    private static final int LENGTH = 44;
+    private static final V8ValueReferenceType[] TYPES = new V8ValueReferenceType[LENGTH];
 
     static {
-        for (V8ValueReferenceType type : values()) {
-            ALL_TYPES[type.getId()] = type;
-        }
+        Stream.of(values()).forEach(v -> TYPES[v.getId()] = v);
     }
 
     private final int id;
@@ -73,7 +74,7 @@ public enum V8ValueReferenceType {
     }
 
     public static V8ValueReferenceType parse(int id) {
-        return ALL_TYPES[id];
+        return id >= 0 && id < LENGTH ? TYPES[id] : Invalid;
     }
 
     public int getId() {
