@@ -7,7 +7,8 @@ build_node(){
 	./configure --enable-static --without-intl
 	python3 patch_node_build.py -p ./
 	rm patch_node_build.py
-	make -j4
+	num_jobs=$(command -v nproc > /dev/null 2>&1 && nproc || echo 4)
+	make -j $num_jobs
 	echo "Node.js build is completed"
 }
 
