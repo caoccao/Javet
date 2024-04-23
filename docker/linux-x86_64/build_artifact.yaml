@@ -1,0 +1,64 @@
+# This file is used to build the artifact image for Javet.
+#
+# To use, run the following command under the project root directory:
+#
+#   cd docker/linux-x86_64
+#   docker compose -f build_artifact.yaml --env-file build.env build
+#
+# Notes:
+# 1. You must use a recent version of Docker CE or Docker Desktop.
+# 2. If you have multiple docker builders, you must use the builtin 'default' builder, for example:
+#
+#   docker compose -f build_artifact.yaml --env-file build.env build --builder default
+#
+name: javet-build-artifact
+services:
+  base-jvm:
+    build:
+      context: ../..
+      dockerfile: docker/linux-x86_64/base_jvm.Dockerfile
+    image: ${JAVET_REPO}:x86_64-base-jvm
+  base-gradle:
+    build:
+      context: ../..
+      dockerfile: docker/linux-x86_64/base_gradle.Dockerfile
+      args:
+        JAVET_REPO: ${JAVET_REPO}
+    image: ${JAVET_REPO}:x86_64-${JAVET_VERSION}
+    depends_on:
+      - base-jvm
+  base-v8:
+    build:
+      context: ../..
+      dockerfile: docker/linux-x86_64/base_v8.Dockerfile
+      args:
+        JAVET_REPO: ${JAVET_REPO}
+        JAVET_V8_VERSION: ${JAVET_V8_VERSION}
+    image: ${JAVET_REPO}:x86_64-base-v8_${JAVET_V8_VERSION}
+    depends_on:
+      - base-jvm
+  base-node:
+    build:
+      context: ../..
+      dockerfile: docker/linux-x86_64/base_node.Dockerfile
+      args:
+        JAVET_REPO: ${JAVET_REPO}
+        JAVET_NODE_VERSION: ${JAVET_NODE_VERSION}
+        NUM_JOBS: ${NUM_JOBS}
+    image: ${JAVET_REPO}:x86_64-base-node_${JAVET_NODE_VERSION}
+    depends_on:
+      - base-v8
+  javet:
+    build:
+      context: ../..
+      dockerfile: docker/linux-x86_64/build_artifact.Dockerfile
+      args:
+        JAVET_REPO: ${JAVET_REPO}
+        JAVET_NODE_VERSION: ${JAVET_NODE_VERSION}
+        JAVET_V8_VERSION: ${JAVET_V8_VERSION}
+        JAVET_VERSION: ${JAVET_VERSION}
+    image: javet-local
+    depends_on:
+      - base-gradle
+      - base-v8
+      - base-node

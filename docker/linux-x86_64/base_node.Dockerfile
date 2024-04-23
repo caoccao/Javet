@@ -33,6 +33,8 @@ WORKDIR /
 COPY ./scripts/shell/fetch_node_source.sh .
 RUN bash ./fetch_node_source.sh
 
+ARG NUM_JOBS
+
 # Build Node.js
 WORKDIR /node
 COPY ./scripts/python/patch_node_build.py .

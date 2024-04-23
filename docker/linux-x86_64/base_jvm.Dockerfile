@@ -27,6 +27,7 @@ RUN apt-get update --yes \
 	build-essential cmake curl execstack git maven openjdk-8-jdk \
 	patchelf python3 python python3-pip python3-distutils python3-testresources \
 	software-properties-common sudo unzip wget zip \
+	file keyboard-configuration \
 	&& apt-get upgrade --yes \
 	&& pip3 install --no-cache-dir coloredlogs \
 	&& apt-get clean --yes
