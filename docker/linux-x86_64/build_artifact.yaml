@@ -44,6 +44,7 @@ services:
       args:
         JAVET_REPO: ${JAVET_REPO}
         JAVET_NODE_VERSION: ${JAVET_NODE_VERSION}
+        NUM_JOBS: ${NUM_JOBS}
     image: ${JAVET_REPO}:x86_64-base-node_${JAVET_NODE_VERSION}
     depends_on:
       - base-v8
