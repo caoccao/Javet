@@ -92,6 +92,9 @@ class ChangeJavetVersion(object):
       'docker/linux-x86_64/base_gradle.Dockerfile', '\n',
       re.compile(r'x86_64-(?P<version>\d+\.\d+\.\d+) '))
     self._update(
+      'docker/linux-x86_64/build.env', '\n',
+      re.compile(r'JAVET_VERSION=(?P<version>\d+\.\d+\.\d+)'))
+    self._update(
       'docker/windows-x86_64/base.Dockerfile', '\n',
       re.compile(r'javet-windows:(?P<version>\d+\.\d+\.\d+) '))
     self._update(
@@ -183,7 +186,7 @@ class ChangeJavetVersion(object):
       logging.info('  Updated.')
 
 def main():
-  change_javet_version = ChangeJavetVersion('3.1.1')
+  change_javet_version = ChangeJavetVersion('3.1.2')
   change_javet_version.update()
   return 0
 
