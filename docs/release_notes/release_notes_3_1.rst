@@ -2,6 +2,12 @@
 Release Notes 3.1.x
 ===================
 
+3.1.2 V8 v12.5
+--------------
+
+* Added ``V8AwaitMode.RunNoWait``
+* Fixed unexpected behavior of ``V8AwaitMode.RunOnce``
+
 3.1.1 V8 v12.4
 --------------
 

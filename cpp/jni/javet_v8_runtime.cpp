@@ -97,6 +97,19 @@ namespace Javet {
     bool V8Runtime::Await(const Javet::Enums::V8AwaitMode::V8AwaitMode awaitMode) noexcept {
         bool hasMoreTasks = false;
 #ifdef ENABLE_NODE
+        uv_run_mode uvRunMode;
+        switch (awaitMode)
+        {
+        case Javet::Enums::V8AwaitMode::V8AwaitMode::RunOnce:
+            uvRunMode = UV_RUN_ONCE;
+            break;
+        case Javet::Enums::V8AwaitMode::V8AwaitMode::RunNoWait:
+            uvRunMode = UV_RUN_NOWAIT;
+            break;
+        default:
+            uvRunMode = UV_RUN_DEFAULT;
+            break;
+        }
         do {
             {
                 // Reduce the locking granularity so that Node.js can respond to requests from other threads.
@@ -105,12 +118,12 @@ namespace Javet {
                 V8HandleScope v8HandleScope(v8Isolate);
                 auto v8Context = GetV8LocalContext();
                 auto v8ContextScope = GetV8ContextScope(v8Context);
-                uv_run(&uvLoop, UV_RUN_NOWAIT);
+                uv_run(&uvLoop, uvRunMode);
                 // DrainTasks is thread-safe.
                 v8PlatformPointer->DrainTasks(v8Isolate);
             }
             hasMoreTasks = uv_loop_alive(&uvLoop);
-            if (hasMoreTasks) {
+            if (uvRunMode == UV_RUN_DEFAULT && hasMoreTasks) {
                 // Sleep a while to give CPU cycles to other threads.
                 std::this_thread::sleep_for(oneMillisecond);
             }
@@ -124,7 +137,7 @@ namespace Javet {
                 node::EmitProcessBeforeExit(nodeEnvironment.get());
                 hasMoreTasks = uv_loop_alive(&uvLoop);
             }
-        } while (awaitMode == Javet::Enums::V8AwaitMode::RunTillNoMoreTasks && hasMoreTasks);
+        } while (uvRunMode == UV_RUN_DEFAULT && hasMoreTasks);
 #else
         // It has to be v8::platform::MessageLoopBehavior::kDoNotWait, otherwise it blockes;
         v8::platform::PumpMessageLoop(v8PlatformPointer, v8Isolate);
