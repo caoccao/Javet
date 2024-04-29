@@ -339,13 +339,13 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetJSFunc
         auto v8InternalShared = *v8InternalFunction.shared();
 #endif
         if (v8InternalShared.native()) {
-            return JSFunctionType::Native;
+            return Native;
         }
         else if (v8InternalShared.IsApiFunction()) {
-            return JSFunctionType::API;
+            return API;
         }
         else if (v8InternalShared.IsUserJavaScript()) {
-            return JSFunctionType::UserDefined;
+            return UserDefined;
         }
     }
     return JSFunctionType::Unknown;
