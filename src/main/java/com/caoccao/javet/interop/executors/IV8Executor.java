@@ -221,7 +221,6 @@ public interface IV8Executor extends IV8Executable {
         getV8ScriptOrigin().setResourceName(resourceName);
         V8Runtime v8Runtime = getV8Runtime();
         if (v8Runtime.getJSRuntimeType().isNode()) {
-            if (!JavetOSUtils.IS_ANDROID) {
                 NodeRuntime nodeRuntime = (NodeRuntime) v8Runtime;
                 File resourceFile = new File(resourceName);
                 File parentFile = resourceFile.getParentFile();
@@ -229,7 +228,6 @@ public interface IV8Executor extends IV8Executable {
                 nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_FILENAME, resourceFile.getAbsolutePath());
                 nodeRuntime.getNodeModule(NodeModuleModule.class).setRequireRootDirectory(parentFile.getAbsoluteFile());
                 nodeRuntime.getNodeModule(NodeModuleProcess.class).setWorkingDirectory(parentFile.getAbsolutePath());
-            }
         }
         return this;
     }
