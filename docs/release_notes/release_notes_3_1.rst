@@ -7,6 +7,7 @@ Release Notes 3.1.x
 
 * Added ``V8AwaitMode.RunNoWait``
 * Fixed unexpected behavior of ``V8AwaitMode.RunOnce``
+* Enabled ``__dirname``, ``__filename``, ``require`` root injection for Node.js Android
 
 3.1.1 V8 v12.4
 --------------
