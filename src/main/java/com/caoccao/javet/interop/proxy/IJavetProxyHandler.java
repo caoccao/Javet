@@ -72,6 +72,12 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      */
     String PROXY_FUNCTION_NAME_GET = "get";
     /**
+     * The constant PROXY_FUNCTION_NAME_GET_OWN_PROPERTY_DESCRIPTOR.
+     *
+     * @since 3.0.4
+     */
+    String PROXY_FUNCTION_NAME_GET_OWN_PROPERTY_DESCRIPTOR = "getOwnPropertyDescriptor";
+    /**
      * The constant PROXY_FUNCTION_NAME_HAS.
      *
      * @since 2.2.0
@@ -84,12 +90,6 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      */
     String PROXY_FUNCTION_NAME_OWN_KEYS = "ownKeys";
     /**
-     * The constant PROXY_FUNCTION_NAME_GET_OWN_PROPERTY_DESCRIPTOR.
-     *
-     * @since 3.0.4
-     */
-    String PROXY_FUNCTION_NAME_GET_OWN_PROPERTY_DESCRIPTOR = "getOwnPropertyDescriptor";
-    /**
      * The constant PROXY_FUNCTION_NAME_SET.
      *
      * @since 2.2.0
@@ -97,8 +97,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     String PROXY_FUNCTION_NAME_SET = "set";
 
     /**
-     * Reflect.apply().
-     * The Reflect.apply() static method calls a target function with arguments as specified.
+     * handler.apply()
+     * The handler.apply() method is a trap for the [[Call]] object internal method,
+     * which is used by operations such as function calls.
      *
      * @param target     the target
      * @param thisObject this object
@@ -115,10 +116,11 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Reflect.construct().
-     * The Reflect.construct() static method is like the new operator, but as a function.
-     * It is equivalent to calling new target(...args).
-     * It gives also the added option to specify a different new.target value.
+     * handler.construct()
+     * The handler.construct() method is a trap for the [[Construct]] object internal method,
+     * which is used by operations such as the new operator.
+     * In order for the new operation to be valid on the resulting Proxy object,
+     * the target used to initialize the proxy must itself be a valid constructor.
      *
      * @param target    the target
      * @param arguments the arguments
@@ -135,8 +137,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Reflect.defineProperty().
-     * The Reflect.defineProperty() static method is like Object.defineProperty() but returns a Boolean.
+     * handler.defineProperty()
+     * The handler.defineProperty() method is a trap for the [[DefineOwnProperty]] object internal method,
+     * which is used by operations such as Object.defineProperty().
      *
      * @param target     the target
      * @param property   the property
@@ -155,9 +158,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Reflect.deleteProperty().
-     * The Reflect.deleteProperty() static method is like the delete operator,
-     * but as a function. It deletes a property from an object.
+     * handler.deleteProperty()
+     * The handler.deleteProperty() method is a trap for the [[Delete]] object internal method,
+     * which is used by operations such as the delete operator.
      *
      * @param target   the target
      * @param property the property
@@ -173,8 +176,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Reflect.get().
-     * The Reflect.get() static method is like the property accessor syntax, but as a function.
+     * handler.get()
+     * The handler.get() method is a trap for the [[Get]] object internal method,
+     * which is used by operations such as property accessors.
      *
      * @param target   the target
      * @param property the property
@@ -191,9 +195,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Reflect.getOwnPropertyDescriptor().
-     * The Reflect.getOwnPropertyDescriptor() static method is like Object.getOwnPropertyDescriptor().
-     * It returns a property descriptor of the given property if it exists on the object, undefined otherwise.
+     * handler.getOwnPropertyDescriptor()
+     * The handler.getOwnPropertyDescriptor() method is a trap for the [[GetOwnProperty]] object internal method,
+     * which is used by operations such as Object.getOwnPropertyDescriptor().
      *
      * @param target   the target
      * @param property the property
@@ -209,12 +213,12 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Reflect.getPrototypeOf().
-     * The Reflect.getPrototypeOf() static method is like Object.getPrototypeOf().
-     * It returns the prototype of the specified object.
+     * handler.getPrototypeOf()
+     * The handler.getPrototypeOf() method is a trap for the [[GetPrototypeOf]] object internal method,
+     * which is used by operations such as Object.getPrototypeOf().
      *
      * @param target the target
-     * @return the prototype of
+     * @return the V8 value
      * @throws JavetException the javet exception
      * @throws E              the custom exception
      * @since 0.9.6
@@ -242,8 +246,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     V8Runtime getV8Runtime();
 
     /**
-     * Reflect.has().
-     * The Reflect.has() static method is like the in operator, but as a function.
+     * handler.has()
+     * The handler.has() method is a trap for the [[HasProperty]] object internal method,
+     * which is used by operations such as the in operator.
      *
      * @param target   the target
      * @param property the property
@@ -259,9 +264,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Reflect.isExtensible().
-     * The Reflect.isExtensible() static method is like Object.isExtensible().
-     * It determines if an object is extensible (whether it can have new properties added to it).
+     * handler.isExtensible()
+     * The handler.isExtensible() method is a trap for the [[IsExtensible]] object internal method,
+     * which is used by operations such as Object.isExtensible().
      *
      * @param target the target
      * @return the V8 value boolean
@@ -276,8 +281,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Reflect.ownKeys().
-     * The Reflect.ownKeys() static method returns an array of the target object's own property keys.
+     * handler.ownKeys()
+     * The handler.ownKeys() method is a trap for the [[OwnPropertyKeys]] object internal method,
+     * which is used by operations such as Object.keys(), Reflect.ownKeys(), etc.
      *
      * @param target the target
      * @return the V8 value array
@@ -292,9 +298,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Reflect.preventExtensions().
-     * The Reflect.preventExtensions() static method is like Object.preventExtensions().
-     * It prevents new properties from ever being added to an object (i.e., prevents future extensions to the object).
+     * handler.preventExtensions()
+     * The handler.preventExtensions() method is a trap for the [[PreventExtensions]] object internal method,
+     * which is used by operations such as Object.preventExtensions().
      *
      * @param target the target
      * @return the V8 value boolean
@@ -309,8 +315,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Reflect.set().
-     * The Reflect.set() static method is like the property accessor and assignment syntax, but as a function.
+     * handler.set()
+     * The handler.set() method is a trap for the [[Set]] object internal method,
+     * which is used by operations such as using property accessors to set a property's value.
      *
      * @param target        the target
      * @param propertyKey   the property key
@@ -330,9 +337,9 @@ public interface IJavetProxyHandler<T, E extends Exception> {
     }
 
     /**
-     * Reflect.setPrototypeOf().
-     * The Reflect.setPrototypeOf() static method is like Object.setPrototypeOf() but returns a Boolean.
-     * It sets the prototype (i.e., the internal [[Prototype]] property) of a specified object.
+     * handler.setPrototypeOf()
+     * The handler.setPrototypeOf() method is a trap for the [[SetPrototypeOf]] object internal method,
+     * which is used by operations such as Object.setPrototypeOf().
      *
      * @param target    the target
      * @param prototype the prototype
