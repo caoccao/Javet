@@ -15,7 +15,7 @@
 
 # Usage: docker build -t sjtucaocao/javet-android:3.1.2 -f docker/android/base.Dockerfile .
 
-ARG JAVET_V8_VERSION=12.4.254.9
+ARG JAVET_V8_VERSION=12.5.227.6
 
 FROM ubuntu:20.04
 WORKDIR /
