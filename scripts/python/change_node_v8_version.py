@@ -100,6 +100,9 @@ class ChangeNodeVersion(ChangeVersion):
       re.compile(r'node_(?P<version>\d+\.\d+\.\d+)'),
       re.compile(r'JAVET_NODE_VERSION=(?P<version>\d+\.\d+\.\d+)'))
     self._update(
+      'docker/linux-x86_64/build.env', '\n',
+      re.compile(r'JAVET_NODE_VERSION=(?P<version>\d+\.\d+\.\d+)$'))
+    self._update(
       'docker/windows-x86_64/base.Dockerfile', '\n',
       re.compile(r'JAVET_NODE_VERSION=(?P<version>\d+\.\d+\.\d+)$'))
     self._update(
@@ -151,6 +154,9 @@ class ChangeV8Version(ChangeVersion):
       re.compile(r'v8_(?P<version>\d+\.\d+\.\d+\.\d+)'),
       re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)'))
     self._update(
+      'docker/linux-x86_64/build.env', '\n',
+      re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)$'))
+    self._update(
       'docker/windows-x86_64/base.Dockerfile', '\n',
       re.compile(r'JAVET_V8_VERSION=(?P<version>\d+\.\d+\.\d+\.\d+)$'))
     self._update(
@@ -158,9 +164,9 @@ class ChangeV8Version(ChangeVersion):
       re.compile(r'"(?P<version>\d+\.\d+\.\d+\.\d+)",'))
 
 def main():
-  change_node_version = ChangeNodeVersion('20.12.2')
+  change_node_version = ChangeNodeVersion('20.13.1')
   change_node_version.update()
-  change_v8_version = ChangeV8Version('12.4.254.9')
+  change_v8_version = ChangeV8Version('12.5.227.6')
   change_v8_version.update()
   return 0
 

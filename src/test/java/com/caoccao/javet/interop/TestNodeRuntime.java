@@ -18,8 +18,10 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.enums.JSRuntimeType;
+import com.caoccao.javet.enums.V8AwaitMode;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.converters.JavetProxyConverter;
 import com.caoccao.javet.interop.options.NodeRuntimeOptions;
 import com.caoccao.javet.node.modules.NodeModuleAny;
 import com.caoccao.javet.node.modules.NodeModuleProcess;
@@ -35,6 +37,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -83,6 +86,81 @@ public class TestNodeRuntime extends BaseTestJavet {
     }
 
     @Test
+    public void testAwaitRunNoWait() {
+        try {
+            nodeRuntime.setConverter(new JavetProxyConverter());
+            AtomicInteger counter = new AtomicInteger();
+            nodeRuntime.getGlobalObject().set("counter", counter);
+            nodeRuntime.getExecutor("let timeoutIDs = [];" +
+                    "function a() {\n" +
+                    "  counter.incrementAndGet();\n" +
+                    "  if (counter.get() < 10) {\n" +
+                    "    timeoutIDs.push(setTimeout(a, 1000));\n" +
+                    "  }\n" +
+                    "};\n" +
+                    "a();").executeVoid();
+            assertTrue(nodeRuntime.await(V8AwaitMode.RunNoWait));
+            nodeRuntime.getExecutor("timeoutIDs.forEach(id => clearTimeout(id));").executeVoid();
+            assertEquals(1, counter.get());
+            nodeRuntime.getGlobalObject().delete("counter");
+        } catch (Throwable t) {
+            fail(t);
+        } finally {
+            nodeRuntime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testAwaitRunOnce() {
+        try {
+            nodeRuntime.setConverter(new JavetProxyConverter());
+            AtomicInteger counter = new AtomicInteger();
+            nodeRuntime.getGlobalObject().set("counter", counter);
+            nodeRuntime.getExecutor("let timeoutIDs = [];" +
+                    "function a() {\n" +
+                    "  counter.incrementAndGet();\n" +
+                    "  if (counter.get() < 10) {\n" +
+                    "    timeoutIDs.push(setTimeout(a, 0));\n" +
+                    "  }\n" +
+                    "};\n" +
+                    "a();").executeVoid();
+            while (counter.get() < 2) {
+                assertTrue(nodeRuntime.await(V8AwaitMode.RunOnce));
+            }
+            nodeRuntime.getExecutor("timeoutIDs.forEach(id => clearTimeout(id));").executeVoid();
+            assertEquals(2, counter.get());
+            nodeRuntime.getGlobalObject().delete("counter");
+        } catch (Throwable t) {
+            fail(t);
+        } finally {
+            nodeRuntime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testAwaitRunTillNoMoreTasks() {
+        try {
+            nodeRuntime.setConverter(new JavetProxyConverter());
+            AtomicInteger counter = new AtomicInteger();
+            nodeRuntime.getGlobalObject().set("counter", counter);
+            nodeRuntime.getExecutor("function a() {\n" +
+                    "  counter.incrementAndGet();\n" +
+                    "  if (counter.get() < 10) {\n" +
+                    "    setTimeout(a, 0);\n" +
+                    "  }\n" +
+                    "};\n" +
+                    "a();").executeVoid();
+            assertFalse(nodeRuntime.await(V8AwaitMode.RunTillNoMoreTasks));
+            assertEquals(10, counter.get());
+            nodeRuntime.getGlobalObject().delete("counter");
+        } catch (Throwable t) {
+            fail(t);
+        } finally {
+            nodeRuntime.lowMemoryNotification();
+        }
+    }
+
+    @Test
     public void testConsoleArguments() throws JavetException {
         NodeRuntimeOptions runtimeOptions = new NodeRuntimeOptions();
         runtimeOptions.setConsoleArguments(new String[]{"--version"});
@@ -116,7 +194,7 @@ public class TestNodeRuntime extends BaseTestJavet {
         Path path4 = nodeModuleProcess.getWorkingDirectory().toPath();
         assertNotEquals(path1.toAbsolutePath().toString(), path3.toAbsolutePath().toString());
         assertEquals(path1.toAbsolutePath().toString(), path4.toAbsolutePath().toString());
-        assertEquals("v20.12.2", nodeModuleProcess.getVersion());
+        assertEquals("v20.13.1", nodeModuleProcess.getVersion());
     }
 
     @Test

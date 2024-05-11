@@ -23,19 +23,29 @@ package com.caoccao.javet.enums;
  */
 public enum V8AwaitMode {
     /**
-     * Run once tells Javet to drain the tasks once and return.
+     * RunNoWait tells Javet to trigger the task queue execution but do not wait.
+     * It is a non-blocking call.
      * It only works in Node.js mode.
      *
-     * @since 2.0.4
+     * @since 3.1.2
      */
-    RunOnce(0),
+    RunNoWait(2),
     /**
-     * Run till no more tasks tells Javet to keep waiting till there are no more tasks.
+     * RunOnce tells Javet to drain the tasks once and return.
+     * It is a blocking call that prevents other threads from calling V8 runtime.
      * It only works in Node.js mode.
      *
      * @since 2.0.4
      */
-    RunTillNoMoreTasks(1);
+    RunOnce(1),
+    /**
+     * RunTillNoMoreTasks tells Javet to keep waiting till there are no more tasks.
+     * It is a non-blocking call. It is the default mode.
+     * It only works in Node.js mode.
+     *
+     * @since 2.0.4
+     */
+    RunTillNoMoreTasks(0);
 
     private final int id;
 

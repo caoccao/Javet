@@ -2,6 +2,16 @@
 Release Notes 3.1.x
 ===================
 
+3.1.2 V8 v12.5
+--------------
+
+* Upgraded Node.js to ``v20.13.1`` `(2024-05-09) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.13.1>`_
+* Upgraded V8 to ``v12.5.227.6`` (2024-04-26)
+* Upgraded Visual Studio 2022 to v17.9.6
+* Added ``V8AwaitMode.RunNoWait``
+* Fixed unexpected behavior of ``V8AwaitMode.RunOnce``
+* Enabled ``__dirname``, ``__filename``, ``require`` root injection for Node.js Android
+
 3.1.1 V8 v12.4
 --------------
 
