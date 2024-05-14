@@ -56,8 +56,8 @@ arm64       ✔️        ✔️       ✔️        ❌
 * Javet engine pool
 * Easy spring integration
 * Live debug with Chrome DevTools
-* AST analysis with `JavetSanitizer <https://github.com/caoccao/JavetSanitizer>`_
-* TS, JSX, TSX transpilation with `swc4j <https://github.com/caoccao/swc4j>`_
+* AST analysis with `swc4j <https://github.com/caoccao/swc4j>`_
+* JS, TS, JSX, TSX transformation and transpilation with `swc4j <https://github.com/caoccao/swc4j>`_
 * Live interaction with `JavetShell <https://github.com/caoccao/JavetShell>`_
 
 Quick Start
