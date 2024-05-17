@@ -33,6 +33,7 @@ import java.util.Objects;
 @SuppressWarnings("unchecked")
 public final class V8ValueBigInteger extends V8ValueBigNumber<BigInteger> {
     private static final int BYTE_COUNT_PER_WORD = 8;
+    private static final String N = "n";
 
     /**
      * Instantiates a new V8 value big integer.
@@ -214,5 +215,10 @@ public final class V8ValueBigInteger extends V8ValueBigNumber<BigInteger> {
      */
     public BigInteger toPrimitive() {
         return value;
+    }
+
+    @Override
+    public String toString() {
+        return value.toString() + N;
     }
 }

@@ -18,10 +18,12 @@ package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.values.IV8ValuePrimitiveValue;
 import com.caoccao.javet.values.reference.V8ValueDoubleObject;
 
-import java.math.BigDecimal;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The type V8 value double.
@@ -32,6 +34,14 @@ import java.math.BigDecimal;
 public final class V8ValueDouble
         extends V8ValueNumber<Double>
         implements IV8ValuePrimitiveValue<V8ValueDoubleObject> {
+    public static final String INFINITY = "Infinity";
+    private static final int MAX_EXPONENT = 308;
+    private static final Pattern PATTERN_DECIMAL_ZEROS =
+            Pattern.compile("^([\\+\\-]?)(\\d+)\\.0*$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PATTERN_SCIENTIFIC_NOTATION_WITHOUT_FRACTION =
+            Pattern.compile("^([\\+\\-]?)(\\d+)e([\\+\\-]?)(\\d+)$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PATTERN_SCIENTIFIC_NOTATION_WITH_FRACTION =
+            Pattern.compile("^([\\+\\-]?)(\\d+)\\.(\\d*)e([\\+\\-]?)(\\d+)$", Pattern.CASE_INSENSITIVE);
     private String cachedToString;
 
     /**
@@ -56,6 +66,61 @@ public final class V8ValueDouble
     public V8ValueDouble(V8Runtime v8Runtime, double value) throws JavetException {
         super(v8Runtime, value);
         cachedToString = null;
+    }
+
+    private static String normalize(String raw) {
+        Matcher matcher = PATTERN_SCIENTIFIC_NOTATION_WITH_FRACTION.matcher(raw);
+        if (matcher.matches()) {
+            String sign = "-".equals(matcher.group(1)) ? "-" : "";
+            String exponentSign = StringUtils.isEmpty(matcher.group(4)) ? "+" : matcher.group(4);
+            String integer = matcher.group(2);
+            String fraction = matcher.group(3);
+            int additionalExponent = 0;
+            while (fraction.endsWith("0")) {
+                fraction = fraction.substring(0, fraction.length() - 1);
+            }
+            if (integer.length() > 1) {
+                additionalExponent += integer.length() - 1;
+                fraction = integer.substring(1) + fraction;
+                integer = integer.substring(0, 1);
+            }
+            if (StringUtils.isNotEmpty(fraction)) {
+                fraction = "." + fraction;
+            }
+            long exponent = Long.parseLong(matcher.group(5)) + additionalExponent;
+            if (exponent > MAX_EXPONENT) {
+                return sign + INFINITY;
+            }
+            return sign + integer + fraction + "e" + exponentSign + exponent;
+        }
+        matcher = PATTERN_SCIENTIFIC_NOTATION_WITHOUT_FRACTION.matcher(raw);
+        if (matcher.matches()) {
+            String sign = "-".equals(matcher.group(1)) ? "-" : "";
+            String exponentSign = StringUtils.isEmpty(matcher.group(3)) ? "+" : matcher.group(3);
+            String integer = matcher.group(2);
+            String fraction = "";
+            int additionalExponent = 0;
+            while (integer.endsWith("0")) {
+                ++additionalExponent;
+                integer = integer.substring(0, integer.length() - 1);
+            }
+            if (integer.length() > 1) {
+                additionalExponent += integer.length() - 1;
+                fraction = "." + integer.substring(1);
+                integer = integer.substring(0, 1);
+            }
+            long exponent = Long.parseLong(matcher.group(4)) + additionalExponent;
+            if (exponent > MAX_EXPONENT) {
+                return sign + INFINITY;
+            }
+            return sign + integer + fraction + "e" + exponentSign + exponent;
+        }
+        matcher = PATTERN_DECIMAL_ZEROS.matcher(raw);
+        if (matcher.matches()) {
+            String sign = "-".equals(matcher.group(1)) ? "-" : "";
+            return sign + matcher.group(2);
+        }
+        return raw;
     }
 
     @Override
@@ -132,7 +197,7 @@ public final class V8ValueDouble
     @Override
     public String toString() {
         if (cachedToString == null) {
-            cachedToString = new BigDecimal(value.toString()).toPlainString();
+            cachedToString = normalize(value.toString());
         }
         return cachedToString;
     }

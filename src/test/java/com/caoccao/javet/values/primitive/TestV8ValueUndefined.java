@@ -25,16 +25,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueUndefined extends BaseTestJavetRuntime {
     @Test
+    public void testAsBoolean() throws JavetException {
+        assertFalse(v8Runtime.createV8ValueUndefined().asBoolean());
+    }
+
+    @Test
     public void testEquals() throws JavetException {
         try (V8ValueUndefined v8ValueUndefined = v8Runtime.getExecutor("undefined").execute()) {
             assertTrue(v8ValueUndefined.equals(v8Runtime.createV8ValueUndefined()));
             assertFalse(v8ValueUndefined.equals(v8Runtime.createV8ValueNull()));
         }
-    }
-
-    @Test
-    public void testIfTrue() throws JavetException {
-        assertFalse(v8Runtime.createV8ValueUndefined().asBoolean());
     }
 
     @Test
