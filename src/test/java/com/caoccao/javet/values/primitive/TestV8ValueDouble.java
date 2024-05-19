@@ -112,7 +112,7 @@ public class TestV8ValueDouble extends BaseTestJavetRuntime {
             assertEquals(v8Runtime, v8ValueDouble.getV8Runtime());
         }
         try (V8ValueDouble v8ValueDouble = v8Runtime.getExecutor("2**32").execute()) {
-            assertEquals("4.294967296e+9", v8ValueDouble.toString());
+            assertEquals("4294967296", v8ValueDouble.toString());
         }
         assertEquals(-0.5, v8Runtime.getExecutor("-0.5").executeDouble(), DELTA);
         assertEquals(0, v8Runtime.getExecutor("-0.0").executeDouble(), DELTA);
@@ -131,7 +131,7 @@ public class TestV8ValueDouble extends BaseTestJavetRuntime {
         assertEquals("1", v8Runtime.getExecutor("+1.0").execute().toString());
         assertEquals("1.1", v8Runtime.createV8ValueDouble(1.1D).toString());
         assertEquals("-1.1", v8Runtime.createV8ValueDouble(-1.1D).toString());
-        assertEquals("1.1e+20", v8Runtime.createV8ValueDouble(1.1e20D).toString());
+        assertEquals("110000000000000000000", v8Runtime.createV8ValueDouble(1.1e20D).toString());
         assertEquals("1.23e+21", v8Runtime.createV8ValueDouble(12.30e20D).toString());
         assertEquals("1.234e+21", v8Runtime.getExecutor("12.340e20").execute().toString());
         assertEquals("-1.234e+21", v8Runtime.getExecutor("-12.340e20").execute().toString());
@@ -148,5 +148,6 @@ public class TestV8ValueDouble extends BaseTestJavetRuntime {
         assertEquals("1.1e-20", v8Runtime.createV8ValueDouble(1.1e-20D).toString());
         assertEquals("-1.1e-20", v8Runtime.createV8ValueDouble(-1.1e-20D).toString());
         assertEquals("NaN", v8Runtime.createV8ValueDouble(Double.NaN).toString());
+        assertEquals("1.199999999999a", v8Runtime.createV8ValueDouble(1.1D).toString(16));
     }
 }

@@ -93,4 +93,14 @@ public class TestV8ValueInteger extends BaseTestJavetRuntime {
         assertEquals("123", v8Runtime.getExecutor("123").executeString());
         assertEquals("123", v8Runtime.getExecutor("new Number(123)").executeString());
     }
+
+    @Test
+    public void testToString() throws JavetException {
+        assertEquals("0", v8Runtime.createV8ValueInteger(0).toString());
+        assertEquals("1", v8Runtime.createV8ValueInteger(1).toString());
+        assertEquals("-1", v8Runtime.createV8ValueInteger(-1).toString());
+        assertEquals(Integer.toString(Integer.MAX_VALUE), v8Runtime.getExecutor("2**31-1").execute().toString());
+        assertEquals(Integer.toString(Integer.MIN_VALUE), v8Runtime.getExecutor("-(2**31)").execute().toString());
+        assertEquals("14", v8Runtime.createV8ValueInteger(20).toString(16));
+    }
 }

@@ -5,7 +5,7 @@ Release Notes 3.1.x
 3.1.3 V8 v12.6
 --------------
 
-* Rewrote ``toString()`` for ``V8ValueBigInteger`` and ``V8ValueDouble``
+* Rewrote ``toString()`` for ``V8ValueBigInteger``, ``V8ValueInteger``, ``V8ValueLong`` and ``V8ValueDouble``
 
 3.1.2 V8 v12.5
 --------------

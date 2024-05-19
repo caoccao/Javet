@@ -203,7 +203,7 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                 "const b = {'2147483648': '2**31'}; b;").execute()) {
             assertEquals(1, v8ValueObject.forEach((V8Value key, V8Value value) -> {
                 assertInstanceOf(V8ValueDouble.class, key);
-                assertEquals("2.147483648e+9", key.toString());
+                assertEquals("2147483648", key.toString());
             }));
         }
     }

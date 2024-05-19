@@ -102,4 +102,14 @@ public class TestV8ValueLong extends BaseTestJavetRuntime {
         assertEquals("4611686018427387904", v8Runtime.getExecutor("(2n ** 62n).toString()").executeString());
         assertEquals("-2", v8Runtime.getExecutor("(-2n).toString()").executeString());
     }
+
+    @Test
+    public void testToString() throws JavetException {
+        assertEquals("0", v8Runtime.createV8ValueLong(0).toString());
+        assertEquals("1", v8Runtime.createV8ValueLong(1).toString());
+        assertEquals("-1", v8Runtime.createV8ValueLong(-1).toString());
+        assertEquals(Long.toString(Long.MAX_VALUE), v8Runtime.createV8ValueLong(Long.MAX_VALUE).toString());
+        assertEquals(Long.toString(Long.MIN_VALUE), v8Runtime.createV8ValueLong(Long.MIN_VALUE).toString());
+        assertEquals("14", v8Runtime.createV8ValueLong(20).toString(16));
+    }
 }
