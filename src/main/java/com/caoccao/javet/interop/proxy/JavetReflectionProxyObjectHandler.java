@@ -153,6 +153,9 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
                             PROXY_FUNCTION_NAME_GET_OWN_PROPERTY_DESCRIPTOR, this, JavetCallbackType.DirectCallNoThisAndResult,
                             (NoThisAndResult<?>) (v8Values) -> getOwnPropertyDescriptor(v8Values[0], v8Values[1])),
                     new JavetCallbackContext(
+                            PROXY_FUNCTION_NAME_GET_PROTOTYPE_OF, this, JavetCallbackType.DirectCallNoThisAndResult,
+                            (NoThisAndResult<E>) (v8Values) -> getPrototypeOf(v8Values[0])),
+                    new JavetCallbackContext(
                             PROXY_FUNCTION_NAME_HAS, this, JavetCallbackType.DirectCallNoThisAndResult,
                             (NoThisAndResult<?>) (v8Values) -> has(v8Values[0], v8Values[1])),
                     new JavetCallbackContext(
@@ -164,6 +167,16 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             };
         }
         return callbackContexts;
+    }
+
+    @Override
+    public V8Value getPrototypeOf(V8Value target) throws JavetException, E {
+        V8Value v8Value = JavetProxyPrototypeStore.getPrototype(
+                v8Runtime, V8ProxyMode.Object, getTargetObject().getClass());
+        if (v8Value != null) {
+            return v8Value;
+        }
+        return super.getPrototypeOf(target);
     }
 
     @Override

@@ -78,6 +78,12 @@ public interface IJavetProxyHandler<T, E extends Exception> {
      */
     String PROXY_FUNCTION_NAME_GET_OWN_PROPERTY_DESCRIPTOR = "getOwnPropertyDescriptor";
     /**
+     * The constant PROXY_FUNCTION_NAME_GET_PROTOTYPE_OF.
+     *
+     * @since 3.1.3
+     */
+    String PROXY_FUNCTION_NAME_GET_PROTOTYPE_OF = "getPrototypeOf";
+    /**
      * The constant PROXY_FUNCTION_NAME_HAS.
      *
      * @since 2.2.0

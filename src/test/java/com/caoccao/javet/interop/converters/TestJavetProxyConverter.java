@@ -1463,10 +1463,13 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     public void testPattern() throws JavetException {
         v8Runtime.getGlobalObject().set("Pattern", Pattern.class);
         assertInstanceOf(Pattern.class, v8Runtime.getExecutor("let p = Pattern.compile('^\\\\d+$'); p;").executeObject());
+        assertInstanceOf(Pattern.class, v8Runtime.getExecutor("let q = Pattern.compile('^\\\\w+$'); q;").executeObject());
         assertTrue(v8Runtime.getExecutor("p.matcher('123').matches();").executeBoolean());
         assertFalse(v8Runtime.getExecutor("p.matcher('a123').matches();").executeBoolean());
+        assertTrue(v8Runtime.getExecutor("Object.getPrototypeOf(p) === Object.getPrototypeOf(q)").executeBoolean());
+        assertFalse(v8Runtime.getExecutor("Object.getPrototypeOf({a:1}) === Object.getPrototypeOf(q)").executeBoolean());
         v8Runtime.getGlobalObject().delete("Pattern");
-        v8Runtime.getExecutor("p = undefined;").executeVoid();
+        v8Runtime.getExecutor("p = undefined; q = undefined;").executeVoid();
     }
 
     @Test

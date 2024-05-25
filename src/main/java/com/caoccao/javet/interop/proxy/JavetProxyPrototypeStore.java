@@ -51,6 +51,16 @@ public final class JavetProxyPrototypeStore {
     private JavetProxyPrototypeStore() {
     }
 
+    /**
+     * Create or get prototype.
+     *
+     * @param v8Runtime   the V8 runtime
+     * @param v8ProxyMode the V8 proxy mode
+     * @param clazz       the clazz
+     * @return the prototype
+     * @throws JavetException the javet exception
+     * @since 3.1.3
+     */
     public static V8Value createOrGetPrototype(
             V8Runtime v8Runtime, V8ProxyMode v8ProxyMode, Class<?> clazz)
             throws JavetException {
@@ -74,5 +84,23 @@ public final class JavetProxyPrototypeStore {
             v8Scope.setEscapable();
             return v8Value;
         }
+    }
+
+    /**
+     * Gets prototype.
+     *
+     * @param v8Runtime   the V8 runtime
+     * @param v8ProxyMode the V8 proxy mode
+     * @param clazz       the clazz
+     * @return the prototype
+     * @throws JavetException the javet exception
+     * @since 3.1.3
+     */
+    public static V8Value getPrototype(
+            V8Runtime v8Runtime, V8ProxyMode v8ProxyMode, Class<?> clazz)
+            throws JavetException {
+        String key = v8ProxyMode.name() + PREFIX + Objects.requireNonNull(clazz).getName();
+        V8ValueGlobalObject globalObject = Objects.requireNonNull(v8Runtime).getGlobalObject();
+        return globalObject.hasPrivateProperty(key) ? globalObject.getPrivateProperty(key) : null;
     }
 }
