@@ -39,17 +39,23 @@ public class V8ValueBuiltInObject extends V8ValueObject {
      */
     public static final String FUNCTION_ASSIGN = "assign";
     /**
-     * The constant FUNCTION_GET_OWN_PROPERTY_SYMBOLS.
+     * The constant FUNCTION_CREATE.
      *
-     * @since 0.9.11
+     * @since 3.1.3
      */
-    public static final String FUNCTION_GET_OWN_PROPERTY_SYMBOLS = "getOwnPropertySymbols";
+    public static final String FUNCTION_CREATE = "create";
     /**
      * The constant FUNCTION_FREEZE.
      *
      * @since 3.0.1
      */
     public static final String FUNCTION_FREEZE = "freeze";
+    /**
+     * The constant FUNCTION_GET_OWN_PROPERTY_SYMBOLS.
+     *
+     * @since 0.9.11
+     */
+    public static final String FUNCTION_GET_OWN_PROPERTY_SYMBOLS = "getOwnPropertySymbols";
     /**
      * The constant NAME.
      *
@@ -81,6 +87,19 @@ public class V8ValueBuiltInObject extends V8ValueObject {
     @CheckReturnValue
     public V8ValueObject assign(V8ValueObject v8Value1, V8ValueObject v8Value2) throws JavetException {
         return invoke(FUNCTION_ASSIGN, Objects.requireNonNull(v8Value1), Objects.requireNonNull(v8Value2));
+    }
+
+    /**
+     * Create V8 value object.
+     *
+     * @param v8ValueObject the V8 value object
+     * @return the V8 value object
+     * @throws JavetException the javet exception
+     * @since 3.1.3
+     */
+    @CheckReturnValue
+    public V8ValueObject create(V8ValueObject v8ValueObject) throws JavetException {
+        return invoke(FUNCTION_CREATE, Objects.requireNonNull(v8ValueObject));
     }
 
     /**

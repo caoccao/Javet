@@ -22,6 +22,7 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8Scope;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueGlobalObject;
+import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.util.Objects;
 
@@ -61,7 +62,7 @@ public final class JavetProxyPrototypeStore {
      * @throws JavetException the javet exception
      * @since 3.1.3
      */
-    public static V8Value createOrGetPrototype(
+    public static V8ValueObject createOrGetPrototype(
             V8Runtime v8Runtime, V8ProxyMode v8ProxyMode, Class<?> clazz)
             throws JavetException {
         String key = v8ProxyMode.name() + PREFIX + Objects.requireNonNull(clazz).getName();
@@ -70,19 +71,22 @@ public final class JavetProxyPrototypeStore {
             return globalObject.getPrivateProperty(key);
         }
         try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
-            V8Value v8Value;
+            V8ValueObject v8ValueObject;
             switch (v8ProxyMode) {
                 case Class:
                 case Function:
-                    v8Value = v8Scope.createV8ValueFunction(DUMMY_FUNCTION_STRING);
+                    v8ValueObject = v8Scope.createV8ValueFunction(DUMMY_FUNCTION_STRING);
+                    try (V8ValueObject v8ValueObjectInner = createOrGetPrototype(v8Runtime, V8ProxyMode.Object, clazz)) {
+                        v8ValueObject.setPrototype(v8ValueObjectInner);
+                    }
                     break;
                 default:
-                    v8Value = v8Scope.createV8ValueObject();
+                    v8ValueObject = v8Scope.createV8ValueObject();
                     break;
             }
-            globalObject.setPrivateProperty(key, v8Value);
+            globalObject.setPrivateProperty(key, v8ValueObject);
             v8Scope.setEscapable();
-            return v8Value;
+            return v8ValueObject;
         }
     }
 
