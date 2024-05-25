@@ -344,6 +344,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
         }
         v8Runtime.setV8ModuleResolver((v8Runtime, resourceName, v8ModuleReferrer) -> {
             if (moduleName.equals(resourceName)) {
+                assertEquals("main.js", v8ModuleReferrer.getResourceName());
                 try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject();
                      V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
                     v8ValueObject.set("a", 1);
@@ -365,14 +366,14 @@ public class TestV8Module extends BaseTestJavetRuntime {
             }
             return null;
         });
-        v8Runtime.getExecutor("import * as x from 'test.js'; Object.assign(globalThis, x);")
-                .setModule(true).executeVoid();
+        IV8Executor executor = v8Runtime.getExecutor("import * as x from 'test.js'; Object.assign(globalThis, x);");
+        executor.getV8ScriptOrigin().setModule(true).setResourceName("main.js");
+        executor.executeVoid();
         assertEquals(1, v8Runtime.getGlobalObject().getInteger("a"));
         assertEquals(2, v8Runtime.getGlobalObject().invokeInteger("b", 1));
         assertEquals("[1]", v8Runtime.getExecutor("JSON.stringify(c);").executeString());
         v8Runtime.getExecutor("c.push(2);").executeVoid();
-        v8Runtime.getExecutor("import * as x from 'test.js'; Object.assign(globalThis, x);")
-                .setModule(true).executeVoid();
+        executor.executeVoid();
         assertEquals(
                 "[1,2]",
                 v8Runtime.getExecutor("JSON.stringify(c);").executeString(),
