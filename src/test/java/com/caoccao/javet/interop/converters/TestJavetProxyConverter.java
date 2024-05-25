@@ -274,6 +274,12 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             // Array.isArray()
             assertTrue(v8Runtime.getExecutor("Array.isArray(intArray)").executeBoolean());
             assertTrue(v8Runtime.getExecutor("Array.isArray(stringArray)").executeBoolean());
+            // instanceof
+            assertTrue(v8Runtime.getExecutor("intArray instanceof Array").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("stringArray instanceof Array").executeBoolean());
+            // typeof
+            assertEquals("object", v8Runtime.getExecutor("typeof intArray").executeString());
+            assertEquals("object", v8Runtime.getExecutor("typeof stringArray").executeString());
             // in
             assertTrue(v8Runtime.getExecutor("0 in intArray").executeBoolean());
             assertFalse(v8Runtime.getExecutor("2 in intArray").executeBoolean());
@@ -1021,6 +1027,10 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertSame(list, v8Runtime.getGlobalObject().getObject("list"));
             // Array.isArray()
             assertTrue(v8Runtime.getExecutor("Array.isArray(list)").executeBoolean());
+            // instanceof
+            assertTrue(v8Runtime.getExecutor("list instanceof Array").executeBoolean());
+            // typeof
+            assertEquals("object", v8Runtime.getExecutor("typeof list").executeString());
             // constructor.name
             assertEquals("Array", v8Runtime.getExecutor("list.constructor.name").executeString());
             // in
@@ -1340,6 +1350,10 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             v8Runtime.getGlobalObject().set("map", map);
             assertSame(map, v8Runtime.getGlobalObject().getObject("map"));
             assertTrue(v8Runtime.getExecutor("map.containsKey('x')").executeBoolean());
+            // instanceof
+            assertTrue(v8Runtime.getExecutor("map instanceof Object").executeBoolean());
+            // typeof
+            assertEquals("object", v8Runtime.getExecutor("typeof map").executeString());
             // constructor.name
             assertEquals("Object", v8Runtime.getExecutor("map.constructor.name").executeString());
             // in
@@ -1533,6 +1547,10 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             Set<String> set = SimpleSet.of("x", "y");
             v8Runtime.getGlobalObject().set("set", set);
             assertSame(set, v8Runtime.getGlobalObject().getObject("set"));
+            // instanceof
+            assertTrue(v8Runtime.getExecutor("set instanceof Set").executeBoolean());
+            // typeof
+            assertEquals("object", v8Runtime.getExecutor("typeof set").executeString());
             // constructor.name
             assertEquals("Set", v8Runtime.getExecutor("set.constructor.name").executeString());
             // in
