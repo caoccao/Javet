@@ -6,7 +6,9 @@ Release Notes 3.1.x
 --------------
 
 * Rewrote ``toString()`` for ``V8ValueBigInteger``, ``V8ValueInteger``, ``V8ValueLong`` and ``V8ValueDouble``
-* Added ``getPrototypeOf()`` to proxy
+* Added ``getPrototypeOf()`` to support ``instanceof`` for proxy converter
+* Added ``getPrototypeOf()``, ``setPrototypeOf()``, ``create()`` to ``V8ValueBuiltInObject``
+* Added ``JavetProxyPrototypeStore``
 
 3.1.2 V8 v12.5
 --------------

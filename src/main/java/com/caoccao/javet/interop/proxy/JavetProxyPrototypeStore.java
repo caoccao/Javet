@@ -76,8 +76,8 @@ public final class JavetProxyPrototypeStore {
                 case Class:
                 case Function:
                     v8ValueObject = v8Scope.createV8ValueFunction(DUMMY_FUNCTION_STRING);
-                    try (V8ValueObject v8ValueObjectInner = createOrGetPrototype(v8Runtime, V8ProxyMode.Object, clazz)) {
-                        v8ValueObject.setPrototype(v8ValueObjectInner);
+                    try (V8ValueObject v8ValueObjectPrototype = createOrGetPrototype(v8Runtime, V8ProxyMode.Object, clazz)) {
+                        v8ValueObject.setPrototype(v8ValueObjectPrototype);
                     }
                     break;
                 default:

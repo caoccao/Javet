@@ -352,8 +352,8 @@ public class TestV8Module extends BaseTestJavetRuntime {
                         v8ValueObject.set("b", v8ValueFunction);
                     }
                     v8ValueObject.set("c", v8ValueArray);
-                    try (V8ValueBuiltInObject v8ValueBuiltInObject = v8Runtime.getGlobalObject().getBuiltInObject()) {
-                        v8ValueBuiltInObject.freeze(v8ValueObject);
+                    try (V8ValueBuiltInObject v8ValueBuiltInObject = v8Runtime.getGlobalObject().getBuiltInObject();
+                         V8ValueObject ignored = v8ValueBuiltInObject.freeze(v8ValueObject)) {
                     }
                     v8ValueArray.push(1);
                     V8Module v8Module = v8Runtime.createV8Module(moduleName, v8ValueObject);

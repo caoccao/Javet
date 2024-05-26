@@ -1379,13 +1379,13 @@ public interface IV8ValueObject extends IV8ValueReference {
     /**
      * Sets prototype.
      *
-     * @param v8ValueObject the V8 value object
+     * @param v8Value the V8 value
      * @return true : set, false: not set
      * @throws JavetException the javet exception
      * @since 0.9.4
      */
     @SuppressWarnings("UnusedReturnValue")
-    boolean setPrototype(IV8ValueObject v8ValueObject) throws JavetException;
+    boolean setPrototype(V8Value v8Value) throws JavetException;
 
     /**
      * Set property by key object and value string.

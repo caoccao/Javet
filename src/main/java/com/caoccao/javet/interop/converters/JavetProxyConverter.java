@@ -28,7 +28,9 @@ import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueLong;
 import com.caoccao.javet.values.reference.IV8ValueObject;
+import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueProxy;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInObject;
 
 import java.util.List;
 
@@ -101,6 +103,9 @@ public class JavetProxyConverter extends JavetObjectConverter {
                 try {
                     switch (proxyMode) {
                         case Class:
+                            v8ValueTarget = JavetProxyPrototypeStore.createOrGetPrototype(
+                                    v8Runtime, proxyMode, (Class<?>) object);
+                            break;
                         case Function:
                             v8ValueTarget = JavetProxyPrototypeStore.createOrGetPrototype(
                                     v8Runtime, proxyMode, objectClass);
@@ -124,9 +129,12 @@ public class JavetProxyConverter extends JavetObjectConverter {
                                             return null;
                                         })
                                         .orElseGet(() -> {
-                                            try {
-                                                return JavetProxyPrototypeStore.createOrGetPrototype(
-                                                        v8Runtime, v8ProxyMode, objectClass);
+                                            try (V8Value v8ValuePrototype = JavetProxyPrototypeStore.createOrGetPrototype(
+                                                    v8Runtime, v8ProxyMode, objectClass);
+                                                 V8ValueBuiltInObject v8ValueBuiltInObject =
+                                                         v8Runtime.getGlobalObject().getBuiltInObject();
+                                                 V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+                                                return v8ValueBuiltInObject.setPrototypeOf(v8ValueObject, v8ValuePrototype);
                                             } catch (Throwable ignored) {
                                             }
                                             return null;

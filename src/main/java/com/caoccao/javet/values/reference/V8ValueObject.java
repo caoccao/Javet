@@ -725,8 +725,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public boolean setPrototype(IV8ValueObject v8ValueObject) throws JavetException {
-        return set(PROPERTY_PROTOTYPE, Objects.requireNonNull(v8ValueObject));
+    public boolean setPrototype(V8Value v8Value) throws JavetException {
+        return set(PROPERTY_PROTOTYPE, Objects.requireNonNull(v8Value));
     }
 
     @Override

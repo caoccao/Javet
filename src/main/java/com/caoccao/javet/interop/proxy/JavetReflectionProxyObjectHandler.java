@@ -172,7 +172,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     @Override
     public V8Value getPrototypeOf(V8Value target) throws JavetException, E {
         V8Value v8Value = JavetProxyPrototypeStore.getPrototype(
-                v8Runtime, V8ProxyMode.Object, getTargetObject().getClass());
+                v8Runtime, V8ProxyMode.Object, classDescriptor.getTargetClass());
         if (v8Value != null) {
             return v8Value;
         }

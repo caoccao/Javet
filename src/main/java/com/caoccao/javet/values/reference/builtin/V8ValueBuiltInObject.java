@@ -19,6 +19,7 @@ package com.caoccao.javet.values.reference.builtin;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.IV8ValueArray;
 import com.caoccao.javet.values.reference.IV8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueObject;
@@ -57,6 +58,18 @@ public class V8ValueBuiltInObject extends V8ValueObject {
      */
     public static final String FUNCTION_GET_OWN_PROPERTY_SYMBOLS = "getOwnPropertySymbols";
     /**
+     * The constant FUNCTION_GET_PROTOTYPE_OF.
+     *
+     * @since 3.1.3
+     */
+    public static final String FUNCTION_GET_PROTOTYPE_OF = "getPrototypeOf";
+    /**
+     * The constant FUNCTION_SET_PROTOTYPE_OF.
+     *
+     * @since 3.1.3
+     */
+    public static final String FUNCTION_SET_PROTOTYPE_OF = "setPrototypeOf";
+    /**
      * The constant NAME.
      *
      * @since 3.0.4
@@ -76,54 +89,129 @@ public class V8ValueBuiltInObject extends V8ValueObject {
     }
 
     /**
-     * Assign V8 value object.
+     * Object.assign()
+     * The Object.assign() static method copies all enumerable own properties from one or more source objects
+     * to a target object. It returns the modified target object.
      *
-     * @param v8Value1 the V8 value 1
-     * @param v8Value2 the V8 value 2
-     * @return the V8 value object
+     * @param iV8ValueObjectTarget The target object — what to apply the sources' properties to, which is returned after it is modified.
+     * @param iV8ValueObjectSource The source object(s) — objects containing the properties you want to apply.
+     * @return The target object.
      * @throws JavetException the javet exception
      * @since 0.9.2
      */
     @CheckReturnValue
-    public V8ValueObject assign(V8ValueObject v8Value1, V8ValueObject v8Value2) throws JavetException {
-        return invoke(FUNCTION_ASSIGN, Objects.requireNonNull(v8Value1), Objects.requireNonNull(v8Value2));
+    public V8ValueObject assign(
+            IV8ValueObject iV8ValueObjectTarget,
+            IV8ValueObject iV8ValueObjectSource)
+            throws JavetException {
+        return invoke(
+                FUNCTION_ASSIGN,
+                Objects.requireNonNull(iV8ValueObjectTarget),
+                Objects.requireNonNull(iV8ValueObjectSource));
     }
 
     /**
-     * Create V8 value object.
+     * Object.create()
+     * The Object.create() static method creates a new object, using an existing object as the prototype
+     * of the newly created object.
      *
-     * @param v8ValueObject the V8 value object
-     * @return the V8 value object
+     * @param iV8ValueObject The object which should be the prototype of the newly-created object.
+     * @return A new object with the specified prototype object and properties.
      * @throws JavetException the javet exception
      * @since 3.1.3
      */
     @CheckReturnValue
-    public V8ValueObject create(V8ValueObject v8ValueObject) throws JavetException {
-        return invoke(FUNCTION_CREATE, Objects.requireNonNull(v8ValueObject));
+    public V8ValueObject create(IV8ValueObject iV8ValueObject) throws JavetException {
+        return invoke(FUNCTION_CREATE, Objects.requireNonNull(iV8ValueObject));
     }
 
     /**
-     * Freeze V8 value object.
+     * Object.create()
+     * The Object.create() static method creates a new object, using an existing object as the prototype
+     * of the newly created object.
      *
-     * @param v8ValueObject the V8 value object
+     * @param iV8ValueObject           The object which should be the prototype of the newly-created object.
+     * @param iV8ValueObjectProperties If specified and not undefined, an object whose enumerable own properties specify property descriptors to be added to the newly-created object, with the corresponding property names. These properties correspond to the second argument of Object.defineProperties().
+     * @return A new object with the specified prototype object and properties.
+     * @throws JavetException the javet exception
+     * @since 3.1.3
+     */
+    @CheckReturnValue
+    public V8ValueObject create(
+            IV8ValueObject iV8ValueObject,
+            IV8ValueObject iV8ValueObjectProperties)
+            throws JavetException {
+        return invoke(
+                FUNCTION_CREATE,
+                Objects.requireNonNull(iV8ValueObject),
+                Objects.requireNonNull(iV8ValueObjectProperties));
+    }
+
+    /**
+     * Object.freeze()
+     * The Object.freeze() static method freezes an object. Freezing an object prevents extensions
+     * and makes existing properties non-writable and non-configurable.
+     * A frozen object can no longer be changed: new properties cannot be added, existing properties cannot be removed,
+     * their enumerability, configurability, writability, or value cannot be changed, and the object's prototype
+     * cannot be re-assigned. freeze() returns the same object that was passed in.
+     *
+     * @param iV8ValueObject The object to freeze.
+     * @return The object that was passed to the function.
      * @throws JavetException the javet exception
      * @since 3.0.1
      */
-    public void freeze(V8ValueObject v8ValueObject) throws JavetException {
-        invokeVoid(FUNCTION_FREEZE, Objects.requireNonNull(v8ValueObject));
+    @CheckReturnValue
+    public V8ValueObject freeze(IV8ValueObject iV8ValueObject) throws JavetException {
+        return invoke(FUNCTION_FREEZE, Objects.requireNonNull(iV8ValueObject));
     }
 
     /**
-     * Gets own property symbols.
+     * Object.getOwnPropertySymbols()
+     * The Object.getOwnPropertySymbols() static method returns an array of all symbol properties
+     * found directly upon a given object.
      *
-     * @param iV8ValueObject the V8 value object
-     * @return the own property symbols
+     * @param iV8ValueObject The object whose symbol properties are to be returned.
+     * @return An array of all symbol properties found directly upon the given object.
      * @throws JavetException the javet exception
      * @since 0.9.11
      */
     @CheckReturnValue
     public IV8ValueArray getOwnPropertySymbols(IV8ValueObject iV8ValueObject) throws JavetException {
         return invoke(FUNCTION_GET_OWN_PROPERTY_SYMBOLS, iV8ValueObject);
+    }
+
+    /**
+     * Object.getPrototypeOf()
+     * The Object.getPrototypeOf() static method returns the prototype (i.e. the value of the internal
+     * [[Prototype]] property) of the specified object.
+     *
+     * @param v8Value The object whose prototype is to be returned.
+     * @return The prototype of the given object, which may be null.
+     * @throws JavetException the javet exception
+     * @since 3.1.3
+     */
+    @CheckReturnValue
+    public V8Value getPrototypeOf(V8Value v8Value) throws JavetException {
+        return invoke(FUNCTION_GET_PROTOTYPE_OF, Objects.requireNonNull(v8Value));
+    }
+
+    /**
+     * Object.setPrototypeOf()
+     * The Object.setPrototypeOf() static method sets the prototype (i.e., the internal [[Prototype]] property)
+     * of a specified object to another object or null.
+     *
+     * @param v8Value          The object which is to have its prototype set.
+     * @param v8ValuePrototype The object's new prototype (an object or null).
+     * @return The specified object.
+     * @throws JavetException the javet exception
+     * @since 3.1.3
+     */
+    @CheckReturnValue
+    public V8Value setPrototypeOf(V8Value v8Value, V8Value v8ValuePrototype) throws JavetException {
+        return invoke(
+                FUNCTION_SET_PROTOTYPE_OF,
+                Objects.requireNonNull(v8Value),
+                Objects.requireNonNull(v8ValuePrototype));
     }
 
     @Override
