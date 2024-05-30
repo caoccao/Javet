@@ -16,7 +16,6 @@
 
 package com.caoccao.javet.interop.proxy;
 
-import com.caoccao.javet.enums.V8ProxyMode;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
@@ -117,15 +116,5 @@ public class JavetReflectionProxyFunctionHandler<T, E extends Exception>
             };
         }
         return callbackContexts;
-    }
-
-    @Override
-    public V8Value getPrototypeOf(V8Value target) throws JavetException, E {
-        V8Value v8Value = JavetProxyPrototypeStore.getPrototype(
-                v8Runtime, V8ProxyMode.Object, classDescriptor.getTargetClass());
-        if (v8Value != null) {
-            return v8Value;
-        }
-        return super.getPrototypeOf(target);
     }
 }

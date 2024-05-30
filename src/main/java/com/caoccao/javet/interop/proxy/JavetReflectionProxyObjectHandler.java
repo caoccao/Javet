@@ -170,16 +170,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     }
 
     @Override
-    public V8Value getPrototypeOf(V8Value target) throws JavetException, E {
-        V8Value v8Value = JavetProxyPrototypeStore.getPrototype(
-                v8Runtime, V8ProxyMode.Object, classDescriptor.getTargetClass());
-        if (v8Value != null) {
-            return v8Value;
-        }
-        return super.getPrototypeOf(target);
-    }
-
-    @Override
     public V8ValueBoolean has(V8Value target, V8Value property) throws JavetException {
         boolean isFound = hasFromCollection(property);
         isFound = isFound || hasFromRegular(property);
