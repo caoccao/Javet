@@ -276,6 +276,19 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
     }
 
     /**
+     * Proxy get prototype of.
+     *
+     * @param target the target
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @throws E              the e
+     * @since 3.1.3
+     */
+    default V8Value proxyGetPrototypeOf(V8Value target) throws JavetException, E {
+        return null;
+    }
+
+    /**
      * Proxy get string getter map.
      *
      * @return the map
@@ -366,32 +379,36 @@ public interface IJavetDirectProxyHandler<E extends Exception> {
      */
     default V8ValueArray proxyOwnKeys(V8Value target) throws JavetException, E {
         Object[] keys = null;
-        Map<String, IJavetUniFunction<String, ? extends V8Value, E>> stringGetterMap = proxyGetStringGetterMap();
-        if (stringGetterMap != null && !stringGetterMap.isEmpty()) {
-            keys = new Object[stringGetterMap.size()];
-            int index = 0;
-            for (String key : stringGetterMap.keySet()) {
-                keys[index++] = getV8Runtime().createV8ValueString(key);
+        try {
+            Map<String, IJavetUniFunction<String, ? extends V8Value, E>> stringGetterMap = proxyGetStringGetterMap();
+            if (stringGetterMap != null && !stringGetterMap.isEmpty()) {
+                keys = new Object[stringGetterMap.size()];
+                int index = 0;
+                for (String key : stringGetterMap.keySet()) {
+                    keys[index++] = getV8Runtime().createV8ValueString(key);
+                }
             }
-        }
-        if (keys == null) {
-            IClassProxyPlugin classProxyPlugin = getProxyPlugin();
-            if (classProxyPlugin.isOwnKeysSupported(getClass())) {
-                keys = classProxyPlugin.getProxyOwnKeys(this);
-                for (int i = 0; i < keys.length; i++) {
-                    Object key = keys[i];
-                    if (key instanceof String) {
-                        keys[i] = getV8Runtime().createV8ValueString((String) key);
-                    } else if (key instanceof IJavetEntitySymbol) {
-                        keys[i] = getV8Runtime().createV8ValueSymbol(((IJavetEntitySymbol) key).getDescription());
-                    } else {
-                        keys[i] = getV8Runtime().createV8ValueString(String.valueOf(key));
+            if (keys == null) {
+                IClassProxyPlugin classProxyPlugin = getProxyPlugin();
+                if (classProxyPlugin.isOwnKeysSupported(getClass())) {
+                    keys = classProxyPlugin.getProxyOwnKeys(this);
+                    for (int i = 0; i < keys.length; i++) {
+                        Object key = keys[i];
+                        if (key instanceof String) {
+                            keys[i] = getV8Runtime().createV8ValueString((String) key);
+                        } else if (key instanceof IJavetEntitySymbol) {
+                            keys[i] = getV8Runtime().createV8ValueSymbol(((IJavetEntitySymbol) key).getDescription());
+                        } else {
+                            keys[i] = getV8Runtime().createV8ValueString(String.valueOf(key));
+                        }
                     }
                 }
             }
-        }
-        if (keys != null) {
-            return V8ValueUtils.createV8ValueArray(getV8Runtime(), keys);
+            if (keys != null) {
+                return V8ValueUtils.createV8ValueArray(getV8Runtime(), keys);
+            }
+        } finally {
+            JavetResourceUtils.safeClose(keys);
         }
         return null;
     }

@@ -99,6 +99,15 @@ public class JavetDirectProxyObjectHandler<T extends IJavetDirectProxyHandler<E>
     }
 
     @Override
+    public V8Value getPrototypeOf(V8Value target) throws JavetException, E {
+        V8Value v8Value = targetObject.proxyGetPrototypeOf(target);
+        if (v8Value != null) {
+            return v8Value;
+        }
+        return super.getPrototypeOf(target);
+    }
+
+    @Override
     public V8ValueBoolean has(V8Value target, V8Value property) throws JavetException, E {
         V8ValueBoolean v8ValueBoolean = targetObject.proxyHas(target, property);
         if (v8ValueBoolean != null) {

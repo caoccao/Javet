@@ -10,6 +10,7 @@ Release Notes 3.1.x
 * Added ``getPrototypeOf()`` to support ``instanceof`` for proxy converter
 * Added ``getPrototypeOf()``, ``setPrototypeOf()``, ``create()`` to ``V8ValueBuiltInObject``
 * Added ``JavetProxyPrototypeStore``
+* Added ``getPrototypeOf()`` to ``IJavetDirectProxyHandler`` and ``JavetDirectProxyObjectHandler``
 
 3.1.2 V8 v12.5
 --------------
