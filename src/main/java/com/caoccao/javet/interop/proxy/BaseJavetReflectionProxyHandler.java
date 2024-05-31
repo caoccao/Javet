@@ -345,12 +345,20 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     @Override
     public V8Value getPrototypeOf(V8Value target) throws JavetException, E {
         V8Value v8Value = JavetProxyPrototypeStore.getPrototype(
-                v8Runtime, V8ProxyMode.Object, classDescriptor.getTargetClass());
+                v8Runtime, getProxyMode(), classDescriptor.getTargetClass());
         if (v8Value != null) {
             return v8Value;
         }
         return super.getPrototypeOf(target);
     }
+
+    /**
+     * Gets proxy mode.
+     *
+     * @return the proxy mode
+     * @since 3.1.3
+     */
+    public abstract V8ProxyMode getProxyMode();
 
     /**
      * Gets setter prefix length.

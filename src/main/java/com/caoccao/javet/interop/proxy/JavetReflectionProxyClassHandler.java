@@ -121,6 +121,11 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
     }
 
     @Override
+    public V8ProxyMode getProxyMode() {
+        return V8ProxyMode.Class;
+    }
+
+    @Override
     public V8ValueBoolean has(V8Value target, V8Value property) throws JavetException {
         boolean isFound = hasFromRegular(property);
         isFound = isFound || hasFromGeneric(property);

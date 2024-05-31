@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.interop.proxy;
 
+import com.caoccao.javet.enums.V8ProxyMode;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
@@ -116,5 +117,10 @@ public class JavetReflectionProxyFunctionHandler<T, E extends Exception>
             };
         }
         return callbackContexts;
+    }
+
+    @Override
+    public V8ProxyMode getProxyMode() {
+        return V8ProxyMode.Function;
     }
 }

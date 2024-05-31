@@ -1003,9 +1003,10 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
                 "const newObject = Object.setPrototypeOf({}, prototypeObject);\n" +
                 "new Proxy(newObject, {}) instanceof new Proxy(constructor, {});").executeBoolean());
         v8Runtime.getGlobalObject().set("StringBuilder", StringBuilder.class);
-        assertTrue(v8Runtime.getExecutor("StringBuilder instanceof StringBuilder;").executeBoolean());
         assertTrue(v8Runtime.getExecutor("new StringBuilder() instanceof StringBuilder;").executeBoolean());
-        assertTrue(v8Runtime.getExecutor("Object.getPrototypeOf(new StringBuilder()) === Object.getPrototypeOf(StringBuilder);").executeBoolean());
+        assertTrue(v8Runtime.getExecutor("Object.getPrototypeOf(new StringBuilder()) === StringBuilder.prototype;").executeBoolean());
+        assertFalse(v8Runtime.getExecutor("Object.getPrototypeOf(new StringBuilder()) === Object.getPrototypeOf(StringBuilder);").executeBoolean());
+        assertFalse(v8Runtime.getExecutor("StringBuilder instanceof StringBuilder;").executeBoolean());
         v8Runtime.getGlobalObject().delete("StringBuilder");
     }
 
