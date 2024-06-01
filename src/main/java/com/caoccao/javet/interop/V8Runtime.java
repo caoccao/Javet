@@ -498,7 +498,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 2.2.0
      */
     @SuppressWarnings("RedundantThrows")
-    public int batchArrayGet(
+    int batchArrayGet(
             IV8ValueArray iV8ValueArray, V8Value[] v8Values, int startIndex, int endIndex)
             throws JavetException {
         return v8Native.batchArrayGet(
@@ -518,7 +518,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 2.2.0
      */
     @SuppressWarnings("RedundantThrows")
-    public int batchObjectGet(
+    int batchObjectGet(
             IV8ValueObject iV8ValueObject, V8Value[] v8ValueKeys, V8Value[] v8ValueValues, int length)
             throws JavetException {
         return v8Native.batchObjectGet(
@@ -2262,7 +2262,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @return true : yes, false : no
      * @since 3.0.1
      */
-    public boolean moduleIsSourceTextModule(IV8Module iV8Module) {
+    boolean moduleIsSourceTextModule(IV8Module iV8Module) {
         return v8Native.moduleIsSourceTextModule(handle, iV8Module.getHandle(), iV8Module.getType().getId());
     }
 
@@ -2273,7 +2273,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @return true : yes, false : no
      * @since 3.0.1
      */
-    public boolean moduleIsSyntheticModule(IV8Module iV8Module) {
+    boolean moduleIsSyntheticModule(IV8Module iV8Module) {
         return v8Native.moduleIsSyntheticModule(handle, iV8Module.getHandle(), iV8Module.getType().getId());
     }
 
