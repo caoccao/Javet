@@ -12,6 +12,8 @@ Release Notes 3.1.x
 * Added ``getPrototypeOf()``, ``setPrototypeOf()``, ``create()`` to ``V8ValueBuiltInObject``
 * Added ``JavetProxyPrototypeStore``
 * Added ``getPrototypeOf()`` to ``IJavetDirectProxyHandler`` and ``JavetDirectProxyObjectHandler``
+* Added ``V8Guard``
+* Added ``getGuard()`` to ``V8Runtime``
 
 3.1.2 V8 v12.5
 --------------

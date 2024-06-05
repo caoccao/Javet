@@ -273,6 +273,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     V8ValueUndefined cachedV8ValueUndefined;
     /**
+     * The Close lock.
+     *
+     * @since 3.1.3
+     */
+    Object closeLock;
+    /**
      * The Converter.
      *
      * @since 0.7.0
@@ -341,6 +347,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         assert handle != INVALID_HANDLE : ERROR_HANDLE_MUST_BE_VALID;
         callbackContextLock = new Object();
         callbackContextMap = new HashMap<>();
+        closeLock = new Object();
         converter = DEFAULT_CONVERTER;
         gcEpilogueCallbacks = new CopyOnWriteArrayList<>();
         gcPrologueCallbacks = new CopyOnWriteArrayList<>();
@@ -587,9 +594,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public void close(boolean forceClose) throws JavetException {
         if (!isClosed() && forceClose) {
             removeAllReferences();
-            v8Host.closeV8Runtime(this);
-            handle = INVALID_HANDLE;
-            v8Native = null;
+            synchronized (closeLock) {
+                v8Host.closeV8Runtime(this);
+                handle = INVALID_HANDLE;
+                v8Native = null;
+            }
         }
     }
 
@@ -1367,6 +1376,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Gets close lock.
+     *
+     * @return the close lock
+     * @since 3.1.3
+     */
+    Object getCloseLock() {
+        return closeLock;
+    }
+
+    /**
      * Gets converter.
      *
      * @return the converter
@@ -1432,6 +1451,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public V8ValueGlobalObject getGlobalObject() throws JavetException {
         return (V8ValueGlobalObject) v8Native.getGlobalObject(handle);
+    }
+
+    /**
+     * Gets guard.
+     *
+     * @param timoutMillis the timout millis
+     * @return the guard
+     * @since 3.1.3
+     */
+    @CheckReturnValue
+    public V8Guard getGuard(long timoutMillis) {
+        return new V8Guard(this, timoutMillis);
     }
 
     /**
@@ -1515,6 +1546,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public V8HeapStatistics getV8HeapStatistics() {
         return (V8HeapStatistics) v8Native.getV8HeapStatistics(handle);
+    }
+
+    /**
+     * Gets V8 host.
+     *
+     * @return the V8 host
+     * @since 3.1.3
+     */
+    V8Host getV8Host() {
+        return v8Host;
     }
 
     /**
