@@ -1456,6 +1456,17 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     /**
      * Gets guard.
      *
+     * @return the guard
+     * @since 3.1.3
+     */
+    @CheckReturnValue
+    public V8Guard getGuard() {
+        return new V8Guard(this);
+    }
+
+    /**
+     * Gets guard.
+     *
      * @param timoutMillis the timout millis
      * @return the guard
      * @since 3.1.3
@@ -1463,6 +1474,19 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @CheckReturnValue
     public V8Guard getGuard(long timoutMillis) {
         return new V8Guard(this, timoutMillis);
+    }
+
+    /**
+     * Gets guard.
+     *
+     * @param timoutMillis     the timout millis
+     * @param debugModeEnabled the debug mode enabled
+     * @return the guard
+     * @since 3.1.3
+     */
+    @CheckReturnValue
+    public V8Guard getGuard(long timoutMillis, boolean debugModeEnabled) {
+        return new V8Guard(this, timoutMillis, debugModeEnabled);
     }
 
     /**

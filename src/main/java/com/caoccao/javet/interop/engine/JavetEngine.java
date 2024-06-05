@@ -16,7 +16,6 @@
 
 package com.caoccao.javet.interop.engine;
 
-import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
@@ -103,18 +102,6 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
     @Override
     public JavetEngineConfig getConfig() {
         return iJavetEnginePool.getConfig();
-    }
-
-    @Override
-    @CheckReturnValue
-    public IJavetEngineGuard getGuard() {
-        return getGuard(iJavetEnginePool.getConfig().getDefaultEngineGuardTimeoutMillis());
-    }
-
-    @Override
-    @CheckReturnValue
-    public IJavetEngineGuard getGuard(long timeoutMillis) {
-        return new JavetEngineGuard(this, v8Runtime, timeoutMillis);
     }
 
     /**

@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The type V8 host.
@@ -80,13 +81,10 @@ public final class V8Host implements AutoCloseable {
      * @since 0.7.0
      */
     public static V8Host getInstance(JSRuntimeType jsRuntimeType) {
-        Objects.requireNonNull(jsRuntimeType);
-        if (jsRuntimeType.isV8()) {
-            return getV8Instance();
-        } else if (jsRuntimeType.isNode()) {
+        if (Objects.requireNonNull(jsRuntimeType).isNode()) {
             return getNodeInstance();
         }
-        return null;
+        return getV8Instance();
     }
 
     /**
@@ -533,7 +531,7 @@ public final class V8Host implements AutoCloseable {
                 if (v8Guard == null) {
                     try {
                         //noinspection BusyWait
-                        Thread.sleep(sleepIntervalMillis);
+                        TimeUnit.MILLISECONDS.sleep(sleepIntervalMillis);
                     } catch (InterruptedException ignored) {
                         break;
                     }

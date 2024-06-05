@@ -102,4 +102,19 @@ public class TestV8Guard extends BaseTestJavet {
                     "V8 runtime should still be able to execute script after being terminated.");
         }
     }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    public void testWithoutTermination(boolean debugModeEnabled) throws JavetException {
+        final long timeoutMillis = 10000;
+        long startTimeMillis = System.currentTimeMillis();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            try (V8Guard v8Guard = v8Runtime.getGuard(timeoutMillis)) {
+                v8Guard.setDebugModeEnabled(debugModeEnabled);
+                assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
+            }
+        }
+        long endTimeMillis = System.currentTimeMillis();
+        assertTrue(endTimeMillis - startTimeMillis < timeoutMillis);
+    }
 }

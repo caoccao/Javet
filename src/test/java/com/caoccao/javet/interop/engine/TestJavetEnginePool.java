@@ -21,13 +21,16 @@ import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.enums.V8AllocationSpace;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
+import com.caoccao.javet.exceptions.JavetTerminatedException;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interfaces.IJavetLogger;
+import com.caoccao.javet.interop.V8Guard;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics;
 import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
+import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.AfterEach;
@@ -35,6 +38,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -49,6 +54,7 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestJavetEnginePool extends BaseTestJavet {
+    public static final int TEST_ENGINE_GUARD_CHECK_INTERVAL_MILLIS = 1;
     public static final int TEST_POOL_DAEMON_CHECK_INTERVAL_MILLIS = 1;
     public static final int TEST_MAX_TIMEOUT = 1000;
     protected JavetEngineConfig javetEngineConfig;
@@ -89,6 +95,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
         assertEquals(javetEnginePool.getConfig().getPoolMaxSize(), javetEnginePool.getReleasedEngineCount());
         javetEngineConfig = javetEnginePool.getConfig();
         javetEngineConfig.setPoolDaemonCheckIntervalMillis(TEST_POOL_DAEMON_CHECK_INTERVAL_MILLIS);
+        javetEngineConfig.setEngineGuardCheckIntervalMillis(TEST_ENGINE_GUARD_CHECK_INTERVAL_MILLIS);
         javetEngineConfig.setJSRuntimeType(v8Host.getJSRuntimeType());
         assertEquals(0, javetEnginePool.getAverageCallbackContextCount());
         assertEquals(0, javetEnginePool.getAverageReferenceCount());
@@ -308,5 +315,39 @@ public class TestJavetEnginePool extends BaseTestJavet {
         assertEquals(1, javetEnginePool.getAverageCallbackContextCount());
         assertEquals(0, javetEnginePool.getAverageReferenceCount());
         JavetResourceUtils.safeClose(engines);
+    }
+
+    @Test
+    public void testTermination() throws JavetException {
+        // Get an engine from the pool as usual.
+        try (IJavetEngine<?> iJavetEngine = javetEnginePool.getEngine()) {
+            V8Runtime v8Runtime = iJavetEngine.getV8Runtime();
+            // Get a guard and apply try-with-resource pattern.
+            try (V8Guard v8Guard = v8Runtime.getGuard(3)) {
+                v8Guard.setDebugModeEnabled(true);
+                v8Runtime.getExecutor("while (true) {}").executeVoid();
+                // That infinite loop will be terminated in 1 millisecond by the guard.
+            } catch (JavetTerminatedException e) {
+                // JavetTerminatedException will be thrown to mark that.
+                assertFalse(e.isContinuable());
+            }
+            assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger(),
+                    "The V8 runtime is not dead and is still able to execute code afterwards.");
+        }
+    }
+
+    @Test
+    public void testWithoutTermination() throws JavetException {
+        final long timeoutMillis = 10000;
+        ZonedDateTime startZonedDateTime = JavetDateTimeUtils.getUTCNow();
+        try (IJavetEngine<?> iJavetEngine = javetEnginePool.getEngine()) {
+            V8Runtime v8Runtime = iJavetEngine.getV8Runtime();
+            try (V8Guard v8Guard = v8Runtime.getGuard(timeoutMillis)) {
+                assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
+            }
+        }
+        ZonedDateTime endZonedDateTime = JavetDateTimeUtils.getUTCNow();
+        Duration duration = Duration.between(startZonedDateTime, endZonedDateTime);
+        assertTrue(duration.toMillis() < timeoutMillis);
     }
 }

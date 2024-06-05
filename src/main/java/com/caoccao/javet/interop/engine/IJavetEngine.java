@@ -16,7 +16,6 @@
 
 package com.caoccao.javet.interop.engine;
 
-import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.V8Runtime;
@@ -35,25 +34,6 @@ public interface IJavetEngine<R extends V8Runtime> extends IJavetClosable {
      * @since 0.7.2
      */
     JavetEngineConfig getConfig();
-
-    /**
-     * Gets guard.
-     *
-     * @return the guard
-     * @since 0.7.2
-     */
-    @CheckReturnValue
-    IJavetEngineGuard getGuard();
-
-    /**
-     * Gets guard.
-     *
-     * @param timeoutMillis the timeout millis
-     * @return the guard
-     * @since 0.7.2
-     */
-    @CheckReturnValue
-    IJavetEngineGuard getGuard(long timeoutMillis);
 
     /**
      * Gets V8 runtime.
@@ -90,6 +70,7 @@ public interface IJavetEngine<R extends V8Runtime> extends IJavetClosable {
 
     /**
      * Send GC notification.
+     *
      * @since 0.8.3
      */
     void sendGCNotification();

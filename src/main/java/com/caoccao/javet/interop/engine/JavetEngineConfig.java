@@ -18,6 +18,7 @@ package com.caoccao.javet.interop.engine;
 
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.interfaces.IJavetLogger;
+import com.caoccao.javet.interop.V8Guard;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetOSUtils;
 
@@ -31,12 +32,6 @@ import java.util.concurrent.ExecutorService;
  * @since 0.7.0
  */
 public final class JavetEngineConfig {
-    /**
-     * The constant DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS.
-     *
-     * @since 0.7.2
-     */
-    public static final int DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS = 30000;
     /**
      * The constant DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS.
      *
@@ -112,7 +107,7 @@ public final class JavetEngineConfig {
     private boolean allowEval;
     private boolean autoSendGCNotification;
     private int defaultEngineGuardTimeoutMillis;
-    private int engineGuardCheckIntervalMillis;
+    private long engineGuardCheckIntervalMillis;
     private ExecutorService executorService;
     private boolean gcBeforeEngineClose;
     private String globalName;
@@ -139,7 +134,7 @@ public final class JavetEngineConfig {
         setGlobalName(null);
         setAllowEval(false);
         setAutoSendGCNotification(true);
-        setDefaultEngineGuardTimeoutMillis(DEFAULT_ENGINE_GUARD_TIMEOUT_MILLIS);
+        setDefaultEngineGuardTimeoutMillis(V8Guard.DEFAULT_TIMEOUT_MILLIS);
         setEngineGuardCheckIntervalMillis(DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS);
         setGCBeforeEngineClose(false);
         setJSRuntimeType(DEFAULT_JS_RUNTIME_TYPE);
@@ -184,7 +179,7 @@ public final class JavetEngineConfig {
      * @return the engine guard check interval millis
      * @since 0.9.1
      */
-    public int getEngineGuardCheckIntervalMillis() {
+    public long getEngineGuardCheckIntervalMillis() {
         return engineGuardCheckIntervalMillis;
     }
 
@@ -393,7 +388,7 @@ public final class JavetEngineConfig {
      * @since 0.9.1
      */
     @SuppressWarnings("UnusedReturnValue")
-    public JavetEngineConfig setEngineGuardCheckIntervalMillis(int engineGuardCheckIntervalMillis) {
+    public JavetEngineConfig setEngineGuardCheckIntervalMillis(long engineGuardCheckIntervalMillis) {
         assert engineGuardCheckIntervalMillis > 0 : "The engine guard check interval millis must be greater than 0.";
         this.engineGuardCheckIntervalMillis = engineGuardCheckIntervalMillis;
         return this;

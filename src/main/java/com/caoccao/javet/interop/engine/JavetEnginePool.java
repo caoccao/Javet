@@ -341,7 +341,11 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
     public void run() {
         IJavetLogger logger = config.getJavetLogger();
         logger.debug("JavetEnginePool.run() begins.");
+        V8Host v8Host = V8Host.getInstance(config.getJSRuntimeType());
         while (!quitting) {
+            if (v8Host.getSleepIntervalMillis() != config.getEngineGuardCheckIntervalMillis()) {
+                v8Host.setSleepIntervalMillis(config.getEngineGuardCheckIntervalMillis());
+            }
             synchronized (internalLock) {
                 final int initialIdleEngineCount = idleEngineIndexList.size();
                 for (int i = config.getPoolMinSize(); i < initialIdleEngineCount; ++i) {

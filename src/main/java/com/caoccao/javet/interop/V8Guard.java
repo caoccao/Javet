@@ -28,11 +28,27 @@ import java.util.concurrent.PriorityBlockingQueue;
  * @since 3.1.3
  */
 public final class V8Guard implements IJavetClosable {
+    /**
+     * The constant DEFAULT_TIMEOUT_MILLIS.
+     *
+     * @since 3.1.3
+     */
+    public static final int DEFAULT_TIMEOUT_MILLIS = 30000;
     private final long startTimeMillis;
     private final V8Runtime v8Runtime;
     private boolean closed;
     private boolean debugModeEnabled;
     private long endTimeMillis;
+
+    /**
+     * Instantiates a new V8 guard.
+     *
+     * @param v8Runtime the V8 runtime
+     * @since 3.1.3
+     */
+    V8Guard(V8Runtime v8Runtime) {
+        this(v8Runtime, DEFAULT_TIMEOUT_MILLIS, false);
+    }
 
     /**
      * Instantiates a new V8 guard.
