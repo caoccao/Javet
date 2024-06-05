@@ -323,7 +323,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
         try (IJavetEngine<?> iJavetEngine = javetEnginePool.getEngine()) {
             V8Runtime v8Runtime = iJavetEngine.getV8Runtime();
             // Get a guard and apply try-with-resource pattern.
-            try (V8Guard v8Guard = v8Runtime.getGuard(3)) {
+            try (V8Guard v8Guard = iJavetEngine.getGuard(3)) {
                 v8Guard.setDebugModeEnabled(true);
                 v8Runtime.getExecutor("while (true) {}").executeVoid();
                 // That infinite loop will be terminated in 1 millisecond by the guard.
@@ -340,11 +340,10 @@ public class TestJavetEnginePool extends BaseTestJavet {
     public void testWithoutTermination() throws JavetException {
         final long timeoutMillis = 10000;
         ZonedDateTime startZonedDateTime = JavetDateTimeUtils.getUTCNow();
-        try (IJavetEngine<?> iJavetEngine = javetEnginePool.getEngine()) {
+        try (IJavetEngine<?> iJavetEngine = javetEnginePool.getEngine();
+             V8Guard v8Guard = iJavetEngine.getGuard(timeoutMillis)) {
             V8Runtime v8Runtime = iJavetEngine.getV8Runtime();
-            try (V8Guard v8Guard = v8Runtime.getGuard(timeoutMillis)) {
-                assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
-            }
+            assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
         }
         ZonedDateTime endZonedDateTime = JavetDateTimeUtils.getUTCNow();
         Duration duration = Duration.between(startZonedDateTime, endZonedDateTime);
