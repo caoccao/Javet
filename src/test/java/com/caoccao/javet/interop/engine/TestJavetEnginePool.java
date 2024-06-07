@@ -334,6 +334,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
     }
 
     @Test
+    @Tag("performance")
     public void testTerminationMultiThreaded() throws InterruptedException {
         final int threadCount = 5;
         final List<Integer> expectedSequence = IntStream.range(0, threadCount).boxed().collect(Collectors.toList());

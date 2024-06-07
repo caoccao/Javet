@@ -22,6 +22,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetTerminatedException;
 import com.caoccao.javet.values.reference.V8ValueGlobalObject;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -64,6 +65,7 @@ public class TestV8Guard extends BaseTestJavet {
     }
 
     @Test
+    @Tag("performance")
     public void testAutoTerminationMultiThreaded() throws InterruptedException {
         final int threadCount = 5;
         final List<Integer> expectedSequence = IntStream.range(0, threadCount).boxed().collect(Collectors.toList());
