@@ -13,6 +13,7 @@ Release Notes 3.1.x
 * Added ``JavetProxyPrototypeStore``
 * Added ``getPrototypeOf()`` to ``IJavetDirectProxyHandler`` and ``JavetDirectProxyObjectHandler``
 * Added ``getGuard()`` to ``V8Runtime``
+* Added ``V8ValueSealedArray``
 * Replaced ``JavetEngineGuard`` with ``V8Guard``
 * Removed ``executorService``, ``engineGuardCheckIntervalMillis`` from ``JavetEngineConfig``
 * Patched V8 `Check failed: !IsFreeSpaceOrFillerMap(map) <https://groups.google.com/g/v8-dev/c/TCGnZKjYFEI/m/uDOciJsHAQAJ>`_

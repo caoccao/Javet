@@ -446,14 +446,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     /**
      * Gets length from an array.
      *
-     * @param iV8ValueArray the V8 value array
+     * @param iV8ValueSealedArray the V8 value sealed array
      * @return the length
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
     @SuppressWarnings("RedundantThrows")
-    int arrayGetLength(IV8ValueArray iV8ValueArray) throws JavetException {
-        return v8Native.arrayGetLength(handle, iV8ValueArray.getHandle(), iV8ValueArray.getType().getId());
+    int arrayGetLength(IV8ValueSealedArray iV8ValueSealedArray) throws JavetException {
+        return v8Native.arrayGetLength(handle, iV8ValueSealedArray.getHandle(), iV8ValueSealedArray.getType().getId());
     }
 
     /**
@@ -496,20 +496,20 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     /**
      * Get the given range of items from the array.
      *
-     * @param iV8ValueArray the V8 value array
-     * @param v8Values      the V8 values
-     * @param startIndex    the start index
-     * @param endIndex      the end index
+     * @param iV8ValueSealedArray the V8 value sealed array
+     * @param v8Values            the V8 values
+     * @param startIndex          the start index
+     * @param endIndex            the end index
      * @return the actual item count
      * @throws JavetException the javet exception
      * @since 2.2.0
      */
     @SuppressWarnings("RedundantThrows")
     int batchArrayGet(
-            IV8ValueArray iV8ValueArray, V8Value[] v8Values, int startIndex, int endIndex)
+            IV8ValueSealedArray iV8ValueSealedArray, V8Value[] v8Values, int startIndex, int endIndex)
             throws JavetException {
         return v8Native.batchArrayGet(
-                handle, iV8ValueArray.getHandle(), iV8ValueArray.getType().getId(),
+                handle, iV8ValueSealedArray.getHandle(), iV8ValueSealedArray.getType().getId(),
                 v8Values, startIndex, endIndex);
     }
 

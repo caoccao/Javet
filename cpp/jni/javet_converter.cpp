@@ -159,6 +159,10 @@ namespace Javet {
         jmethodID jmethodIDV8ValueRegExpConstructor;
         jmethodID jmethodIDV8ValueRegExpGetHandle;
 
+        jclass jclassV8ValueSealedArray;
+        jmethodID jmethodIDV8ValueSealedArrayConstructor;
+        jmethodID jmethodIDV8ValueSealedArrayGetHandle;
+
         jclass jclassV8ValueSet;
         jmethodID jmethodIDV8ValueSetConstructor;
         jmethodID jmethodIDV8ValueSetGetHandle;
@@ -478,6 +482,10 @@ namespace Javet {
             jmethodIDV8ValueRegExpConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueRegExp);
             jmethodIDV8ValueRegExpGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueRegExp);
 
+            jclassV8ValueSealedArray = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueSealedArray");
+            jmethodIDV8ValueSealedArrayConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueSealedArray);
+            jmethodIDV8ValueSealedArrayGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueSealedArray);
+
             jclassV8ValueSet = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueSet");
             jmethodIDV8ValueSetConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueSet);
             jmethodIDV8ValueSetGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueSet);
@@ -658,11 +666,26 @@ namespace Javet {
             // Reference types
             // Note: Reference types must be checked before primitive types are checked.
             if (v8Value->IsArray()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueArray,
-                    jmethodIDV8ValueArrayConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
+                auto v8InternalJSObject = ToV8InternalJSObject(v8Value);
+#ifdef ENABLE_NODE
+                auto elementKind = V8InternalJSObject::cast(v8InternalJSObject).GetElementsKind();
+#else
+                auto elementKind = V8InternalJSObject::cast(v8InternalJSObject)->GetElementsKind();
+#endif
+                if (v8::internal::IsSealedElementsKind(elementKind)) {
+                    return jniEnv->NewObject(
+                        jclassV8ValueSealedArray,
+                        jmethodIDV8ValueSealedArrayConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                else {
+                    return jniEnv->NewObject(
+                        jclassV8ValueArray,
+                        jmethodIDV8ValueArrayConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
             }
             if (v8Value->IsTypedArray()) {
                 int type = V8ValueReferenceType::Invalid;

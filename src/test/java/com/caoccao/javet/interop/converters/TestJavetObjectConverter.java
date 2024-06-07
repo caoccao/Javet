@@ -256,6 +256,19 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testSealedArray() throws JavetException {
+        assertArrayEquals(
+                new Object[]{1, 2},
+                v8Runtime.getExecutor("Object.seal([1,2])").executeObject());
+        assertArrayEquals(
+                new Object[]{"a", "b"},
+                v8Runtime.getExecutor("Object.seal(['a','b'])").executeObject());
+        assertArrayEquals(
+                new Object[]{},
+                v8Runtime.getExecutor("Object.seal([])").executeObject());
+    }
+
+    @Test
     public void testSet() throws JavetException {
         IJavetConverter converter = new JavetObjectConverter();
         try (V8ValueSet v8ValueSet = v8Runtime.createV8ValueSet()) {

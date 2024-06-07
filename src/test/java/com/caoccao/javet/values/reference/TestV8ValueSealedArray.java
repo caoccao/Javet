@@ -16,22 +16,23 @@
 
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.interop.V8Runtime;
+import org.junit.jupiter.api.Test;
 
-/**
- * The type V8 value array.
- *
- * @since 0.7.0
- */
-public class V8ValueArray extends V8ValueSealedArray implements IV8ValueArray {
-    V8ValueArray(V8Runtime v8Runtime, long handle) throws JavetException {
-        super(v8Runtime, handle);
-    }
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-    @Override
-    public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.Array;
+public class TestV8ValueSealedArray extends BaseTestJavetRuntime {
+    @Test
+    public void testConversion() throws JavetException {
+        assertArrayEquals(
+                new Object[]{1, 2},
+                v8Runtime.getExecutor("Object.seal([1,2])").executeObject());
+        assertArrayEquals(
+                new Object[]{"a", "b"},
+                v8Runtime.getExecutor("Object.seal(['a','b'])").executeObject());
+        assertArrayEquals(
+                new Object[]{},
+                v8Runtime.getExecutor("Object.seal([])").executeObject());
     }
 }
