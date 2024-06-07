@@ -14,6 +14,7 @@ Release Notes 3.1.x
 * Added ``getPrototypeOf()`` to ``IJavetDirectProxyHandler`` and ``JavetDirectProxyObjectHandler``
 * Added ``getGuard()`` to ``V8Runtime``
 * Added ``isSealed`` to ``V8ValueObject``
+* Added ``sealedEnabled`` to ``JavetConverterConfig``
 * Updated ``JavetObjectConverter`` to convert sealed array to ``Object[]`` instead of ``List<Object>``
 * Replaced ``JavetEngineGuard`` with ``V8Guard``
 * Removed ``executorService``, ``engineGuardCheckIntervalMillis`` from ``JavetEngineConfig``

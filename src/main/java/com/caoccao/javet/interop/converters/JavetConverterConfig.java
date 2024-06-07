@@ -112,6 +112,12 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     protected IJavetReflectionObjectFactory reflectionObjectFactory;
     /**
+     * The Sealed enabled.
+     *
+     * @since 3.1.3
+     */
+    protected boolean sealedEnabled;
+    /**
      * This flag determines whether function should be skipped in object or not.
      *
      * @since 0.9.4
@@ -136,6 +142,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
         maxDepth = DEFAULT_MAX_DEPTH;
         proxyPlugins = new ArrayList<>();
         reflectionObjectFactory = null;
+        sealedEnabled = false;
         skipFunctionInObject = true;
     }
 
@@ -297,6 +304,16 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     public boolean isProxySetEnabled() {
         return getProxyPlugins().stream().anyMatch(p -> p instanceof JavetProxyPluginSet);
+    }
+
+    /**
+     * Is sealed enabled.
+     *
+     * @return true : yes, false : no
+     * @since 3.1.3
+     */
+    public boolean isSealedEnabled() {
+        return sealedEnabled;
     }
 
     /**
@@ -525,6 +542,19 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
     @SuppressWarnings("UnusedReturnValue")
     public JavetConverterConfig<T> setReflectionObjectFactory(IJavetReflectionObjectFactory reflectionObjectFactory) {
         this.reflectionObjectFactory = reflectionObjectFactory;
+        return this;
+    }
+
+    /**
+     * Sets sealed enabled.
+     *
+     * @param sealedEnabled the sealed enabled
+     * @return the self
+     * @since 3.1.3
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public JavetConverterConfig<T> setSealedEnabled(boolean sealedEnabled) {
+        this.sealedEnabled = sealedEnabled;
         return this;
     }
 
