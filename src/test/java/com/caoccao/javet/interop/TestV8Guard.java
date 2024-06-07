@@ -26,7 +26,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,6 +61,42 @@ public class TestV8Guard extends BaseTestJavet {
             assertTrue(v8Runtime.getGlobalObject().getInteger("count") > 0);
         }
         assertEquals(0, v8Host.getV8GuardDaemon().getV8GuardQueue().size());
+    }
+
+    @Test
+    public void testAutoTerminationMultiThreaded() throws InterruptedException {
+        final int threadCount = 5;
+        final List<Integer> expectedSequence = IntStream.range(0, threadCount).boxed().collect(Collectors.toList());
+        final List<Integer> newSequence = new ArrayList<>();
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+        final Object lock = new Object();
+        expectedSequence.forEach(i -> executorService.submit(() -> {
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+                countDownLatch.countDown();
+                synchronized (lock) {
+                    lock.wait();
+                }
+                try (V8Guard v8Guard = v8Runtime.getGuard(10L * (i + 1))) {
+                    v8Guard.setDebugModeEnabled(true);
+                    v8Runtime.getExecutor("while (true) {}").executeVoid();
+                } catch (JavetTerminatedException e) {
+                    assertFalse(e.isContinuable());
+                }
+                synchronized (newSequence) {
+                    newSequence.add(i);
+                }
+            } catch (Exception e) {
+                fail(e);
+            }
+        }));
+        countDownLatch.await();
+        synchronized (lock) {
+            lock.notifyAll();
+        }
+        executorService.shutdown();
+        assertTrue(executorService.awaitTermination(10000, TimeUnit.MILLISECONDS));
+        assertEquals(expectedSequence, newSequence);
     }
 
     @Test

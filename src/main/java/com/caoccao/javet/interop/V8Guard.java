@@ -36,7 +36,7 @@ public final class V8Guard implements IJavetClosable {
     public static final int DEFAULT_TIMEOUT_MILLIS = 30000;
     private final long startTimeMillis;
     private final V8Runtime v8Runtime;
-    private boolean closed;
+    private volatile boolean closed;
     private boolean debugModeEnabled;
     private long endTimeMillis;
 

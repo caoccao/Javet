@@ -38,7 +38,6 @@ public abstract class BaseTestJavetPool extends BaseTestJavet {
     @BeforeEach
     public void beforeEach() {
         javetEnginePool = new JavetEnginePool<>();
-        javetEnginePool.getConfig().setEngineGuardCheckIntervalMillis(1);
         javetEnginePool.getConfig().setJSRuntimeType(v8Host.getJSRuntimeType());
     }
 

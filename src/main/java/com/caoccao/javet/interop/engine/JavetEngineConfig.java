@@ -24,7 +24,6 @@ import com.caoccao.javet.utils.JavetOSUtils;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
 
 /**
  * The type Javet engine config.
@@ -32,12 +31,6 @@ import java.util.concurrent.ExecutorService;
  * @since 0.7.0
  */
 public final class JavetEngineConfig {
-    /**
-     * The constant DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS.
-     *
-     * @since 0.7.2
-     */
-    public static final int DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS = 1000;
     /**
      * The constant DEFAULT_JS_RUNTIME_TYPE.
      *
@@ -107,8 +100,6 @@ public final class JavetEngineConfig {
     private boolean allowEval;
     private boolean autoSendGCNotification;
     private int defaultEngineGuardTimeoutMillis;
-    private long engineGuardCheckIntervalMillis;
-    private ExecutorService executorService;
     private boolean gcBeforeEngineClose;
     private String globalName;
     private IJavetLogger javetLogger;
@@ -135,7 +126,6 @@ public final class JavetEngineConfig {
         setAllowEval(false);
         setAutoSendGCNotification(true);
         setDefaultEngineGuardTimeoutMillis(V8Guard.DEFAULT_TIMEOUT_MILLIS);
-        setEngineGuardCheckIntervalMillis(DEFAULT_ENGINE_GUARD_CHECK_INTERVAL_MILLIS);
         setGCBeforeEngineClose(false);
         setJSRuntimeType(DEFAULT_JS_RUNTIME_TYPE);
         poolSizeFrozen = false;
@@ -171,26 +161,6 @@ public final class JavetEngineConfig {
      */
     public int getDefaultEngineGuardTimeoutMillis() {
         return defaultEngineGuardTimeoutMillis;
-    }
-
-    /**
-     * Gets engine guard check interval millis.
-     *
-     * @return the engine guard check interval millis
-     * @since 0.9.1
-     */
-    public long getEngineGuardCheckIntervalMillis() {
-        return engineGuardCheckIntervalMillis;
-    }
-
-    /**
-     * Gets executor service.
-     *
-     * @return the executor service
-     * @since 0.9.1
-     */
-    public ExecutorService getExecutorService() {
-        return executorService;
     }
 
     /**
@@ -377,33 +347,6 @@ public final class JavetEngineConfig {
     public JavetEngineConfig setDefaultEngineGuardTimeoutMillis(int defaultEngineGuardTimeoutMillis) {
         assert defaultEngineGuardTimeoutMillis > 0 : "The default engine guard timeout millis must be greater than 0.";
         this.defaultEngineGuardTimeoutMillis = defaultEngineGuardTimeoutMillis;
-        return this;
-    }
-
-    /**
-     * Sets engine guard check interval millis.
-     *
-     * @param engineGuardCheckIntervalMillis the engine guard check interval millis
-     * @return the self
-     * @since 0.9.1
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public JavetEngineConfig setEngineGuardCheckIntervalMillis(long engineGuardCheckIntervalMillis) {
-        assert engineGuardCheckIntervalMillis > 0 : "The engine guard check interval millis must be greater than 0.";
-        this.engineGuardCheckIntervalMillis = engineGuardCheckIntervalMillis;
-        return this;
-    }
-
-    /**
-     * Sets executor service.
-     *
-     * @param executorService the executor service
-     * @return the self
-     * @since 0.9.1
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    JavetEngineConfig setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
         return this;
     }
 

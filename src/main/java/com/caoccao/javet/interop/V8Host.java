@@ -527,15 +527,8 @@ public final class V8Host implements AutoCloseable {
         @Override
         public void run() {
             while (true) {
-                V8Guard v8Guard = v8GuardQueue.peek();
-                if (v8Guard == null) {
-                    try {
-                        //noinspection BusyWait
-                        TimeUnit.MILLISECONDS.sleep(sleepIntervalMillis);
-                    } catch (InterruptedException ignored) {
-                        break;
-                    }
-                } else {
+                try {
+                    V8Guard v8Guard = v8GuardQueue.take();
                     long now = System.currentTimeMillis();
                     if (now > v8Guard.getEndTimeMillis()) {
                         if (!(!v8Guard.isDebugModeEnabled() && IS_IN_DEBUG_MODE)) {
@@ -549,9 +542,13 @@ public final class V8Host implements AutoCloseable {
                                 }
                             }
                         }
-                        // poll() cannot be used because there may be concurrent issue.
-                        boolean ignored = v8GuardQueue.remove(v8Guard);
+                    } else {
+                        v8GuardQueue.add(v8Guard);
+                        long sleepMillis = Math.min(v8Guard.getEndTimeMillis() - now, sleepIntervalMillis);
+                        TimeUnit.MILLISECONDS.sleep(sleepMillis);
                     }
+                } catch (InterruptedException ignored) {
+                    break;
                 }
             }
         }

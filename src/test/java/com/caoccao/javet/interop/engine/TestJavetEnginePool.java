@@ -43,10 +43,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -87,6 +84,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
 
     @BeforeEach
     public void beforeEach() {
+        v8Host.setSleepIntervalMillis(TEST_ENGINE_GUARD_CHECK_INTERVAL_MILLIS);
         javetEnginePool = new JavetEnginePool<>();
         assertTrue(javetEnginePool.isActive());
         assertFalse(javetEnginePool.isClosed());
@@ -95,7 +93,6 @@ public class TestJavetEnginePool extends BaseTestJavet {
         assertEquals(javetEnginePool.getConfig().getPoolMaxSize(), javetEnginePool.getReleasedEngineCount());
         javetEngineConfig = javetEnginePool.getConfig();
         javetEngineConfig.setPoolDaemonCheckIntervalMillis(TEST_POOL_DAEMON_CHECK_INTERVAL_MILLIS);
-        javetEngineConfig.setEngineGuardCheckIntervalMillis(TEST_ENGINE_GUARD_CHECK_INTERVAL_MILLIS);
         javetEngineConfig.setJSRuntimeType(v8Host.getJSRuntimeType());
         assertEquals(0, javetEnginePool.getAverageCallbackContextCount());
         assertEquals(0, javetEnginePool.getAverageReferenceCount());
@@ -334,6 +331,43 @@ public class TestJavetEnginePool extends BaseTestJavet {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger(),
                     "The V8 runtime is not dead and is still able to execute code afterwards.");
         }
+    }
+
+    @Test
+    public void testTerminationMultiThreaded() throws InterruptedException {
+        final int threadCount = 5;
+        final List<Integer> expectedSequence = IntStream.range(0, threadCount).boxed().collect(Collectors.toList());
+        final List<Integer> newSequence = new ArrayList<>();
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+        final Object lock = new Object();
+        expectedSequence.forEach(i -> executorService.submit(() -> {
+            try (IJavetEngine<?> iJavetEngine = javetEnginePool.getEngine()) {
+                V8Runtime v8Runtime = iJavetEngine.getV8Runtime();
+                countDownLatch.countDown();
+                synchronized (lock) {
+                    lock.wait();
+                }
+                try (V8Guard v8Guard = v8Runtime.getGuard(10L * (i + 1))) {
+                    v8Guard.setDebugModeEnabled(true);
+                    v8Runtime.getExecutor("while (true) {}").executeVoid();
+                } catch (JavetTerminatedException e) {
+                    assertFalse(e.isContinuable());
+                }
+                synchronized (newSequence) {
+                    newSequence.add(i);
+                }
+            } catch (Exception e) {
+                fail(e);
+            }
+        }));
+        countDownLatch.await();
+        synchronized (lock) {
+            lock.notifyAll();
+        }
+        executorService.shutdown();
+        assertTrue(executorService.awaitTermination(10000, TimeUnit.MILLISECONDS));
+        assertEquals(expectedSequence, newSequence);
     }
 
     @Test
