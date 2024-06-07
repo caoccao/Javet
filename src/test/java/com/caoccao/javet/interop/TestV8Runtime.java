@@ -22,19 +22,16 @@ import com.caoccao.javet.enums.V8GCType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
-import com.caoccao.javet.exceptions.JavetTerminatedException;
 import com.caoccao.javet.interop.callback.IJavetGCCallback;
 import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.utils.SimpleList;
-import com.caoccao.javet.values.reference.V8ValueGlobalObject;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 

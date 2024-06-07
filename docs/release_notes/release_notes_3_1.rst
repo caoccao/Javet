@@ -15,6 +15,7 @@ Release Notes 3.1.x
 * Added ``getGuard()`` to ``V8Runtime``
 * Replaced ``JavetEngineGuard`` with ``V8Guard``
 * Removed ``executorService``, ``engineGuardCheckIntervalMillis`` from ``JavetEngineConfig``
+* Patched V8 `Check failed: !IsFreeSpaceOrFillerMap(map) <https://groups.google.com/g/v8-dev/c/TCGnZKjYFEI/m/uDOciJsHAQAJ>`_
 
 3.1.2 V8 v12.5
 --------------
