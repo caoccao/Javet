@@ -39,8 +39,8 @@ public final class V8Internal {
         v8Runtime.addReference(iV8ValueReference);
     }
 
-    public int arrayGetLength(IV8ValueSealedArray iV8ValueSealedArray) throws JavetException {
-        return v8Runtime.arrayGetLength(iV8ValueSealedArray);
+    public int arrayGetLength(IV8ValueArray iV8ValueArray) throws JavetException {
+        return v8Runtime.arrayGetLength(iV8ValueArray);
     }
 
     public int arrayGetLength(IV8ValueTypedArray iV8ValueTypedArray) throws JavetException {
@@ -48,9 +48,9 @@ public final class V8Internal {
     }
 
     public int batchArrayGet(
-            IV8ValueSealedArray iV8ValueSealedArray, V8Value[] v8Values, int startIndex, int endIndex)
+            IV8ValueArray iV8ValueArray, V8Value[] v8Values, int startIndex, int endIndex)
             throws JavetException {
-        return v8Runtime.batchArrayGet(iV8ValueSealedArray, v8Values, startIndex, endIndex);
+        return v8Runtime.batchArrayGet(iV8ValueArray, v8Values, startIndex, endIndex);
     }
 
     public int batchObjectGet(
@@ -447,6 +447,10 @@ public final class V8Internal {
             IV8ValueObject iV8ValueObject, String functionName, boolean returnResult, V8Value... v8Values)
             throws JavetException {
         return v8Runtime.objectInvoke(iV8ValueObject, functionName, returnResult, v8Values);
+    }
+
+    public boolean objectIsSealed(IV8ValueObject iV8ValueObject) {
+        return v8Runtime.objectIsSealed(iV8ValueObject);
     }
 
     public boolean objectSet(IV8ValueObject iV8ValueObject, V8Value... v8Values) throws JavetException {

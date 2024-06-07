@@ -638,6 +638,21 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectInvoke
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
 }
 
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectIsSealed
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle) {
+    RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
+    if (v8LocalValue->IsObject()) {
+        auto v8InternalJSObject = Javet::Converter::ToV8InternalJSObject(v8LocalValue);
+#ifdef ENABLE_NODE
+        auto elementKind = V8InternalJSObject::cast(v8InternalJSObject).GetElementsKind();
+#else
+        auto elementKind = V8InternalJSObject::cast(v8InternalJSObject)->GetElementsKind();
+#endif
+        return v8::internal::IsSealedElementsKind(elementKind);
+    }
+    return false;
+}
+
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectSet
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobjectArray keysAndValues) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);

@@ -446,14 +446,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     /**
      * Gets length from an array.
      *
-     * @param iV8ValueSealedArray the V8 value sealed array
+     * @param iV8ValueArray the V8 value array
      * @return the length
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
     @SuppressWarnings("RedundantThrows")
-    int arrayGetLength(IV8ValueSealedArray iV8ValueSealedArray) throws JavetException {
-        return v8Native.arrayGetLength(handle, iV8ValueSealedArray.getHandle(), iV8ValueSealedArray.getType().getId());
+    int arrayGetLength(IV8ValueArray iV8ValueArray) throws JavetException {
+        return v8Native.arrayGetLength(handle, iV8ValueArray.getHandle(), iV8ValueArray.getType().getId());
     }
 
     /**
@@ -496,20 +496,20 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     /**
      * Get the given range of items from the array.
      *
-     * @param iV8ValueSealedArray the V8 value sealed array
-     * @param v8Values            the V8 values
-     * @param startIndex          the start index
-     * @param endIndex            the end index
+     * @param iV8ValueArray the V8 value array
+     * @param v8Values      the V8 values
+     * @param startIndex    the start index
+     * @param endIndex      the end index
      * @return the actual item count
      * @throws JavetException the javet exception
      * @since 2.2.0
      */
     @SuppressWarnings("RedundantThrows")
     int batchArrayGet(
-            IV8ValueSealedArray iV8ValueSealedArray, V8Value[] v8Values, int startIndex, int endIndex)
+            IV8ValueArray iV8ValueArray, V8Value[] v8Values, int startIndex, int endIndex)
             throws JavetException {
         return v8Native.batchArrayGet(
-                handle, iV8ValueSealedArray.getHandle(), iV8ValueSealedArray.getType().getId(),
+                handle, iV8ValueArray.getHandle(), iV8ValueArray.getType().getId(),
                 v8Values, startIndex, endIndex);
     }
 
@@ -2655,6 +2655,17 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Object is sealed.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @return true : yes, false: no
+     * @since 3.1.3
+     */
+    public boolean objectIsSealed(IV8ValueObject iV8ValueObject) {
+        return v8Native.objectIsSealed(handle, Objects.requireNonNull(iV8ValueObject).getHandle());
+    }
+
+    /**
      * Sets a property of an object by a key
      *
      * @param iV8ValueObject the V8 value object
@@ -2666,7 +2677,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     boolean objectSet(IV8ValueObject iV8ValueObject, V8Value... v8Values) throws JavetException {
         assert v8Values.length > 0 && v8Values.length % 2 == 0 : ERROR_THE_KEY_VALUE_PAIR_MUST_MATCH;
-        return v8Native.objectSet(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), v8Values);
+        return v8Native.objectSet(
+                handle,
+                Objects.requireNonNull(iV8ValueObject).getHandle(),
+                iV8ValueObject.getType().getId(),
+                v8Values);
     }
 
     /**

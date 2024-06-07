@@ -1228,6 +1228,15 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     /**
+     * Is sealed.
+     *
+     * @return true : yes, false: no
+     * @throws JavetException the javet exception
+     * @since 3.1.3
+     */
+    boolean isSealed() throws JavetException;
+
+    /**
      * Set property by key object and value object.
      *
      * @param key   the key

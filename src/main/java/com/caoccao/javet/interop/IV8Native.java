@@ -286,6 +286,8 @@ public interface IV8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             String functionName, boolean returnResult, Object[] values);
 
+    boolean objectIsSealed(long v8RuntimeHandle, long v8ValueHandle);
+
     boolean objectSet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] keysAndValues);
 
     boolean objectSetAccessor(

@@ -530,6 +530,16 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testSeal() throws JavetException {
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const a = {}; a;").execute()) {
+            assertFalse(v8ValueObject.isSealed());
+        }
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const b = {}; Object.seal(b);").execute()) {
+            assertTrue(v8ValueObject.isSealed());
+        }
+    }
+
+    @Test
     public void testSetProperty() throws JavetException {
         ZonedDateTime now = ZonedDateTime.now();
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const x = {}; x;").execute()) {

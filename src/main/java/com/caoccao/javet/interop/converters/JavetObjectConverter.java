@@ -208,12 +208,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             V8ValueArray v8ValueArray = (V8ValueArray) v8Value;
             final List<Object> list = new ArrayList<>();
             v8ValueArray.forEach(value -> list.add(toObject(value, depth + 1)));
-            return (T) list;
-        } else if (v8Value instanceof V8ValueSealedArray) {
-            V8ValueSealedArray v8ValueSealedArray = (V8ValueSealedArray) v8Value;
-            final List<Object> list = new ArrayList<>();
-            v8ValueSealedArray.forEach(value -> list.add(toObject(value, depth + 1)));
-            return (T) list.toArray();
+            return (T) (v8ValueArray.isSealed() ? list.toArray() : list);
         } else if (v8Value instanceof V8ValueSet) {
             V8ValueSet v8ValueSet = (V8ValueSet) v8Value;
             final HashSet<Object> set = new HashSet<>();

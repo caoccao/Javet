@@ -605,6 +605,11 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
+    public boolean isSealed() throws JavetException {
+        return checkV8Runtime().getV8Internal().objectIsSealed(this);
+    }
+
+    @Override
     public boolean sameValue(V8Value v8Value) throws JavetException {
         if (!(v8Value instanceof V8ValueObject)) {
             return false;

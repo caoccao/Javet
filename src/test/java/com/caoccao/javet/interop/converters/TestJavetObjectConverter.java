@@ -89,6 +89,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
     public void testArray() throws JavetException {
         IJavetConverter converter = new JavetObjectConverter();
         try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+            assertFalse(v8ValueArray.isSealed());
             v8ValueArray.push("abc");
             v8ValueArray.push(123);
             List<Object> list = converter.toObject(v8ValueArray);
@@ -133,6 +134,19 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertEquals(1, v8ValueArray.getInteger(0));
             assertEquals("abc", v8ValueArray.getString(1));
         }
+        // Sealed
+        try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("Object.seal([1,2])").execute()) {
+            assertTrue(v8ValueArray.isSealed());
+        }
+        assertArrayEquals(
+                new Object[]{1, 2},
+                v8Runtime.getExecutor("Object.seal([1,2])").executeObject());
+        assertArrayEquals(
+                new Object[]{"a", "b"},
+                v8Runtime.getExecutor("Object.seal(['a','b'])").executeObject());
+        assertArrayEquals(
+                new Object[]{},
+                v8Runtime.getExecutor("Object.seal([])").executeObject());
     }
 
     @Test
@@ -253,19 +267,6 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
         try (V8ValueObject v8ValueObject = converter.toV8Value(v8Runtime, SimpleMap.of("x", "abc"))) {
             assertEquals("abc", v8ValueObject.getString("x"));
         }
-    }
-
-    @Test
-    public void testSealedArray() throws JavetException {
-        assertArrayEquals(
-                new Object[]{1, 2},
-                v8Runtime.getExecutor("Object.seal([1,2])").executeObject());
-        assertArrayEquals(
-                new Object[]{"a", "b"},
-                v8Runtime.getExecutor("Object.seal(['a','b'])").executeObject());
-        assertArrayEquals(
-                new Object[]{},
-                v8Runtime.getExecutor("Object.seal([])").executeObject());
     }
 
     @Test
