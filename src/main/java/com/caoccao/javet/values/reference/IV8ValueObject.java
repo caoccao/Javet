@@ -1217,6 +1217,15 @@ public interface IV8ValueObject extends IV8ValueReference {
     }
 
     /**
+     * Is frozen.
+     *
+     * @return true : yes, false: no
+     * @throws JavetException the javet exception
+     * @since 3.1.3
+     */
+    boolean isFrozen() throws JavetException;
+
+    /**
      * Is generator object.
      *
      * @return true : yes, false: no

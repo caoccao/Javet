@@ -2655,6 +2655,17 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Object is frozen.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @return true : yes, false: no
+     * @since 3.1.3
+     */
+    public boolean objectIsFrozen(IV8ValueObject iV8ValueObject) {
+        return v8Native.objectIsFrozen(handle, Objects.requireNonNull(iV8ValueObject).getHandle());
+    }
+
+    /**
      * Object is sealed.
      *
      * @param iV8ValueObject the V8 value object

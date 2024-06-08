@@ -64,6 +64,12 @@ public class V8ValueBuiltInObject extends V8ValueObject {
      */
     public static final String FUNCTION_GET_PROTOTYPE_OF = "getPrototypeOf";
     /**
+     * The constant FUNCTION_SEAL.
+     *
+     * @since 3.1.3
+     */
+    public static final String FUNCTION_SEAL = "seal";
+    /**
      * The constant FUNCTION_SET_PROTOTYPE_OF.
      *
      * @since 3.1.3
@@ -130,6 +136,7 @@ public class V8ValueBuiltInObject extends V8ValueObject {
      * The Object.create() static method creates a new object, using an existing object as the prototype
      * of the newly created object.
      *
+     * @param <T>                      the type parameter
      * @param iV8ValueObject           The object which should be the prototype of the newly-created object.
      * @param iV8ValueObjectProperties If specified and not undefined, an object whose enumerable own properties specify property descriptors to be added to the newly-created object, with the corresponding property names. These properties correspond to the second argument of Object.defineProperties().
      * @return A new object with the specified prototype object and properties.
@@ -137,11 +144,11 @@ public class V8ValueBuiltInObject extends V8ValueObject {
      * @since 3.1.3
      */
     @CheckReturnValue
-    public V8ValueObject create(
+    public <T extends IV8ValueObject> T create(
             IV8ValueObject iV8ValueObject,
             IV8ValueObject iV8ValueObjectProperties)
             throws JavetException {
-        return invoke(
+        return (T) invoke(
                 FUNCTION_CREATE,
                 Objects.requireNonNull(iV8ValueObject),
                 Objects.requireNonNull(iV8ValueObjectProperties));
@@ -155,14 +162,15 @@ public class V8ValueBuiltInObject extends V8ValueObject {
      * their enumerability, configurability, writability, or value cannot be changed, and the object's prototype
      * cannot be re-assigned. freeze() returns the same object that was passed in.
      *
+     * @param <T>            the type parameter
      * @param iV8ValueObject The object to freeze.
      * @return The object that was passed to the function.
      * @throws JavetException the javet exception
      * @since 3.0.1
      */
     @CheckReturnValue
-    public V8ValueObject freeze(IV8ValueObject iV8ValueObject) throws JavetException {
-        return invoke(FUNCTION_FREEZE, Objects.requireNonNull(iV8ValueObject));
+    public <T extends IV8ValueObject> T freeze(T iV8ValueObject) throws JavetException {
+        return (T) invoke(FUNCTION_FREEZE, Objects.requireNonNull(iV8ValueObject));
     }
 
     /**
@@ -193,6 +201,25 @@ public class V8ValueBuiltInObject extends V8ValueObject {
     @CheckReturnValue
     public V8Value getPrototypeOf(V8Value v8Value) throws JavetException {
         return invoke(FUNCTION_GET_PROTOTYPE_OF, Objects.requireNonNull(v8Value));
+    }
+
+    /**
+     * Object.seal()
+     * The Object.seal() static method seals an object. Sealing an object prevents extensions and makes existing
+     * properties non-configurable. A sealed object has a fixed set of properties: new properties cannot be added,
+     * existing properties cannot be removed, their enumerability and configurability cannot be changed,
+     * and its prototype cannot be re-assigned. Values of existing properties can still be changed as long as
+     * they are writable. seal() returns the same object that was passed in.
+     *
+     * @param <T>            the type parameter
+     * @param iV8ValueObject The object to seal.
+     * @return The object that was passed to the function.
+     * @throws JavetException the javet exception
+     * @since 3.1.3
+     */
+    @CheckReturnValue
+    public <T extends IV8ValueObject> T seal(T iV8ValueObject) throws JavetException {
+        return (T) invoke(FUNCTION_SEAL, Objects.requireNonNull(iV8ValueObject));
     }
 
     /**

@@ -605,6 +605,11 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
+    public boolean isFrozen() throws JavetException {
+        return checkV8Runtime().getV8Internal().objectIsFrozen(this);
+    }
+
+    @Override
     public boolean isSealed() throws JavetException {
         return checkV8Runtime().getV8Internal().objectIsSealed(this);
     }

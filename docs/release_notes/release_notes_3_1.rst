@@ -9,11 +9,11 @@ Release Notes 3.1.x
 * Upgraded Visual Studio 2022 to `v17.10.1 <https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.10>`_
 * Rewrote ``toString()`` for ``V8ValueBigInteger``, ``V8ValueInteger``, ``V8ValueLong`` and ``V8ValueDouble``
 * Added ``getPrototypeOf()`` to support ``instanceof`` for proxy converter
-* Added ``getPrototypeOf()``, ``setPrototypeOf()``, ``create()`` to ``V8ValueBuiltInObject``
+* Added ``getPrototypeOf()``, ``setPrototypeOf()``, ``create()``, ``seal()`` to ``V8ValueBuiltInObject``
 * Added ``JavetProxyPrototypeStore``
 * Added ``getPrototypeOf()`` to ``IJavetDirectProxyHandler`` and ``JavetDirectProxyObjectHandler``
 * Added ``getGuard()`` to ``V8Runtime``
-* Added ``isSealed`` to ``V8ValueObject``
+* Added ``isSealed()``, ``isFrozen()`` to ``V8ValueObject``
 * Added ``sealedEnabled`` to ``JavetConverterConfig``
 * Updated ``JavetObjectConverter`` to convert sealed array to ``Object[]`` instead of ``List<Object>``
 * Replaced ``JavetEngineGuard`` with ``V8Guard``
