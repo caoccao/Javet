@@ -28,8 +28,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class TestV8HeapStatisticsOOM {
-    @Tag("performance")
     @Test
+    @Tag("performance")
     public void testOOM() throws JavetException, InterruptedException {
         V8RuntimeOptions.V8_FLAGS.setMaxHeapSize(8096);
         try (V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime()) {

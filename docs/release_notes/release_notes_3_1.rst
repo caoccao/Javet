@@ -6,6 +6,7 @@ Release Notes 3.1.x
 --------------
 
 * Upgraded Node.js to ``v20.14.0`` `(2024-05-28) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.14.0>`_
+* Upgraded V8 to ``v12.6.228.13`` (2024-06-06)
 * Upgraded Visual Studio 2022 to `v17.10.1 <https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.10>`_
 * Rewrote ``toString()`` for ``V8ValueBigInteger``, ``V8ValueInteger``, ``V8ValueLong`` and ``V8ValueDouble``
 * Added ``getPrototypeOf()`` to support ``instanceof`` for proxy converter
