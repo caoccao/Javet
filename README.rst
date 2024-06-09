@@ -120,8 +120,8 @@ Hello Javet
 .. code-block:: java
 
     // Node.js Mode
-    try (V8Runtime v8Runtime = V8Host.getNodeInstance().createV8Runtime()) {
-        System.out.println(v8Runtime.getExecutor("'Hello Javet'").executeString());
+    try (NodeRuntime nodeRuntime = V8Host.getNodeInstance().createV8Runtime()) {
+        System.out.println(nodeRuntime.getExecutor("'Hello Javet'").executeString());
     }
 
     // V8 Mode
