@@ -35,7 +35,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -445,7 +444,6 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         }
         semaphore = new Semaphore(engines.length);
         quitting = false;
-        config.setExecutorService(Executors.newCachedThreadPool());
         daemonThread = new Thread(this);
         daemonThread.setDaemon(true);
         daemonThread.setName(JAVET_DAEMON_THREAD_NAME);
@@ -463,15 +461,6 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         IJavetLogger logger = config.getJavetLogger();
         logger.debug("JavetEnginePool.stopDaemon() begins.");
         quitting = true;
-        try {
-            config.getExecutorService().shutdown();
-            //noinspection ResultOfMethodCallIgnored
-            config.getExecutorService().awaitTermination(config.getPoolShutdownTimeoutSeconds(), TimeUnit.SECONDS);
-        } catch (Exception e) {
-            logger.logError(e, e.getMessage());
-        } finally {
-            config.setExecutorService(null);
-        }
         try {
             if (daemonThread != null) {
                 daemonThread.join();

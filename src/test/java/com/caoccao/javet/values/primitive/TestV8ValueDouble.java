@@ -27,9 +27,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueDouble extends BaseTestJavetRuntime {
     @Test
+    public void testAsBoolean() throws JavetException {
+        assertTrue(v8Runtime.createV8ValueDouble(1.0D).asBoolean());
+        assertFalse(v8Runtime.createV8ValueDouble(0.0D).asBoolean());
+        assertTrue(v8Runtime.getExecutor("1.0").execute().asBoolean());
+        assertFalse(v8Runtime.getExecutor("0.0").execute().asBoolean());
+    }
+
+    @Test
     public void testAsInt() throws JavetException {
         assertEquals(0, v8Runtime.createV8ValueDouble(0.0D).asInt());
         assertEquals(1, v8Runtime.createV8ValueDouble(1.0D).asInt());
+        assertEquals(1, v8Runtime.createV8ValueDouble(1.1D).asInt());
+        assertEquals(0, v8Runtime.createV8ValueDouble(Double.NaN).asInt());
     }
 
     @Test
@@ -73,14 +83,6 @@ public class TestV8ValueDouble extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testIfTrue() throws JavetException {
-        assertTrue(v8Runtime.createV8ValueDouble(1.0D).asBoolean());
-        assertFalse(v8Runtime.createV8ValueDouble(0.0D).asBoolean());
-        assertTrue(v8Runtime.getExecutor("1.0").execute().asBoolean());
-        assertFalse(v8Runtime.getExecutor("0.0").execute().asBoolean());
-    }
-
-    @Test
     public void testNaNAndInfiniteAndFinite() throws JavetException {
         V8ValueDouble v8ValueDouble = v8Runtime.getExecutor("NaN").execute();
         assertNotNull(v8ValueDouble);
@@ -91,6 +93,13 @@ public class TestV8ValueDouble extends BaseTestJavetRuntime {
         assertTrue(v8ValueDouble.isInfinite());
         v8ValueDouble = v8Runtime.getExecutor("1/2").execute();
         assertTrue(v8ValueDouble.isFinite());
+        v8ValueDouble = v8Runtime.getExecutor("NaN").execute();
+        assertFalse(v8ValueDouble.isInfinite());
+        assertFalse(v8ValueDouble.isFinite());
+        v8ValueDouble = v8Runtime.getExecutor(V8ValueDouble.INFINITY).execute();
+        assertTrue(v8ValueDouble.isInfinite());
+        v8ValueDouble = v8Runtime.getExecutor("-" + V8ValueDouble.INFINITY).execute();
+        assertTrue(v8ValueDouble.isInfinite());
     }
 
     @Test
@@ -111,5 +120,34 @@ public class TestV8ValueDouble extends BaseTestJavetRuntime {
         assertEquals("2147483648", new BigDecimal(
                 v8Runtime.getExecutor("-(1 << -1)").executeDouble()).toPlainString());
         assertTrue(v8Runtime.getExecutor("-(1 << -1) == 2147483648").executeBoolean());
+    }
+
+    @Test
+    public void testToString() throws JavetException {
+        assertEquals("0", v8Runtime.createV8ValueDouble(0).toString());
+        assertEquals("1", v8Runtime.createV8ValueDouble(1).toString());
+        assertEquals("-1", v8Runtime.createV8ValueDouble(-1).toString());
+        assertEquals("-1", v8Runtime.getExecutor("-1.0").execute().toString());
+        assertEquals("1", v8Runtime.getExecutor("+1.0").execute().toString());
+        assertEquals("1.1", v8Runtime.createV8ValueDouble(1.1D).toString());
+        assertEquals("-1.1", v8Runtime.createV8ValueDouble(-1.1D).toString());
+        assertEquals("110000000000000000000", v8Runtime.createV8ValueDouble(1.1e20D).toString());
+        assertEquals("1.23e+21", v8Runtime.createV8ValueDouble(12.30e20D).toString());
+        assertEquals("1.234e+21", v8Runtime.getExecutor("12.340e20").execute().toString());
+        assertEquals("-1.234e+21", v8Runtime.getExecutor("-12.340e20").execute().toString());
+        assertEquals("1.234e+21", v8Runtime.getExecutor("+12.340e20").execute().toString());
+        assertEquals("Infinity", v8Runtime.createV8ValueDouble(Double.POSITIVE_INFINITY).toString());
+        assertEquals("Infinity", v8Runtime.getExecutor("1e309").execute().toString());
+        assertEquals("Infinity", v8Runtime.getExecutor("+1e309").execute().toString());
+        assertEquals("Infinity", v8Runtime.getExecutor("1.23e309").execute().toString());
+        assertEquals("Infinity", v8Runtime.getExecutor("+1.23e309").execute().toString());
+        assertEquals("-Infinity", v8Runtime.createV8ValueDouble(Double.NEGATIVE_INFINITY).toString());
+        assertEquals("-Infinity", v8Runtime.getExecutor("-1e309").execute().toString());
+        assertEquals("-Infinity", v8Runtime.getExecutor("-1e309").execute().toString());
+        assertEquals("-Infinity", v8Runtime.getExecutor("-1.23e309").execute().toString());
+        assertEquals("1.1e-20", v8Runtime.createV8ValueDouble(1.1e-20D).toString());
+        assertEquals("-1.1e-20", v8Runtime.createV8ValueDouble(-1.1e-20D).toString());
+        assertEquals("NaN", v8Runtime.createV8ValueDouble(Double.NaN).toString());
+        assertEquals("1.199999999999a", v8Runtime.createV8ValueDouble(1.1D).toString(16));
     }
 }

@@ -31,6 +31,7 @@ import com.caoccao.javet.values.primitive.V8ValueDouble;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueLong;
 import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInObject;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -205,6 +206,23 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
                 assertInstanceOf(V8ValueDouble.class, key);
                 assertEquals("2147483648", key.toString());
             }));
+        }
+    }
+
+    @Test
+    public void testFreeze() throws JavetException {
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const a = {}; a;").execute()) {
+            assertFalse(v8ValueObject.isFrozen());
+        }
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const b = {}; Object.freeze(b);").execute()) {
+            assertTrue(v8ValueObject.isFrozen());
+        }
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            assertFalse(v8ValueObject.isFrozen());
+            try (V8ValueBuiltInObject v8ValueBuiltInObject = v8Runtime.getGlobalObject().getBuiltInObject();
+                 V8ValueObject frozenV8ValueObject = v8ValueBuiltInObject.freeze(v8ValueObject)) {
+                assertTrue(frozenV8ValueObject.isFrozen());
+            }
         }
     }
 
@@ -527,6 +545,23 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
         assertEquals(1, v8Runtime.getExecutor("const a = new A(); a.a();").executeInteger());
         assertEquals(1, v8Runtime.getExecutor("const b = new B(); b.a();").executeInteger());
         assertEquals(2, v8Runtime.getExecutor("b.b();").executeInteger());
+    }
+
+    @Test
+    public void testSeal() throws JavetException {
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const a = {}; a;").execute()) {
+            assertFalse(v8ValueObject.isSealed());
+        }
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("const b = {}; Object.seal(b);").execute()) {
+            assertTrue(v8ValueObject.isSealed());
+        }
+        try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+            assertFalse(v8ValueObject.isSealed());
+            try (V8ValueBuiltInObject v8ValueBuiltInObject = v8Runtime.getGlobalObject().getBuiltInObject();
+                 V8ValueObject sealedV8ValueObject = v8ValueBuiltInObject.seal(v8ValueObject)) {
+                assertTrue(sealedV8ValueObject.isSealed());
+            }
+        }
     }
 
     @Test

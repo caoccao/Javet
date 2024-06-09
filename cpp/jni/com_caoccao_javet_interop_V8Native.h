@@ -953,6 +953,22 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectInvoke
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectIsFrozen
+ * Signature: (JJ)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectIsFrozen
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    objectIsSealed
+ * Signature: (JJ)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectIsSealed
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    objectSet
  * Signature: (JJI[Ljava/lang/Object;)Z
  */

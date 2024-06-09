@@ -23,7 +23,6 @@ import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.loader.JavetLibLoader;
 import com.caoccao.javet.interop.monitoring.V8SharedMemoryStatistics;
 import com.caoccao.javet.interop.options.RuntimeOptions;
-import com.caoccao.javet.interop.options.V8Flags;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.SimpleMap;
 
@@ -33,6 +32,8 @@ import java.lang.management.MemoryType;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The type V8 host.
@@ -46,12 +47,14 @@ public final class V8Host implements AutoCloseable {
     private static volatile double memoryUsageThresholdRatio = 0.7;
     private final JSRuntimeType jsRuntimeType;
     private final IJavetLogger logger;
+    private final V8GuardDaemon v8GuardDaemon;
     private final V8Notifier v8Notifier;
     private final ConcurrentHashMap<Long, V8Runtime> v8RuntimeMap;
     private boolean isolateCreated;
     private JavetClassLoader javetClassLoader;
     private JavetException lastException;
     private volatile boolean libraryLoaded;
+    private Thread threadV8GuardDaemon;
     private IV8Native v8Native;
 
     private V8Host(JSRuntimeType jsRuntimeType) {
@@ -64,6 +67,8 @@ public final class V8Host implements AutoCloseable {
         v8Native = null;
         isolateCreated = false;
         this.jsRuntimeType = jsRuntimeType;
+        v8GuardDaemon = new V8GuardDaemon();
+        threadV8GuardDaemon = null;
         loadLibrary();
         v8Notifier = new V8Notifier(v8RuntimeMap);
     }
@@ -76,13 +81,10 @@ public final class V8Host implements AutoCloseable {
      * @since 0.7.0
      */
     public static V8Host getInstance(JSRuntimeType jsRuntimeType) {
-        Objects.requireNonNull(jsRuntimeType);
-        if (jsRuntimeType.isV8()) {
-            return getV8Instance();
-        } else if (jsRuntimeType.isNode()) {
+        if (Objects.requireNonNull(jsRuntimeType).isNode()) {
             return getNodeInstance();
         }
-        return null;
+        return getV8Instance();
     }
 
     /**
@@ -187,6 +189,9 @@ public final class V8Host implements AutoCloseable {
 
     @Override
     public void close() throws JavetException {
+        threadV8GuardDaemon.interrupt();
+        v8GuardDaemon.getV8GuardQueue().clear();
+        lastException = null;
         final int v8RuntimeCount = getV8RuntimeCount();
         if (v8RuntimeCount != 0) {
             throw new JavetException(
@@ -351,6 +356,26 @@ public final class V8Host implements AutoCloseable {
     }
 
     /**
+     * Gets sleep interval millis.
+     *
+     * @return the sleep interval millis
+     * @since 3.1.3
+     */
+    public long getSleepIntervalMillis() {
+        return v8GuardDaemon.getSleepIntervalMillis();
+    }
+
+    /**
+     * Gets V8 guard daemon.
+     *
+     * @return the V8 guard daemon
+     * @since 3.1.3
+     */
+    V8GuardDaemon getV8GuardDaemon() {
+        return v8GuardDaemon;
+    }
+
+    /**
      * Gets V8 native.
      *
      * @return the V8 native
@@ -419,12 +444,25 @@ public final class V8Host implements AutoCloseable {
                 v8Native = javetClassLoader.getNative();
                 libraryLoaded = true;
                 isolateCreated = false;
+                threadV8GuardDaemon = new Thread(v8GuardDaemon);
+                threadV8GuardDaemon.setDaemon(true);
+                threadV8GuardDaemon.start();
             } catch (JavetException e) {
                 logger.logError(e, "Failed to load Javet lib with error {0}.", e.getMessage());
                 lastException = e;
             }
         }
         return libraryLoaded;
+    }
+
+    /**
+     * Sets sleep interval millis.
+     *
+     * @param sleepIntervalMillis the sleep interval millis
+     * @since 3.1.3
+     */
+    public void setSleepIntervalMillis(long sleepIntervalMillis) {
+        v8GuardDaemon.setSleepIntervalMillis(sleepIntervalMillis);
     }
 
     /**
@@ -440,6 +478,8 @@ public final class V8Host implements AutoCloseable {
             logger.logDebug(
                     "[{0}] Unloading library.",
                     jsRuntimeType.getName());
+            threadV8GuardDaemon.interrupt();
+            v8GuardDaemon.getV8GuardQueue().clear();
             isolateCreated = false;
             v8Native = null;
             javetClassLoader = null;
@@ -453,6 +493,70 @@ public final class V8Host implements AutoCloseable {
 
     private static class NodeInstanceHolder {
         private static final V8Host INSTANCE = new V8Host(JSRuntimeType.Node);
+    }
+
+    static class V8GuardDaemon implements Runnable {
+        private static final long DEFAULT_SLEEP_INTERVAL_MILLIS = 5;
+        private static final int INITIAL_CAPACITY = 64;
+        private static final boolean IS_IN_DEBUG_MODE =
+            /* if defined ANDROID
+            false;
+            /* end if */
+                /* if not defined ANDROID */
+                ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
+        /* end if */
+        private final PriorityBlockingQueue<V8Guard> v8GuardQueue;
+
+        private long sleepIntervalMillis;
+
+        public V8GuardDaemon() {
+            sleepIntervalMillis = DEFAULT_SLEEP_INTERVAL_MILLIS;
+            v8GuardQueue = new PriorityBlockingQueue<>(
+                    INITIAL_CAPACITY,
+                    (g1, g2) -> (int) (g1.getEndTimeMillis() - g2.getEndTimeMillis()));
+        }
+
+        public long getSleepIntervalMillis() {
+            return sleepIntervalMillis;
+        }
+
+        public PriorityBlockingQueue<V8Guard> getV8GuardQueue() {
+            return v8GuardQueue;
+        }
+
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    V8Guard v8Guard = v8GuardQueue.take();
+                    long now = System.currentTimeMillis();
+                    if (now > v8Guard.getEndTimeMillis()) {
+                        if (!(!v8Guard.isDebugModeEnabled() && IS_IN_DEBUG_MODE)) {
+                            V8Runtime v8Runtime = v8Guard.getV8Runtime();
+                            synchronized (v8Runtime.getCloseLock()) {
+                                if (!v8Runtime.isClosed() && v8Runtime.isInUse()) {
+                                    v8Runtime.terminateExecution();
+                                    v8Runtime.getLogger().logWarn(
+                                            "Execution was terminated after {0}ms.",
+                                            now - v8Guard.getStartTimeMillis());
+                                }
+                            }
+                        }
+                    } else {
+                        v8GuardQueue.add(v8Guard);
+                        long sleepMillis = Math.min(v8Guard.getEndTimeMillis() - now, sleepIntervalMillis);
+                        TimeUnit.MILLISECONDS.sleep(sleepMillis);
+                    }
+                } catch (InterruptedException ignored) {
+                    break;
+                }
+            }
+        }
+
+        public void setSleepIntervalMillis(long sleepIntervalMillis) {
+            assert sleepIntervalMillis > 0 : "sleepIntervalMillis must be greater than 0";
+            this.sleepIntervalMillis = sleepIntervalMillis;
+        }
     }
 
     private static class V8InstanceHolder {

@@ -18,6 +18,7 @@ package com.caoccao.javet.interop.proxy;
 
 import com.caoccao.javet.annotations.*;
 import com.caoccao.javet.enums.V8ConversionMode;
+import com.caoccao.javet.enums.V8ProxyMode;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetEntityPropertyDescriptor;
@@ -340,6 +341,24 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
         }
         return super.getOwnPropertyDescriptor(target, property);
     }
+
+    @Override
+    public V8Value getPrototypeOf(V8Value target) throws JavetException, E {
+        V8Value v8Value = JavetProxyPrototypeStore.getPrototype(
+                v8Runtime, getProxyMode(), classDescriptor.getTargetClass());
+        if (v8Value != null) {
+            return v8Value;
+        }
+        return super.getPrototypeOf(target);
+    }
+
+    /**
+     * Gets proxy mode.
+     *
+     * @return the proxy mode
+     * @since 3.1.3
+     */
+    public abstract V8ProxyMode getProxyMode();
 
     /**
      * Gets setter prefix length.

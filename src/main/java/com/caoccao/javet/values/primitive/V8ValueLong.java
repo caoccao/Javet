@@ -105,4 +105,22 @@ public final class V8ValueLong
     public long toPrimitive() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return toString(10);
+    }
+
+    /**
+     * Number.prototype.toString()
+     * The toString() method of Number values returns a string representing this number value.
+     *
+     * @param radix An integer in the range 2 through 36 specifying the base to use for representing the number value.
+     *              Defaults to 10.
+     * @return the string
+     * @since 3.1.3
+     */
+    public String toString(int radix) {
+        return Long.toString(value, radix);
+    }
 }

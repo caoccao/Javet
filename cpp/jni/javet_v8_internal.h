@@ -67,6 +67,7 @@ using V8InternalHeapObject = v8::internal::HeapObject;
 using V8InternalIncrementalStringBuilder = v8::internal::IncrementalStringBuilder;
 using V8InternalIsolate = v8::internal::Isolate;
 using V8InternalJSFunction = v8::internal::JSFunction;
+using V8InternalJSObject = v8::internal::JSObject;
 using V8InternalModule = v8::internal::Module;
 using V8InternalObject = v8::internal::Object;
 using V8InternalRobustnessFlag = v8::internal::RobustnessFlag;

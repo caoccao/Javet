@@ -26,6 +26,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueLong extends BaseTestJavetRuntime {
     @Test
+    public void testAsBoolean() throws JavetException {
+        assertTrue(v8Runtime.createV8ValueLong(1L).asBoolean());
+        assertFalse(v8Runtime.createV8ValueLong(0L).asBoolean());
+        assertTrue(v8Runtime.getExecutor("1n").execute().asBoolean());
+        assertFalse(v8Runtime.getExecutor("0n").execute().asBoolean());
+    }
+
+    @Test
     public void testAsInt() throws JavetException {
         assertEquals(0, v8Runtime.createV8ValueLong(0L).asInt());
         assertEquals(1, v8Runtime.createV8ValueLong(1L).asInt());
@@ -65,14 +73,6 @@ public class TestV8ValueLong extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testIfTrue() throws JavetException {
-        assertTrue(v8Runtime.createV8ValueLong(1L).asBoolean());
-        assertFalse(v8Runtime.createV8ValueLong(0L).asBoolean());
-        assertTrue(v8Runtime.getExecutor("1n").execute().asBoolean());
-        assertFalse(v8Runtime.getExecutor("0n").execute().asBoolean());
-    }
-
-    @Test
     public void testLongObject() throws JavetException {
         // 2n**62n = 4611686018427387904n
         try (V8ValueLong v8ValueLong1 = v8Runtime.createV8ValueLong(4611686018427387904L)) {
@@ -101,5 +101,15 @@ public class TestV8ValueLong extends BaseTestJavetRuntime {
     public void testString() throws JavetException {
         assertEquals("4611686018427387904", v8Runtime.getExecutor("(2n ** 62n).toString()").executeString());
         assertEquals("-2", v8Runtime.getExecutor("(-2n).toString()").executeString());
+    }
+
+    @Test
+    public void testToString() throws JavetException {
+        assertEquals("0", v8Runtime.createV8ValueLong(0).toString());
+        assertEquals("1", v8Runtime.createV8ValueLong(1).toString());
+        assertEquals("-1", v8Runtime.createV8ValueLong(-1).toString());
+        assertEquals(Long.toString(Long.MAX_VALUE), v8Runtime.createV8ValueLong(Long.MAX_VALUE).toString());
+        assertEquals(Long.toString(Long.MIN_VALUE), v8Runtime.createV8ValueLong(Long.MIN_VALUE).toString());
+        assertEquals("14", v8Runtime.createV8ValueLong(20).toString(16));
     }
 }

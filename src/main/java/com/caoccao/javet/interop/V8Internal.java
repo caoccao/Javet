@@ -449,6 +449,14 @@ public final class V8Internal {
         return v8Runtime.objectInvoke(iV8ValueObject, functionName, returnResult, v8Values);
     }
 
+    public boolean objectIsFrozen(IV8ValueObject iV8ValueObject) {
+        return v8Runtime.objectIsFrozen(iV8ValueObject);
+    }
+
+    public boolean objectIsSealed(IV8ValueObject iV8ValueObject) {
+        return v8Runtime.objectIsSealed(iV8ValueObject);
+    }
+
     public boolean objectSet(IV8ValueObject iV8ValueObject, V8Value... v8Values) throws JavetException {
         return v8Runtime.objectSet(iV8ValueObject, v8Values);
     }

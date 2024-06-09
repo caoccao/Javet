@@ -4,18 +4,22 @@ Termination
 
 Terminating scripts that run out of control is quite important in terms of protecting the applications from being attacked by malicious scripts. In Javet, there are 2 typical ways of terminating scripts.
 
-Automatic Termination with Pool and Engine
-==========================================
+Automatic Termination
+=====================
 
-``IJavetEngineGuard`` is the built-in support for terminating a script which runs out of control.
+``V8Guard`` is the built-in support for terminating a script which runs out of control.
+
+With Engine Pool
+----------------
 
 .. code-block:: java
 
     // Get an engine from the pool as usual.
     try (IJavetEngine iJavetEngine = iJavetEnginePool.getEngine()) {
         V8Runtime v8Runtime = iJavetEngine.getV8Runtime();
-        // Get a guard from the engine and apply try-with-resource pattern.
-        try (IJavetEngineGuard iJavetEngineGuard = iJavetEngine.getGuard(10000)) {
+        // Get a guard and apply try-with-resource pattern.
+        try (V8Guard v8Guard = iJavetEngine.getGuard(10000)) {
+            v8Guard.setDebugModeEnabled(true);
             v8Runtime.getExecutor("while (true) {}").executeVoid();
             // That infinite loop will be terminated in 10 seconds by the guard.
         } catch (JavetTerminatedException e) {
@@ -26,9 +30,37 @@ Automatic Termination with Pool and Engine
                 "The V8 runtime is not dead and is still able to execute code afterwards.");
     }
 
-Does ``IJavetEngineGuard`` hang normal scripts till timeout is hit? No, it doesn't cause any overhead. If the script completes, ``IJavetEngineGuard.close()`` will be called via try-with-resource pattern and cancel the daemon thread immediately.
+Please refer to the :extsource3:`source code <../../../src/test/java/com/caoccao/javet/interop/engine/TestJavetEnginePool.java>` for more detail.
 
-Please refer to the :extsource3:`source code <../../../src/test/java/com/caoccao/javet/interop/engine/TestJavetEngineGuard.java>` for more detail.
+Without Engine Pool
+----------------
+
+.. code-block:: java
+
+    try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+        try (V8Guard v8Guard = v8Runtime.getGuard(10000)) {
+            v8Guard.setDebugModeEnabled(true);
+            assertEquals(1, v8Host.getV8GuardDaemon().getV8GuardQueue().size());
+            v8Runtime.getExecutor("var count = 0; while (true) { ++count; }").executeVoid();
+            fail("Failed to terminate execution.");
+        } catch (JavetException e) {
+            assertInstanceOf(JavetTerminatedException.class, e);
+            assertEquals(JavetError.ExecutionTerminated, e.getError());
+            assertFalse(((JavetTerminatedException) e).isContinuable());
+        }
+        assertTrue(v8Runtime.getGlobalObject().getInteger("count") > 0);
+    }
+
+Please refer to the :extsource3:`source code <../../../src/test/java/com/caoccao/javet/interop/TestV8Guard.java>` for more detail.
+
+How does ``V8Guard`` work internally? It adds itself to a priority queue held by ``V8Host`` which has a daemon thread doing the following:
+
+* For each of the ``V8Runtime`` in the queue.
+* If the end time of a ``V8Runtime`` is before now, terminate that ``V8Runtime``.
+
+There is only one daemon thread managing all the V8 runtime instances so that the overhead is fixed and the process is non-blocking.
+
+Does ``V8Guard`` hang normal scripts till timeout is hit? No, it doesn't cause any overhead. If the script completes, ``V8Guard.close()`` will be called via try-with-resource pattern and there will be no termination.
 
 Manual Termination
 ==================
@@ -70,4 +102,4 @@ Manual termination gives applications complete control. In return, the coding ef
 How about Debug Mode?
 =====================
 
-Usually, when application is being debugged, ``JavetEngineGuard`` may easily interrupt the debug. No worry, ``JavetEngineGuard`` is by default disabled in debug mode. Please refer to ``disableInDebugMode()`` and ``enableInDebugMode()`` for details.
+Usually, when application is being debugged, ``V8Guard`` may easily interrupt the debug. No worry, ``V8Guard`` is by default disabled in debug mode. Please refer to ``setDebugModeEnabled()`` for details.

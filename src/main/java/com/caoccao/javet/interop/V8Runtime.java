@@ -273,6 +273,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     V8ValueUndefined cachedV8ValueUndefined;
     /**
+     * The Close lock.
+     *
+     * @since 3.1.3
+     */
+    Object closeLock;
+    /**
      * The Converter.
      *
      * @since 0.7.0
@@ -341,6 +347,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         assert handle != INVALID_HANDLE : ERROR_HANDLE_MUST_BE_VALID;
         callbackContextLock = new Object();
         callbackContextMap = new HashMap<>();
+        closeLock = new Object();
         converter = DEFAULT_CONVERTER;
         gcEpilogueCallbacks = new CopyOnWriteArrayList<>();
         gcPrologueCallbacks = new CopyOnWriteArrayList<>();
@@ -498,7 +505,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 2.2.0
      */
     @SuppressWarnings("RedundantThrows")
-    public int batchArrayGet(
+    int batchArrayGet(
             IV8ValueArray iV8ValueArray, V8Value[] v8Values, int startIndex, int endIndex)
             throws JavetException {
         return v8Native.batchArrayGet(
@@ -518,7 +525,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 2.2.0
      */
     @SuppressWarnings("RedundantThrows")
-    public int batchObjectGet(
+    int batchObjectGet(
             IV8ValueObject iV8ValueObject, V8Value[] v8ValueKeys, V8Value[] v8ValueValues, int length)
             throws JavetException {
         return v8Native.batchObjectGet(
@@ -587,9 +594,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public void close(boolean forceClose) throws JavetException {
         if (!isClosed() && forceClose) {
             removeAllReferences();
-            v8Host.closeV8Runtime(this);
-            handle = INVALID_HANDLE;
-            v8Native = null;
+            synchronized (closeLock) {
+                v8Host.closeV8Runtime(this);
+                handle = INVALID_HANDLE;
+                v8Native = null;
+            }
         }
     }
 
@@ -1367,6 +1376,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Gets close lock.
+     *
+     * @return the close lock
+     * @since 3.1.3
+     */
+    Object getCloseLock() {
+        return closeLock;
+    }
+
+    /**
      * Gets converter.
      *
      * @return the converter
@@ -1432,6 +1451,42 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public V8ValueGlobalObject getGlobalObject() throws JavetException {
         return (V8ValueGlobalObject) v8Native.getGlobalObject(handle);
+    }
+
+    /**
+     * Gets guard.
+     *
+     * @return the guard
+     * @since 3.1.3
+     */
+    @CheckReturnValue
+    public V8Guard getGuard() {
+        return new V8Guard(this);
+    }
+
+    /**
+     * Gets guard.
+     *
+     * @param timoutMillis the timout millis
+     * @return the guard
+     * @since 3.1.3
+     */
+    @CheckReturnValue
+    public V8Guard getGuard(long timoutMillis) {
+        return new V8Guard(this, timoutMillis);
+    }
+
+    /**
+     * Gets guard.
+     *
+     * @param timoutMillis     the timout millis
+     * @param debugModeEnabled the debug mode enabled
+     * @return the guard
+     * @since 3.1.3
+     */
+    @CheckReturnValue
+    public V8Guard getGuard(long timoutMillis, boolean debugModeEnabled) {
+        return new V8Guard(this, timoutMillis, debugModeEnabled);
     }
 
     /**
@@ -1515,6 +1570,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public V8HeapStatistics getV8HeapStatistics() {
         return (V8HeapStatistics) v8Native.getV8HeapStatistics(handle);
+    }
+
+    /**
+     * Gets V8 host.
+     *
+     * @return the V8 host
+     * @since 3.1.3
+     */
+    V8Host getV8Host() {
+        return v8Host;
     }
 
     /**
@@ -2262,7 +2327,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @return true : yes, false : no
      * @since 3.0.1
      */
-    public boolean moduleIsSourceTextModule(IV8Module iV8Module) {
+    boolean moduleIsSourceTextModule(IV8Module iV8Module) {
         return v8Native.moduleIsSourceTextModule(handle, iV8Module.getHandle(), iV8Module.getType().getId());
     }
 
@@ -2273,7 +2338,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @return true : yes, false : no
      * @since 3.0.1
      */
-    public boolean moduleIsSyntheticModule(IV8Module iV8Module) {
+    boolean moduleIsSyntheticModule(IV8Module iV8Module) {
         return v8Native.moduleIsSyntheticModule(handle, iV8Module.getHandle(), iV8Module.getType().getId());
     }
 
@@ -2590,6 +2655,28 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Object is frozen.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @return true : yes, false: no
+     * @since 3.1.3
+     */
+    public boolean objectIsFrozen(IV8ValueObject iV8ValueObject) {
+        return v8Native.objectIsFrozen(handle, Objects.requireNonNull(iV8ValueObject).getHandle());
+    }
+
+    /**
+     * Object is sealed.
+     *
+     * @param iV8ValueObject the V8 value object
+     * @return true : yes, false: no
+     * @since 3.1.3
+     */
+    public boolean objectIsSealed(IV8ValueObject iV8ValueObject) {
+        return v8Native.objectIsSealed(handle, Objects.requireNonNull(iV8ValueObject).getHandle());
+    }
+
+    /**
      * Sets a property of an object by a key
      *
      * @param iV8ValueObject the V8 value object
@@ -2601,7 +2688,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     boolean objectSet(IV8ValueObject iV8ValueObject, V8Value... v8Values) throws JavetException {
         assert v8Values.length > 0 && v8Values.length % 2 == 0 : ERROR_THE_KEY_VALUE_PAIR_MUST_MATCH;
-        return v8Native.objectSet(handle, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId(), v8Values);
+        return v8Native.objectSet(
+                handle,
+                Objects.requireNonNull(iV8ValueObject).getHandle(),
+                iV8ValueObject.getType().getId(),
+                v8Values);
     }
 
     /**

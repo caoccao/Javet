@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Tips" href="../tips/index.html" /><link rel="prev" title="Logging" href="logging.html" />
 
     <link rel="shortcut icon" href="../../_static/logo.ico"/><!-- Generated with Sphinx 7.3.6 and Furo 2024.01.29 -->
-        <title>Termination - Javet 3.1.2 documentation</title>
+        <title>Termination - Javet 3.1.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Javet 3.1.2 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Javet 3.1.3 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -151,7 +151,7 @@
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Javet 3.1.2 documentation</span>
+  <span class="sidebar-brand-text">Javet 3.1.3 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -306,14 +306,17 @@
           <section id="termination">
 <h1>Termination<a class="headerlink" href="#termination" title="Link to this heading">¶</a></h1>
 <p>Terminating scripts that run out of control is quite important in terms of protecting the applications from being attacked by malicious scripts. In Javet, there are 2 typical ways of terminating scripts.</p>
-<section id="automatic-termination-with-pool-and-engine">
-<h2>Automatic Termination with Pool and Engine<a class="headerlink" href="#automatic-termination-with-pool-and-engine" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">IJavetEngineGuard</span></code> is the built-in support for terminating a script which runs out of control.</p>
+<section id="automatic-termination">
+<h2>Automatic Termination<a class="headerlink" href="#automatic-termination" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">V8Guard</span></code> is the built-in support for terminating a script which runs out of control.</p>
+<section id="with-engine-pool">
+<h3>With Engine Pool<a class="headerlink" href="#with-engine-pool" title="Link to this heading">¶</a></h3>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Get an engine from the pool as usual.</span>
 <span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">IJavetEngine</span><span class="w"> </span><span class="n">iJavetEngine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iJavetEnginePool</span><span class="p">.</span><span class="na">getEngine</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">V8Runtime</span><span class="w"> </span><span class="n">v8Runtime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iJavetEngine</span><span class="p">.</span><span class="na">getV8Runtime</span><span class="p">();</span>
-<span class="w">    </span><span class="c1">// Get a guard from the engine and apply try-with-resource pattern.</span>
-<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">IJavetEngineGuard</span><span class="w"> </span><span class="n">iJavetEngineGuard</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iJavetEngine</span><span class="p">.</span><span class="na">getGuard</span><span class="p">(</span><span class="mi">10000</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Get a guard and apply try-with-resource pattern.</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">V8Guard</span><span class="w"> </span><span class="n">v8Guard</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iJavetEngine</span><span class="p">.</span><span class="na">getGuard</span><span class="p">(</span><span class="mi">10000</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">v8Guard</span><span class="p">.</span><span class="na">setDebugModeEnabled</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
 <span class="w">        </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;while (true) {}&quot;</span><span class="p">).</span><span class="na">executeVoid</span><span class="p">();</span>
 <span class="w">        </span><span class="c1">// That infinite loop will be terminated in 10 seconds by the guard.</span>
 <span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">JavetTerminatedException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -325,8 +328,34 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Does <code class="docutils literal notranslate"><span class="pre">IJavetEngineGuard</span></code> hang normal scripts till timeout is hit? No, it doesn't cause any overhead. If the script completes, <code class="docutils literal notranslate"><span class="pre">IJavetEngineGuard.close()</span></code> will be called via try-with-resource pattern and cancel the daemon thread immediately.</p>
-<p>Please refer to the <a class="reference external" href="https://github.com/caoccao/Javet/tree/main/1/2/3/../../../src/test/java/com/caoccao/javet/interop/engine/TestJavetEngineGuard.java">source code</a> for more detail.</p>
+<p>Please refer to the <a class="reference external" href="https://github.com/caoccao/Javet/tree/main/1/2/3/../../../src/test/java/com/caoccao/javet/interop/engine/TestJavetEnginePool.java">source code</a> for more detail.</p>
+</section>
+<section id="without-engine-pool">
+<h3>Without Engine Pool<a class="headerlink" href="#without-engine-pool" title="Link to this heading">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">V8Runtime</span><span class="w"> </span><span class="n">v8Runtime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Host</span><span class="p">.</span><span class="na">createV8Runtime</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">V8Guard</span><span class="w"> </span><span class="n">v8Guard</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGuard</span><span class="p">(</span><span class="mi">10000</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">v8Guard</span><span class="p">.</span><span class="na">setDebugModeEnabled</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="w">        </span><span class="n">assertEquals</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">v8Host</span><span class="p">.</span><span class="na">getV8GuardDaemon</span><span class="p">().</span><span class="na">getV8GuardQueue</span><span class="p">().</span><span class="na">size</span><span class="p">());</span>
+<span class="w">        </span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getExecutor</span><span class="p">(</span><span class="s">&quot;var count = 0; while (true) { ++count; }&quot;</span><span class="p">).</span><span class="na">executeVoid</span><span class="p">();</span>
+<span class="w">        </span><span class="n">fail</span><span class="p">(</span><span class="s">&quot;Failed to terminate execution.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">JavetException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">assertInstanceOf</span><span class="p">(</span><span class="n">JavetTerminatedException</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">);</span>
+<span class="w">        </span><span class="n">assertEquals</span><span class="p">(</span><span class="n">JavetError</span><span class="p">.</span><span class="na">ExecutionTerminated</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">getError</span><span class="p">());</span>
+<span class="w">        </span><span class="n">assertFalse</span><span class="p">(((</span><span class="n">JavetTerminatedException</span><span class="p">)</span><span class="w"> </span><span class="n">e</span><span class="p">).</span><span class="na">isContinuable</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">assertTrue</span><span class="p">(</span><span class="n">v8Runtime</span><span class="p">.</span><span class="na">getGlobalObject</span><span class="p">().</span><span class="na">getInteger</span><span class="p">(</span><span class="s">&quot;count&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Please refer to the <a class="reference external" href="https://github.com/caoccao/Javet/tree/main/1/2/3/../../../src/test/java/com/caoccao/javet/interop/TestV8Guard.java">source code</a> for more detail.</p>
+<p>How does <code class="docutils literal notranslate"><span class="pre">V8Guard</span></code> work internally? It adds itself to a priority queue held by <code class="docutils literal notranslate"><span class="pre">V8Host</span></code> which has a daemon thread doing the following:</p>
+<ul class="simple">
+<li><p>For each of the <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> in the queue.</p></li>
+<li><p>If the end time of a <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code> is before now, terminate that <code class="docutils literal notranslate"><span class="pre">V8Runtime</span></code>.</p></li>
+</ul>
+<p>There is only one daemon thread managing all the V8 runtime instances so that the overhead is fixed and the process is non-blocking.</p>
+<p>Does <code class="docutils literal notranslate"><span class="pre">V8Guard</span></code> hang normal scripts till timeout is hit? No, it doesn't cause any overhead. If the script completes, <code class="docutils literal notranslate"><span class="pre">V8Guard.close()</span></code> will be called via try-with-resource pattern and there will be no termination.</p>
+</section>
 </section>
 <section id="manual-termination">
 <h2>Manual Termination<a class="headerlink" href="#manual-termination" title="Link to this heading">¶</a></h2>
@@ -365,7 +394,7 @@
 </section>
 <section id="how-about-debug-mode">
 <h2>How about Debug Mode?<a class="headerlink" href="#how-about-debug-mode" title="Link to this heading">¶</a></h2>
-<p>Usually, when application is being debugged, <code class="docutils literal notranslate"><span class="pre">JavetEngineGuard</span></code> may easily interrupt the debug. No worry, <code class="docutils literal notranslate"><span class="pre">JavetEngineGuard</span></code> is by default disabled in debug mode. Please refer to <code class="docutils literal notranslate"><span class="pre">disableInDebugMode()</span></code> and <code class="docutils literal notranslate"><span class="pre">enableInDebugMode()</span></code> for details.</p>
+<p>Usually, when application is being debugged, <code class="docutils literal notranslate"><span class="pre">V8Guard</span></code> may easily interrupt the debug. No worry, <code class="docutils literal notranslate"><span class="pre">V8Guard</span></code> is by default disabled in debug mode. Please refer to <code class="docutils literal notranslate"><span class="pre">setDebugModeEnabled()</span></code> for details.</p>
 </section>
 </section>
 
@@ -424,7 +453,11 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Termination</a><ul>
-<li><a class="reference internal" href="#automatic-termination-with-pool-and-engine">Automatic Termination with Pool and Engine</a></li>
+<li><a class="reference internal" href="#automatic-termination">Automatic Termination</a><ul>
+<li><a class="reference internal" href="#with-engine-pool">With Engine Pool</a></li>
+<li><a class="reference internal" href="#without-engine-pool">Without Engine Pool</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#manual-termination">Manual Termination</a></li>
 <li><a class="reference internal" href="#how-about-debug-mode">How about Debug Mode?</a></li>
 </ul>
@@ -438,7 +471,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=88a8f739"></script>
+</div><script src="../../_static/documentation_options.js?v=f5d3a522"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>

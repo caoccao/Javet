@@ -25,6 +25,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueBoolean extends BaseTestJavetRuntime {
     @Test
+    public void testAsBoolean() throws JavetException {
+        assertTrue(v8Runtime.createV8ValueBoolean(true).asBoolean());
+        assertFalse(v8Runtime.createV8ValueBoolean(false).asBoolean());
+        assertTrue(v8Runtime.getExecutor("true").execute().asBoolean());
+        assertFalse(v8Runtime.getExecutor("false").execute().asBoolean());
+    }
+
+    @Test
     public void testAsInt() throws JavetException {
         assertEquals(0, v8Runtime.createV8ValueBoolean(false).asInt());
         assertEquals(1, v8Runtime.createV8ValueBoolean(true).asInt());
@@ -88,13 +96,5 @@ public class TestV8ValueBoolean extends BaseTestJavetRuntime {
         assertFalse(v8ValueBoolean.equals(null));
         assertFalse(v8ValueBoolean.equals(v8Runtime.createV8ValueBoolean(false)));
         assertFalse(v8ValueBoolean.equals(v8Runtime.createV8ValueUndefined()));
-    }
-
-    @Test
-    public void testIfTrue() throws JavetException {
-        assertTrue(v8Runtime.createV8ValueBoolean(true).asBoolean());
-        assertFalse(v8Runtime.createV8ValueBoolean(false).asBoolean());
-        assertTrue(v8Runtime.getExecutor("true").execute().asBoolean());
-        assertFalse(v8Runtime.getExecutor("false").execute().asBoolean());
     }
 }

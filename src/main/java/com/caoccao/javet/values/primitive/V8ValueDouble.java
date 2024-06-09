@@ -21,8 +21,6 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.IV8ValuePrimitiveValue;
 import com.caoccao.javet.values.reference.V8ValueDoubleObject;
 
-import java.math.BigDecimal;
-
 /**
  * The type V8 value double.
  *
@@ -32,7 +30,7 @@ import java.math.BigDecimal;
 public final class V8ValueDouble
         extends V8ValueNumber<Double>
         implements IV8ValuePrimitiveValue<V8ValueDoubleObject> {
-    private String cachedToString;
+    public static final String INFINITY = "Infinity";
 
     /**
      * Instantiates a new V8 value double.
@@ -55,7 +53,6 @@ public final class V8ValueDouble
      */
     public V8ValueDouble(V8Runtime v8Runtime, double value) throws JavetException {
         super(v8Runtime, value);
-        cachedToString = null;
     }
 
     @Override
@@ -131,9 +128,23 @@ public final class V8ValueDouble
 
     @Override
     public String toString() {
-        if (cachedToString == null) {
-            cachedToString = new BigDecimal(value.toString()).toPlainString();
+        return toString(10);
+    }
+
+    /**
+     * Number.prototype.toString()
+     * The toString() method of Number values returns a string representing this number value.
+     *
+     * @param radix An integer in the range 2 through 36 specifying the base to use for representing the number value.
+     *              Defaults to 10.
+     * @return the string
+     * @since 3.1.3
+     */
+    public String toString(int radix) {
+        try {
+            return checkV8Runtime().getExecutor("(" + value + ").toString(" + radix + ")").executeString();
+        } catch (JavetException e) {
+            return value.toString();
         }
-        return cachedToString;
     }
 }

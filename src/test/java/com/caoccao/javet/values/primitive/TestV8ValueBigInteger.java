@@ -27,6 +27,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueBigInteger extends BaseTestJavetRuntime {
     @Test
+    public void testAsBoolean() throws JavetException {
+        assertTrue(v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(1)).asBoolean());
+        assertFalse(v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(0)).asBoolean());
+    }
+
+    @Test
     public void testAsInt() throws JavetException {
         assertEquals(0, v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(0)).asInt());
         assertEquals(1, v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(1)).asInt());
@@ -43,7 +49,7 @@ public class TestV8ValueBigInteger extends BaseTestJavetRuntime {
             try (V8ValueBigInteger v8ValueBigInteger =
                          v8Runtime.getExecutor("-1n * (2n ** 65n) - " + deltaBigInteger + "n").execute()) {
                 assertNotNull(v8ValueBigInteger);
-                assertEquals(expectedBigInteger.toString(), v8ValueBigInteger.toString());
+                assertEquals(expectedBigInteger, v8ValueBigInteger.getValue());
                 assertEquals(-1, v8ValueBigInteger.getValue().signum());
                 assertEquals(-1, v8ValueBigInteger.getSignum());
                 v8Runtime.getGlobalObject().set("a", v8ValueBigInteger);
@@ -71,7 +77,7 @@ public class TestV8ValueBigInteger extends BaseTestJavetRuntime {
             try (V8ValueBigInteger v8ValueBigInteger =
                          v8Runtime.getExecutor("2n ** 65n + " + deltaBigInteger + "n").execute()) {
                 assertNotNull(v8ValueBigInteger);
-                assertEquals(expectedBigInteger.toString(), v8ValueBigInteger.toString());
+                assertEquals(expectedBigInteger, v8ValueBigInteger.getValue());
                 assertEquals(1, v8ValueBigInteger.getValue().signum());
                 assertEquals(1, v8ValueBigInteger.getSignum());
                 v8Runtime.getGlobalObject().set("a", v8ValueBigInteger);
@@ -93,8 +99,11 @@ public class TestV8ValueBigInteger extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testIfTrue() throws JavetException {
-        assertTrue(v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(1)).asBoolean());
-        assertFalse(v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(0)).asBoolean());
+    public void testToString() throws JavetException {
+        assertEquals("0", v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(0)).toString());
+        assertEquals("1", v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(1)).toString());
+        assertEquals("-1", v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(-1)).toString());
+        assertEquals("36893488147419103232", v8Runtime.getExecutor("2n**65n").execute().toString());
+        assertEquals("14", v8Runtime.createV8ValueBigInteger(BigInteger.valueOf(20)).toString(16));
     }
 }

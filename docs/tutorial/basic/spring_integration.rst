@@ -23,7 +23,6 @@ Configuration
             javetEngineConfigNode.setAllowEval(...);
             javetEngineConfigNode.setAutoSendGCNotification(...);
             javetEngineConfigNode.setDefaultEngineGuardTimeoutMillis(...);
-            javetEngineConfigNode.setEngineGuardCheckIntervalMillis(...);
             javetEngineConfigNode.setPoolDaemonCheckIntervalMillis(...);
             javetEngineConfigNode.setPoolIdleTimeoutSeconds(...);
             javetEngineConfigNode.setPoolMinSize(...);
@@ -41,7 +40,6 @@ Configuration
             javetEngineConfigV8.setAllowEval(...);
             javetEngineConfigV8.setAutoSendGCNotification(...);
             javetEngineConfigV8.setDefaultEngineGuardTimeoutMillis(...);
-            javetEngineConfigV8.setEngineGuardCheckIntervalMillis(...);
             javetEngineConfigV8.setPoolDaemonCheckIntervalMillis(...);
             javetEngineConfigV8.setPoolIdleTimeoutSeconds(...);
             javetEngineConfigV8.setPoolMinSize(...);

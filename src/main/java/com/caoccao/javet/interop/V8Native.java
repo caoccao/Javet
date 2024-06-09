@@ -431,6 +431,12 @@ class V8Native implements IV8Native {
             String functionName, boolean returnResult, Object[] values);
 
     @Override
+    public native boolean objectIsFrozen(long v8RuntimeHandle, long v8ValueHandle);
+
+    @Override
+    public native boolean objectIsSealed(long v8RuntimeHandle, long v8ValueHandle);
+
+    @Override
     public native boolean objectSet(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] keysAndValues);
 

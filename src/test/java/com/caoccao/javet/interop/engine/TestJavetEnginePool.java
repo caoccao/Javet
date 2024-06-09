@@ -21,13 +21,16 @@ import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.enums.V8AllocationSpace;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
+import com.caoccao.javet.exceptions.JavetTerminatedException;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interfaces.IJavetLogger;
+import com.caoccao.javet.interop.V8Guard;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics;
 import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
+import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.AfterEach;
@@ -35,13 +38,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -49,6 +51,7 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestJavetEnginePool extends BaseTestJavet {
+    public static final int TEST_ENGINE_GUARD_CHECK_INTERVAL_MILLIS = 1;
     public static final int TEST_POOL_DAEMON_CHECK_INTERVAL_MILLIS = 1;
     public static final int TEST_MAX_TIMEOUT = 1000;
     protected JavetEngineConfig javetEngineConfig;
@@ -81,6 +84,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
 
     @BeforeEach
     public void beforeEach() {
+        v8Host.setSleepIntervalMillis(TEST_ENGINE_GUARD_CHECK_INTERVAL_MILLIS);
         javetEnginePool = new JavetEnginePool<>();
         assertTrue(javetEnginePool.isActive());
         assertFalse(javetEnginePool.isClosed());
@@ -308,5 +312,76 @@ public class TestJavetEnginePool extends BaseTestJavet {
         assertEquals(1, javetEnginePool.getAverageCallbackContextCount());
         assertEquals(0, javetEnginePool.getAverageReferenceCount());
         JavetResourceUtils.safeClose(engines);
+    }
+
+    @Test
+    public void testTermination() throws JavetException {
+        // Get an engine from the pool as usual.
+        try (IJavetEngine<?> iJavetEngine = javetEnginePool.getEngine()) {
+            V8Runtime v8Runtime = iJavetEngine.getV8Runtime();
+            // Get a guard and apply try-with-resource pattern.
+            try (V8Guard v8Guard = iJavetEngine.getGuard(3)) {
+                v8Guard.setDebugModeEnabled(true);
+                v8Runtime.getExecutor("while (true) {}").executeVoid();
+                // That infinite loop will be terminated in 1 millisecond by the guard.
+            } catch (JavetTerminatedException e) {
+                // JavetTerminatedException will be thrown to mark that.
+                assertFalse(e.isContinuable());
+            }
+            assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger(),
+                    "The V8 runtime is not dead and is still able to execute code afterwards.");
+        }
+    }
+
+    @Test
+    @Tag("performance")
+    public void testTerminationMultiThreaded() throws InterruptedException {
+        final int threadCount = 5;
+        final List<Integer> expectedSequence = IntStream.range(0, threadCount).boxed().collect(Collectors.toList());
+        final List<Integer> newSequence = new ArrayList<>();
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+        final Object lock = new Object();
+        expectedSequence.forEach(i -> executorService.submit(() -> {
+            try (IJavetEngine<?> iJavetEngine = javetEnginePool.getEngine()) {
+                V8Runtime v8Runtime = iJavetEngine.getV8Runtime();
+                countDownLatch.countDown();
+                synchronized (lock) {
+                    lock.wait();
+                }
+                try (V8Guard v8Guard = v8Runtime.getGuard(10L * (i + 1))) {
+                    v8Guard.setDebugModeEnabled(true);
+                    v8Runtime.getExecutor("while (true) {}").executeVoid();
+                } catch (JavetTerminatedException e) {
+                    assertFalse(e.isContinuable());
+                }
+                synchronized (newSequence) {
+                    newSequence.add(i);
+                }
+            } catch (Exception e) {
+                fail(e);
+            }
+        }));
+        countDownLatch.await();
+        synchronized (lock) {
+            lock.notifyAll();
+        }
+        executorService.shutdown();
+        assertTrue(executorService.awaitTermination(10000, TimeUnit.MILLISECONDS));
+        assertEquals(expectedSequence, newSequence);
+    }
+
+    @Test
+    public void testWithoutTermination() throws JavetException {
+        final long timeoutMillis = 10000;
+        ZonedDateTime startZonedDateTime = JavetDateTimeUtils.getUTCNow();
+        try (IJavetEngine<?> iJavetEngine = javetEnginePool.getEngine();
+             V8Guard v8Guard = iJavetEngine.getGuard(timeoutMillis)) {
+            V8Runtime v8Runtime = iJavetEngine.getV8Runtime();
+            assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
+        }
+        ZonedDateTime endZonedDateTime = JavetDateTimeUtils.getUTCNow();
+        Duration duration = Duration.between(startZonedDateTime, endZonedDateTime);
+        assertTrue(duration.toMillis() < timeoutMillis);
     }
 }

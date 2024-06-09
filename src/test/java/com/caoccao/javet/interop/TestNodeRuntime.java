@@ -27,6 +27,7 @@ import com.caoccao.javet.node.modules.NodeModuleAny;
 import com.caoccao.javet.node.modules.NodeModuleProcess;
 import com.caoccao.javet.utils.JavetOSUtils;
 import com.caoccao.javet.values.reference.V8ValueArray;
+import com.caoccao.javet.values.reference.V8ValueError;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -194,7 +195,7 @@ public class TestNodeRuntime extends BaseTestJavet {
         Path path4 = nodeModuleProcess.getWorkingDirectory().toPath();
         assertNotEquals(path1.toAbsolutePath().toString(), path3.toAbsolutePath().toString());
         assertEquals(path1.toAbsolutePath().toString(), path4.toAbsolutePath().toString());
-        assertEquals("v20.13.1", nodeModuleProcess.getVersion());
+        assertEquals("v20.14.0", nodeModuleProcess.getVersion());
     }
 
     @Test
@@ -307,6 +308,20 @@ public class TestNodeRuntime extends BaseTestJavet {
             nodeRuntime.await();
             assertEquals("[1,2]", v8ValueArray.toJsonString(),
                     "setTimeout() has been executed after await().");
+        }
+    }
+
+    @Test
+    public void testUncaughtException() throws JavetException {
+        nodeRuntime.getExecutor("let a = [];\n" +
+                "process.on('uncaughtException', (error, origin) => {\n" +
+                "  a.push(origin, error);\n" +
+                "});").executeVoid();
+        nodeRuntime.getExecutor("setTimeout(() => { throw new Error('Error'); }, 0);").executeVoid();
+        nodeRuntime.await();
+        assertEquals("uncaughtException", nodeRuntime.getExecutor("a[0]").executeString());
+        try (V8ValueError v8ValueError = nodeRuntime.getExecutor("a[1]").execute()) {
+            assertEquals("Error", v8ValueError.getMessage());
         }
     }
 }

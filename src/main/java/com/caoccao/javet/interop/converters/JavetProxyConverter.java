@@ -28,8 +28,9 @@ import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueLong;
 import com.caoccao.javet.values.reference.IV8ValueObject;
-import com.caoccao.javet.values.reference.V8ValueFunction;
+import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueProxy;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInObject;
 
 import java.util.List;
 
@@ -98,21 +99,24 @@ public class JavetProxyConverter extends JavetObjectConverter {
             }
             try (V8Scope v8Scope = v8Runtime.getV8Scope()) {
                 V8ValueProxy v8ValueProxy;
-                switch (proxyMode) {
-                    case Class:
-                    case Function:
-                        try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(DUMMY_FUNCTION_STRING)) {
-                            v8ValueProxy = v8Scope.createV8ValueProxy(v8ValueFunction);
-                        }
-                        break;
-                    default:
-                        V8Value v8ValueTarget = null;
-                        try {
+                V8Value v8ValueTarget = null;
+                try {
+                    switch (proxyMode) {
+                        case Class:
+                            v8ValueTarget = JavetProxyPrototypeStore.createOrGetPrototype(
+                                    v8Runtime, proxyMode, (Class<?>) object);
+                            break;
+                        case Function:
+                            v8ValueTarget = JavetProxyPrototypeStore.createOrGetPrototype(
+                                    v8Runtime, proxyMode, objectClass);
+                            break;
+                        default:
                             if (object instanceof IJavetDirectProxyHandler<?>) {
                                 IJavetDirectProxyHandler<?> javetDirectProxyHandler = (IJavetDirectProxyHandler<?>) object;
                                 javetDirectProxyHandler.setV8Runtime(v8Runtime);
                                 v8ValueTarget = javetDirectProxyHandler.createTargetObject();
                             } else {
+                                V8ProxyMode v8ProxyMode = proxyMode;
                                 v8ValueTarget = getConfig().getProxyPlugins().stream()
                                         .filter(p -> p.isProxyable(objectClass))
                                         .findFirst()
@@ -124,13 +128,23 @@ public class JavetProxyConverter extends JavetObjectConverter {
                                             }
                                             return null;
                                         })
-                                        .orElse(null);
+                                        .orElseGet(() -> {
+                                            try (V8Value v8ValuePrototype = JavetProxyPrototypeStore.createOrGetPrototype(
+                                                    v8Runtime, v8ProxyMode, objectClass);
+                                                 V8ValueBuiltInObject v8ValueBuiltInObject =
+                                                         v8Runtime.getGlobalObject().getBuiltInObject();
+                                                 V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
+                                                return v8ValueBuiltInObject.setPrototypeOf(v8ValueObject, v8ValuePrototype);
+                                            } catch (Throwable ignored) {
+                                            }
+                                            return null;
+                                        });
                             }
-                            v8ValueProxy = v8Scope.createV8ValueProxy(v8ValueTarget);
-                        } finally {
-                            JavetResourceUtils.safeClose(v8ValueTarget);
-                        }
-                        break;
+                            break;
+                    }
+                    v8ValueProxy = v8Scope.createV8ValueProxy(v8ValueTarget);
+                } finally {
+                    JavetResourceUtils.safeClose(v8ValueTarget);
                 }
                 try (IV8ValueObject iV8ValueObjectHandler = v8ValueProxy.getHandler()) {
                     IJavetProxyHandler<?, ?> javetProxyHandler;

@@ -26,6 +26,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8ValueInteger extends BaseTestJavetRuntime {
     @Test
+    public void testAsBoolean() throws JavetException {
+        assertTrue(v8Runtime.createV8ValueInteger(1).asBoolean());
+        assertFalse(v8Runtime.createV8ValueInteger(0).asBoolean());
+        assertTrue(v8Runtime.getExecutor("1").execute().asBoolean());
+        assertFalse(v8Runtime.getExecutor("0").execute().asBoolean());
+    }
+
+    @Test
     public void testAsInt() throws JavetException {
         assertEquals(0, v8Runtime.createV8ValueInteger(0).asInt());
         assertEquals(1, v8Runtime.createV8ValueInteger(1).asInt());
@@ -38,14 +46,6 @@ public class TestV8ValueInteger extends BaseTestJavetRuntime {
         assertFalse(v8ValueInteger.equals(null));
         assertFalse(v8ValueInteger.equals(v8Runtime.createV8ValueInteger(2)));
         assertFalse(v8ValueInteger.equals(v8Runtime.createV8ValueLong(1)));
-    }
-
-    @Test
-    public void testIfTrue() throws JavetException {
-        assertTrue(v8Runtime.createV8ValueInteger(1).asBoolean());
-        assertFalse(v8Runtime.createV8ValueInteger(0).asBoolean());
-        assertTrue(v8Runtime.getExecutor("1").execute().asBoolean());
-        assertFalse(v8Runtime.getExecutor("0").execute().asBoolean());
     }
 
     @Test
@@ -92,5 +92,15 @@ public class TestV8ValueInteger extends BaseTestJavetRuntime {
         assertEquals(123L, v8Runtime.getExecutor("new Number(123)").executeLong());
         assertEquals("123", v8Runtime.getExecutor("123").executeString());
         assertEquals("123", v8Runtime.getExecutor("new Number(123)").executeString());
+    }
+
+    @Test
+    public void testToString() throws JavetException {
+        assertEquals("0", v8Runtime.createV8ValueInteger(0).toString());
+        assertEquals("1", v8Runtime.createV8ValueInteger(1).toString());
+        assertEquals("-1", v8Runtime.createV8ValueInteger(-1).toString());
+        assertEquals(Integer.toString(Integer.MAX_VALUE), v8Runtime.getExecutor("2**31-1").execute().toString());
+        assertEquals(Integer.toString(Integer.MIN_VALUE), v8Runtime.getExecutor("-(2**31)").execute().toString());
+        assertEquals("14", v8Runtime.createV8ValueInteger(20).toString(16));
     }
 }
