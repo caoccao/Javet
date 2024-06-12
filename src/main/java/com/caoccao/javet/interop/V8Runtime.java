@@ -51,6 +51,7 @@ import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.caoccao.javet.exceptions.JavetError.PARAMETER_FEATURE;
@@ -1553,23 +1554,22 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * Gets V8 heap space statistics by an allocation space.
      *
      * @param v8AllocationSpace the V8 allocation space
-     * @return the V8 heap space statistics
+     * @return the V8 heap space statistics in a complete future
      * @since 1.0.4
      */
-    public V8HeapSpaceStatistics getV8HeapSpaceStatistics(V8AllocationSpace v8AllocationSpace) {
-        Objects.requireNonNull(v8AllocationSpace);
-        return ((V8HeapSpaceStatistics) v8Native.getV8HeapSpaceStatistics(handle, v8AllocationSpace.getIndex()))
-                .setAllocationSpace(v8AllocationSpace);
+    public CompletableFuture<V8HeapSpaceStatistics> getV8HeapSpaceStatistics(V8AllocationSpace v8AllocationSpace) {
+        return (CompletableFuture<V8HeapSpaceStatistics>) v8Native.getV8HeapSpaceStatistics(
+                handle, Objects.requireNonNull(v8AllocationSpace));
     }
 
     /**
      * Gets V8 heap statistics.
      *
-     * @return the V8 heap statistics
+     * @return the V8 heap statistics in a complete future
      * @since 1.0.0
      */
-    public V8HeapStatistics getV8HeapStatistics() {
-        return (V8HeapStatistics) v8Native.getV8HeapStatistics(handle);
+    public CompletableFuture<V8HeapStatistics> getV8HeapStatistics() {
+        return (CompletableFuture<V8HeapStatistics>) v8Native.getV8HeapStatistics(handle);
     }
 
     /**

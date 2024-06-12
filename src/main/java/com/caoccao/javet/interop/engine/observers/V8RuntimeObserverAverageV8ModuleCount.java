@@ -68,9 +68,8 @@ public class V8RuntimeObserverAverageV8ModuleCount implements IV8RuntimeObserver
     }
 
     @Override
-    public boolean observe(V8Runtime v8Runtime) {
+    public void observe(V8Runtime v8Runtime) {
         v8ModuleCountList.add(v8Runtime.getV8ModuleCount());
-        return true;
     }
 
     @Override

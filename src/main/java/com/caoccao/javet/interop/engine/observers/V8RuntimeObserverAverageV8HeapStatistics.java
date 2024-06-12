@@ -21,6 +21,7 @@ import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * The type V8 runtime observer average V8 heap statistics.
@@ -29,11 +30,11 @@ import java.util.List;
  */
 public class V8RuntimeObserverAverageV8HeapStatistics implements IV8RuntimeObserver<V8HeapStatistics> {
     /**
-     * The V8 heap statistics list.
+     * The V8 heap statistics future list.
      *
      * @since 1.0.5
      */
-    protected final List<V8HeapStatistics> v8HeapStatisticsList;
+    protected final List<CompletableFuture<V8HeapStatistics>> v8HeapStatisticsFutureList;
 
     /**
      * Instantiates a new V8 runtime observer for average V8 heap statistics.
@@ -51,7 +52,7 @@ public class V8RuntimeObserverAverageV8HeapStatistics implements IV8RuntimeObser
      * @since 1.0.6
      */
     public V8RuntimeObserverAverageV8HeapStatistics(int capacity) {
-        v8HeapStatisticsList = new ArrayList<>(capacity);
+        v8HeapStatisticsFutureList = new ArrayList<>(capacity);
     }
 
     @Override
@@ -70,24 +71,28 @@ public class V8RuntimeObserverAverageV8HeapStatistics implements IV8RuntimeObser
         long totalPhysicalSize = 0;
         long usedGlobalHandlesSize = 0;
         long usedHeapSize = 0;
-        if (!v8HeapStatisticsList.isEmpty()) {
-            for (V8HeapStatistics v8HeapStatistics : v8HeapStatisticsList) {
-                doesZapGarbage += v8HeapStatistics.getDoesZapGarbage();
-                externalMemory += v8HeapStatistics.getExternalMemory();
-                heapSizeLimit += v8HeapStatistics.getHeapSizeLimit();
-                mallocedMemory += v8HeapStatistics.getMallocedMemory();
-                numberOfDetachedContexts += v8HeapStatistics.getNumberOfDetachedContexts();
-                numberOfNativeContexts += v8HeapStatistics.getNumberOfNativeContexts();
-                peakMallocedMemory += v8HeapStatistics.getPeakMallocedMemory();
-                totalAvailableSize += v8HeapStatistics.getTotalAvailableSize();
-                totalGlobalHandlesSize += v8HeapStatistics.getTotalGlobalHandlesSize();
-                totalHeapSize += v8HeapStatistics.getTotalHeapSize();
-                totalHeapSizeExecutable += v8HeapStatistics.getTotalHeapSizeExecutable();
-                totalPhysicalSize += v8HeapStatistics.getTotalPhysicalSize();
-                usedGlobalHandlesSize += v8HeapStatistics.getUsedGlobalHandlesSize();
-                usedHeapSize += v8HeapStatistics.getUsedHeapSize();
+        if (!v8HeapStatisticsFutureList.isEmpty()) {
+            for (CompletableFuture<V8HeapStatistics> v8HeapStatisticsFuture : v8HeapStatisticsFutureList) {
+                try {
+                    V8HeapStatistics v8HeapStatistics = v8HeapStatisticsFuture.join();
+                    doesZapGarbage += v8HeapStatistics.getDoesZapGarbage();
+                    externalMemory += v8HeapStatistics.getExternalMemory();
+                    heapSizeLimit += v8HeapStatistics.getHeapSizeLimit();
+                    mallocedMemory += v8HeapStatistics.getMallocedMemory();
+                    numberOfDetachedContexts += v8HeapStatistics.getNumberOfDetachedContexts();
+                    numberOfNativeContexts += v8HeapStatistics.getNumberOfNativeContexts();
+                    peakMallocedMemory += v8HeapStatistics.getPeakMallocedMemory();
+                    totalAvailableSize += v8HeapStatistics.getTotalAvailableSize();
+                    totalGlobalHandlesSize += v8HeapStatistics.getTotalGlobalHandlesSize();
+                    totalHeapSize += v8HeapStatistics.getTotalHeapSize();
+                    totalHeapSizeExecutable += v8HeapStatistics.getTotalHeapSizeExecutable();
+                    totalPhysicalSize += v8HeapStatistics.getTotalPhysicalSize();
+                    usedGlobalHandlesSize += v8HeapStatistics.getUsedGlobalHandlesSize();
+                    usedHeapSize += v8HeapStatistics.getUsedHeapSize();
+                } catch (Throwable ignored) {
+                }
             }
-            final int v8RuntimeCount = v8HeapStatisticsList.size();
+            final int v8RuntimeCount = v8HeapStatisticsFutureList.size();
             doesZapGarbage = doesZapGarbage / v8RuntimeCount;
             externalMemory = externalMemory / v8RuntimeCount;
             heapSizeLimit = heapSizeLimit / v8RuntimeCount;
@@ -121,13 +126,12 @@ public class V8RuntimeObserverAverageV8HeapStatistics implements IV8RuntimeObser
     }
 
     @Override
-    public boolean observe(V8Runtime v8Runtime) {
-        v8HeapStatisticsList.add(v8Runtime.getV8HeapStatistics());
-        return true;
+    public void observe(V8Runtime v8Runtime) {
+        v8HeapStatisticsFutureList.add(v8Runtime.getV8HeapStatistics());
     }
 
     @Override
     public void reset() {
-        v8HeapStatisticsList.clear();
+        v8HeapStatisticsFutureList.clear();
     }
 }

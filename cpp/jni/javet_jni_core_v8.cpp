@@ -145,7 +145,7 @@ JNIEXPORT jlongArray JNICALL Java_com_caoccao_javet_interop_V8Native_getInternal
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getV8HeapSpaceStatistics
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint allocationSpace) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject allocationSpace) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     return Javet::Monitor::GetHeapSpaceStatistics(jniEnv, v8Runtime->v8Isolate, allocationSpace);
 }

@@ -195,7 +195,7 @@ class V8Native implements IV8Native {
     public native long[] getInternalStatistic();
 
     @Override
-    public native Object getV8HeapSpaceStatistics(long v8RuntimeHandle, int allocationSpace);
+    public native Object getV8HeapSpaceStatistics(long v8RuntimeHandle, Object v8AllocationSpace);
 
     @Override
     public native Object getV8HeapStatistics(long v8RuntimeHandle);

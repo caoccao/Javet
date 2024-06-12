@@ -136,7 +136,7 @@ public interface IV8Native {
 
     long[] getInternalStatistic();
 
-    Object getV8HeapSpaceStatistics(long v8RuntimeHandle, int allocationSpace);
+    Object getV8HeapSpaceStatistics(long v8RuntimeHandle, Object v8AllocationSpace);
 
     Object getV8HeapStatistics(long v8RuntimeHandle);
 

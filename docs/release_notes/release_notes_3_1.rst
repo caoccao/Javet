@@ -5,6 +5,8 @@ Release Notes 3.1.x
 3.1.4 V8 v12.7
 --------------
 
+* Rewrote ``getV8HeapStatistics()``, ``getV8HeapSpaceStatistics()`` for ``V8Runtime`` to remediate the racing condition
+
 3.1.3 V8 v12.6
 --------------
 

@@ -24,6 +24,7 @@ import com.caoccao.javet.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * The type V8 runtime observer average V8 heap space statistics.
@@ -38,11 +39,11 @@ public class V8RuntimeObserverAverageV8HeapSpaceStatistics implements IV8Runtime
      */
     protected final V8AllocationSpace v8AllocationSpace;
     /**
-     * The V8 heap space statistics list.
+     * The V8 heap space statistics future list.
      *
      * @since 1.0.5
      */
-    protected final List<V8HeapSpaceStatistics> v8HeapSpaceStatisticsList;
+    protected final List<CompletableFuture<V8HeapSpaceStatistics>> v8HeapSpaceStatisticsFutureList;
 
     /**
      * Instantiates a new V8 runtime observer for average V8 heap space statistics.
@@ -63,7 +64,7 @@ public class V8RuntimeObserverAverageV8HeapSpaceStatistics implements IV8Runtime
      */
     public V8RuntimeObserverAverageV8HeapSpaceStatistics(V8AllocationSpace v8AllocationSpace, int capacity) {
         this.v8AllocationSpace = Objects.requireNonNull(v8AllocationSpace);
-        v8HeapSpaceStatisticsList = new ArrayList<>(capacity);
+        v8HeapSpaceStatisticsFutureList = new ArrayList<>(capacity);
     }
 
     @Override
@@ -73,17 +74,21 @@ public class V8RuntimeObserverAverageV8HeapSpaceStatistics implements IV8Runtime
         String spaceName = StringUtils.EMPTY;
         long spaceSize = 0;
         long spaceUsedSize = 0;
-        if (!v8HeapSpaceStatisticsList.isEmpty()) {
-            for (V8HeapSpaceStatistics v8HeapSpaceStatistics : v8HeapSpaceStatisticsList) {
-                if (spaceName.isEmpty()) {
-                    spaceName = v8HeapSpaceStatistics.getSpaceName();
+        if (!v8HeapSpaceStatisticsFutureList.isEmpty()) {
+            for (CompletableFuture<V8HeapSpaceStatistics> v8HeapSpaceStatisticsFuture : v8HeapSpaceStatisticsFutureList) {
+                try {
+                    V8HeapSpaceStatistics v8HeapSpaceStatistics = v8HeapSpaceStatisticsFuture.join();
+                    if (spaceName.isEmpty()) {
+                        spaceName = v8HeapSpaceStatistics.getSpaceName();
+                    }
+                    physicalSpaceSize += v8HeapSpaceStatistics.getPhysicalSpaceSize();
+                    spaceAvailableSize += v8HeapSpaceStatistics.getSpaceAvailableSize();
+                    spaceSize += v8HeapSpaceStatistics.getSpaceSize();
+                    spaceUsedSize += v8HeapSpaceStatistics.getSpaceUsedSize();
+                } catch (Throwable ignored) {
                 }
-                physicalSpaceSize += v8HeapSpaceStatistics.getPhysicalSpaceSize();
-                spaceAvailableSize += v8HeapSpaceStatistics.getSpaceAvailableSize();
-                spaceSize += v8HeapSpaceStatistics.getSpaceSize();
-                spaceUsedSize += v8HeapSpaceStatistics.getSpaceUsedSize();
             }
-            final int v8RuntimeCount = v8HeapSpaceStatisticsList.size();
+            final int v8RuntimeCount = v8HeapSpaceStatisticsFutureList.size();
             physicalSpaceSize = physicalSpaceSize / v8RuntimeCount;
             spaceAvailableSize = spaceAvailableSize / v8RuntimeCount;
             spaceSize = spaceSize / v8RuntimeCount;
@@ -98,13 +103,12 @@ public class V8RuntimeObserverAverageV8HeapSpaceStatistics implements IV8Runtime
     }
 
     @Override
-    public boolean observe(V8Runtime v8Runtime) {
-        v8HeapSpaceStatisticsList.add(v8Runtime.getV8HeapSpaceStatistics(v8AllocationSpace));
-        return true;
+    public void observe(V8Runtime v8Runtime) {
+        v8HeapSpaceStatisticsFutureList.add(v8Runtime.getV8HeapSpaceStatistics(v8AllocationSpace));
     }
 
     @Override
     public void reset() {
-        v8HeapSpaceStatisticsList.clear();
+        v8HeapSpaceStatisticsFutureList.clear();
     }
 }

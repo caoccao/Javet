@@ -49,8 +49,8 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
         long[] counters = v8Host.getInternalStatistic();
         if (counters != null) {
             assertArrayEquals(
-                    Arrays.copyOfRange(counters, 1, 7),
-                    Arrays.copyOfRange(counters, 7, 13));
+                    Arrays.copyOfRange(counters, 1, 8),
+                    Arrays.copyOfRange(counters, 8, 15));
         }
         v8Host.clearInternalStatistic();
         assertEquals(0, v8Host.getV8RuntimeCount());

@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,8 +50,9 @@ public class TestV8HeapStatistics extends BaseTestJavetRuntime {
 
     @Test
     public void testGetV8HeapStatistics() {
-        V8HeapStatistics v8HeapStatistics = v8Runtime.getV8HeapStatistics();
-        assertNotNull(v8HeapStatistics);
+        CompletableFuture<V8HeapStatistics> v8HeapStatisticsFuture = v8Runtime.getV8HeapStatistics();
+        assertTrue(v8HeapStatisticsFuture.isDone());
+        V8HeapStatistics v8HeapStatistics = v8HeapStatisticsFuture.join();
         String detailString = v8HeapStatistics.toString();
         assertNotNull(detailString);
         assertEquals(0, v8HeapStatistics.getDoesZapGarbage());
