@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The type V8 runtime observer average V8 heap space statistics.
@@ -32,6 +33,24 @@ import java.util.concurrent.CompletableFuture;
  * @since 1.0.5
  */
 public class V8RuntimeObserverAverageV8HeapSpaceStatistics implements IV8RuntimeObserver<V8HeapSpaceStatistics> {
+    /**
+     * The constant DEFAULT_CAPACITY.
+     *
+     * @since 3.1.4
+     */
+    protected static final int DEFAULT_CAPACITY = 256;
+    /**
+     * The constant DEFAULT_TIMEOUT_MILLIS.
+     *
+     * @since 3.1.4
+     */
+    protected static final int DEFAULT_TIMEOUT_MILLIS = 5000;
+    /**
+     * The Timeout millis.
+     *
+     * @since 3.1.4
+     */
+    protected final int timeoutMillis;
     /**
      * The V8 allocation space.
      *
@@ -52,7 +71,7 @@ public class V8RuntimeObserverAverageV8HeapSpaceStatistics implements IV8Runtime
      * @since 1.0.5
      */
     public V8RuntimeObserverAverageV8HeapSpaceStatistics(V8AllocationSpace v8AllocationSpace) {
-        this(v8AllocationSpace, 256);
+        this(v8AllocationSpace, DEFAULT_CAPACITY, DEFAULT_TIMEOUT_MILLIS);
     }
 
     /**
@@ -60,10 +79,15 @@ public class V8RuntimeObserverAverageV8HeapSpaceStatistics implements IV8Runtime
      *
      * @param v8AllocationSpace the V8 allocation space
      * @param capacity          the capacity
+     * @param timeoutMillis     the timeout millis
      * @since 1.0.6
      */
-    public V8RuntimeObserverAverageV8HeapSpaceStatistics(V8AllocationSpace v8AllocationSpace, int capacity) {
+    public V8RuntimeObserverAverageV8HeapSpaceStatistics(
+            V8AllocationSpace v8AllocationSpace,
+            int capacity,
+            int timeoutMillis) {
         this.v8AllocationSpace = Objects.requireNonNull(v8AllocationSpace);
+        this.timeoutMillis = timeoutMillis;
         v8HeapSpaceStatisticsFutureList = new ArrayList<>(capacity);
     }
 
@@ -75,24 +99,33 @@ public class V8RuntimeObserverAverageV8HeapSpaceStatistics implements IV8Runtime
         long spaceSize = 0;
         long spaceUsedSize = 0;
         if (!v8HeapSpaceStatisticsFutureList.isEmpty()) {
+            int count = 0;
+            final long expectedEndTime = System.currentTimeMillis() + timeoutMillis;
             for (CompletableFuture<V8HeapSpaceStatistics> v8HeapSpaceStatisticsFuture : v8HeapSpaceStatisticsFutureList) {
                 try {
-                    V8HeapSpaceStatistics v8HeapSpaceStatistics = v8HeapSpaceStatisticsFuture.join();
-                    if (spaceName.isEmpty()) {
-                        spaceName = v8HeapSpaceStatistics.getSpaceName();
+                    final long now = System.currentTimeMillis();
+                    V8HeapSpaceStatistics v8HeapSpaceStatistics = now < expectedEndTime
+                            ? v8HeapSpaceStatisticsFuture.get(expectedEndTime - now, TimeUnit.MILLISECONDS)
+                            : v8HeapSpaceStatisticsFuture.getNow(null);
+                    if (v8HeapSpaceStatistics != null) {
+                        if (spaceName.isEmpty()) {
+                            spaceName = v8HeapSpaceStatistics.getSpaceName();
+                        }
+                        physicalSpaceSize += v8HeapSpaceStatistics.getPhysicalSpaceSize();
+                        spaceAvailableSize += v8HeapSpaceStatistics.getSpaceAvailableSize();
+                        spaceSize += v8HeapSpaceStatistics.getSpaceSize();
+                        spaceUsedSize += v8HeapSpaceStatistics.getSpaceUsedSize();
+                        ++count;
                     }
-                    physicalSpaceSize += v8HeapSpaceStatistics.getPhysicalSpaceSize();
-                    spaceAvailableSize += v8HeapSpaceStatistics.getSpaceAvailableSize();
-                    spaceSize += v8HeapSpaceStatistics.getSpaceSize();
-                    spaceUsedSize += v8HeapSpaceStatistics.getSpaceUsedSize();
                 } catch (Throwable ignored) {
                 }
             }
-            final int v8RuntimeCount = v8HeapSpaceStatisticsFutureList.size();
-            physicalSpaceSize = physicalSpaceSize / v8RuntimeCount;
-            spaceAvailableSize = spaceAvailableSize / v8RuntimeCount;
-            spaceSize = spaceSize / v8RuntimeCount;
-            spaceUsedSize = spaceUsedSize / v8RuntimeCount;
+            if (count > 0) {
+                physicalSpaceSize = physicalSpaceSize / count;
+                spaceAvailableSize = spaceAvailableSize / count;
+                spaceSize = spaceSize / count;
+                spaceUsedSize = spaceUsedSize / count;
+            }
         }
         return new V8HeapSpaceStatistics(
                 spaceName,

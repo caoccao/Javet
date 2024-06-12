@@ -22,6 +22,7 @@ import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The type V8 runtime observer average V8 heap statistics.
@@ -29,6 +30,24 @@ import java.util.concurrent.CompletableFuture;
  * @since 1.0.5
  */
 public class V8RuntimeObserverAverageV8HeapStatistics implements IV8RuntimeObserver<V8HeapStatistics> {
+    /**
+     * The constant DEFAULT_CAPACITY.
+     *
+     * @since 3.1.4
+     */
+    protected static final int DEFAULT_CAPACITY = 256;
+    /**
+     * The constant DEFAULT_TIMEOUT_MILLIS.
+     *
+     * @since 3.1.4
+     */
+    protected static final int DEFAULT_TIMEOUT_MILLIS = 5000;
+    /**
+     * The Timeout millis.
+     *
+     * @since 3.1.4
+     */
+    protected final int timeoutMillis;
     /**
      * The V8 heap statistics future list.
      *
@@ -42,16 +61,18 @@ public class V8RuntimeObserverAverageV8HeapStatistics implements IV8RuntimeObser
      * @since 1.0.5
      */
     public V8RuntimeObserverAverageV8HeapStatistics() {
-        this(256);
+        this(DEFAULT_CAPACITY, DEFAULT_TIMEOUT_MILLIS);
     }
 
     /**
      * Instantiates a new V8 runtime observer for average V8 heap statistics.
      *
-     * @param capacity the capacity
+     * @param capacity      the capacity
+     * @param timeoutMillis the timeout millis
      * @since 1.0.6
      */
-    public V8RuntimeObserverAverageV8HeapStatistics(int capacity) {
+    public V8RuntimeObserverAverageV8HeapStatistics(int capacity, int timeoutMillis) {
+        this.timeoutMillis = timeoutMillis;
         v8HeapStatisticsFutureList = new ArrayList<>(capacity);
     }
 
@@ -72,41 +93,50 @@ public class V8RuntimeObserverAverageV8HeapStatistics implements IV8RuntimeObser
         long usedGlobalHandlesSize = 0;
         long usedHeapSize = 0;
         if (!v8HeapStatisticsFutureList.isEmpty()) {
+            int count = 0;
+            final long expectedEndTime = System.currentTimeMillis() + timeoutMillis;
             for (CompletableFuture<V8HeapStatistics> v8HeapStatisticsFuture : v8HeapStatisticsFutureList) {
                 try {
-                    V8HeapStatistics v8HeapStatistics = v8HeapStatisticsFuture.join();
-                    doesZapGarbage += v8HeapStatistics.getDoesZapGarbage();
-                    externalMemory += v8HeapStatistics.getExternalMemory();
-                    heapSizeLimit += v8HeapStatistics.getHeapSizeLimit();
-                    mallocedMemory += v8HeapStatistics.getMallocedMemory();
-                    numberOfDetachedContexts += v8HeapStatistics.getNumberOfDetachedContexts();
-                    numberOfNativeContexts += v8HeapStatistics.getNumberOfNativeContexts();
-                    peakMallocedMemory += v8HeapStatistics.getPeakMallocedMemory();
-                    totalAvailableSize += v8HeapStatistics.getTotalAvailableSize();
-                    totalGlobalHandlesSize += v8HeapStatistics.getTotalGlobalHandlesSize();
-                    totalHeapSize += v8HeapStatistics.getTotalHeapSize();
-                    totalHeapSizeExecutable += v8HeapStatistics.getTotalHeapSizeExecutable();
-                    totalPhysicalSize += v8HeapStatistics.getTotalPhysicalSize();
-                    usedGlobalHandlesSize += v8HeapStatistics.getUsedGlobalHandlesSize();
-                    usedHeapSize += v8HeapStatistics.getUsedHeapSize();
+                    final long now = System.currentTimeMillis();
+                    V8HeapStatistics v8HeapStatistics = now < expectedEndTime
+                            ? v8HeapStatisticsFuture.get(expectedEndTime - now, TimeUnit.MILLISECONDS)
+                            : v8HeapStatisticsFuture.getNow(null);
+                    if (v8HeapStatistics != null) {
+                        doesZapGarbage += v8HeapStatistics.getDoesZapGarbage();
+                        externalMemory += v8HeapStatistics.getExternalMemory();
+                        heapSizeLimit += v8HeapStatistics.getHeapSizeLimit();
+                        mallocedMemory += v8HeapStatistics.getMallocedMemory();
+                        numberOfDetachedContexts += v8HeapStatistics.getNumberOfDetachedContexts();
+                        numberOfNativeContexts += v8HeapStatistics.getNumberOfNativeContexts();
+                        peakMallocedMemory += v8HeapStatistics.getPeakMallocedMemory();
+                        totalAvailableSize += v8HeapStatistics.getTotalAvailableSize();
+                        totalGlobalHandlesSize += v8HeapStatistics.getTotalGlobalHandlesSize();
+                        totalHeapSize += v8HeapStatistics.getTotalHeapSize();
+                        totalHeapSizeExecutable += v8HeapStatistics.getTotalHeapSizeExecutable();
+                        totalPhysicalSize += v8HeapStatistics.getTotalPhysicalSize();
+                        usedGlobalHandlesSize += v8HeapStatistics.getUsedGlobalHandlesSize();
+                        usedHeapSize += v8HeapStatistics.getUsedHeapSize();
+                        ++count;
+                    }
                 } catch (Throwable ignored) {
                 }
             }
-            final int v8RuntimeCount = v8HeapStatisticsFutureList.size();
-            doesZapGarbage = doesZapGarbage / v8RuntimeCount;
-            externalMemory = externalMemory / v8RuntimeCount;
-            heapSizeLimit = heapSizeLimit / v8RuntimeCount;
-            mallocedMemory = mallocedMemory / v8RuntimeCount;
-            numberOfDetachedContexts = numberOfDetachedContexts / v8RuntimeCount;
-            numberOfNativeContexts = numberOfNativeContexts / v8RuntimeCount;
-            peakMallocedMemory = peakMallocedMemory / v8RuntimeCount;
-            totalAvailableSize = totalAvailableSize / v8RuntimeCount;
-            totalGlobalHandlesSize = totalGlobalHandlesSize / v8RuntimeCount;
-            totalHeapSize = totalHeapSize / v8RuntimeCount;
-            totalHeapSizeExecutable = totalHeapSizeExecutable / v8RuntimeCount;
-            totalPhysicalSize = totalPhysicalSize / v8RuntimeCount;
-            usedGlobalHandlesSize = usedGlobalHandlesSize / v8RuntimeCount;
-            usedHeapSize = usedHeapSize / v8RuntimeCount;
+            if (count > 0) {
+                doesZapGarbage = doesZapGarbage / count;
+                externalMemory = externalMemory / count;
+                heapSizeLimit = heapSizeLimit / count;
+                mallocedMemory = mallocedMemory / count;
+                numberOfDetachedContexts = numberOfDetachedContexts / count;
+                numberOfNativeContexts = numberOfNativeContexts / count;
+                peakMallocedMemory = peakMallocedMemory / count;
+                totalAvailableSize = totalAvailableSize / count;
+                totalGlobalHandlesSize = totalGlobalHandlesSize / count;
+                totalHeapSize = totalHeapSize / count;
+                totalHeapSizeExecutable = totalHeapSizeExecutable / count;
+                totalPhysicalSize = totalPhysicalSize / count;
+                usedGlobalHandlesSize = usedGlobalHandlesSize / count;
+                usedHeapSize = usedHeapSize / count;
+            }
         }
         return new V8HeapStatistics(
                 doesZapGarbage,

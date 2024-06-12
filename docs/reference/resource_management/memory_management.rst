@@ -256,4 +256,5 @@ V8 exposes quite a few statistics for applications to analyze the memory usage, 
 
 .. note::
 
-    More statistics will be exposed in new releases. Please file issues if you need more of them.
+    * If the ``V8Runtime`` is in use, calling ``getV8HeapSpaceStatistics()`` and ``getV8HeapStatistics()`` may take a slight chance (a race condition) to have tiny memory leak. Please refer to this `issue <https://issues.chromium.org/issues/345822325>`_ for details. It's recommended to call them when the ``V8Runtime`` is idle.
+    * More statistics will be exposed in new releases. Please file issues if you need more of them.

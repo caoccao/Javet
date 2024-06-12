@@ -38,6 +38,12 @@ public final class JavetEngineConfig {
      */
     public static final JSRuntimeType DEFAULT_JS_RUNTIME_TYPE = JSRuntimeType.V8;
     /**
+     * The constant DEFAULT_OBSERVER_TIMEOUT_MILLIS.
+     *
+     * @since 3.1.4
+     */
+    public static final int DEFAULT_OBSERVER_TIMEOUT_MILLIS = 5000;
+    /**
      * The constant DEFAULT_POOL_MIN_SIZE.
      *
      * @since 0.7.0
@@ -56,17 +62,17 @@ public final class JavetEngineConfig {
      */
     public static final int DEFAULT_POOL_DAEMON_CHECK_INTERVAL_MILLIS = 1000;
     /**
-     * The constant DEFAULT_RESET_ENGINE_TIMEOUT_SECONDS.
-     *
-     * @since 0.7.0
-     */
-    public static final int DEFAULT_RESET_ENGINE_TIMEOUT_SECONDS = 3600;
-    /**
      * The constant DEFAULT_POOL_SHUTDOWN_TIMEOUT_SECONDS.
      *
      * @since 0.7.2
      */
     public static final int DEFAULT_POOL_SHUTDOWN_TIMEOUT_SECONDS = 5;
+    /**
+     * The constant DEFAULT_RESET_ENGINE_TIMEOUT_SECONDS.
+     *
+     * @since 0.7.0
+     */
+    public static final int DEFAULT_RESET_ENGINE_TIMEOUT_SECONDS = 3600;
     /**
      * The constant DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_MILLIS.
      *
@@ -74,17 +80,17 @@ public final class JavetEngineConfig {
      */
     public static final int DEFAULT_WAIT_FOR_ENGINE_LOG_INTERVAL_MILLIS = 1000;
     /**
-     * The constant MAX_POOL_SIZE.
-     *
-     * @since 1.0.4
-     */
-    public static final int MAX_POOL_SIZE = 4096;
-    /**
      * The constant DEFAULT_WAIT_FOR_ENGINE_MAX_RETRY_COUNT.
      *
      * @since 1.1.6
      */
     public static final int DEFAULT_WAIT_FOR_ENGINE_MAX_RETRY_COUNT = 500;
+    /**
+     * The constant MAX_POOL_SIZE.
+     *
+     * @since 1.0.4
+     */
+    public static final int MAX_POOL_SIZE = 4096;
     /**
      * The constant DEFAULT_WAIT_FOR_ENGINE_SHEEP_INTERVAL_MILLIS.
      *
@@ -104,6 +110,7 @@ public final class JavetEngineConfig {
     private String globalName;
     private IJavetLogger javetLogger;
     private JSRuntimeType jsRuntimeType;
+    private int observerTimeoutMillis;
     private int poolDaemonCheckIntervalMillis;
     private int poolIdleTimeoutSeconds;
     private int poolMaxSize;
@@ -191,6 +198,16 @@ public final class JavetEngineConfig {
      */
     public IJavetLogger getJavetLogger() {
         return javetLogger;
+    }
+
+    /**
+     * Gets observer timeout millis.
+     *
+     * @return the observer timeout millis
+     * @since 3.1.4
+     */
+    public int getObserverTimeoutMillis() {
+        return observerTimeoutMillis;
     }
 
     /**
@@ -332,6 +349,7 @@ public final class JavetEngineConfig {
      * @return the self
      * @since 0.9.1
      */
+    @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setAutoSendGCNotification(boolean autoSendGCNotification) {
         this.autoSendGCNotification = autoSendGCNotification;
         return this;
@@ -344,6 +362,7 @@ public final class JavetEngineConfig {
      * @return the self
      * @since 0.7.2
      */
+    @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setDefaultEngineGuardTimeoutMillis(int defaultEngineGuardTimeoutMillis) {
         assert defaultEngineGuardTimeoutMillis > 0 : "The default engine guard timeout millis must be greater than 0.";
         this.defaultEngineGuardTimeoutMillis = defaultEngineGuardTimeoutMillis;
@@ -357,6 +376,7 @@ public final class JavetEngineConfig {
      * @return the self
      * @since 0.9.1
      */
+    @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setGCBeforeEngineClose(boolean gcBeforeEngineClose) {
         this.gcBeforeEngineClose = gcBeforeEngineClose;
         return this;
@@ -369,6 +389,7 @@ public final class JavetEngineConfig {
      * @return the self
      * @since 0.9.1
      */
+    @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setGlobalName(String globalName) {
         this.globalName = globalName;
         return this;
@@ -381,6 +402,7 @@ public final class JavetEngineConfig {
      * @return the self
      * @since 0.9.1
      */
+    @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setJSRuntimeType(JSRuntimeType jsRuntimeType) {
         this.jsRuntimeType = Objects.requireNonNull(jsRuntimeType);
         return this;
@@ -393,8 +415,23 @@ public final class JavetEngineConfig {
      * @return the self
      * @since 0.7.0
      */
+    @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setJavetLogger(IJavetLogger javetLogger) {
         this.javetLogger = Objects.requireNonNull(javetLogger);
+        return this;
+    }
+
+    /**
+     * Sets observer timeout millis.
+     *
+     * @param observerTimeoutMillis the observer timeout millis
+     * @return the self
+     * @since 3.1.4
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public JavetEngineConfig setObserverTimeoutMillis(int observerTimeoutMillis) {
+        assert observerTimeoutMillis > 0 : "The observer timeout millis must be greater than 0.";
+        this.observerTimeoutMillis = observerTimeoutMillis;
         return this;
     }
 
@@ -419,6 +456,7 @@ public final class JavetEngineConfig {
      * @return the self
      * @since 0.9.1
      */
+    @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setPoolIdleTimeoutSeconds(int poolIdleTimeoutSeconds) {
         assert poolIdleTimeoutSeconds > 0 : "The pool idle timeout seconds must be greater than 0.";
         this.poolIdleTimeoutSeconds = poolIdleTimeoutSeconds;
@@ -432,6 +470,7 @@ public final class JavetEngineConfig {
      * @return the self
      * @since 0.9.1
      */
+    @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setPoolMaxSize(int poolMaxSize) {
         assert poolMaxSize > 0 : "Pool max size must be greater than 0.";
         assert poolMaxSize <= MAX_POOL_SIZE : "Pool max size must be no greater than " + MAX_POOL_SIZE + ".";
@@ -448,6 +487,7 @@ public final class JavetEngineConfig {
      * @return the self
      * @since 0.7.0
      */
+    @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setPoolMinSize(int poolMinSize) {
         assert poolMinSize > 0 : "Pool min size must be greater than 0.";
         assert poolMinSize <= MAX_POOL_SIZE : "Pool min size must be no greater than " + MAX_POOL_SIZE + ".";
@@ -464,6 +504,7 @@ public final class JavetEngineConfig {
      * @return the self
      * @since 0.9.1
      */
+    @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setPoolShutdownTimeoutSeconds(int poolShutdownTimeoutSeconds) {
         assert poolShutdownTimeoutSeconds > 0 : "The pool shutdown timeout seconds must be greater than 0.";
         this.poolShutdownTimeoutSeconds = poolShutdownTimeoutSeconds;
@@ -477,6 +518,7 @@ public final class JavetEngineConfig {
      * @return the self
      * @since 0.9.1
      */
+    @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setResetEngineTimeoutSeconds(int resetEngineTimeoutSeconds) {
         assert resetEngineTimeoutSeconds > 0 : "The reset engine timeout seconds must be greater than 0.";
         this.resetEngineTimeoutSeconds = resetEngineTimeoutSeconds;
@@ -490,7 +532,9 @@ public final class JavetEngineConfig {
      * @return the self
      * @since 1.0.5
      */
+    @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setWaitForEngineLogIntervalMillis(int waitForEngineLogIntervalMillis) {
+        assert waitForEngineLogIntervalMillis > 0 : "The wait for engine log interval millis must be greater than 0.";
         this.waitForEngineLogIntervalMillis = waitForEngineLogIntervalMillis;
         return this;
     }
@@ -502,7 +546,9 @@ public final class JavetEngineConfig {
      * @return the self
      * @since 1.1.6
      */
+    @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setWaitForEngineMaxRetryCount(int waitForEngineMaxRetryCount) {
+        assert waitForEngineMaxRetryCount >= 0 : "The wait for engine max retry count must be no less than 0.";
         this.waitForEngineMaxRetryCount = waitForEngineMaxRetryCount;
         return this;
     }
@@ -514,6 +560,7 @@ public final class JavetEngineConfig {
      * @return the self
      * @since 1.0.5
      */
+    @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setWaitForEngineSleepIntervalMillis(int[] waitForEngineSleepIntervalMillis) {
         Objects.requireNonNull(waitForEngineSleepIntervalMillis);
         assert waitForEngineSleepIntervalMillis.length > 0;
