@@ -132,7 +132,7 @@ Hello Javet
 Sponsors
 ========
 
-`HiveMQ <https://www.hivemq.com/>`_
+`HiveMQ <https://www.hivemq.com/>`_ | `SheetJS <https://www.sheetjs.com/>`_
 
 License
 =======
