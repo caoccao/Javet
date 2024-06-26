@@ -32,9 +32,10 @@ namespace Javet {
         static jclass jclassV8AllocationSpace;
         static jmethodID jmethodIDV8AllocationSpaceGetIndex;
 
-        static jclass jclassCompletableFuture;
-        static jmethodID jmethodIDCompletableFutureConstructor;
-        static jmethodID jmethodIDCompletableFutureComplete;
+        static jclass jclassV8StatisticsFuture;
+        static jmethodID jmethodIDV8StatisticsFutureConstructor;
+        static jmethodID jmethodIDV8StatisticsFutureComplete;
+        static jmethodID jmethodIDV8StatisticsFutureSetHandle;
 
         static jclass jclassV8HeapSpaceStatistics;
         static jmethodID jmethodIDV8HeapSpaceStatisticsConstructor;
