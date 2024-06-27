@@ -53,7 +53,6 @@ namespace Javet {
             JNIEnv* jniEnv,
             v8::Isolate* v8Isolate,
             const jobject allocationSpaceIndex) noexcept;
-
         void GetHeapSpaceStatisticsCallback(v8::Isolate* v8Isolate, void* data) noexcept;
 
         jobject GetHeapStatistics(
@@ -62,6 +61,9 @@ namespace Javet {
         void GetHeapStatisticsCallback(v8::Isolate* v8Isolate, void* data) noexcept;
 
         jobject GetV8SharedMemoryStatistics(JNIEnv* jniEnv) noexcept;
+
+        void RemoveHeapSpaceStatisticsContainer(jlong handle) noexcept;
+        void RemoveHeapStatisticsContainer(jlong handle) noexcept;
 
 #ifdef ENABLE_MONITOR
         namespace CounterType {

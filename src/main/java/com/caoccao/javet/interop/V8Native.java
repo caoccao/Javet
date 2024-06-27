@@ -550,6 +550,9 @@ class V8Native implements IV8Native {
     public native void removeJNIGlobalRef(long handle);
 
     @Override
+    public native void removeRawPointer(long handle, int rawPointerTypeId);
+
+    @Override
     public native void removeReferenceHandle(long v8RuntimeHandle, long referenceHandle, int referenceType);
 
     @Override

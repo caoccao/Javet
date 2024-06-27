@@ -17,6 +17,7 @@
 package com.caoccao.javet.interop.monitoring;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.enums.RawPointerType;
 import com.caoccao.javet.enums.V8AllocationSpace;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
@@ -56,7 +57,8 @@ public class TestV8HeapSpaceStatistics extends BaseTestJavetRuntime {
         for (V8AllocationSpace v8AllocationSpace : V8AllocationSpace.values()) {
             V8StatisticsFuture<V8HeapSpaceStatistics> v8HeapSpaceStatisticsFuture =
                     (V8StatisticsFuture<V8HeapSpaceStatistics>) v8Runtime.getV8HeapSpaceStatistics(v8AllocationSpace);
-            assertTrue(v8HeapSpaceStatisticsFuture.isValid());
+            assertEquals(V8StatisticsFuture.INVALID_HANDLE, v8HeapSpaceStatisticsFuture.getHandle());
+            assertEquals(RawPointerType.HeapSpaceStatisticsContainer, v8HeapSpaceStatisticsFuture.getRawPointerType());
             assertTrue(v8HeapSpaceStatisticsFuture.isDone());
             V8HeapSpaceStatistics v8HeapSpaceStatistics = v8HeapSpaceStatisticsFuture.join();
             assertNotNull(v8HeapSpaceStatistics);

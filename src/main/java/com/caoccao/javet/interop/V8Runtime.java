@@ -32,6 +32,7 @@ import com.caoccao.javet.interop.executors.V8StringExecutor;
 import com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics;
 import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
 import com.caoccao.javet.interop.monitoring.V8SharedMemoryStatistics;
+import com.caoccao.javet.interop.monitoring.V8StatisticsFuture;
 import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetResourceUtils;
@@ -1551,25 +1552,36 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Gets V8 heap space statistics by an allocation space.
+     * Gets V8 heap space statistics by an allocation space via completable future.
+     * It is an async call that will be completed if there is no race condition.
      *
      * @param v8AllocationSpace the V8 allocation space
      * @return the V8 heap space statistics in a complete future
      * @since 1.0.4
      */
     public CompletableFuture<V8HeapSpaceStatistics> getV8HeapSpaceStatistics(V8AllocationSpace v8AllocationSpace) {
-        return (CompletableFuture<V8HeapSpaceStatistics>) v8Native.getV8HeapSpaceStatistics(
-                handle, Objects.requireNonNull(v8AllocationSpace));
+        V8StatisticsFuture<V8HeapSpaceStatistics> v8StatisticsFuture = (V8StatisticsFuture<V8HeapSpaceStatistics>)
+                v8Native.getV8HeapSpaceStatistics(handle, Objects.requireNonNull(v8AllocationSpace));
+        if (!v8StatisticsFuture.isDone()) {
+            v8Host.offerV8StatisticsFuture(v8StatisticsFuture);
+        }
+        return v8StatisticsFuture;
     }
 
     /**
-     * Gets V8 heap statistics.
+     * Gets V8 heap statistics via completable future.
+     * It is an async call that will be completed if there is no race condition.
      *
      * @return the V8 heap statistics in a complete future
      * @since 1.0.0
      */
     public CompletableFuture<V8HeapStatistics> getV8HeapStatistics() {
-        return (CompletableFuture<V8HeapStatistics>) v8Native.getV8HeapStatistics(handle);
+        V8StatisticsFuture<V8HeapStatistics> v8StatisticsFuture = (V8StatisticsFuture<V8HeapStatistics>)
+                v8Native.getV8HeapStatistics(handle);
+        if (!v8StatisticsFuture.isDone()) {
+            v8Host.offerV8StatisticsFuture(v8StatisticsFuture);
+        }
+        return v8StatisticsFuture;
     }
 
     /**

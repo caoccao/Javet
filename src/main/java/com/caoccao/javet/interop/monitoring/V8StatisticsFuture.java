@@ -16,6 +16,11 @@
 
 package com.caoccao.javet.interop.monitoring;
 
+import com.caoccao.javet.enums.RawPointerType;
+import com.caoccao.javet.interfaces.IJavetRawPointer;
+import com.caoccao.javet.utils.JavetDateTimeUtils;
+
+import java.time.ZonedDateTime;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -24,35 +29,37 @@ import java.util.concurrent.CompletableFuture;
  * @param <T> the type parameter
  * @since 3.1.4
  */
-public final class V8StatisticsFuture<T> extends CompletableFuture<T> {
+public final class V8StatisticsFuture<T> extends CompletableFuture<T> implements IJavetRawPointer {
     /**
      * The constant INVALID_HANDLE.
      *
      * @since 3.1.4
      */
     public static final long INVALID_HANDLE = 0L;
-    private final long creationTime;
+    private final ZonedDateTime creationDateTime;
+    private final RawPointerType rawPointerType;
     private long handle;
 
     /**
-     * Instantiates a new V 8 statistics future.
+     * Instantiates a new V8 statistics future.
      *
      * @since 3.1.4
      */
-    V8StatisticsFuture() {
+    V8StatisticsFuture(int rawPointerTypeId) {
         super();
-        creationTime = System.currentTimeMillis();
+        creationDateTime = JavetDateTimeUtils.getUTCNow();
         handle = INVALID_HANDLE;
+        rawPointerType = RawPointerType.parse(rawPointerTypeId);
     }
 
     /**
-     * Gets creation time.
+     * Gets creation date time.
      *
-     * @return the creation time
+     * @return the creation date time
      * @since 3.1.4
      */
-    public long getCreationTime() {
-        return creationTime;
+    public ZonedDateTime getCreationDateTime() {
+        return creationDateTime;
     }
 
     /**
@@ -65,14 +72,9 @@ public final class V8StatisticsFuture<T> extends CompletableFuture<T> {
         return handle;
     }
 
-    /**
-     * Is valid.
-     *
-     * @return true : yes, false : no
-     * @since 3.1.4
-     */
-    public boolean isValid() {
-        return handle != INVALID_HANDLE;
+    @Override
+    public RawPointerType getRawPointerType() {
+        return rawPointerType;
     }
 
     /**

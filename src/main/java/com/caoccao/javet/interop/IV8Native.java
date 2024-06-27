@@ -360,6 +360,8 @@ public interface IV8Native {
 
     void removeJNIGlobalRef(long handle);
 
+    void removeRawPointer(long handle, int rawPointerTypeId);
+
     void removeReferenceHandle(long v8RuntimeHandle, long referenceHandle, int referenceType);
 
     boolean reportPendingMessages(long v8RuntimeHandle);

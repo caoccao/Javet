@@ -18,6 +18,11 @@ package com.caoccao.javet.enums;
 
 import java.util.stream.Stream;
 
+/**
+ * The enum JS scope type.
+ *
+ * @since 0.8.8
+ */
 public enum JSScopeType {
     Class(0, "Class"),
     Eval(1, "Eval"),

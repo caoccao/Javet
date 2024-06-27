@@ -1233,6 +1233,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeJNIGlobalRe
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    removeRawPointer
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeRawPointer
+  (JNIEnv *, jobject, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    removeReferenceHandle
  * Signature: (JJI)V
  */
