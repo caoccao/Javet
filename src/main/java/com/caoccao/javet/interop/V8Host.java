@@ -61,6 +61,7 @@ public final class V8Host {
     private JavetException lastException;
     private volatile boolean libraryLoaded;
     private Thread threadV8GuardDaemon;
+    private Thread threadV8StatisticsFutureDaemon;
     private IV8Native v8Native;
 
     private V8Host(JSRuntimeType jsRuntimeType) {
@@ -76,6 +77,7 @@ public final class V8Host {
         v8GuardDaemon = new V8GuardDaemon();
         v8StatisticsFutureDaemon = new V8StatisticsFutureDaemon();
         threadV8GuardDaemon = null;
+        threadV8StatisticsFutureDaemon = null;
         loadLibrary();
         v8Notifier = new V8Notifier(v8RuntimeMap);
     }
@@ -441,6 +443,9 @@ public final class V8Host {
                 threadV8GuardDaemon.setDaemon(true);
                 threadV8GuardDaemon.start();
                 v8StatisticsFutureDaemon.setV8Native(v8Native);
+                threadV8StatisticsFutureDaemon = new Thread(v8StatisticsFutureDaemon);
+                threadV8StatisticsFutureDaemon.setDaemon(true);
+                threadV8StatisticsFutureDaemon.start();
             } catch (JavetException e) {
                 logger.logError(e, "Failed to load Javet lib with error {0}.", e.getMessage());
                 lastException = e;
@@ -484,6 +489,9 @@ public final class V8Host {
             threadV8GuardDaemon.interrupt();
             threadV8GuardDaemon = null;
             v8GuardDaemon.getV8GuardQueue().clear();
+            threadV8StatisticsFutureDaemon.interrupt();
+            threadV8StatisticsFutureDaemon = null;
+            v8StatisticsFutureDaemon.purgeV8StatisticsFutureQueue();
             v8StatisticsFutureDaemon.setV8Native(null);
             isolateCreated = false;
             v8Native = null;
@@ -581,6 +589,17 @@ public final class V8Host {
 
         public ConcurrentLinkedQueue<V8StatisticsFuture<?>> getV8StatisticsFutureQueue() {
             return v8StatisticsFutureQueue;
+        }
+
+        public void purgeV8StatisticsFutureQueue() {
+            while (!v8StatisticsFutureQueue.isEmpty()) {
+                V8StatisticsFuture<?> v8StatisticsFuture = v8StatisticsFutureQueue.poll();
+                if (!v8StatisticsFuture.isDone()) {
+                    v8Native.removeRawPointer(
+                            v8StatisticsFuture.getHandle(),
+                            v8StatisticsFuture.getRawPointerType().getId());
+                }
+            }
         }
 
         @Override
