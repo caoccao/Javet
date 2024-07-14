@@ -5,7 +5,7 @@ Release Notes 3.1.x
 3.1.4 V8 v12.7
 --------------
 
-* Upgraded Node.js to ``v20.15.0`` `(2024-06-20) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.15.0>`_
+* Upgraded Node.js to ``v20.15.1`` `(2024-07-08) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.15.1>`_
 * Rewrote ``getV8HeapStatistics()``, ``getV8HeapSpaceStatistics()`` for ``V8Runtime`` to remediate the race condition and fixed possible memory leak 
 * Added ``observerTimeoutMillis`` to ``JavetEngineConfig``
 * Added ``V8StatisticsFuture``
