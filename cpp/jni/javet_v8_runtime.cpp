@@ -75,7 +75,7 @@ namespace Javet {
     V8Runtime::V8Runtime(
         node::MultiIsolatePlatform* v8PlatformPointer,
         std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator) noexcept
-        : nodeEnvironment(nullptr, node::FreeEnvironment), nodeIsolateData(nullptr, node::FreeIsolateData), uvLoop(),
+        : nodeEnvironment(nullptr, node::FreeEnvironment), nodeIsolateData(nullptr, node::FreeIsolateData), nodeStopping(false), uvLoop(),
 #else
     V8Runtime::V8Runtime(
         V8Platform* v8PlatformPointer,
@@ -94,9 +94,9 @@ namespace Javet {
         this->v8PlatformPointer = v8PlatformPointer;
     }
 
+#ifdef ENABLE_NODE
     bool V8Runtime::Await(const Javet::Enums::V8AwaitMode::V8AwaitMode awaitMode) noexcept {
         bool hasMoreTasks = false;
-#ifdef ENABLE_NODE
         using namespace Javet::Enums::V8AwaitMode;
         uv_run_mode uvRunMode;
         switch (awaitMode)
@@ -136,12 +136,15 @@ namespace Javet {
                 hasMoreTasks = uv_loop_alive(&uvLoop);
             }
         } while (awaitMode == RunTillNoMoreTasks && hasMoreTasks);
-#else
-        // It has to be v8::platform::MessageLoopBehavior::kDoNotWait, otherwise it blockes;
-        v8::platform::PumpMessageLoop(v8PlatformPointer, v8Isolate);
-#endif
         return hasMoreTasks;
     }
+#else
+    bool V8Runtime::Await(const Javet::Enums::V8AwaitMode::V8AwaitMode awaitMode) noexcept {
+        // It has to be v8::platform::MessageLoopBehavior::kDoNotWait, otherwise it blockes;
+        v8::platform::PumpMessageLoop(v8PlatformPointer, v8Isolate);
+        return false;
+    }
+#endif
 
     void V8Runtime::CloseV8Context() noexcept {
         v8Locker.reset();
@@ -155,7 +158,7 @@ namespace Javet {
         }
 #ifdef ENABLE_NODE
         int errorCode = 0;
-        {
+        if (!IsStopping()) {
             auto internalV8Locker = GetUniqueV8Locker();
             auto v8IsolateScope = GetV8IsolateScope();
             V8HandleScope v8HandleScope(v8Isolate);

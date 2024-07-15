@@ -158,6 +158,16 @@ public class NodeRuntime extends V8Runtime {
         return nodeModuleMap.size();
     }
 
+    /**
+     * Is the event loop stopping.
+     *
+     * @return true : the event queue will be skipped while the Node.js runtime is being closed, false : regular behavior
+     * @since 3.1.4
+     */
+    public boolean isStopping() {
+        return ((INodeNative) v8Native).isStopping(handle);
+    }
+
     @Override
     void removeAllReferences() throws JavetException {
         removeNodeModules();
@@ -189,5 +199,15 @@ public class NodeRuntime extends V8Runtime {
             JavetResourceUtils.safeClose(nodeModuleMap.values());
             nodeModuleMap.clear();
         }
+    }
+
+    /**
+     * Sets the event loop stopping.
+     *
+     * @param stopping true : the event queue will be skipped while the Node.js runtime is being closed, false : regular behavior
+     * @since 3.1.4
+     */
+    public void setStopping(boolean stopping) {
+        ((INodeNative) v8Native).setStopping(handle, stopping);
     }
 }

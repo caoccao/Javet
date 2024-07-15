@@ -24,3 +24,16 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_NodeNative_await
     return (jboolean)v8Runtime->Await(umAwaitMode);
 }
 
+#ifdef ENABLE_NODE
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_NodeNative_isStopping
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    return v8Runtime->IsStopping();
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_NodeNative_setStopping
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jboolean stopping) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    v8Runtime->SetStopping(stopping);
+}
+#endif

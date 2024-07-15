@@ -22,4 +22,7 @@ package com.caoccao.javet.interop;
  * @since 0.8.0
  */
 public interface INodeNative extends IV8Native {
+    boolean isStopping(long nodeRuntimeHandle);
+
+    void setStopping(long nodeRuntimeHandle, boolean stopping);
 }

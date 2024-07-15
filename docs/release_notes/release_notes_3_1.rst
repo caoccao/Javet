@@ -9,6 +9,7 @@ Release Notes 3.1.x
 * Rewrote ``getV8HeapStatistics()``, ``getV8HeapSpaceStatistics()`` for ``V8Runtime`` to remediate the race condition and fixed possible memory leak 
 * Added ``observerTimeoutMillis`` to ``JavetEngineConfig``
 * Added ``V8StatisticsFuture``
+* Added ``isStopping()``, ``setStopping()`` to ``NodeRuntime``
 
 3.1.3 V8 v12.6
 --------------

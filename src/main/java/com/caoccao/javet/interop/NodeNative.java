@@ -27,5 +27,11 @@ class NodeNative extends V8Native implements INodeNative {
     }
 
     @Override
-    public native boolean await(long v8RuntimeHandle, int v8AwaitMode);
+    public native boolean await(long nodeRuntimeHandle, int v8AwaitMode);
+
+    @Override
+    public native boolean isStopping(long nodeRuntimeHandle);
+
+    @Override
+    public native void setStopping(long nodeRuntimeHandle, boolean stopping);
 }

@@ -39,6 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -297,6 +298,18 @@ public class TestNodeRuntime extends BaseTestJavet {
                 fail(MessageFormat.format("{0} should pass.", scriptFile.getAbsolutePath()));
             }
         }
+    }
+
+    @Test
+    public void testStopping() throws JavetException {
+        IntStream.range(0, 5).forEach(i -> assertFalse(nodeRuntime.isStopping()));
+        IntStream.range(0, 5).forEach(i -> {
+            nodeRuntime.setStopping(false);
+            assertFalse(nodeRuntime.isStopping());
+            nodeRuntime.setStopping(true);
+            assertTrue(nodeRuntime.isStopping());
+        });
+        nodeRuntime.getExecutor("let count = 0; setInterval(()=> console.log(count++), 1000);").executeVoid();
     }
 
     @Test
