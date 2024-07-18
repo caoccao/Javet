@@ -183,11 +183,6 @@ V8Runtime.await()
 
 This API represents a light-weighted way of giving V8 a hint to perform GC. It actually tells Node.js or V8 runtime to drain the message or task queue. As a side effect of the drain, a GC may occur based on the decision of Node.js or V8 runtime.
 
-V8Runtime.idleNotificationDeadline(long deadlineInMillis)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-This API explicitly tells Node.js or V8 runtime that the application expects a GC to happen in the given milliseconds. Be careful, Node.js or V8 runtime may disregard this instruction.
-
 V8Runtime.lowMemoryNotification()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -218,7 +213,6 @@ Almost all `V8 options <https://docs.google.com/document/d/1DFsbyoPcdK1__fe1nBDz
     v8Flags.setMaxHeapSize(768);
     v8Flags.setMaxOldSpaceSize(512);
     v8Flags.setUseStrict(true);
-    v8Flags.setTrackRetainingPath(true);
     v8Flags.setCustomFlags("--max-semi-space-size=384 --min-semi-space-size=256");
 
     // V8 Mode
@@ -229,7 +223,6 @@ Almost all `V8 options <https://docs.google.com/document/d/1DFsbyoPcdK1__fe1nBDz
     v8Flags.setMaxHeapSize(768);
     v8Flags.setMaxOldSpaceSize(512);
     v8Flags.setUseStrict(true);
-    v8Flags.setTrackRetainingPath(true);
     v8Flags.setCustomFlags("--max-semi-space-size=384 --min-semi-space-size=256");
 
 .. note::

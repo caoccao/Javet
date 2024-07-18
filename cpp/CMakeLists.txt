@@ -162,7 +162,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(JAVET_LIB_ARCH x86_64)
     set(JAVET_LIB_ARCH x86_64)
     # Generate PDB file
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi /MP /O2 /Ob2 /GS-")
+    # https://learn.microsoft.com/en-us/cpp/build/reference/zc-cplusplus
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi /MP /O2 /Ob2 /GS- /Zc:__cplusplus")
     set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
     add_definitions(-D_ITERATOR_DEBUG_LEVEL=0 -D_WIN32)
     list(APPEND includeDirs $ENV{JAVA_HOME}/include/win32)

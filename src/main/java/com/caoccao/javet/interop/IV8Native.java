@@ -152,8 +152,6 @@ public interface IV8Native {
 
     boolean hasScheduledException(long v8RuntimeHandle);
 
-    void idleNotificationDeadline(long v8RuntimeHandle, long deadlineInMillis);
-
     Object integerObjectCreate(long v8RuntimeHandle, int intValue);
 
     Object integerObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

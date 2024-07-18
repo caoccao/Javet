@@ -449,14 +449,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasScheduledE
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    idleNotificationDeadline
- * Signature: (JJ)V
- */
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_idleNotificationDeadline
-  (JNIEnv *, jobject, jlong, jlong);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
  * Method:    integerObjectCreate
  * Signature: (JI)Ljava/lang/Object;
  */

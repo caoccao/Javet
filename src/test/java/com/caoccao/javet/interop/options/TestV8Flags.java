@@ -16,7 +16,6 @@
 
 package com.caoccao.javet.interop.options;
 
-import com.caoccao.javet.interop.options.V8Flags;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,8 +38,6 @@ public class TestV8Flags {
         assertEquals(2048, v8Flags.setMaxHeapSize(2048).getMaxHeapSize());
         assertEquals(0, v8Flags.getMaxOldSpaceSize());
         assertEquals(2048, v8Flags.setMaxOldSpaceSize(2048).getMaxOldSpaceSize());
-        assertFalse(v8Flags.isTrackRetainingPath());
-        assertTrue(v8Flags.setTrackRetainingPath(true).isTrackRetainingPath());
         assertTrue(v8Flags.isUseStrict());
         assertFalse(v8Flags.setUseStrict(false).isUseStrict());
         assertNull(v8Flags.getCustomFlags());
@@ -53,7 +50,6 @@ public class TestV8Flags {
         assertEquals(2048, v8Flags.setInitialHeapSize(1).getInitialHeapSize());
         assertEquals(2048, v8Flags.setMaxHeapSize(1).getMaxHeapSize());
         assertEquals(2048, v8Flags.setMaxOldSpaceSize(1).getMaxOldSpaceSize());
-        assertTrue(v8Flags.setTrackRetainingPath(false).isTrackRetainingPath());
         assertFalse(v8Flags.setUseStrict(true).isUseStrict());
         assertEquals("test 123", v8Flags.setCustomFlags("abc def").getCustomFlags());
     }

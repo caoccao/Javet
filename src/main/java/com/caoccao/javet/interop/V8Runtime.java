@@ -1769,18 +1769,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Idle notification deadline tells V8 to perform GC in the given millis.
-     *
-     * @param deadlineInMillis the deadline in millis
-     * @since 0.9.1
-     */
-    public void idleNotificationDeadline(long deadlineInMillis) {
-        if (!isClosed() && deadlineInMillis > 0) {
-            v8Native.idleNotificationDeadline(handle, deadlineInMillis);
-        }
-    }
-
-    /**
      * Initialize V8 value cache.
      *
      * @since 0.7.4

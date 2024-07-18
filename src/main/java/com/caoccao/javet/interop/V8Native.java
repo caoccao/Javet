@@ -219,9 +219,6 @@ class V8Native implements IV8Native {
     public native boolean hasScheduledException(long v8RuntimeHandle);
 
     @Override
-    public native void idleNotificationDeadline(long v8RuntimeHandle, long deadlineInMillis);
-
-    @Override
     public native Object integerObjectCreate(long v8RuntimeHandle, int intValue);
 
     @Override

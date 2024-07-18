@@ -232,14 +232,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasInternalTy
     return false;
 }
 
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_idleNotificationDeadline
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong deadlineInMillis) {
-    if (deadlineInMillis > 0) {
-        RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-        v8Context->GetIsolate()->IdleNotificationDeadline(((long)deadlineInMillis) / 1000.0);
-    }
-}
-
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isDead
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
