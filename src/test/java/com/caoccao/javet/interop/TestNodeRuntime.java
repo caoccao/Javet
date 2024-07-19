@@ -172,6 +172,20 @@ public class TestNodeRuntime extends BaseTestJavet {
     }
 
     @Test
+    public void testDynamicImport() throws JavetException {
+        nodeRuntime.getExecutor("const { Script, constants } = require('node:vm');\n" +
+                        "const script = new Script(\n" +
+                        "  'import(\"node:fs\").then(({readFile}) => readFile instanceof Function)',\n" +
+                        "  { importModuleDynamically: constants.USE_MAIN_CONTEXT_DEFAULT_LOADER });\n" +
+                        "globalThis.a = null;" +
+                        "script.runInNewContext().then((x) => { globalThis.a = x; });")
+                .setModule(true)
+                .executeVoid();
+        nodeRuntime.await();
+        assertFalse(nodeRuntime.getGlobalObject().getBoolean("a"));
+    }
+
+    @Test
     public void testModuleAny() throws JavetException {
         NodeModuleAny nodeModuleFS = nodeRuntime.getNodeModule("fs", NodeModuleAny.class);
         assertTrue(nodeModuleFS.getModuleObject().invokeBoolean(

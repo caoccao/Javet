@@ -177,6 +177,11 @@ There is workaround: create a new module that calls `require` internally by regi
 
 The application may extend the capability of `JavetBuiltInModuleResolver` to gain granular control over the built-in modules.
 
+Dynamic import()
+----------------
+
+If ``import()`` is called directly, an error `ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING <https://nodejs.org/docs/latest/api/errors.html#err_vm_dynamic_import_callback_missing>`_ will be thrown. Please follow the Node.js official `doc <https://nodejs.org/docs/latest/api/vm.html#support-of-dynamic-import-in-compilation-apis>`_ to set ``importModuleDynamically`` to either ``vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER`` or a custom callback function.
+
 V8 Mode
 =======
 
