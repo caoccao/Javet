@@ -1124,7 +1124,9 @@ namespace Javet {
             const jboolean mIsWASM,
             const jboolean mIsModule) noexcept {
             return std::make_unique<v8::ScriptOrigin>(
+#ifdef ENABLE_NODE
                 v8Context->GetIsolate(),
+#endif
                 ToV8String(jniEnv, v8Context, mResourceName),
                 (int)mResourceLineOffset,
                 (int)mResourceColumnOffset,

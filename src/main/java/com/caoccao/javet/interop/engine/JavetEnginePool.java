@@ -296,23 +296,16 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                 IJavetLogger logger = config.getJavetLogger();
                 for (JavetEngine<R> engine : engines) {
                     if (engine != null) {
-                        boolean isContinuable = true;
                         for (IV8RuntimeObserver<?> observer : observers) {
                             if (!engine.v8Runtime.isClosed()) {
                                 try {
-                                    isContinuable = observer.observe(engine.v8Runtime);
+                                    observer.observe(engine.v8Runtime);
                                 } catch (Throwable t) {
                                     logger.error(t.getMessage(), t);
                                 } finally {
                                     ++processedCount;
                                 }
-                                if (!isContinuable) {
-                                    break;
-                                }
                             }
-                        }
-                        if (!isContinuable) {
-                            break;
                         }
                     }
                 }

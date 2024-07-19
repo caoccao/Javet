@@ -183,11 +183,6 @@ V8Runtime.await()
 
 This API represents a light-weighted way of giving V8 a hint to perform GC. It actually tells Node.js or V8 runtime to drain the message or task queue. As a side effect of the drain, a GC may occur based on the decision of Node.js or V8 runtime.
 
-V8Runtime.idleNotificationDeadline(long deadlineInMillis)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-This API explicitly tells Node.js or V8 runtime that the application expects a GC to happen in the given milliseconds. Be careful, Node.js or V8 runtime may disregard this instruction.
-
 V8Runtime.lowMemoryNotification()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -218,7 +213,6 @@ Almost all `V8 options <https://docs.google.com/document/d/1DFsbyoPcdK1__fe1nBDz
     v8Flags.setMaxHeapSize(768);
     v8Flags.setMaxOldSpaceSize(512);
     v8Flags.setUseStrict(true);
-    v8Flags.setTrackRetainingPath(true);
     v8Flags.setCustomFlags("--max-semi-space-size=384 --min-semi-space-size=256");
 
     // V8 Mode
@@ -229,7 +223,6 @@ Almost all `V8 options <https://docs.google.com/document/d/1DFsbyoPcdK1__fe1nBDz
     v8Flags.setMaxHeapSize(768);
     v8Flags.setMaxOldSpaceSize(512);
     v8Flags.setUseStrict(true);
-    v8Flags.setTrackRetainingPath(true);
     v8Flags.setCustomFlags("--max-semi-space-size=384 --min-semi-space-size=256");
 
 .. note::
@@ -241,8 +234,8 @@ Statistics
 
 V8 exposes quite a few statistics for applications to analyze the memory usage, performance, etc. Javet selectively exposes some of those statistics via ``V8Runtime`` or ``V8Host``.
 
-* `getV8HeapSpaceStatistics() <../javadoc/com/caoccao/javet/interop/V8Runtime.html#getV8HeapSpaceStatistics-com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics.AllocationSpace->`_
-* `getV8HeapStatistics() <../javadoc/com/caoccao/javet/interop/V8Runtime.html#getV8HeapStatistics-->`_
+* `getV8HeapSpaceStatistics() <../javadoc/com/caoccao/javet/interop/V8Runtime.html#getV8HeapSpaceStatistics-com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics.AllocationSpace->`_ (Asynchronous)
+* `getV8HeapStatistics() <../javadoc/com/caoccao/javet/interop/V8Runtime.html#getV8HeapStatistics-->`_ (Asynchronous)
 * `getV8SharedMemoryStatistics() <../javadoc/com/caoccao/javet/interop/V8Host.html#getV8SharedMemoryStatistics-->`_
 
 .. image:: ../../resources/images/statistics_v8_heap_space_statistics.png
@@ -256,4 +249,5 @@ V8 exposes quite a few statistics for applications to analyze the memory usage, 
 
 .. note::
 
-    More statistics will be exposed in new releases. Please file issues if you need more of them.
+    * If the ``V8Runtime`` is in use, calling ``getV8HeapSpaceStatistics()`` and ``getV8HeapStatistics()`` may take a slight chance (a race condition) to have tiny memory leak. Please refer to this `issue <https://issues.chromium.org/issues/345822325>`_ for details. It's recommended to call them when the ``V8Runtime`` is idle.
+    * More statistics will be exposed in new releases. Please file issues if you need more of them.

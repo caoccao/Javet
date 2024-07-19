@@ -17,6 +17,7 @@
 package com.caoccao.javet.interop.monitoring;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.enums.RawPointerType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetResourceUtils;
@@ -49,8 +50,12 @@ public class TestV8HeapStatistics extends BaseTestJavetRuntime {
 
     @Test
     public void testGetV8HeapStatistics() {
-        V8HeapStatistics v8HeapStatistics = v8Runtime.getV8HeapStatistics();
-        assertNotNull(v8HeapStatistics);
+        V8StatisticsFuture<V8HeapStatistics> v8HeapStatisticsFuture =
+                (V8StatisticsFuture<V8HeapStatistics>) v8Runtime.getV8HeapStatistics();
+        assertEquals(V8StatisticsFuture.INVALID_HANDLE, v8HeapStatisticsFuture.getHandle());
+        assertEquals(RawPointerType.HeapStatisticsContainer, v8HeapStatisticsFuture.getRawPointerType());
+        assertTrue(v8HeapStatisticsFuture.isDone());
+        V8HeapStatistics v8HeapStatistics = v8HeapStatisticsFuture.join();
         String detailString = v8HeapStatistics.toString();
         assertNotNull(detailString);
         assertEquals(0, v8HeapStatistics.getDoesZapGarbage());

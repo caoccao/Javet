@@ -17,6 +17,7 @@
 package com.caoccao.javet.interop.monitoring;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.enums.RawPointerType;
 import com.caoccao.javet.enums.V8AllocationSpace;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
@@ -54,12 +55,17 @@ public class TestV8HeapSpaceStatistics extends BaseTestJavetRuntime {
     @Test
     public void testGetV8HeapSpaceStatistics() {
         for (V8AllocationSpace v8AllocationSpace : V8AllocationSpace.values()) {
-            V8HeapSpaceStatistics v8HeapSpaceStatistics = v8Runtime.getV8HeapSpaceStatistics(v8AllocationSpace);
+            V8StatisticsFuture<V8HeapSpaceStatistics> v8HeapSpaceStatisticsFuture =
+                    (V8StatisticsFuture<V8HeapSpaceStatistics>) v8Runtime.getV8HeapSpaceStatistics(v8AllocationSpace);
+            assertEquals(V8StatisticsFuture.INVALID_HANDLE, v8HeapSpaceStatisticsFuture.getHandle());
+            assertEquals(RawPointerType.HeapSpaceStatisticsContainer, v8HeapSpaceStatisticsFuture.getRawPointerType());
+            assertTrue(v8HeapSpaceStatisticsFuture.isDone());
+            V8HeapSpaceStatistics v8HeapSpaceStatistics = v8HeapSpaceStatisticsFuture.join();
             assertNotNull(v8HeapSpaceStatistics);
             String detailString = v8HeapSpaceStatistics.toString();
             assertNotNull(detailString);
             assertEquals(v8AllocationSpace, v8HeapSpaceStatistics.getAllocationSpace());
-            assertTrue(v8HeapSpaceStatistics.getSpaceName().length() > 0);
+            assertFalse(v8HeapSpaceStatistics.getSpaceName().isEmpty());
             assertTrue(v8HeapSpaceStatistics.getPhysicalSpaceSize() >= 0);
             assertTrue(v8HeapSpaceStatistics.getSpaceAvailableSize() >= 0);
             assertTrue(v8HeapSpaceStatistics.getSpaceSize() >= 0);

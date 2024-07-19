@@ -15,6 +15,22 @@ extern "C" {
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_NodeNative_await
   (JNIEnv *, jobject, jlong, jint);
 
+/*
+ * Class:     com_caoccao_javet_interop_NodeNative
+ * Method:    isStopping
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_NodeNative_isStopping
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_NodeNative
+ * Method:    setStopping
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_NodeNative_setStopping
+  (JNIEnv *, jobject, jlong, jboolean);
+
 #ifdef __cplusplus
 }
 #endif

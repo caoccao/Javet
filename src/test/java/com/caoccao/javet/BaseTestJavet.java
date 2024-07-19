@@ -68,7 +68,6 @@ public abstract class BaseTestJavet {
                     v8Flags.setMaxHeapSize(768);
                     v8Flags.setMaxOldSpaceSize(512);
                     v8Flags.setUseStrict(true);
-                    v8Flags.setTrackRetainingPath(true);
                 }
             }
             if (jsRuntimeType.isNode()) {

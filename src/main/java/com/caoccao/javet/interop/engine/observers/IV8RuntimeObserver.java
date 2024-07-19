@@ -37,13 +37,11 @@ public interface IV8RuntimeObserver<R> {
 
     /**
      * Observe the input V8 runtime.
-     * The return value notifies the owner to whether continue or break.
      *
      * @param v8Runtime the V8 runtime
-     * @return true : continue, false : break
      * @since 1.0.5
      */
-    boolean observe(V8Runtime v8Runtime);
+    void observe(V8Runtime v8Runtime);
 
     /**
      * Reset.

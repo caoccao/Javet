@@ -2,10 +2,22 @@
 Release Notes 3.1.x
 ===================
 
+3.1.4 V8 v12.7
+--------------
+
+* Upgraded Node.js to ``v20.15.1`` `(2024-07-08) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.15.1>`_
+* Upgraded V8 to ``v12.7.224.16`` (2024-07-15)
+* Rewrote ``getV8HeapStatistics()``, ``getV8HeapSpaceStatistics()`` for ``V8Runtime`` to remediate the race condition and fixed possible memory leak 
+* Added ``observerTimeoutMillis`` to ``JavetEngineConfig``
+* Added ``V8StatisticsFuture``
+* Added ``isStopping()``, ``setStopping()`` to ``NodeRuntime``
+* Removed ``idleNotificationDeadline()`` from ``V8Runtime``
+* Removed ``--track-retaining-path`` from ``V8Flags``
+
 3.1.3 V8 v12.6
 --------------
 
-* Upgraded Node.js to ``v20.14.0`` `(2024-05-28) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.14.0>`_
+* Upgraded Node.js to ``v20.14.0`` `(2024-06-28) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.14.0>`_
 * Upgraded V8 to ``v12.6.228.13`` (2024-06-06)
 * Upgraded Visual Studio 2022 to `v17.10.1 <https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.10>`_
 * Rewrote ``toString()`` for ``V8ValueBigInteger``, ``V8ValueInteger``, ``V8ValueLong`` and ``V8ValueDouble``

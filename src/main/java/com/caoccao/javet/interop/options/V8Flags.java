@@ -67,12 +67,6 @@ public final class V8Flags {
      */
     public static final String FLAG_MAX_HEAP_SIZE = "--max-heap-size";
     /**
-     * The constant FLAG_TRACK_RETAINING_PATH.
-     *
-     * @since 0.9.13
-     */
-    public static final String FLAG_TRACK_RETAINING_PATH = "--track-retaining-path";
-    /**
      * The constant FLAG_USE_STRICT.
      *
      * @since 0.9.13
@@ -87,7 +81,6 @@ public final class V8Flags {
     private int maxHeapSize;
     private int maxOldSpaceSize;
     private boolean sealed;
-    private boolean trackRetainingPath;
     private boolean useStrict;
 
     /**
@@ -104,7 +97,6 @@ public final class V8Flags {
         maxHeapSize = 0;
         maxOldSpaceSize = 0;
         sealed = false;
-        trackRetainingPath = false;
         useStrict = true;
     }
 
@@ -190,16 +182,6 @@ public final class V8Flags {
      */
     public boolean isSealed() {
         return sealed;
-    }
-
-    /**
-     * Is track retaining path.
-     *
-     * @return the boolean
-     * @since 0.7.0
-     */
-    public boolean isTrackRetainingPath() {
-        return trackRetainingPath;
     }
 
     /**
@@ -336,20 +318,6 @@ public final class V8Flags {
     }
 
     /**
-     * Sets track retaining path.
-     *
-     * @param trackRetainingPath the track retaining path
-     * @return the self
-     * @since 0.7.0
-     */
-    public V8Flags setTrackRetainingPath(boolean trackRetainingPath) {
-        if (!sealed) {
-            this.trackRetainingPath = trackRetainingPath;
-        }
-        return this;
-    }
-
-    /**
      * Sets use strict.
      *
      * @param useStrict the use strict
@@ -386,9 +354,6 @@ public final class V8Flags {
         }
         if (useStrict) {
             tokens.add(FLAG_USE_STRICT);
-        }
-        if (trackRetainingPath) {
-            tokens.add(FLAG_TRACK_RETAINING_PATH);
         }
         Collections.sort(tokens, String::compareTo);
         if (StringUtils.isNotEmpty(customFlags)) {

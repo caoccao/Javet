@@ -22,16 +22,21 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.loader.JavetLibLoader;
 import com.caoccao.javet.interop.monitoring.V8SharedMemoryStatistics;
+import com.caoccao.javet.interop.monitoring.V8StatisticsFuture;
 import com.caoccao.javet.interop.options.RuntimeOptions;
+import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.SimpleMap;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryType;
+import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -41,7 +46,7 @@ import java.util.concurrent.TimeUnit;
  * @since 0.7.0
  */
 @SuppressWarnings("unchecked")
-public final class V8Host implements AutoCloseable {
+public final class V8Host {
     private static final long INVALID_HANDLE = 0L;
     private static boolean libraryReloadable = false;
     private static volatile double memoryUsageThresholdRatio = 0.7;
@@ -50,11 +55,13 @@ public final class V8Host implements AutoCloseable {
     private final V8GuardDaemon v8GuardDaemon;
     private final V8Notifier v8Notifier;
     private final ConcurrentHashMap<Long, V8Runtime> v8RuntimeMap;
+    private final V8StatisticsFutureDaemon v8StatisticsFutureDaemon;
     private boolean isolateCreated;
     private JavetClassLoader javetClassLoader;
     private JavetException lastException;
     private volatile boolean libraryLoaded;
     private Thread threadV8GuardDaemon;
+    private Thread threadV8StatisticsFutureDaemon;
     private IV8Native v8Native;
 
     private V8Host(JSRuntimeType jsRuntimeType) {
@@ -68,7 +75,9 @@ public final class V8Host implements AutoCloseable {
         isolateCreated = false;
         this.jsRuntimeType = jsRuntimeType;
         v8GuardDaemon = new V8GuardDaemon();
+        v8StatisticsFutureDaemon = new V8StatisticsFutureDaemon();
         threadV8GuardDaemon = null;
+        threadV8StatisticsFutureDaemon = null;
         loadLibrary();
         v8Notifier = new V8Notifier(v8RuntimeMap);
     }
@@ -185,20 +194,6 @@ public final class V8Host implements AutoCloseable {
      */
     public void clearInternalStatistic() {
         v8Native.clearInternalStatistic();
-    }
-
-    @Override
-    public void close() throws JavetException {
-        threadV8GuardDaemon.interrupt();
-        v8GuardDaemon.getV8GuardQueue().clear();
-        lastException = null;
-        final int v8RuntimeCount = getV8RuntimeCount();
-        if (v8RuntimeCount != 0) {
-            throw new JavetException(
-                    JavetError.RuntimeLeakageDetected,
-                    SimpleMap.of(JavetError.PARAMETER_COUNT, v8RuntimeCount));
-        }
-        disableGCNotification();
     }
 
     /**
@@ -447,12 +442,25 @@ public final class V8Host implements AutoCloseable {
                 threadV8GuardDaemon = new Thread(v8GuardDaemon);
                 threadV8GuardDaemon.setDaemon(true);
                 threadV8GuardDaemon.start();
+                v8StatisticsFutureDaemon.setV8Native(v8Native);
+                threadV8StatisticsFutureDaemon = new Thread(v8StatisticsFutureDaemon);
+                threadV8StatisticsFutureDaemon.setDaemon(true);
+                threadV8StatisticsFutureDaemon.start();
             } catch (JavetException e) {
                 logger.logError(e, "Failed to load Javet lib with error {0}.", e.getMessage());
                 lastException = e;
             }
         }
         return libraryLoaded;
+    }
+
+    /**
+     * Offer V8 statistics future to the queue.
+     *
+     * @param v8StatisticsFuture the V8 statistics future
+     */
+    void offerV8StatisticsFuture(V8StatisticsFuture<?> v8StatisticsFuture) {
+        v8StatisticsFutureDaemon.getV8StatisticsFutureQueue().offer(Objects.requireNonNull(v8StatisticsFuture));
     }
 
     /**
@@ -479,7 +487,12 @@ public final class V8Host implements AutoCloseable {
                     "[{0}] Unloading library.",
                     jsRuntimeType.getName());
             threadV8GuardDaemon.interrupt();
+            threadV8GuardDaemon = null;
             v8GuardDaemon.getV8GuardQueue().clear();
+            threadV8StatisticsFutureDaemon.interrupt();
+            threadV8StatisticsFutureDaemon = null;
+            v8StatisticsFutureDaemon.purgeV8StatisticsFutureQueue();
+            v8StatisticsFutureDaemon.setV8Native(null);
             isolateCreated = false;
             v8Native = null;
             javetClassLoader = null;
@@ -561,5 +574,67 @@ public final class V8Host implements AutoCloseable {
 
     private static class V8InstanceHolder {
         private static final V8Host INSTANCE = new V8Host(JSRuntimeType.V8);
+    }
+
+    static class V8StatisticsFutureDaemon implements Runnable {
+        private static final long SLEEP_IN_MILLIS = 1000;
+        private static final long TIMEOUT_IN_SECONDS = 60;
+        private final ConcurrentLinkedQueue<V8StatisticsFuture<?>> v8StatisticsFutureQueue;
+        private IV8Native v8Native;
+
+        public V8StatisticsFutureDaemon() {
+            v8Native = null;
+            v8StatisticsFutureQueue = new ConcurrentLinkedQueue<>();
+        }
+
+        public ConcurrentLinkedQueue<V8StatisticsFuture<?>> getV8StatisticsFutureQueue() {
+            return v8StatisticsFutureQueue;
+        }
+
+        public void purgeV8StatisticsFutureQueue() {
+            while (!v8StatisticsFutureQueue.isEmpty()) {
+                V8StatisticsFuture<?> v8StatisticsFuture = v8StatisticsFutureQueue.poll();
+                if (!v8StatisticsFuture.isDone()) {
+                    v8Native.removeRawPointer(
+                            v8StatisticsFuture.getHandle(),
+                            v8StatisticsFuture.getRawPointerType().getId());
+                }
+            }
+        }
+
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    if (v8StatisticsFutureQueue.isEmpty()) {
+                        TimeUnit.MILLISECONDS.sleep(SLEEP_IN_MILLIS);
+                    } else {
+                        V8StatisticsFuture<?> v8StatisticsFuture = v8StatisticsFutureQueue.peek();
+                        if (v8StatisticsFuture.isDone()) {
+                            v8StatisticsFutureQueue.poll();
+                        } else {
+                            ZonedDateTime now = JavetDateTimeUtils.getUTCNow();
+                            ZonedDateTime purgeDateTime =
+                                    v8StatisticsFuture.getCreationDateTime().plusSeconds(TIMEOUT_IN_SECONDS);
+                            Duration duration = Duration.between(now, purgeDateTime);
+                            if (duration.isNegative()) {
+                                v8Native.removeRawPointer(
+                                        v8StatisticsFuture.getHandle(),
+                                        v8StatisticsFuture.getRawPointerType().getId());
+                                v8StatisticsFutureQueue.poll();
+                            } else {
+                                TimeUnit.MILLISECONDS.sleep(duration.toMillis());
+                            }
+                        }
+                    }
+                } catch (InterruptedException ignored) {
+                    break;
+                }
+            }
+        }
+
+        public void setV8Native(IV8Native v8Native) {
+            this.v8Native = v8Native;
+        }
     }
 }

@@ -21,9 +21,58 @@
 
 namespace Javet {
     namespace Monitor {
+        struct HeapSpaceStatisticsContainer {
+            jobject allocationSpace;
+            jobject completableFuture;
+
+            HeapSpaceStatisticsContainer(JNIEnv* jniEnv, jobject completableFuture, jobject allocationSpace) noexcept {
+                this->allocationSpace = jniEnv->NewGlobalRef(allocationSpace);
+                INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
+                this->completableFuture = jniEnv->NewGlobalRef(completableFuture);
+                INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
+            }
+
+            ~HeapSpaceStatisticsContainer() {
+                FETCH_JNI_ENV(GlobalJavaVM);
+                jniEnv->CallVoidMethod(completableFuture, jmethodIDV8StatisticsFutureSetHandle, 0);
+                jniEnv->DeleteGlobalRef(allocationSpace);
+                INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
+                jniEnv->DeleteGlobalRef(completableFuture);
+                INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
+            }
+        };
+
+        struct HeapStatisticsContainer {
+            jobject completableFuture;
+
+            HeapStatisticsContainer(JNIEnv* jniEnv, jobject completableFuture) noexcept {
+                this->completableFuture = jniEnv->NewGlobalRef(completableFuture);
+                INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
+            }
+
+            ~HeapStatisticsContainer() {
+                FETCH_JNI_ENV(GlobalJavaVM);
+                jniEnv->CallVoidMethod(completableFuture, jmethodIDV8StatisticsFutureSetHandle, 0);
+                jniEnv->DeleteGlobalRef(completableFuture);
+                INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
+            }
+        };
+
         void Initialize(JNIEnv* jniEnv) noexcept {
+            jclassV8AllocationSpace = FIND_CLASS(jniEnv, "com/caoccao/javet/enums/V8AllocationSpace");
+            jmethodIDV8AllocationSpaceGetIndex = jniEnv->GetMethodID(jclassV8AllocationSpace, "getIndex", "()I");
+
+            jclassV8StatisticsFuture = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/monitoring/V8StatisticsFuture");
+            jmethodIDV8StatisticsFutureConstructor = jniEnv->GetMethodID(jclassV8StatisticsFuture, "<init>", "(I)V");
+            jmethodIDV8StatisticsFutureComplete = jniEnv->GetMethodID(jclassV8StatisticsFuture, "complete", "(Ljava/lang/Object;)Z");
+            jmethodIDV8StatisticsFutureSetHandle = jniEnv->GetMethodID(jclassV8StatisticsFuture, "setHandle", "(J)V");
+
             jclassV8HeapSpaceStatistics = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics");
             jmethodIDV8HeapSpaceStatisticsConstructor = jniEnv->GetMethodID(jclassV8HeapSpaceStatistics, "<init>", "(Ljava/lang/String;JJJJ)V");
+            jmethodIDV8HeapSpaceStatisticsSetAllocationSpace = jniEnv->GetMethodID(
+                jclassV8HeapSpaceStatistics,
+                "setAllocationSpace",
+                "(Lcom/caoccao/javet/enums/V8AllocationSpace;)Lcom/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics;");
 
             jclassV8HeapStatistics = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/monitoring/V8HeapStatistics");
             jmethodIDV8HeapStatisticsConstructor = jniEnv->GetMethodID(jclassV8HeapStatistics, "<init>", "(JJJJJJJJJJJJJJ)V");
@@ -35,23 +84,69 @@ namespace Javet {
         jobject GetHeapSpaceStatistics(
             JNIEnv* jniEnv,
             v8::Isolate* v8Isolate,
-            const jint allocationSpaceIndex) noexcept {
+            const jobject jAllocationSpace) noexcept {
+            jobject jFuture = jniEnv->NewObject(
+                jclassV8StatisticsFuture,
+                jmethodIDV8StatisticsFutureConstructor,
+                (jint)Javet::Enums::RawPointerType::HeapSpaceStatisticsContainer);
+            auto containerPointer = new HeapSpaceStatisticsContainer(jniEnv, jFuture, jAllocationSpace);
+            INCREASE_COUNTER(Javet::Monitor::CounterType::New);
+            jniEnv->CallVoidMethod(jFuture, jmethodIDV8StatisticsFutureSetHandle, TO_JAVA_LONG(containerPointer));
+            if (v8Isolate->IsInUse()) {
+                v8Isolate->RequestInterrupt(GetHeapSpaceStatisticsCallback, containerPointer);
+            }
+            else {
+                auto v8Locker = v8::Locker(v8Isolate);
+                GetHeapSpaceStatisticsCallback(v8Isolate, containerPointer);
+            }
+            return jFuture;
+        }
+
+        void GetHeapSpaceStatisticsCallback(v8::Isolate* v8Isolate, void* data) noexcept {
+            FETCH_JNI_ENV(GlobalJavaVM);
             v8::HeapSpaceStatistics heapSpaceStatistics;
-            v8Isolate->GetHeapSpaceStatistics(&heapSpaceStatistics, static_cast<size_t>(allocationSpaceIndex));
-            return jniEnv->NewObject(jclassV8HeapSpaceStatistics, jmethodIDV8HeapSpaceStatisticsConstructor,
+            auto containerPointer = static_cast<HeapSpaceStatisticsContainer*>(data);
+            auto index = jniEnv->CallIntMethod(containerPointer->allocationSpace, jmethodIDV8AllocationSpaceGetIndex);
+            v8Isolate->GetHeapSpaceStatistics(&heapSpaceStatistics, static_cast<size_t>(index));
+            auto jHeapSpaceStatistics = jniEnv->NewObject(jclassV8HeapSpaceStatistics, jmethodIDV8HeapSpaceStatisticsConstructor,
                 Javet::Converter::ToJavaString(jniEnv, heapSpaceStatistics.space_name()),
                 static_cast<jlong>(heapSpaceStatistics.physical_space_size()),
                 static_cast<jlong>(heapSpaceStatistics.space_available_size()),
                 static_cast<jlong>(heapSpaceStatistics.space_size()),
                 static_cast<jlong>(heapSpaceStatistics.space_used_size()));
+            jniEnv->CallObjectMethod(jHeapSpaceStatistics, jmethodIDV8HeapSpaceStatisticsSetAllocationSpace, containerPointer->allocationSpace);
+            jniEnv->CallBooleanMethod(containerPointer->completableFuture, jmethodIDV8StatisticsFutureComplete, jHeapSpaceStatistics);
+            jniEnv->DeleteLocalRef(jHeapSpaceStatistics);
+            delete containerPointer;
+            INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
         }
 
         jobject GetHeapStatistics(
             JNIEnv* jniEnv,
             v8::Isolate* v8Isolate) noexcept {
+            jobject jFuture = jniEnv->NewObject(
+                jclassV8StatisticsFuture,
+                jmethodIDV8StatisticsFutureConstructor,
+                (jint)Javet::Enums::RawPointerType::HeapStatisticsContainer);
+            auto containerPointer = new HeapStatisticsContainer(jniEnv, jFuture);
+            INCREASE_COUNTER(Javet::Monitor::CounterType::New);
+            jniEnv->CallVoidMethod(jFuture, jmethodIDV8StatisticsFutureSetHandle, TO_JAVA_LONG(containerPointer));
+            if (v8Isolate->IsInUse()) {
+                v8Isolate->RequestInterrupt(GetHeapStatisticsCallback, containerPointer);
+            }
+            else {
+                auto v8Locker = v8::Locker(v8Isolate);
+                GetHeapStatisticsCallback(v8Isolate, containerPointer);
+            }
+            return jFuture;
+        }
+
+        void GetHeapStatisticsCallback(v8::Isolate* v8Isolate, void* data) noexcept {
+            FETCH_JNI_ENV(GlobalJavaVM);
             v8::HeapStatistics heapStatistics;
+            auto containerPointer = static_cast<HeapStatisticsContainer*>(data);
             v8Isolate->GetHeapStatistics(&heapStatistics);
-            return jniEnv->NewObject(jclassV8HeapStatistics, jmethodIDV8HeapStatisticsConstructor,
+            auto jHeapStatistics = jniEnv->NewObject(jclassV8HeapStatistics, jmethodIDV8HeapStatisticsConstructor,
                 static_cast<jlong>(heapStatistics.does_zap_garbage()),
                 static_cast<jlong>(heapStatistics.external_memory()),
                 static_cast<jlong>(heapStatistics.heap_size_limit()),
@@ -66,6 +161,10 @@ namespace Javet {
                 static_cast<jlong>(heapStatistics.total_physical_size()),
                 static_cast<jlong>(heapStatistics.used_global_handles_size()),
                 static_cast<jlong>(heapStatistics.used_heap_size()));
+            jniEnv->CallBooleanMethod(containerPointer->completableFuture, jmethodIDV8StatisticsFutureComplete, jHeapStatistics);
+            jniEnv->DeleteLocalRef(jHeapStatistics);
+            delete containerPointer;
+            INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
         }
 
         jobject GetV8SharedMemoryStatistics(JNIEnv* jniEnv) noexcept {
@@ -75,6 +174,18 @@ namespace Javet {
                 static_cast<jlong>(sharedMemoryStatistics.read_only_space_physical_size()),
                 static_cast<jlong>(sharedMemoryStatistics.read_only_space_size()),
                 static_cast<jlong>(sharedMemoryStatistics.read_only_space_used_size()));
+        }
+
+        void RemoveHeapSpaceStatisticsContainer(jlong handle) noexcept {
+            auto containerPointer = reinterpret_cast<HeapSpaceStatisticsContainer*>(handle);
+            delete containerPointer;
+            INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
+        }
+
+        void RemoveHeapStatisticsContainer(jlong handle) noexcept {
+            auto containerPointer = reinterpret_cast<HeapStatisticsContainer*>(handle);
+            delete containerPointer;
+            INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
         }
 
 #ifdef ENABLE_MONITOR

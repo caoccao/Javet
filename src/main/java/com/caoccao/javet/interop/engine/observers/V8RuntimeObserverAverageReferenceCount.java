@@ -68,9 +68,8 @@ public class V8RuntimeObserverAverageReferenceCount implements IV8RuntimeObserve
     }
 
     @Override
-    public boolean observe(V8Runtime v8Runtime) {
+    public void observe(V8Runtime v8Runtime) {
         referenceCountList.add(v8Runtime.getReferenceCount());
-        return true;
     }
 
     @Override

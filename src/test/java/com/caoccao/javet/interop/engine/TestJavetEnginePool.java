@@ -259,9 +259,9 @@ public class TestJavetEnginePool extends BaseTestJavet {
 
     @Test
     public void testSingleThreadedExecution() throws Exception {
-        List<V8HeapStatistics> v8HeapStatisticsList = new ArrayList<>();
+        final List<CompletableFuture<V8HeapStatistics>> v8HeapStatisticsFutureList = new ArrayList<>();
         IV8RuntimeObserver<?> observer =
-                v8Runtime -> v8HeapStatisticsList.add(v8Runtime.getV8HeapStatistics());
+                v8Runtime -> v8HeapStatisticsFutureList.add(v8Runtime.getV8HeapStatistics());
         assertEquals(0, javetEnginePool.observe(observer));
         try (IJavetEngine<?> engine = javetEnginePool.getEngine()) {
             assertEquals(0, javetEnginePool.getIdleEngineCount());
@@ -282,8 +282,11 @@ public class TestJavetEnginePool extends BaseTestJavet {
         assertEquals(0, javetEnginePool.getActiveEngineCount());
         assertEquals(javetEnginePool.getConfig().getPoolMaxSize() - 1, javetEnginePool.getReleasedEngineCount());
         assertEquals(1, javetEnginePool.observe(observer));
-        assertEquals(1, v8HeapStatisticsList.size());
-        assertNotNull(v8HeapStatisticsList.stream().map(V8HeapStatistics::toString).collect(Collectors.joining()));
+        assertEquals(1, v8HeapStatisticsFutureList.size());
+        assertNotNull(v8HeapStatisticsFutureList.stream()
+                .map(CompletableFuture::join)
+                .map(V8HeapStatistics::toString)
+                .collect(Collectors.joining()));
     }
 
     @Test

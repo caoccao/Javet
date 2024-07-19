@@ -195,7 +195,7 @@ class V8Native implements IV8Native {
     public native long[] getInternalStatistic();
 
     @Override
-    public native Object getV8HeapSpaceStatistics(long v8RuntimeHandle, int allocationSpace);
+    public native Object getV8HeapSpaceStatistics(long v8RuntimeHandle, Object v8AllocationSpace);
 
     @Override
     public native Object getV8HeapStatistics(long v8RuntimeHandle);
@@ -217,9 +217,6 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean hasScheduledException(long v8RuntimeHandle);
-
-    @Override
-    public native void idleNotificationDeadline(long v8RuntimeHandle, long deadlineInMillis);
 
     @Override
     public native Object integerObjectCreate(long v8RuntimeHandle, int intValue);
@@ -548,6 +545,9 @@ class V8Native implements IV8Native {
 
     @Override
     public native void removeJNIGlobalRef(long handle);
+
+    @Override
+    public native void removeRawPointer(long handle, int rawPointerTypeId);
 
     @Override
     public native void removeReferenceHandle(long v8RuntimeHandle, long referenceHandle, int referenceType);

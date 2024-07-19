@@ -17,11 +17,11 @@
 
 #include "javet_jni.h"
 
-/*
- * Development Guide:
- * 1. Omitting namespace is not recommended in this project.
- * 2. Methods are expected to be sorted alphabatically except JNI_OnLoad.
- */
+ /*
+  * Development Guide:
+  * 1. Omitting namespace is not recommended in this project.
+  * 2. Methods are expected to be sorted alphabatically except JNI_OnLoad.
+  */
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_allowCodeGenerationFromStrings
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jboolean allow) {
@@ -145,7 +145,7 @@ JNIEXPORT jlongArray JNICALL Java_com_caoccao_javet_interop_V8Native_getInternal
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getV8HeapSpaceStatistics
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint allocationSpace) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject allocationSpace) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     return Javet::Monitor::GetHeapSpaceStatistics(jniEnv, v8Runtime->v8Isolate, allocationSpace);
 }
@@ -232,14 +232,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasInternalTy
     return false;
 }
 
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_idleNotificationDeadline
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong deadlineInMillis) {
-    if (deadlineInMillis > 0) {
-        RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-        v8Context->GetIsolate()->IdleNotificationDeadline(((long)deadlineInMillis) / 1000.0);
-    }
-}
-
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isDead
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
@@ -302,6 +294,21 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeJNIGlobalRe
 (JNIEnv* jniEnv, jobject caller, jlong handle) {
     jniEnv->DeleteGlobalRef((jobject)handle);
     INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeRawPointer
+(JNIEnv* jniEnv, jobject caller, jlong handle, jint rawPointerTypeId) {
+    using namespace Javet::Enums::RawPointerType;
+    switch (rawPointerTypeId) {
+    case HeapStatisticsContainer:
+        Javet::Monitor::RemoveHeapStatisticsContainer(handle);
+        break;
+    case HeapSpaceStatisticsContainer:
+        Javet::Monitor::RemoveHeapSpaceStatisticsContainer(handle);
+        break;
+    default:
+        break;
+    }
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeReferenceHandle

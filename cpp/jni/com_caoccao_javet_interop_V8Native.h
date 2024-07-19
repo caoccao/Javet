@@ -386,10 +386,10 @@ JNIEXPORT jlongArray JNICALL Java_com_caoccao_javet_interop_V8Native_getInternal
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getV8HeapSpaceStatistics
- * Signature: (JI)Ljava/lang/Object;
+ * Signature: (JLjava/lang/Object;)Ljava/lang/Object;
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getV8HeapSpaceStatistics
-  (JNIEnv *, jobject, jlong, jint);
+  (JNIEnv *, jobject, jlong, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -446,14 +446,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingMes
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasScheduledException
   (JNIEnv *, jobject, jlong);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    idleNotificationDeadline
- * Signature: (JJ)V
- */
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_idleNotificationDeadline
-  (JNIEnv *, jobject, jlong, jlong);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -1230,6 +1222,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerV8Runtime
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeJNIGlobalRef
   (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    removeRawPointer
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeRawPointer
+  (JNIEnv *, jobject, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

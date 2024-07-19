@@ -26,6 +26,14 @@ namespace Javet {
             };
         };
 
+        namespace RawPointerType {
+            enum RawPointerType {
+                HeapStatisticsContainer = 1,
+                HeapSpaceStatisticsContainer = 2,
+                Invalid = 0,
+            };
+        }
+
         namespace V8AwaitMode {
             enum V8AwaitMode {
                 RunNoWait = 2,

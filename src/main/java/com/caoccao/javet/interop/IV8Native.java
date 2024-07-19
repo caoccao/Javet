@@ -136,7 +136,7 @@ public interface IV8Native {
 
     long[] getInternalStatistic();
 
-    Object getV8HeapSpaceStatistics(long v8RuntimeHandle, int allocationSpace);
+    Object getV8HeapSpaceStatistics(long v8RuntimeHandle, Object v8AllocationSpace);
 
     Object getV8HeapStatistics(long v8RuntimeHandle);
 
@@ -151,8 +151,6 @@ public interface IV8Native {
     boolean hasPendingMessage(long v8RuntimeHandle);
 
     boolean hasScheduledException(long v8RuntimeHandle);
-
-    void idleNotificationDeadline(long v8RuntimeHandle, long deadlineInMillis);
 
     Object integerObjectCreate(long v8RuntimeHandle, int intValue);
 
@@ -359,6 +357,8 @@ public interface IV8Native {
     void registerV8Runtime(long v8RuntimeHandle, Object v8Runtime);
 
     void removeJNIGlobalRef(long handle);
+
+    void removeRawPointer(long handle, int rawPointerTypeId);
 
     void removeReferenceHandle(long v8RuntimeHandle, long referenceHandle, int referenceType);
 

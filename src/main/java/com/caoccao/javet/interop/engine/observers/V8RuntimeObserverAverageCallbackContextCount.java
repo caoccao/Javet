@@ -68,9 +68,8 @@ public class V8RuntimeObserverAverageCallbackContextCount implements IV8RuntimeO
     }
 
     @Override
-    public boolean observe(V8Runtime v8Runtime) {
+    public void observe(V8Runtime v8Runtime) {
         callbackContextCountList.add(v8Runtime.getCallbackContextCount());
-        return true;
     }
 
     @Override

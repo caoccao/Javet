@@ -29,8 +29,17 @@
 
 namespace Javet {
     namespace Monitor {
+        static jclass jclassV8AllocationSpace;
+        static jmethodID jmethodIDV8AllocationSpaceGetIndex;
+
+        static jclass jclassV8StatisticsFuture;
+        static jmethodID jmethodIDV8StatisticsFutureConstructor;
+        static jmethodID jmethodIDV8StatisticsFutureComplete;
+        static jmethodID jmethodIDV8StatisticsFutureSetHandle;
+
         static jclass jclassV8HeapSpaceStatistics;
         static jmethodID jmethodIDV8HeapSpaceStatisticsConstructor;
+        static jmethodID jmethodIDV8HeapSpaceStatisticsSetAllocationSpace;
 
         static jclass jclassV8HeapStatistics;
         static jmethodID jmethodIDV8HeapStatisticsConstructor;
@@ -43,31 +52,38 @@ namespace Javet {
         jobject GetHeapSpaceStatistics(
             JNIEnv* jniEnv,
             v8::Isolate* v8Isolate,
-            const jint allocationSpaceIndex) noexcept;
+            const jobject allocationSpaceIndex) noexcept;
+        void GetHeapSpaceStatisticsCallback(v8::Isolate* v8Isolate, void* data) noexcept;
 
         jobject GetHeapStatistics(
             JNIEnv* jniEnv,
             v8::Isolate* v8Isolate) noexcept;
+        void GetHeapStatisticsCallback(v8::Isolate* v8Isolate, void* data) noexcept;
 
         jobject GetV8SharedMemoryStatistics(JNIEnv* jniEnv) noexcept;
+
+        void RemoveHeapSpaceStatisticsContainer(jlong handle) noexcept;
+        void RemoveHeapStatisticsContainer(jlong handle) noexcept;
 
 #ifdef ENABLE_MONITOR
         namespace CounterType {
             enum CounterType {
                 Reserved = 0,
-                NewGlobalRef = 1,
-                NewWeakCallbackReference = 2,
-                NewJavetCallbackContextReference = 3,
-                NewPersistentReference = 4,
-                NewPersistentCallbackContextReference = 5,
-                NewV8Runtime = 6,
-                DeleteGlobalRef = 7,
-                DeleteWeakCallbackReference = 8,
-                DeleteJavetCallbackContextReference = 9,
-                DeletePersistentReference = 10,
-                DeletePersistentCallbackContextReference = 11,
-                DeleteV8Runtime = 12,
-                Max = 13,
+                New = 1,
+                NewGlobalRef = 2,
+                NewWeakCallbackReference = 3,
+                NewJavetCallbackContextReference = 4,
+                NewPersistentReference = 5,
+                NewPersistentCallbackContextReference = 6,
+                NewV8Runtime = 7,
+                Delete = 8,
+                DeleteGlobalRef = 9,
+                DeleteWeakCallbackReference = 10,
+                DeleteJavetCallbackContextReference = 11,
+                DeletePersistentReference = 12,
+                DeletePersistentCallbackContextReference = 13,
+                DeleteV8Runtime = 14,
+                Max = 15,
             };
         };
 

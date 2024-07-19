@@ -135,6 +135,12 @@ namespace Javet {
             return (bool)v8Locker;
         }
 
+#ifdef ENABLE_NODE
+        inline bool IsStopping() const noexcept {
+            return nodeStopping.load();
+        }
+#endif
+
         inline void Lock() noexcept {
             v8Locker.reset(new v8::Locker(v8Isolate));
         }
@@ -157,6 +163,12 @@ namespace Javet {
             const V8LocalContext& v8Context,
             const V8LocalValue& v8Value) noexcept;
 
+#ifdef ENABLE_NODE
+        inline void SetStopping(bool stopping) noexcept {
+            nodeStopping.store(stopping);
+        }
+#endif
+
         inline void Unlock() noexcept {
             v8Locker.reset();
         }
@@ -173,6 +185,7 @@ namespace Javet {
         std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator;
         std::unique_ptr<node::Environment, decltype(&node::FreeEnvironment)> nodeEnvironment;
         std::unique_ptr<node::IsolateData, decltype(&node::FreeIsolateData)> nodeIsolateData;
+        std::atomic_bool nodeStopping;
         uv_loop_t uvLoop;
 #else
         std::shared_ptr<V8ArrayBufferAllocator> v8ArrayBufferAllocator;

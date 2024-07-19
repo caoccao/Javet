@@ -145,13 +145,6 @@ public class TestV8Runtime extends BaseTestJavet {
     }
 
     @Test
-    public void testIdleNotificationDeadline() throws JavetException {
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-            v8Runtime.idleNotificationDeadline(1000);
-        }
-    }
-
-    @Test
     public void testLowMemoryNotification() throws JavetException {
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             v8Runtime.lowMemoryNotification();
