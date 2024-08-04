@@ -282,9 +282,13 @@ public class TestV8Module extends BaseTestJavetRuntime {
             v8Runtime.setV8ModuleResolver(new JavetBuiltInModuleResolver());
             v8Runtime.getExecutor(
                             "import fs from 'node:fs';\n" +
+                                    "import events from 'node:events';\n" +
+                                    "import stream from 'node:stream';\n" +
+                                    "globalThis.b = events === stream;\n" +
                                     "globalThis.a = fs.existsSync('/path-not-found');")
                     .setModule(true).executeVoid();
             assertFalse(v8Runtime.getGlobalObject().getBoolean("a"));
+            assertFalse(v8Runtime.getGlobalObject().getBoolean("b"));
         }
     }
 

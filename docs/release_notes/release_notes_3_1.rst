@@ -2,6 +2,11 @@
 Release Notes 3.1.x
 ===================
 
+3.1.5 V8 v12.8
+--------------
+
+* Fixed a bug of the default export in ``JavetBuiltInModuleResolver``
+
 3.1.4 V8 v12.7
 --------------
 
