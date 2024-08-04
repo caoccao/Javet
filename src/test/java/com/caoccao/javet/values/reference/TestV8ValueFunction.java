@@ -1786,7 +1786,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             public Optional<String> test(Optional<String> optionalString) {
                 if (optionalString.isPresent()) {
                     String str = optionalString.get();
-                    if (str.length() > 0) {
+                    if (StringUtils.isNotEmpty(str)) {
                         return Optional.of(str.substring(1));
                     }
                 }

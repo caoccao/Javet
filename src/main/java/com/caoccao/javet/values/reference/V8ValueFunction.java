@@ -23,6 +23,7 @@ import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Internal;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.virtual.V8VirtualValueList;
@@ -221,8 +222,9 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
             SetSourceCodeOptions options) throws JavetException {
         Objects.requireNonNull(options, "Options cannot be null.");
         boolean success = false;
-        if (getJSFunctionType().isUserDefined() && getJSScopeType().isFunction()
-                && sourceCodeString != null && sourceCodeString.length() > 0) {
+        if (getJSFunctionType().isUserDefined()
+                && getJSScopeType().isFunction()
+                && StringUtils.isNotEmpty(sourceCodeString)) {
             if (options.isTrimTailingCharacters()) {
                 sourceCodeString = V8ValueUtils.trimAnonymousFunction(sourceCodeString);
             }

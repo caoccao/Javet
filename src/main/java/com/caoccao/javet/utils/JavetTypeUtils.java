@@ -122,7 +122,7 @@ public final class JavetTypeUtils {
                 return object;
             } else if (object instanceof String) {
                 String objectString = (String) object;
-                if (objectString.length() > 0) {
+                if (StringUtils.isNotEmpty(objectString)) {
                     return objectString.charAt(0);
                 }
             }
