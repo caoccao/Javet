@@ -5,6 +5,7 @@
     Java_com_caoccao_javet_*;
     napi_*;
     node_*;
+    _*v8_inspector*V8InspectorClient*;
   local:
     *;
 };
