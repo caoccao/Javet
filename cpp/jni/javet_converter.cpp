@@ -656,212 +656,231 @@ namespace Javet {
                 return ToExternalV8ValueNull(jniEnv, v8Runtime);
             }
             // Reference types
-            // Note: Reference types must be checked before primitive types are checked.
-            if (v8Value->IsArray()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueArray,
-                    jmethodIDV8ValueArrayConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            if (v8Value->IsTypedArray()) {
-                int type = V8ValueReferenceType::Invalid;
-                if (v8Value->IsBigInt64Array()) {
-                    type = V8ValueReferenceType::BigInt64Array;
-                }
-                else if (v8Value->IsBigUint64Array()) {
-                    type = V8ValueReferenceType::BigUint64Array;
-                }
-                else if (v8Value->IsFloat32Array()) {
-                    type = V8ValueReferenceType::Float32Array;
-                }
-                else if (v8Value->IsFloat64Array()) {
-                    type = V8ValueReferenceType::Float64Array;
-                }
-                else if (v8Value->IsInt16Array()) {
-                    type = V8ValueReferenceType::Int16Array;
-                }
-                else if (v8Value->IsInt32Array()) {
-                    type = V8ValueReferenceType::Int32Array;
-                }
-                else if (v8Value->IsInt8Array()) {
-                    type = V8ValueReferenceType::Int8Array;
-                }
-                else if (v8Value->IsUint16Array()) {
-                    type = V8ValueReferenceType::Uint16Array;
-                }
-                else if (v8Value->IsUint32Array()) {
-                    type = V8ValueReferenceType::Uint32Array;
-                }
-                else if (v8Value->IsUint8Array()) {
-                    type = V8ValueReferenceType::Uint8Array;
-                }
-                else if (v8Value->IsUint8ClampedArray()) {
-                    type = V8ValueReferenceType::Uint8ClampedArray;
-                }
-                if (type != V8ValueReferenceType::Invalid) {
+            if (v8Value->IsObject()) {
+                if (v8Value->IsArray()) {
                     return jniEnv->NewObject(
-                        jclassV8ValueTypedArray,
-                        jmethodIDV8ValueTypedArrayConstructor,
+                        jclassV8ValueArray,
+                        jmethodIDV8ValueArrayConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                if (v8Value->IsTypedArray()) {
+                    int type = V8ValueReferenceType::Invalid;
+                    if (v8Value->IsBigInt64Array()) {
+                        type = V8ValueReferenceType::BigInt64Array;
+                    }
+                    else if (v8Value->IsBigUint64Array()) {
+                        type = V8ValueReferenceType::BigUint64Array;
+                    }
+                    else if (v8Value->IsFloat32Array()) {
+                        type = V8ValueReferenceType::Float32Array;
+                    }
+                    else if (v8Value->IsFloat64Array()) {
+                        type = V8ValueReferenceType::Float64Array;
+                    }
+                    else if (v8Value->IsInt16Array()) {
+                        type = V8ValueReferenceType::Int16Array;
+                    }
+                    else if (v8Value->IsInt32Array()) {
+                        type = V8ValueReferenceType::Int32Array;
+                    }
+                    else if (v8Value->IsInt8Array()) {
+                        type = V8ValueReferenceType::Int8Array;
+                    }
+                    else if (v8Value->IsUint16Array()) {
+                        type = V8ValueReferenceType::Uint16Array;
+                    }
+                    else if (v8Value->IsUint32Array()) {
+                        type = V8ValueReferenceType::Uint32Array;
+                    }
+                    else if (v8Value->IsUint8Array()) {
+                        type = V8ValueReferenceType::Uint8Array;
+                    }
+                    else if (v8Value->IsUint8ClampedArray()) {
+                        type = V8ValueReferenceType::Uint8ClampedArray;
+                    }
+                    if (type != V8ValueReferenceType::Invalid) {
+                        return jniEnv->NewObject(
+                            jclassV8ValueTypedArray,
+                            jmethodIDV8ValueTypedArrayConstructor,
+                            v8Runtime->externalV8Runtime,
+                            ToV8PersistentReference(v8Context, v8Value),
+                            type);
+                    }
+                }
+                if (v8Value->IsDataView()) {
+                    return jniEnv->NewObject(
+                        jclassV8ValueDataView,
+                        jmethodIDV8ValueDataViewConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                if (v8Value->IsArrayBuffer()) {
+                    auto v8ArrayBuffer = v8Value.As<v8::ArrayBuffer>();
+                    return jniEnv->NewObject(
+                        jclassV8ValueArrayBuffer,
+                        jmethodIDV8ValueArrayBufferConstructor,
                         v8Runtime->externalV8Runtime,
                         ToV8PersistentReference(v8Context, v8Value),
-                        type);
+                        jniEnv->NewDirectByteBuffer(v8ArrayBuffer->GetBackingStore()->Data(), v8ArrayBuffer->ByteLength()));
                 }
-            }
-            if (v8Value->IsDataView()) {
+                if (v8Value->IsSharedArrayBuffer()) {
+                    auto v8SharedArrayBuffer = v8Value.As<v8::SharedArrayBuffer>();
+                    return jniEnv->NewObject(
+                        jclassV8ValueSharedArrayBuffer,
+                        jmethodIDV8ValueSharedArrayBufferConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value),
+                        jniEnv->NewDirectByteBuffer(v8SharedArrayBuffer->GetBackingStore()->Data(), v8SharedArrayBuffer->ByteLength()));
+                }
+                if (v8Value->IsArrayBufferView()) {
+                    /*
+                     * ArrayBufferView is a helper type representing any of typed array or DataView.
+                     * This block shouldn't be entered.
+                     */
+                }
+                if (v8Value->IsWeakMap()) {
+                    return jniEnv->NewObject(
+                        jclassV8ValueWeakMap,
+                        jmethodIDV8ValueWeakMapConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                if (v8Value->IsWeakSet()) {
+                    return jniEnv->NewObject(
+                        jclassV8ValueWeakSet,
+                        jmethodIDV8ValueWeakSetConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                if (v8Value->IsMap()) {
+                    return jniEnv->NewObject(
+                        jclassV8ValueMap,
+                        jmethodIDV8ValueMapConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                if (v8Value->IsSet()) {
+                    return jniEnv->NewObject(
+                        jclassV8ValueSet,
+                        jmethodIDV8ValueSetConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                if (v8Value->IsMapIterator() || v8Value->IsSetIterator() || v8Value->IsGeneratorObject()) {
+                    return jniEnv->NewObject(
+                        jclassV8ValueIterator,
+                        jmethodIDV8ValueIteratorConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                if (v8Value->IsArgumentsObject()) {
+                    return jniEnv->NewObject(
+                        jclassV8ValueArguments,
+                        jmethodIDV8ValueArgumentsConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                if (v8Value->IsPromise()) {
+                    return jniEnv->NewObject(
+                        jclassV8ValuePromise,
+                        jmethodIDV8ValuePromiseConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                if (v8Value->IsRegExp()) {
+                    return jniEnv->NewObject(
+                        jclassV8ValueRegExp,
+                        jmethodIDV8ValueRegExpConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                if (v8Value->IsAsyncFunction()) {
+                    // It defaults to V8ValueFunction.
+                }
+                if (v8Value->IsGeneratorFunction()) {
+                    // It defaults to V8ValueFunction.
+                }
+                if (v8Value->IsProxy()) {
+                    // Proxy is also a function. So, it needs to be tested before IsFunction().
+                    return jniEnv->NewObject(
+                        jclassV8ValueProxy,
+                        jmethodIDV8ValueProxyConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                if (v8Value->IsFunction()) {
+                    return jniEnv->NewObject(
+                        jclassV8ValueFunction,
+                        jmethodIDV8ValueFunctionConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                if (v8Value->IsNativeError()) {
+                    return jniEnv->NewObject(
+                        jclassV8ValueError,
+                        jmethodIDV8ValueErrorConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                if (v8Value->IsDate()) {
+                    auto v8Date = v8Value->ToObject(v8Context).ToLocalChecked().As<v8::Date>();
+                    return jniEnv->CallObjectMethod(
+                        v8Runtime->externalV8Runtime,
+                        jmethodIDV8RuntimeCreateV8ValueZonedDateTime,
+                        static_cast<std::int64_t>(v8Date->ValueOf()));
+                }
+                if (v8Value->IsSymbolObject()) {
+                    return jniEnv->NewObject(
+                        jclassV8ValueSymbolObject,
+                        jmethodIDV8ValueSymbolObjectConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                if (v8Value->IsStringObject()) {
+                    return jniEnv->NewObject(
+                        jclassV8ValueStringObject,
+                        jmethodIDV8ValueStringObjectConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                if (v8Value->IsNumberObject()) {
+                    return jniEnv->NewObject(
+                        jclassV8ValueDoubleObject,
+                        jmethodIDV8ValueDoubleObjectConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                if (v8Value->IsBooleanObject()) {
+                    return jniEnv->NewObject(
+                        jclassV8ValueBooleanObject,
+                        jmethodIDV8ValueBooleanObjectConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                if (v8Value->IsBigIntObject()) {
+                    return jniEnv->NewObject(
+                        jclassV8ValueLongObject,
+                        jmethodIDV8ValueLongObjectConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
+                if (v8Value->IsName()) {
+                    /*
+                     * Name is handled by either String or Symbol.
+                     * This block should not be entered.
+                     */
+                }
+                if (v8Value->IsModule()) {
+                    return jniEnv->NewObject(
+                        jclassV8Module,
+                        jmethodIDV8ModuleConstructor,
+                        v8Runtime->externalV8Runtime,
+                        ToV8PersistentReference(v8Context, v8Value));
+                }
                 return jniEnv->NewObject(
-                    jclassV8ValueDataView,
-                    jmethodIDV8ValueDataViewConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            if (v8Value->IsArrayBuffer()) {
-                auto v8ArrayBuffer = v8Value.As<v8::ArrayBuffer>();
-                return jniEnv->NewObject(
-                    jclassV8ValueArrayBuffer,
-                    jmethodIDV8ValueArrayBufferConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value),
-                    jniEnv->NewDirectByteBuffer(v8ArrayBuffer->GetBackingStore()->Data(), v8ArrayBuffer->ByteLength()));
-            }
-            if (v8Value->IsSharedArrayBuffer()) {
-                auto v8SharedArrayBuffer = v8Value.As<v8::SharedArrayBuffer>();
-                return jniEnv->NewObject(
-                    jclassV8ValueSharedArrayBuffer,
-                    jmethodIDV8ValueSharedArrayBufferConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value),
-                    jniEnv->NewDirectByteBuffer(v8SharedArrayBuffer->GetBackingStore()->Data(), v8SharedArrayBuffer->ByteLength()));
-            }
-            if (v8Value->IsArrayBufferView()) {
-                /*
-                 * ArrayBufferView is a helper type representing any of typed array or DataView.
-                 * This block shouldn't be entered.
-                 */
-            }
-            if (v8Value->IsWeakMap()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueWeakMap,
-                    jmethodIDV8ValueWeakMapConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            if (v8Value->IsWeakSet()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueWeakSet,
-                    jmethodIDV8ValueWeakSetConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            if (v8Value->IsMap()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueMap,
-                    jmethodIDV8ValueMapConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            if (v8Value->IsSet()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueSet,
-                    jmethodIDV8ValueSetConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            if (v8Value->IsMapIterator() || v8Value->IsSetIterator() || v8Value->IsGeneratorObject()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueIterator,
-                    jmethodIDV8ValueIteratorConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            if (v8Value->IsArgumentsObject()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueArguments,
-                    jmethodIDV8ValueArgumentsConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            if (v8Value->IsPromise()) {
-                return jniEnv->NewObject(
-                    jclassV8ValuePromise,
-                    jmethodIDV8ValuePromiseConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            if (v8Value->IsRegExp()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueRegExp,
-                    jmethodIDV8ValueRegExpConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            if (v8Value->IsAsyncFunction()) {
-                // It defaults to V8ValueFunction.
-            }
-            if (v8Value->IsGeneratorFunction()) {
-                // It defaults to V8ValueFunction.
-            }
-            if (v8Value->IsProxy()) {
-                // Proxy is also a function. So, it needs to be tested before IsFunction().
-                return jniEnv->NewObject(
-                    jclassV8ValueProxy,
-                    jmethodIDV8ValueProxyConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            if (v8Value->IsFunction()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueFunction,
-                    jmethodIDV8ValueFunctionConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            if (v8Value->IsNativeError()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueError,
-                    jmethodIDV8ValueErrorConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            if (v8Value->IsSymbolObject()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueSymbolObject,
-                    jmethodIDV8ValueSymbolObjectConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            if (v8Value->IsSymbol()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueSymbol,
-                    jmethodIDV8ValueSymbolConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            if (v8Value->IsStringObject()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueStringObject,
-                    jmethodIDV8ValueStringObjectConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            if (v8Value->IsNumberObject()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueDoubleObject,
-                    jmethodIDV8ValueDoubleObjectConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            if (v8Value->IsBooleanObject()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueBooleanObject,
-                    jmethodIDV8ValueBooleanObjectConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            if (v8Value->IsBigIntObject()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueLongObject,
-                    jmethodIDV8ValueLongObjectConstructor,
+                    jclassV8ValueObject,
+                    jmethodIDV8ValueObjectConstructor,
                     v8Runtime->externalV8Runtime,
                     ToV8PersistentReference(v8Context, v8Value));
             }
@@ -877,6 +896,28 @@ namespace Javet {
                     v8Runtime->externalV8Runtime,
                     jmethodIDV8RuntimeCreateV8ValueInteger,
                     v8Value->Int32Value(v8Context).FromMaybe(0));
+            }
+            if (v8Value->IsNumber()) {
+                return jniEnv->CallObjectMethod(
+                    v8Runtime->externalV8Runtime,
+                    jmethodIDV8RuntimeCreateV8ValueDouble,
+                    v8Value->NumberValue(v8Context).FromMaybe(0));
+            }
+            if (v8Value->IsString()) {
+                return ToExternalV8ValuePrimitive(
+                    jniEnv,
+                    jclassV8ValueString,
+                    jmethodIDV8ValueStringConstructor,
+                    v8Runtime,
+                    v8Context,
+                    v8Value);
+            }
+            if (v8Value->IsSymbol()) {
+                return jniEnv->NewObject(
+                    jclassV8ValueSymbol,
+                    jmethodIDV8ValueSymbolConstructor,
+                    v8Runtime->externalV8Runtime,
+                    ToV8PersistentReference(v8Context, v8Value));
             }
             if (v8Value->IsBigInt()) {
                 V8LocalBigInt v8LocalBigInt = v8Value->ToBigInt(v8Context).ToLocalChecked();
@@ -902,49 +943,6 @@ namespace Javet {
                         signum,
                         mLongArray);
                 }
-            }
-            if (v8Value->IsDate()) {
-                auto v8Date = v8Value->ToObject(v8Context).ToLocalChecked().As<v8::Date>();
-                return jniEnv->CallObjectMethod(
-                    v8Runtime->externalV8Runtime,
-                    jmethodIDV8RuntimeCreateV8ValueZonedDateTime,
-                    static_cast<std::int64_t>(v8Date->ValueOf()));
-            }
-            if (v8Value->IsNumber()) {
-                return jniEnv->CallObjectMethod(
-                    v8Runtime->externalV8Runtime,
-                    jmethodIDV8RuntimeCreateV8ValueDouble,
-                    v8Value->NumberValue(v8Context).FromMaybe(0));
-            }
-            if (v8Value->IsString()) {
-                return ToExternalV8ValuePrimitive(
-                    jniEnv,
-                    jclassV8ValueString,
-                    jmethodIDV8ValueStringConstructor,
-                    v8Runtime,
-                    v8Context,
-                    v8Value);
-            }
-            if (v8Value->IsName()) {
-                /*
-                 * Name is handled by either String or Symbol.
-                 * This block should not be entered.
-                 */
-            }
-            if (v8Value->IsModule()) {
-                return jniEnv->NewObject(
-                    jclassV8Module,
-                    jmethodIDV8ModuleConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
-            }
-            // Object needs to be the last one.
-            if (v8Value->IsObject()) {
-                return jniEnv->NewObject(
-                    jclassV8ValueObject,
-                    jmethodIDV8ValueObjectConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Context, v8Value));
             }
             // Something is wrong. It defaults to toString().
             return ToExternalV8ValuePrimitive(
