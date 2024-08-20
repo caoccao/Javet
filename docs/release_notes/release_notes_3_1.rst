@@ -9,7 +9,6 @@ Release Notes 3.1.x
 * Upgraded Android NDK to r27
 * Fixed a bug of the default export in ``JavetBuiltInModuleResolver``
 * Adjust JS type conversion priority for better performance
-* Fixed undefined symbol ``_ZTIN12v8_inspector17V8InspectorClientE`` for Linux x86_64 (temporarily)
 
 3.1.4 V8 v12.7
 --------------
