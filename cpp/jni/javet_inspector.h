@@ -57,7 +57,7 @@ namespace Javet {
             void quitMessageLoopOnPause() override;
             void runIfWaitingForDebugger(int contextGroupId) override;
             void runMessageLoopOnPause(int contextGroupId) override;
-            virtual ~JavetInspectorClient();
+            virtual ~JavetInspectorClient() = default;
         private:
             bool activateMessageLoop;
             jobject mV8Inspector;

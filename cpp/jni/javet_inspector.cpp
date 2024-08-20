@@ -140,9 +140,6 @@ namespace Javet {
             return v8Runtime->GetV8LocalContext();
         }
 
-        JavetInspectorClient::~JavetInspectorClient() {
-        }
-
         JavetInspectorChannel::JavetInspectorChannel(V8Runtime* v8Runtime, const jobject mV8Inspector) noexcept {
             this->mV8Inspector = mV8Inspector;
             this->v8Runtime = v8Runtime;
