@@ -828,9 +828,17 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             @V8Function
             public Integer contextScope(V8ValueFunction v8ValueFunction) throws JavetException {
                 assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined());
-                assertTrue(v8ValueFunction.getJSScopeType().isFunction());
-                if (v8ValueFunction.setSourceCode("() => a + 2", options)) {
+                if (v8Runtime.getJSRuntimeType().isNode()) {
                     assertTrue(v8ValueFunction.getJSScopeType().isFunction());
+                } else {
+                    assertTrue(v8ValueFunction.getJSScopeType().isScript());
+                }
+                if (v8ValueFunction.setSourceCode("() => a + 2", options)) {
+                    if (v8Runtime.getJSRuntimeType().isNode()) {
+                        assertTrue(v8ValueFunction.getJSScopeType().isFunction());
+                    } else {
+                        assertTrue(v8ValueFunction.getJSScopeType().isScript());
+                    }
                     return v8ValueFunction.callInteger(null);
                 } else {
                     return 0;
@@ -1226,7 +1234,11 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals("() => a + b + 1", originalScriptSource.getCodeSnippet(), "The code snippet should match.");
             assertTrue(originalV8ValueFunction.getJSScopeType().isClass(), "The context is not ready.");
             assertEquals(5, originalV8ValueFunction.callInteger(null), "Populate the context.");
-            assertTrue(originalV8ValueFunction.getJSScopeType().isFunction(), "The context is ready.");
+            if (v8Runtime.getJSRuntimeType().isNode()) {
+                assertTrue(originalV8ValueFunction.getJSScopeType().isFunction(), "The context is ready.");
+            } else {
+                assertTrue(originalV8ValueFunction.getJSScopeType().isScript(), "The context is ready.");
+            }
             try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(crackedCodeString);
                  V8Context v8Context = originalV8ValueFunction.getContext()) {
                 assertNotNull(v8Context);
@@ -1274,12 +1286,20 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 if (v8ValueFunction.getJSScopeType().isClass()) {
                     v8ValueFunction.callInteger(null, 0);
                 }
-                assertTrue(v8ValueFunction.getJSScopeType().isFunction());
+                if (v8Runtime.getJSRuntimeType().isNode()) {
+                    assertTrue(v8ValueFunction.getJSScopeType().isFunction());
+                } else {
+                    assertTrue(v8ValueFunction.getJSScopeType().isScript());
+                }
                 String originalCodeString = v8ValueFunction.getSourceCode();
                 String newCodeString = originalCodeString + " /*\n測試\nI am longer\n*/ + 1";
                 v8ValueFunction.setSourceCode(newCodeString, options);
                 int result = v8ValueFunction.callInteger(null, 1);
-                assertTrue(v8ValueFunction.getJSScopeType().isFunction());
+                if (v8Runtime.getJSRuntimeType().isNode()) {
+                    assertTrue(v8ValueFunction.getJSScopeType().isFunction());
+                } else {
+                    assertTrue(v8ValueFunction.getJSScopeType().isScript());
+                }
                 v8ValueFunction.setSourceCode(originalCodeString, options);
                 ++callCount;
                 return result;
@@ -1441,23 +1461,38 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                             "The cache is not ready and the scope type should be [Class].");
                     assertEquals(i, v8ValueFunction.callInteger(null),
                             "Calling the function to build the cache and the result should match.");
-                    assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
-                            "The cache is ready and the scope type should be [Function].");
+                    if (v8Runtime.getJSRuntimeType().isNode()) {
+                        assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
+                                "The cache is ready and the scope type should be [Function].");
+                    } else {
+                        assertTrue(v8ValueFunction.getJSScopeType().isScript(),
+                                "The cache is ready and the scope type should be [Script].");
+                    }
                     assertTrue(v8ValueFunction.setSourceCode(MessageFormat.format(functionBodyTemplate[1], i), options),
                             "Updating the source code should pass.");
                     assertEquals(i + 1, v8ValueFunction.callInteger(null),
                             "Calling the new function and the result should match.");
                     assertTrue(v8ValueFunction.setSourceCode(functionBodies.get(i), options),
                             "Restoring the source code should pass.");
-                    assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
-                            "The cache is refreshed and the scope type should be [Function].");
+                    if (v8Runtime.getJSRuntimeType().isNode()) {
+                        assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
+                                "The cache is refreshed and the scope type should be [Function].");
+                    } else {
+                        assertTrue(v8ValueFunction.getJSScopeType().isScript(),
+                                "The cache is refreshed and the scope type should be [Script].");
+                    }
                 }
                 // Verify the cache.
                 try (V8ValueFunction v8ValueFunction = v8Runtime.getGlobalObject().get(functionNames.get(i))) {
                     assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined(),
                             "Function type should be user defined.");
-                    assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
-                            "The cache is restored and the scope type should be [Function].");
+                    if (v8Runtime.getJSRuntimeType().isNode()) {
+                        assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
+                                "The cache is restored and the scope type should be [Function].");
+                    } else {
+                        assertTrue(v8ValueFunction.getJSScopeType().isScript(),
+                                "The cache is restored and the scope type should be [Script].");
+                    }
                     assertEquals(i, v8ValueFunction.callInteger(null),
                             "Calling the function from the cache and the result should match.");
                 }

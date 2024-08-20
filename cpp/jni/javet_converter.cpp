@@ -625,12 +625,12 @@ namespace Javet {
                 return ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8LocalObject);
             }
             else if (v8::internal::IsContext(v8InternalObject)) {
-                auto v8InternalContext = V8InternalContext::cast(v8InternalObject);
+                auto v8InternalContext = v8::internal::Cast<V8InternalContext>(v8InternalObject);
                 auto v8LocalContext = v8::Utils::ToLocal(v8::internal::handle(v8InternalContext, v8InternalIsolate));
                 return ToExternalV8Context(jniEnv, v8Runtime, v8Context, v8LocalContext);
             }
             else if (v8::internal::IsModule(v8InternalObject)) {
-                auto v8LocalModule = v8::Utils::ToLocal(v8::internal::handle(V8InternalModule::cast(v8InternalObject), v8InternalIsolate));
+                auto v8LocalModule = v8::Utils::ToLocal(v8::internal::handle(v8::internal::Cast<V8InternalModule>(v8InternalObject), v8InternalIsolate));
                 return ToExternalV8Module(jniEnv, v8Runtime, v8Context, v8LocalModule);
             }
             else if (v8::internal::IsScript(v8InternalObject)) {

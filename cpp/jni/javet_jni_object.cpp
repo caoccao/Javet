@@ -646,7 +646,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectIsFroze
 #ifdef ENABLE_NODE
         auto elementKind = V8InternalJSObject::cast(v8InternalJSObject).GetElementsKind();
 #else
-        auto elementKind = V8InternalJSObject::cast(v8InternalJSObject)->GetElementsKind();
+        auto elementKind = v8::internal::Cast<V8InternalJSObject>(v8InternalJSObject)->GetElementsKind();
 #endif
         return v8::internal::IsFrozenElementsKind(elementKind);
     }
@@ -661,7 +661,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectIsSeale
 #ifdef ENABLE_NODE
         auto elementKind = V8InternalJSObject::cast(v8InternalJSObject).GetElementsKind();
 #else
-        auto elementKind = V8InternalJSObject::cast(v8InternalJSObject)->GetElementsKind();
+        auto elementKind = v8::internal::Cast<V8InternalJSObject>(v8InternalJSObject)->GetElementsKind();
 #endif
         return v8::internal::IsSealedElementsKind(elementKind);
     }
@@ -718,7 +718,11 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectSetAcce
             return false;
         }
         if (mContextGetter == nullptr) {
+#ifdef ENABLE_NODE
             v8MaybeBool = v8LocalObject.As<v8::Object>()->SetAccessor(v8Context, v8LocalName, nullptr);
+#else
+            v8MaybeBool = v8LocalObject.As<v8::Object>()->SetNativeDataProperty(v8Context, v8LocalName, nullptr);
+#endif
         }
         else {
             auto v8LocalArrayContext = v8::Array::New(v8Context->GetIsolate(), 2);
@@ -745,7 +749,11 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectSetAcce
                 maybeResult = v8LocalArrayContext->Set(v8Context, 1, v8LocalContextSetterHandle);
                 setter = Javet::Callback::JavetPropertySetterCallback;
             }
+#ifdef ENABLE_NODE
             v8MaybeBool = v8LocalObject.As<v8::Object>()->SetAccessor(v8Context, v8LocalName, getter, setter, v8LocalArrayContext);
+#else
+            v8MaybeBool = v8LocalObject.As<v8::Object>()->SetNativeDataProperty(v8Context, v8LocalName, getter, setter, v8LocalArrayContext);
+#endif
         }
     }
     if (v8MaybeBool.IsNothing()) {

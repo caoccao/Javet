@@ -99,6 +99,7 @@ if(DEFINED V8_DIR)
         ${V8_DIR}
         ${V8_DIR}/include
         ${V8_DIR}/third_party/abseil-cpp
+        ${V8_DIR}/third_party/fp16/src/include
         ${V8_RELEASE_DIR}/gen)
     if(DEFINED ENABLE_I18N)
         add_definitions(-DENABLE_I18N -DV8_INTL_SUPPORT)

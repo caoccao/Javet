@@ -332,7 +332,7 @@ namespace Javet {
 #ifdef ENABLE_NODE
             return V8InternalContext::cast(*v8::Utils::OpenHandle(*v8LocalContext));
 #else
-            return *V8InternalContext::cast(*v8::Utils::OpenHandle(*v8LocalContext));
+            return *v8::internal::Cast<V8InternalContext>(*v8::Utils::OpenHandle(*v8LocalContext));
 #endif
         }
 
@@ -341,7 +341,7 @@ namespace Javet {
 #ifdef ENABLE_NODE
             return V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
 #else
-            return *V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+            return *v8::internal::Cast<V8InternalJSFunction>(*v8::Utils::OpenHandle(*v8LocalValue));
 #endif
         }
 
@@ -350,7 +350,7 @@ namespace Javet {
 #ifdef ENABLE_NODE
             return V8InternalJSObject::cast(*v8::Utils::OpenHandle(*v8LocalValue));
 #else
-            return *V8InternalJSObject::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+            return *v8::internal::Cast<V8InternalJSObject>(*v8::Utils::OpenHandle(*v8LocalValue));
 #endif
         }
 
@@ -359,7 +359,7 @@ namespace Javet {
 #ifdef ENABLE_NODE
             return V8InternalModule::cast(*v8::Utils::OpenHandle(*v8LocalModule));
 #else
-            return *V8InternalModule::cast(*v8::Utils::OpenHandle(*v8LocalModule));
+            return *v8::internal::Cast<V8InternalModule>(*v8::Utils::OpenHandle(*v8LocalModule));
 #endif
         }
 
@@ -368,7 +368,7 @@ namespace Javet {
 #ifdef ENABLE_NODE
             return V8InternalScript::cast(*v8::Utils::OpenHandle(*v8LocalScript));
 #else
-            return *V8InternalScript::cast(*v8::Utils::OpenHandle(*v8LocalScript));
+            return *v8::internal::Cast<V8InternalScript>(*v8::Utils::OpenHandle(*v8LocalScript));
 #endif
         }
     }
