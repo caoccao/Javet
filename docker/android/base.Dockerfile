@@ -58,9 +58,9 @@ RUN echo V8 preparation is completed.
 
 # Prepare Android NDK
 WORKDIR /
-RUN wget https://dl.google.com/android/repository/android-ndk-r25b-linux.zip
-RUN unzip android-ndk-r25b-linux.zip
-RUN rm android-ndk-r25b-linux.zip
+RUN wget https://dl.google.com/android/repository/android-ndk-r27-linux.zip
+RUN unzip android-ndk-r27-linux.zip
+RUN rm android-ndk-r27-linux.zip
 
 # Prepare Android SDK
 WORKDIR /google/v8/third_party/android_sdk/public/cmdline-tools/latest/bin
