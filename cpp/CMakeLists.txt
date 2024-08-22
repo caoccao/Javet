@@ -99,6 +99,7 @@ if(DEFINED V8_DIR)
         ${V8_DIR}
         ${V8_DIR}/include
         ${V8_DIR}/third_party/abseil-cpp
+        ${V8_DIR}/third_party/fp16/src/include
         ${V8_RELEASE_DIR}/gen)
     if(DEFINED ENABLE_I18N)
         add_definitions(-DENABLE_I18N -DV8_INTL_SUPPORT)
@@ -196,8 +197,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
     add_library(Javet SHARED ${sourceFiles})
     add_library(JavetStatic STATIC ${sourceFiles})
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-invalid-offsetof -O3 ")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof -O3 ")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-invalid-offsetof -O3 -fno-rtti ")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof -O3 -fno-rtti ")
     if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|x86_64|aarch64)")
         set(JAVET_LIB_SYSTEM "linux")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated -Wno-deprecated-declarations ")

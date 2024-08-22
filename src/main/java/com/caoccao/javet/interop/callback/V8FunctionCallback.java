@@ -21,10 +21,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.converters.IJavetConverter;
 import com.caoccao.javet.interop.converters.JavetConverterConfig;
-import com.caoccao.javet.utils.JavetReflectionUtils;
-import com.caoccao.javet.utils.JavetResourceUtils;
-import com.caoccao.javet.utils.JavetTypeUtils;
-import com.caoccao.javet.utils.SimpleMap;
+import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.IV8Value;
 import com.caoccao.javet.values.V8Value;
 
@@ -189,7 +186,7 @@ public final class V8FunctionCallback {
                                 return ((Character) convertedObject).charValue();
                             } else if (convertedObjectClass == String.class) {
                                 String convertedString = (String) convertedObject;
-                                return convertedString.length() > 0 ?
+                                return StringUtils.isNotEmpty(convertedString) ?
                                         convertedString.charAt(0) : converter.getConfig().getDefaultChar();
                             }
                         }
@@ -252,7 +249,7 @@ public final class V8FunctionCallback {
                     } else if (expectedClass == Character.class) {
                         if (convertedObjectClass == String.class) {
                             String convertedString = (String) convertedObject;
-                            return convertedString.length() > 0 ?
+                            return StringUtils.isNotEmpty(convertedString) ?
                                     convertedString.charAt(0) : converter.getConfig().getDefaultChar();
                         }
                     } else if (expectedClass == Optional.class) {

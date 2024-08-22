@@ -62,7 +62,7 @@ Android Environment
 * Gradle 8.5+
 * Python 3.11+
 * Latest Android Studio (Optional)
-* Android NDK r25b
+* Android NDK r27
 * Android SDK 30
 
 Environment Variables

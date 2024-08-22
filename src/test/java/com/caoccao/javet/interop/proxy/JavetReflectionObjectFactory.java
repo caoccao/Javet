@@ -19,6 +19,7 @@ package com.caoccao.javet.interop.proxy;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetResourceUtils;
+import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.V8ValueFunction;
 import com.caoccao.javet.values.reference.V8ValueObject;
@@ -225,7 +226,7 @@ public final class JavetReflectionObjectFactory implements IJavetReflectionObjec
                     } else if (methodName.startsWith(V8ValueObject.METHOD_PREFIX_GET)) {
                         propertyName = methodName.substring(V8ValueObject.METHOD_PREFIX_GET.length());
                     }
-                    if (propertyName != null && propertyName.length() > 0) {
+                    if (StringUtils.isNotEmpty(propertyName)) {
                         propertyName = propertyName.substring(0, 1).toLowerCase(Locale.ROOT)
                                 + propertyName.substring(1);
                         if (v8ValueObject.has(propertyName)) {
@@ -238,7 +239,7 @@ public final class JavetReflectionObjectFactory implements IJavetReflectionObjec
                     if (methodName.startsWith(V8ValueObject.METHOD_PREFIX_SET)) {
                         propertyName = methodName.substring(V8ValueObject.METHOD_PREFIX_SET.length());
                     }
-                    if (propertyName != null && propertyName.length() > 0) {
+                    if (StringUtils.isNotEmpty(propertyName)) {
                         propertyName = propertyName.substring(0, 1).toLowerCase(Locale.ROOT)
                                 + propertyName.substring(1);
                         if (v8ValueObject.has(propertyName)) {

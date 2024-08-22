@@ -16,21 +16,21 @@ Maven
         <dependency>
             <groupId>com.caoccao.javet</groupId>
             <artifactId>javet</artifactId>
-            <version>3.1.4</version>
+            <version>3.1.5</version>
         </dependency>
 
         <!-- Linux (arm64) -->
         <dependency>
             <groupId>com.caoccao.javet</groupId>
             <artifactId>javet-linux-arm64</artifactId>
-            <version>3.1.4</version>
+            <version>3.1.5</version>
         </dependency>
 
         <!-- Mac OS (x86_64 and arm64) -->
         <dependency>
             <groupId>com.caoccao.javet</groupId>
             <artifactId>javet-macos</artifactId>
-            <version>3.1.4</version>
+            <version>3.1.5</version>
         </dependency>
 
 .. tab:: Complete
@@ -38,7 +38,7 @@ Maven
     .. code-block:: xml
 
         <properties>
-          <javet.version>3.1.4</javet.version>
+          <javet.version>3.1.5</javet.version>
         </properties>
 
         <profiles>
@@ -115,11 +115,11 @@ Gradle Kotlin DSL
 
     .. code-block:: kotlin
 
-        implementation("com.caoccao.javet:javet:3.1.4") // Linux and Windows (x86_64)
-        implementation("com.caoccao.javet:javet-linux-arm64:3.1.4") // Linux (arm64)
-        implementation("com.caoccao.javet:javet-macos:3.1.4") // Mac OS (x86_64 and arm64)
-        implementation("com.caoccao.javet:javet-android-node:3.1.4") // Android Node (arm, arm64, x86 and x86_64)
-        implementation("com.caoccao.javet:javet-android-v8:3.1.4") // Android V8 (arm, arm64, x86 and x86_64)
+        implementation("com.caoccao.javet:javet:3.1.5") // Linux and Windows (x86_64)
+        implementation("com.caoccao.javet:javet-linux-arm64:3.1.5") // Linux (arm64)
+        implementation("com.caoccao.javet:javet-macos:3.1.5") // Mac OS (x86_64 and arm64)
+        implementation("com.caoccao.javet:javet-android-node:3.1.5") // Android Node (arm, arm64, x86 and x86_64)
+        implementation("com.caoccao.javet:javet-android-v8:3.1.5") // Android V8 (arm, arm64, x86 and x86_64)
 
 .. tab:: Complete
 
@@ -130,11 +130,11 @@ Gradle Kotlin DSL
         val os = OperatingSystem.current()
         val cpuArch = System.getProperty("os.arch")
         if (os.isMacOsX) {
-            implementation("com.caoccao.javet:javet:3.1.4")
+            implementation("com.caoccao.javet:javet:3.1.5")
         } else if (os.isLinux && (cpuArch == "aarch64" || cpuArch == "arm64")) {
-            implementation("com.caoccao.javet:javet-linux-arm64:3.1.4")
+            implementation("com.caoccao.javet:javet-linux-arm64:3.1.5")
         } else {
-            implementation("com.caoccao.javet:javet-macos:3.1.4")
+            implementation("com.caoccao.javet:javet-macos:3.1.5")
         }
 
 Gradle Groovy DSL
@@ -142,11 +142,11 @@ Gradle Groovy DSL
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:3.1.4' // Linux and Windows (x86_64)
-    implementation 'com.caoccao.javet:javet-linux-arm64:3.1.4' // Linux (arm64)
-    implementation 'com.caoccao.javet:javet-macos:3.1.4' // Mac OS (x86_64 and arm64)
-    implementation 'com.caoccao.javet:javet-android-node:3.1.4' // Android Node (arm, arm64, x86 and x86_64)
-    implementation 'com.caoccao.javet:javet-android-v8:3.1.4' // Android V8 (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet:3.1.5' // Linux and Windows (x86_64)
+    implementation 'com.caoccao.javet:javet-linux-arm64:3.1.5' // Linux (arm64)
+    implementation 'com.caoccao.javet:javet-macos:3.1.5' // Mac OS (x86_64 and arm64)
+    implementation 'com.caoccao.javet:javet-android-node:3.1.5' // Android Node (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet-android-v8:3.1.5' // Android V8 (arm, arm64, x86 and x86_64)
 
 OS Compatibility
 ================

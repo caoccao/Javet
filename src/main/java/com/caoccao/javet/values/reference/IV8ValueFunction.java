@@ -23,6 +23,7 @@ import com.caoccao.javet.enums.V8ScopeType;
 import com.caoccao.javet.enums.V8ValueInternalType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
+import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueBigInteger;
 import com.caoccao.javet.values.primitive.V8ValueZonedDateTime;
@@ -971,7 +972,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
          * @since 2.0.1
          */
         public ScriptSource setCodeSnippet(String codeSnippet) {
-            if (codeSnippet != null && codeSnippet.length() > 0) {
+            if (StringUtils.isNotEmpty(codeSnippet)) {
                 final int originalCodeLength = code.length();
                 final int codeSnippetLength = codeSnippet.length();
                 final int newCodeLength = originalCodeLength - (endPosition - startPosition) + codeSnippetLength;

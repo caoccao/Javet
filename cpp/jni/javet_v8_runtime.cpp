@@ -316,7 +316,7 @@ namespace Javet {
             jstring mGlobalName = (jstring)jniEnv->CallObjectMethod(mRuntimeOptions, jmethodV8RuntimeOptionsGetGlobalName);
             if (mGlobalName != nullptr) {
                 auto umGlobalName = Javet::Converter::ToV8String(jniEnv, v8::Context::New(v8Isolate), mGlobalName);
-                v8ObjectTemplate->SetAccessor(umGlobalName, GlobalAccessorGetterCallback);
+                v8ObjectTemplate->SetNativeDataProperty(umGlobalName, GlobalAccessorGetterCallback);
             }
         }
         auto v8LocalContext = v8::Context::New(v8Isolate, nullptr, v8ObjectTemplate);

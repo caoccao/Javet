@@ -23,6 +23,7 @@ import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Internal;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.virtual.V8VirtualValueList;
@@ -208,7 +209,9 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     @Override
     public boolean setScriptSource(ScriptSource scriptSource, boolean cloneScript) throws JavetException {
         boolean success = false;
-        if (getJSFunctionType().isUserDefined() && getJSScopeType().isFunction() && scriptSource != null) {
+        if (getJSFunctionType().isUserDefined()
+                && (getJSScopeType().isFunction() || getJSScopeType().isScript())
+                && scriptSource != null) {
             success = checkV8Runtime().getV8Internal().functionSetScriptSource(
                     this, scriptSource, cloneScript);
         }
@@ -221,8 +224,9 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
             SetSourceCodeOptions options) throws JavetException {
         Objects.requireNonNull(options, "Options cannot be null.");
         boolean success = false;
-        if (getJSFunctionType().isUserDefined() && getJSScopeType().isFunction()
-                && sourceCodeString != null && sourceCodeString.length() > 0) {
+        if (getJSFunctionType().isUserDefined()
+                && (getJSScopeType().isFunction() || getJSScopeType().isScript())
+                && StringUtils.isNotEmpty(sourceCodeString)) {
             if (options.isTrimTailingCharacters()) {
                 sourceCodeString = V8ValueUtils.trimAnonymousFunction(sourceCodeString);
             }
@@ -237,7 +241,8 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
                 } else {
                     ScriptSource originalScriptSource = v8Internal.functionGetScriptSource(this);
                     ScriptSource newScriptSource = originalScriptSource.setCodeSnippet(sourceCodeString);
-                    if (getJSFunctionType().isUserDefined() && getJSScopeType().isFunction()) {
+                    if (getJSFunctionType().isUserDefined()
+                            && (getJSScopeType().isFunction() || getJSScopeType().isScript())) {
                         success = v8Internal.functionSetScriptSource(
                                 this, newScriptSource, options.isCloneScript());
                     }

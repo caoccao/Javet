@@ -49,13 +49,16 @@ public class JavetBuiltInModuleResolver implements IV8ModuleResolver {
         IV8Module iV8Module = null;
         // It only works for Node.js runtime and module names starting with "node:".
         if (v8Runtime.getJSRuntimeType().isNode() && resourceName != null && resourceName.startsWith(PREFIX_NODE)) {
-            String moduleName = resourceName.substring(PREFIX_NODE.length());
             NodeRuntime nodeRuntime = (NodeRuntime) v8Runtime;
-            NodeModuleAny nodeModuleAny = nodeRuntime.getNodeModule(moduleName, NodeModuleAny.class);
+            NodeModuleAny nodeModuleAny = nodeRuntime.getNodeModule(resourceName, NodeModuleAny.class);
             V8ValueObject v8ValueObject = nodeModuleAny.getModuleObject();
-            if (!v8ValueObject.has(DEFAULT)) {
-                v8ValueObject.set(DEFAULT, v8ValueObject);
-            }
+            /*
+             * https://github.com/caoccao/Javet/issues/376
+             *
+             * Sometimes the module object has 'default' property, but that property seems to be weird.
+             * Resetting the 'default' property resolves the issue.
+             */
+            v8ValueObject.set(DEFAULT, v8ValueObject);
             iV8Module = v8Runtime.createV8Module(resourceName, v8ValueObject);
         }
         return iV8Module;

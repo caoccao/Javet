@@ -244,7 +244,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_functionG
             auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
             auto wrappedArguments = v8InternalScript.wrapped_arguments();
 #else
-            auto v8InternalScript = V8InternalScript::cast(v8InternalShared->script());
+            auto v8InternalScript = v8::internal::Cast<V8InternalScript>(v8InternalShared->script());
             auto wrappedArguments = *v8InternalScript->wrapped_arguments();
 #endif
             auto length = wrappedArguments.length();
@@ -274,7 +274,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_functionGet
             auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
             if (v8InternalScript.is_wrapped()) {
 #else
-            auto v8InternalScript = V8InternalScript::cast(v8InternalShared->script());
+            auto v8InternalScript = v8::internal::Cast<V8InternalScript>(v8InternalShared->script());
             if (v8InternalScript->is_wrapped()) {
 #endif
                 V8TryCatch v8TryCatch(v8Context->GetIsolate());
@@ -425,8 +425,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetScr
                 V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
                 0, sourceLength);
 #else
-            auto v8InternalScript = V8InternalScript::cast(v8InternalShared->script());
-            auto v8InternalSource = V8InternalString::cast(v8InternalScript->source());
+            auto v8InternalScript = v8::internal::Cast<V8InternalScript>(v8InternalShared->script());
+            auto v8InternalSource = v8::internal::Cast<V8InternalString>(v8InternalScript->source());
             const int startPosition = v8InternalShared->StartPosition();
             const int endPosition = v8InternalShared->EndPosition();
             const int sourceLength = v8InternalSource->length();
@@ -461,8 +461,8 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetSou
                 V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
                 startPosition, endPosition - startPosition);
 #else
-            auto v8InternalScript = V8InternalScript::cast(v8InternalShared->script());
-            auto v8InternalSource = V8InternalString::cast(v8InternalScript->source());
+            auto v8InternalScript = v8::internal::Cast<V8InternalScript>(v8InternalShared->script());
+            auto v8InternalSource = v8::internal::Cast<V8InternalString>(v8InternalScript->source());
             const int startPosition = v8InternalShared->StartPosition();
             const int endPosition = v8InternalShared->EndPosition();
             auto sourceCode = v8InternalSource->ToCString(
@@ -551,7 +551,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSc
                 bool sourceCodeEquals = v8InternalScript.source().StrictEquals(*v8InternalSource);
                 bool positionEquals = startPosition == v8InternalShared.StartPosition() && endPosition == v8InternalShared.EndPosition();
 #else
-                auto v8InternalScript = V8InternalScript::cast(v8InternalShared->script());
+                auto v8InternalScript = v8::internal::Cast<V8InternalScript>(v8InternalShared->script());
                 auto v8InternalSource = v8::Utils::OpenHandle(*umSourceCode);
                 bool sourceCodeEquals = V8InternalObject::StrictEquals(v8InternalScript->source(), *v8InternalSource);
                 bool positionEquals = startPosition == v8InternalShared->StartPosition() && endPosition == v8InternalShared->EndPosition();
@@ -629,8 +629,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
                 const int endPosition = v8InternalShared.EndPosition();
                 const int sourceLength = v8InternalSource.length();
 #else
-                auto v8InternalScript = V8InternalScript::cast(v8InternalShared->script());
-                auto v8InternalSource = V8InternalString::cast(v8InternalScript->source());
+                auto v8InternalScript = v8::internal::Cast<V8InternalScript>(v8InternalShared->script());
+                auto v8InternalSource = v8::internal::Cast<V8InternalString>(v8InternalScript->source());
                 const int startPosition = v8InternalShared->StartPosition();
                 const int endPosition = v8InternalShared->EndPosition();
                 const int sourceLength = v8InternalSource->length();
