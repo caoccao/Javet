@@ -33,7 +33,9 @@ import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryType;
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -48,6 +50,8 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("unchecked")
 public final class V8Host {
     private static final long INVALID_HANDLE = 0L;
+    private static final Map<Long, V8StatisticsFuture<?>> v8StatisticsFutureMap = new HashMap<>(1024);
+    private static final Object v8StatisticsFutureMapLock = new Object();
     private static boolean libraryReloadable = false;
     private static volatile double memoryUsageThresholdRatio = 0.7;
     private final JSRuntimeType jsRuntimeType;
@@ -138,6 +142,28 @@ public final class V8Host {
      */
     public static boolean isLibraryReloadable() {
         return libraryReloadable;
+    }
+
+    private static void purgeV8StatisticsFuture(V8StatisticsFuture<?> v8StatisticsFuture, IV8Native iV8Native) {
+        synchronized (v8StatisticsFutureMapLock) {
+            if (v8StatisticsFutureMap.remove(v8StatisticsFuture.getHandle()) != null) {
+                iV8Native.removeRawPointer(
+                        v8StatisticsFuture.getHandle(),
+                        v8StatisticsFuture.getRawPointerType().getId());
+            }
+        }
+    }
+
+    private static void registerV8StatisticsFuture(V8StatisticsFuture<?> v8StatisticsFuture) {
+        synchronized (v8StatisticsFutureMapLock) {
+            v8StatisticsFutureMap.put(v8StatisticsFuture.getHandle(), v8StatisticsFuture);
+        }
+    }
+
+    private static boolean requestV8StatisticsFuture(long handle) {
+        synchronized (v8StatisticsFutureMapLock) {
+            return v8StatisticsFutureMap.remove(handle) != null;
+        }
     }
 
     /**
@@ -595,9 +621,7 @@ public final class V8Host {
             while (!v8StatisticsFutureQueue.isEmpty()) {
                 V8StatisticsFuture<?> v8StatisticsFuture = v8StatisticsFutureQueue.poll();
                 if (!v8StatisticsFuture.isDone()) {
-                    v8Native.removeRawPointer(
-                            v8StatisticsFuture.getHandle(),
-                            v8StatisticsFuture.getRawPointerType().getId());
+                    V8Host.purgeV8StatisticsFuture(v8StatisticsFuture, v8Native);
                 }
             }
         }
@@ -618,9 +642,7 @@ public final class V8Host {
                                     v8StatisticsFuture.getCreationDateTime().plusSeconds(TIMEOUT_IN_SECONDS);
                             Duration duration = Duration.between(now, purgeDateTime);
                             if (duration.isNegative()) {
-                                v8Native.removeRawPointer(
-                                        v8StatisticsFuture.getHandle(),
-                                        v8StatisticsFuture.getRawPointerType().getId());
+                                V8Host.purgeV8StatisticsFuture(v8StatisticsFuture, v8Native);
                                 v8StatisticsFutureQueue.poll();
                             } else {
                                 TimeUnit.MILLISECONDS.sleep(duration.toMillis());

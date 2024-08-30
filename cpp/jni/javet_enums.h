@@ -28,8 +28,8 @@ namespace Javet {
 
         namespace RawPointerType {
             enum RawPointerType {
-                HeapStatisticsContainer = 1,
-                HeapSpaceStatisticsContainer = 2,
+                HeapStatisticsContext = 1,
+                HeapSpaceStatisticsContext = 2,
                 Invalid = 0,
             };
         }

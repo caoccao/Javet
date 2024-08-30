@@ -2,6 +2,11 @@
 Release Notes 3.1.x
 ===================
 
+3.1.6 V8 v12.9
+--------------
+
+* Rewrote ``getV8HeapStatistics()``, ``getV8HeapSpaceStatistics()`` for ``V8Runtime`` again to fix possible JVM crash
+
 3.1.5 V8 v12.8
 --------------
 
@@ -9,7 +14,7 @@ Release Notes 3.1.x
 * Upgraded V8 to ``v12.8.374.17`` (2024-08-19)
 * Upgraded Android NDK to r27
 * Fixed a bug of the default export in ``JavetBuiltInModuleResolver``
-* Adjust JS type conversion priority for better performance
+* Adjusted JS type conversion priority for better performance
 
 3.1.4 V8 v12.7
 --------------
