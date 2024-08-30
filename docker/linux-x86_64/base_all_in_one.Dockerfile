@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet:3.1.5 -f docker/linux-x86_64/base_all_in_one.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet:3.1.6 -f docker/linux-x86_64/base_all_in_one.Dockerfile .
 
 FROM ubuntu:20.04
 WORKDIR /
