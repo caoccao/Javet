@@ -2,9 +2,10 @@
 Release Notes 3.1.x
 ===================
 
-3.1.6 V8 v12.9
---------------
+3.1.6 Node.js v20.17.0
+----------------------
 
+* Upgraded Node.js to ``v20.17.0`` `(2024-08-21) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.17.0>`_
 * Rewrote ``getV8HeapStatistics()``, ``getV8HeapSpaceStatistics()`` for ``V8Runtime`` again to fix possible JVM crash
 
 3.1.5 V8 v12.8
