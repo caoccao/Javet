@@ -210,7 +210,7 @@ public class TestNodeRuntime extends BaseTestJavet {
         Path path4 = nodeModuleProcess.getWorkingDirectory().toPath();
         assertNotEquals(path1.toAbsolutePath().toString(), path3.toAbsolutePath().toString());
         assertEquals(path1.toAbsolutePath().toString(), path4.toAbsolutePath().toString());
-        assertEquals("v20.16.0", nodeModuleProcess.getVersion());
+        assertEquals("v20.17.0", nodeModuleProcess.getVersion());
     }
 
     @Test

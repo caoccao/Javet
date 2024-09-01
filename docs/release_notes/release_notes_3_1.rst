@@ -2,6 +2,12 @@
 Release Notes 3.1.x
 ===================
 
+3.1.6 Node.js v20.17.0
+----------------------
+
+* Upgraded Node.js to ``v20.17.0`` `(2024-08-21) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V20.md#20.17.0>`_
+* Rewrote ``getV8HeapStatistics()``, ``getV8HeapSpaceStatistics()`` for ``V8Runtime`` again to fix possible JVM crash
+
 3.1.5 V8 v12.8
 --------------
 
@@ -9,7 +15,7 @@ Release Notes 3.1.x
 * Upgraded V8 to ``v12.8.374.17`` (2024-08-19)
 * Upgraded Android NDK to r27
 * Fixed a bug of the default export in ``JavetBuiltInModuleResolver``
-* Adjust JS type conversion priority for better performance
+* Adjusted JS type conversion priority for better performance
 
 3.1.4 V8 v12.7
 --------------

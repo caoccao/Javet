@@ -300,11 +300,11 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeRawPointer
 (JNIEnv* jniEnv, jobject caller, jlong handle, jint rawPointerTypeId) {
     using namespace Javet::Enums::RawPointerType;
     switch (rawPointerTypeId) {
-    case HeapStatisticsContainer:
-        Javet::Monitor::RemoveHeapStatisticsContainer(handle);
+    case HeapStatisticsContext:
+        Javet::Monitor::RemoveHeapStatisticsContext(handle);
         break;
-    case HeapSpaceStatisticsContainer:
-        Javet::Monitor::RemoveHeapSpaceStatisticsContainer(handle);
+    case HeapSpaceStatisticsContext:
+        Javet::Monitor::RemoveHeapSpaceStatisticsContext(handle);
         break;
     default:
         break;

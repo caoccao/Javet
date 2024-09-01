@@ -29,41 +29,38 @@
 
 namespace Javet {
     namespace Monitor {
-        static jclass jclassV8AllocationSpace;
-        static jmethodID jmethodIDV8AllocationSpaceGetIndex;
-
-        static jclass jclassV8StatisticsFuture;
-        static jmethodID jmethodIDV8StatisticsFutureConstructor;
-        static jmethodID jmethodIDV8StatisticsFutureComplete;
-        static jmethodID jmethodIDV8StatisticsFutureSetHandle;
-
-        static jclass jclassV8HeapSpaceStatistics;
-        static jmethodID jmethodIDV8HeapSpaceStatisticsConstructor;
-        static jmethodID jmethodIDV8HeapSpaceStatisticsSetAllocationSpace;
-
-        static jclass jclassV8HeapStatistics;
-        static jmethodID jmethodIDV8HeapStatisticsConstructor;
-
-        static jclass jclassV8SharedMemoryStatistics;
-        static jmethodID jmethodIDV8SharedMemoryStatisticsConstructor;
-
         void Initialize(JNIEnv* jniEnv) noexcept;
 
         jobject GetHeapSpaceStatistics(
             JNIEnv* jniEnv,
             v8::Isolate* v8Isolate,
             const jobject allocationSpaceIndex) noexcept;
-        void GetHeapSpaceStatisticsCallback(v8::Isolate* v8Isolate, void* data) noexcept;
-
-        jobject GetHeapStatistics(
+        void GetHeapSpaceStatisticsAsync(v8::Isolate* v8Isolate, void* data) noexcept;
+        void GetHeapSpaceStatisticsInternal(
             JNIEnv* jniEnv,
-            v8::Isolate* v8Isolate) noexcept;
-        void GetHeapStatisticsCallback(v8::Isolate* v8Isolate, void* data) noexcept;
+            v8::Isolate* v8Isolate,
+            const jobject& completableFuture,
+            const jobject& allocationSpace) noexcept;
+        void GetHeapSpaceStatisticsSync(
+            JNIEnv* jniEnv,
+            v8::Isolate* v8Isolate,
+            void* data) noexcept;
+
+        jobject GetHeapStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate) noexcept;
+        void GetHeapStatisticsAsync(v8::Isolate* v8Isolate, void* data) noexcept;
+        void GetHeapStatisticsInternal(
+            JNIEnv* jniEnv,
+            v8::Isolate* v8Isolate,
+            const jobject& completableFuture) noexcept;
+        void GetHeapStatisticsSync(
+            JNIEnv* jniEnv,
+            v8::Isolate* v8Isolate,
+            void* data) noexcept;
 
         jobject GetV8SharedMemoryStatistics(JNIEnv* jniEnv) noexcept;
 
-        void RemoveHeapSpaceStatisticsContainer(jlong handle) noexcept;
-        void RemoveHeapStatisticsContainer(jlong handle) noexcept;
+        void RemoveHeapSpaceStatisticsContext(jlong handle) noexcept;
+        void RemoveHeapStatisticsContext(jlong handle) noexcept;
 
 #ifdef ENABLE_MONITOR
         namespace CounterType {
