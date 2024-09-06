@@ -573,7 +573,7 @@ public final class V8Host {
                         if (!(!v8Guard.isDebugModeEnabled() && IS_IN_DEBUG_MODE)) {
                             V8Runtime v8Runtime = v8Guard.getV8Runtime();
                             synchronized (v8Runtime.getCloseLock()) {
-                                if (!v8Runtime.isClosed() && v8Runtime.isInUse()) {
+                                if (!v8Guard.isClosed() && !v8Runtime.isClosed() && v8Runtime.isInUse()) {
                                     v8Runtime.terminateExecution();
                                     v8Runtime.getLogger().logWarn(
                                             "Execution was terminated after {0}ms.",
@@ -582,9 +582,16 @@ public final class V8Host {
                             }
                         }
                     } else {
-                        v8GuardQueue.add(v8Guard);
-                        long sleepMillis = Math.min(v8Guard.getEndTimeMillis() - now, sleepIntervalMillis);
-                        TimeUnit.MILLISECONDS.sleep(sleepMillis);
+                        V8Runtime v8Runtime = v8Guard.getV8Runtime();
+                        synchronized (v8Runtime.getCloseLock()) {
+                            if (!v8Guard.isClosed() && !v8Runtime.isClosed()) {
+                                v8GuardQueue.add(v8Guard);
+                                long sleepMillis = Math.min(v8Guard.getEndTimeMillis() - now, sleepIntervalMillis);
+                                if (sleepMillis > 0) {
+                                    TimeUnit.MILLISECONDS.sleep(sleepMillis);
+                                }
+                            }
+                        }
                     }
                 } catch (InterruptedException ignored) {
                     break;
