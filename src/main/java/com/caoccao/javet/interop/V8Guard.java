@@ -83,9 +83,11 @@ public final class V8Guard implements IJavetClosable {
      */
     public void cancel() {
         if (!isClosed()) {
-            PriorityBlockingQueue<V8Guard> v8GuardQueue = v8Runtime.getV8Host().getV8GuardDaemon().getV8GuardQueue();
-            boolean ignored = v8GuardQueue.remove(this);
             closed = true;
+            synchronized (v8Runtime.getCloseLock()) {
+                PriorityBlockingQueue<V8Guard> v8GuardQueue = v8Runtime.getV8Host().getV8GuardDaemon().getV8GuardQueue();
+                boolean ignored = v8GuardQueue.remove(this);
+            }
         }
     }
 

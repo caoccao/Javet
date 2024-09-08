@@ -2,6 +2,11 @@
 Release Notes 3.1.x
 ===================
 
+3.1.7
+-----
+
+* Fixed race condition in ``V8Guard``
+
 3.1.6 Node.js v20.17.0
 ----------------------
 
