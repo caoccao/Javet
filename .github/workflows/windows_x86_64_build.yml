@@ -58,10 +58,10 @@ jobs:
         .\depot_tools\gclient.bat sync -D
         cd v8
         python3 tools\dev\v8gen.py x64.release -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-        .\depot_tools\gn.bat gen out.gn/x64.release
+        ..\depot_tools\gn.bat gen out.gn/x64.release
         python3 ${{ env.ROOT }}\Javet\scripts\python\patch_v8_build.py -p .\
-        git apply ..\..\Javet\scripts\patches\windows\v8\tagged-field.h.patch
-        .\depot_tools\ninja.bat -C out.gn/x64.release v8_monolith
+        git apply ${{ env.ROOT }}\Javet\scripts\patches\windows\v8\tagged-field.h.patch
+        ..\depot_tools\ninja.bat -C out.gn/x64.release v8_monolith
 
     - name: Setup JDK 8
       uses: actions/setup-java@v4
