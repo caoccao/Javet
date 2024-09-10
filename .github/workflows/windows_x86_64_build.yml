@@ -1,0 +1,198 @@
+name: Windows x86_64 Build
+
+concurrency:
+  group: windows_x86_64_build_${{ github.ref }}
+  cancel-in-progress: true
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - "**.rst"
+      - "docs/**"
+  push:
+    paths-ignore:
+      - "**.rst"
+      - "docs/**"
+
+env:
+  JAVET_NODE_VERSION: 20.17.0
+  JAVET_V8_VERSION: 12.8.374.17
+  JAVET_VERSION: 3.1.7
+  ROOT: /home/runner/work/Javet
+
+jobs:
+  build_javet_v8:
+    name: Build Javet V8
+    runs-on: windows-latest
+
+    steps:
+
+    - name: Checkout the code
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11' 
+
+    - name: Setup Path
+      run: |
+        echo "${{ env.ROOT }}\google\depot_tools" >> $GITHUB_PATH
+
+    - name: Build V8
+      env:
+        DEPOT_TOOLS_WIN_TOOLCHAIN: 0
+      run: |
+        cd ${{ env.ROOT }}
+        mkdir google
+        cd google
+        git clone --depth=10 --branch=main https://chromium.googlesource.com/chromium/tools/depot_tools.git
+        cd depot_tools
+        git checkout remotes/origin/main
+        cd ..
+        fetch v8
+        cd v8
+        git checkout ${{ env.JAVET_V8_VERSION }}
+        cd ..
+        gclient sync -D
+        cd v8
+        python3 tools\dev\v8gen.py x64.release -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
+        gn gen out.gn/x64.release
+        python3 ${{ env.ROOT }}\Javet\scripts\python\patch_v8_build.py -p .\
+        git apply < ..\..\Javet\scripts\patches\windows\v8\tagged-field.h.patch
+        ninja -C out.gn/x64.release v8_monolith
+
+    - name: Setup JDK 8
+      uses: actions/setup-java@v4
+      with:
+        distribution: corretto
+        java-version: 8
+
+    - name: Setup Cmake
+      uses: jwlawson/actions-setup-cmake@v2.0
+      with:
+        cmake-version: '3.23.x'
+
+    - name: Build Javet JNI
+      run: |
+        cd ${{ env.ROOT }}\Javet\cpp
+        build-windows.cmd -DV8_DIR=${{ env.ROOT }}\google\v8
+
+    - name: Upload the Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: javet-windows-v8-x86_64-${{ env.JAVET_VERSION }}
+        path: src\main\resources\*.so
+
+  build_javet_node:
+    name: Build Javet Node
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout the code
+      uses: actions/checkout@v4
+
+    - name: Install NASM
+      run: choco install nasm
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11' 
+
+    - name: Build Node.js
+      run: |
+        cd ${{ env.ROOT }}
+        git clone https://github.com/nodejs/node.git
+        cd node
+        git checkout v${{ env.JAVET_NODE_VERSION }}
+        vcbuild.bat static without-intl vs2022
+
+    - name: Setup JDK 8
+      uses: actions/setup-java@v4
+      with:
+        distribution: corretto
+        java-version: 8
+
+    - name: Setup Cmake
+      uses: jwlawson/actions-setup-cmake@v2.0
+      with:
+        cmake-version: '3.23.x'
+
+    - name: Build Javet JNI
+      run: |
+        cd ${{ env.ROOT }}/Javet/cpp
+        build-windows.cmd -DNODE_DIR=${{ env.ROOT }}\node
+
+    - name: Upload the Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: javet-windows-node-x86_64-${{ env.JAVET_VERSION }}
+        path: src\main\resources\*.so
+
+  build_javet_jar:
+    needs: [build_javet_v8, build_javet_node]
+    name: Build Javet Jar
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout the code
+      uses: actions/checkout@v4
+
+    - name: Setup JDK 8
+      uses: actions/setup-java@v4
+      with:
+        distribution: corretto
+        java-version: 8
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        gradle-version: 8.5
+
+    - name: Download Javet V8
+      uses: actions/download-artifact@v4
+      with:
+        name: javet-windows-v8-x86_64-${{ env.JAVET_VERSION }}
+        path: src\main\resources\
+
+    - name: Download Javet Node
+      uses: actions/download-artifact@v4
+      with:
+        name: javet-windows-node-x86_64-${{ env.JAVET_VERSION }}
+        path: src\main\resources\
+
+    - name: Build the Artifact
+      run: |
+        cd ${{ env.ROOT }}/Javet
+        (gci src/main/resources/libjavet-v8*).LastWriteTime = Get-Date
+        gradle build test --rerun-tasks --debug
+        (gci src/main/resources/libjavet-node*).LastWriteTime = Get-Date
+        gradle test --rerun-tasks --debug
+        gradle build generatePomFileForGeneratePomPublication
+
+    - name: Clear up Source Jar
+      uses: edgarrc/action-7z@v1
+      with:
+        args: 7z d build/libs/javet-${{ env.JAVET_VERSION }}-sources.jar *.so
+
+    - name: Upload the Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: javet-windows-x86_64-${{ env.JAVET_VERSION }}
+        path: |
+          build/libs/*.jar
+          build/libs/*.pom
+
+    - name: Delete Javet V8
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: javet-windows-v8-x86_64-${{ env.JAVET_VERSION }}
+
+    - name: Delete Javet Node
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: javet-windows-node-x86_64-${{ env.JAVET_VERSION }}

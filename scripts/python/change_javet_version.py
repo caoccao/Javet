@@ -62,6 +62,9 @@ class ChangeJavetVersion(object):
       '.github/workflows/macos_x86_64_build.yml', '\n',
       re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)'))
     self._update(
+      '.github/workflows/windows_x86_64_build.yml', '\n',
+      re.compile(r'JAVET_VERSION: (?P<version>\d+\.\d+\.\d+)'))
+    self._update(
       'docker/android/base.Dockerfile', '\n',
       re.compile(r'javet-android:(?P<version>\d+\.\d+\.\d+) '))
     self._update(
