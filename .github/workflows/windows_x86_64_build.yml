@@ -51,7 +51,7 @@ jobs:
         cd depot_tools
         git checkout remotes/origin/main
         cd ..
-        fetch v8
+        .\depot_tools\fetch.bat v8
         cd v8
         git checkout ${{ env.JAVET_V8_VERSION }}
         cd ..
@@ -77,7 +77,7 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}\Javet\cpp
-        build-windows.cmd -DV8_DIR=${{ env.ROOT }}\google\v8
+        .\build-windows.cmd -DV8_DIR=${{ env.ROOT }}\google\v8
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
@@ -108,7 +108,7 @@ jobs:
         git clone https://github.com/nodejs/node.git
         cd node
         git checkout v${{ env.JAVET_NODE_VERSION }}
-        vcbuild.bat static without-intl vs2022
+        .\vcbuild.bat static without-intl vs2022
 
     - name: Setup JDK 8
       uses: actions/setup-java@v4
@@ -124,7 +124,7 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
-        build-windows.cmd -DNODE_DIR=${{ env.ROOT }}\node
+        .\build-windows.cmd -DNODE_DIR=${{ env.ROOT }}\node
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
