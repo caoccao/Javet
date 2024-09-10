@@ -76,7 +76,7 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}\google\v8
-        git apply ${{ env.ROOT }}\Javet\scripts\patches\windows\v8\tagged-field.h.patch
+        ((Get-Content -path .\src\objects\tagged-field.h -Raw) -replace 'static_assert(alignof(Type) <= alignof(decltype(*this)));','') | Set-Content -Path .\src\objects\tagged-field.h
         cd ${{ env.ROOT }}\Javet\cpp
         .\build-windows.cmd -DV8_DIR=${{ env.ROOT }}\google\v8
 
