@@ -19,7 +19,7 @@ env:
   JAVET_NODE_VERSION: 20.17.0
   JAVET_V8_VERSION: 12.8.374.17
   JAVET_VERSION: 3.1.7
-  ROOT: /home/runner/work/Javet
+  ROOT: D:\a\Javet
 
 jobs:
   build_javet_v8:
