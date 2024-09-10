@@ -83,7 +83,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: javet-windows-v8-x86_64-${{ env.JAVET_VERSION }}
-        path: src\main\resources\*.so
+        path: src\main\resources\*.dll
 
   build_javet_node:
     name: Build Javet Node
@@ -130,7 +130,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: javet-windows-node-x86_64-${{ env.JAVET_VERSION }}
-        path: src\main\resources\*.so
+        path: src\main\resources\*.dll
 
   build_javet_jar:
     needs: [build_javet_v8, build_javet_node]
