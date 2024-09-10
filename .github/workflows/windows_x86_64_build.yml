@@ -76,7 +76,7 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}\google\v8
-        ((Get-Content -path .\src\objects\tagged-field.h -Raw) -replace 'static_assert(alignof(Type) <= alignof(decltype(*this)));','') | Set-Content -Path .\src\objects\tagged-field.h
+        ((Get-Content -path .\src\objects\tagged-field.h -Raw) -replace 'static_assert[^;]+;','') | Set-Content -Path .\src\objects\tagged-field.h
         cd ${{ env.ROOT }}\Javet\cpp
         .\build-windows.cmd -DV8_DIR=${{ env.ROOT }}\google\v8
 
@@ -168,17 +168,16 @@ jobs:
 
     - name: Build the Artifact
       run: |
-        cd ${{ env.ROOT }}/Javet
-        (gci src/main/resources/libjavet-v8*).LastWriteTime = Get-Date
+        (Get-ChildItem .\src\main\resources\libjavet-v8*).LastWriteTime = Get-Date
         gradle build test --rerun-tasks --debug
-        (gci src/main/resources/libjavet-node*).LastWriteTime = Get-Date
+        (Get-ChildItem .\src\main\resources\libjavet-node*).LastWriteTime = Get-Date
         gradle test --rerun-tasks --debug
         gradle build generatePomFileForGeneratePomPublication
 
     - name: Clear up Source Jar
       uses: edgarrc/action-7z@v1
       with:
-        args: 7z d build/libs/javet-${{ env.JAVET_VERSION }}-sources.jar *.dll
+        args: 7z d build\libs\javet-${{ env.JAVET_VERSION }}-sources.jar *.dll
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
