@@ -60,7 +60,7 @@ jobs:
         python3 tools\dev\v8gen.py x64.release -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
         gn gen out.gn/x64.release
         python3 ${{ env.ROOT }}\Javet\scripts\python\patch_v8_build.py -p .\
-        git apply < ..\..\Javet\scripts\patches\windows\v8\tagged-field.h.patch
+        git apply ..\..\Javet\scripts\patches\windows\v8\tagged-field.h.patch
         ninja -C out.gn/x64.release v8_monolith
 
     - name: Setup JDK 8
@@ -87,7 +87,7 @@ jobs:
 
   build_javet_node:
     name: Build Javet Node
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
 
