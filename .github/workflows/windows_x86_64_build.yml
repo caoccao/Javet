@@ -168,9 +168,9 @@ jobs:
 
     - name: Build the Artifact
       run: |
-        (Get-ChildItem .\src\main\resources\libjavet-v8*).LastWriteTime = Get-Date
+        (Get-ChildItem .\src\main\resources\libjavet-v8*.dll).LastWriteTime = Get-Date
         gradle build test --rerun-tasks --debug
-        (Get-ChildItem .\src\main\resources\libjavet-node*).LastWriteTime = Get-Date
+        (Get-ChildItem .\src\main\resources\libjavet-node*.dll).LastWriteTime = Get-Date
         gradle test --rerun-tasks --debug
         gradle build generatePomFileForGeneratePomPublication
 
