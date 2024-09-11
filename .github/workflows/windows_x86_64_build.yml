@@ -41,6 +41,7 @@ jobs:
         echo "${{ env.ROOT }}\google\depot_tools" >> $GITHUB_PATH
 
     - name: Build V8
+      shell: cmd
       env:
         DEPOT_TOOLS_WIN_TOOLCHAIN: 0
       run: |
@@ -51,16 +52,16 @@ jobs:
         cd depot_tools
         git checkout remotes/origin/main
         cd ..
-        .\depot_tools\fetch.bat v8
+        fetch v8
         cd v8
         git checkout ${{ env.JAVET_V8_VERSION }}
         cd ..
-        .\depot_tools\gclient.bat sync -D
+        gclient sync -D
         cd v8
         python3 tools\dev\v8gen.py x64.release -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-        ..\depot_tools\gn.bat gen out.gn/x64.release
+        gn gen out.gn/x64.release
         python3 ${{ env.ROOT }}\Javet\scripts\python\patch_v8_build.py -p .\
-        ..\depot_tools\ninja.bat -C out.gn/x64.release v8_monolith
+        ninja -C out.gn/x64.release v8_monolith
 
     - name: Setup JDK 8
       uses: actions/setup-java@v4
@@ -136,7 +137,7 @@ jobs:
   build_javet_jar:
     needs: [build_javet_v8, build_javet_node]
     name: Build Javet Jar
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
 
@@ -185,8 +186,8 @@ jobs:
       with:
         name: javet-windows-x86_64-${{ env.JAVET_VERSION }}
         path: |
-          build/libs/*.jar
-          build/libs/*.pom
+          build\libs\*.jar
+          build\libs\*.pom
 
     - name: Delete Javet V8
       uses: geekyeggo/delete-artifact@v4
