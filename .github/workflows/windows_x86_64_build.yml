@@ -28,6 +28,11 @@ jobs:
 
     steps:
 
+    - name: Set git to use LF
+      run: |
+        git config --global core.autocrlf false
+        git config --global core.eol lf
+
     - name: Checkout the code
       uses: actions/checkout@v4
 
@@ -73,10 +78,14 @@ jobs:
       with:
         cmake-version: '3.23.x'
 
+    - name: Patch V8
+      shell: bash
+      run: |
+        cd ../google/v8
+        sed -i '/static_assert(alignof(Type) <= alignof(decltype(/d' src/objects/tagged-field.h
+
     - name: Build Javet JNI
       run: |
-        cd ${{ env.ROOT }}\google\v8
-        ((Get-Content -path .\src\objects\tagged-field.h -Raw) -replace 'static_assert[^;]+;','') | Set-Content -Path .\src\objects\tagged-field.h
         cd ${{ env.ROOT }}\Javet\cpp
         .\build-windows.cmd -DV8_DIR=${{ env.ROOT }}\google\v8
 
@@ -91,6 +100,11 @@ jobs:
     runs-on: windows-latest
 
     steps:
+
+    - name: Set git to use LF
+      run: |
+        git config --global core.autocrlf false
+        git config --global core.eol lf
 
     - name: Checkout the code
       uses: actions/checkout@v4
@@ -139,6 +153,11 @@ jobs:
     runs-on: windows-latest
 
     steps:
+
+    - name: Set git to use LF
+      run: |
+        git config --global core.autocrlf false
+        git config --global core.eol lf
 
     - name: Checkout the code
       uses: actions/checkout@v4
