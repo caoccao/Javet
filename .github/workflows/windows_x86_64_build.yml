@@ -195,9 +195,9 @@ jobs:
         gradle build generatePomFileForGeneratePomPublication
 
     - name: Clear up Source Jar
-      uses: edgarrc/action-7z@v1
+      uses: montudor/action-zip@v1
       with:
-        args: 7z d build\libs\javet-${{ env.JAVET_VERSION }}-sources.jar *.dll
+        args: zip -d build\libs\javet-${{ env.JAVET_VERSION }}-sources.jar *.dll
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
