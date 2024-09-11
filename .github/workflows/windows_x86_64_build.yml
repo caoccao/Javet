@@ -194,10 +194,12 @@ jobs:
         gradle test --rerun-tasks --debug
         gradle build generatePomFileForGeneratePomPublication
 
+    - name: Install 7zip
+      run: choco install 7zip.install
+
     - name: Clear up Source Jar
-      uses: montudor/action-zip@v1
-      with:
-        args: zip -d build\libs\javet-${{ env.JAVET_VERSION }}-sources.jar *.dll
+      run: |
+        7z d build\libs\javet-${{ env.JAVET_VERSION }}-sources.jar *.dll
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
