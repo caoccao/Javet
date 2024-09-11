@@ -167,10 +167,11 @@ jobs:
         path: src\main\resources\
 
     - name: Build the Artifact
+      shell: bash
       run: |
-        (Get-ChildItem .\src\main\resources\libjavet-v8*.dll).LastWriteTime = Get-Date
+        touch src/main/resources/libjavet-v8*
         gradle build test --rerun-tasks --debug
-        (Get-ChildItem .\src\main\resources\libjavet-node*.dll).LastWriteTime = Get-Date
+        touch src/main/resources/libjavet-node*
         gradle test --rerun-tasks --debug
         gradle build generatePomFileForGeneratePomPublication
 
