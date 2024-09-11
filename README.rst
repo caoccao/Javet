@@ -3,7 +3,7 @@ Javet
 
 |Maven Central| |Discord| |Donate|
 
-|Linux x86_64 Build| |MacOS x86_64 Build| |MacOS arm64 Build| |Android Node Build| |Android V8 Build|
+|Linux x86_64 Build| |MacOS x86_64 Build| |MacOS arm64 Build| |Windows x86_64 Build| |Android Node Build| |Android V8 Build|
 
 .. |Maven Central| image:: https://img.shields.io/maven-central/v/com.caoccao.javet/javet?style=for-the-badge
     :target: https://central.sonatype.com/search?q=g:com.caoccao.javet
@@ -22,6 +22,9 @@ Javet
 
 .. |MacOS arm64 Build| image:: https://github.com/caoccao/Javet/actions/workflows/macos_arm64_build.yml/badge.svg
     :target: https://github.com/caoccao/Javet/actions/workflows/macos_arm64_build.yml
+
+.. |Windows x86_64 Build| image:: https://github.com/caoccao/Javet/actions/workflows/windows_x86_64_build.yml/badge.svg
+    :target: https://github.com/caoccao/Javet/actions/workflows/windows_x86_64_build.yml
 
 .. |Android Node Build| image:: https://github.com/caoccao/Javet/actions/workflows/android_node_build.yml/badge.svg
     :target: https://github.com/caoccao/Javet/actions/workflows/android_node_build.yml
@@ -48,7 +51,7 @@ arm64       ✔️        ✔️       ✔️        ❌
 =========== ======= ======= ======= =======
 
 * Node.js ``v20.17.0`` + V8 ``v12.8.374.17``
-* Dynamic switch between Node.js and V8 mode (`Which mode do you prefer? <https://github.com/caoccao/Javet/discussions/92>`_)
+* Dynamic switch between Node.js and V8 mode
 * Polyfill V8 mode with `Javenode <https://github.com/caoccao/Javenode>`_
 * V8 API exposure in JVM
 * JavaScript and Java interop
