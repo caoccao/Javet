@@ -13,13 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet:3.1.7 -f docker/linux-x86_64/base_all_in_one.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet:3.1.8 -f docker/linux-x86_64/base_all_in_one.Dockerfile .
 
 FROM ubuntu:20.04
 WORKDIR /
 
 ARG JAVET_NODE_VERSION=20.17.0
-ARG JAVET_V8_VERSION=12.8.374.17
+ARG JAVET_V8_VERSION=12.9.202.18
 
 # Update Ubuntu
 ENV DEBIAN_FRONTEND=noninteractive

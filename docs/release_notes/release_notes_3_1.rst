@@ -2,6 +2,12 @@
 Release Notes 3.1.x
 ===================
 
+3.1.8
+-----
+
+* Upgraded V8 to ``v12.9.202.18`` (2024-09-13)
+* Upgraded Visual Studio 2022 to `v17.11.3 <https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.11>`_
+
 3.1.7
 -----
 
