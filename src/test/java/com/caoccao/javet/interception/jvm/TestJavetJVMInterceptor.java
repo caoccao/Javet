@@ -17,9 +17,9 @@
 package com.caoccao.javet.interception.jvm;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
+import com.caoccao.javet.buddy.interop.proxy.JavetReflectionObjectFactory;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.converters.JavetProxyConverter;
-import com.caoccao.javet.interop.proxy.JavetReflectionObjectFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

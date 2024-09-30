@@ -352,30 +352,9 @@ Dynamic: Anonymous Object for Class
 
 This feature is similar to the dynamic anonymous object for interface, but it allows implementing all methods exposed by a non-final Java class.
 
-1. Add ``ByteBuddy`` to the dependency. You may skip this step if your project has already referenced ``ByteBuddy``.
+1. Add ``ByteBuddy`` and ``JavetBuddy`` to the dependency. Please refer to `JavetBuddy <https://github.com/caoccao/JavetBuddy>`_ for detail.
 
-.. code-block:: xml
-
-    <!-- Maven -->
-    <dependency>
-        <groupId>net.bytebuddy</groupId>
-        <artifactId>byte-buddy</artifactId>
-        <version>1.14.10</version>
-    </dependency>
-
-.. code-block:: kotlin
-
-    // Gradle Kotlin DSL
-    implementation("net.bytebuddy:byte-buddy:1.14.10")
-
-.. code-block:: groovy
-
-    // Gradle Groovy DSL
-    implementation 'net.bytebuddy:byte-buddy:1.14.10'
-
-2. Copy :extsource3:`JavetReflectionObjectFactory.java <../../../src/test/java/com/caoccao/javet/interop/proxy/JavetReflectionObjectFactory.java>` to your project. As Javet doesn't reference ``ByteBuddy`` directly, ``JavetReflectionObjectFactory`` has to stay at the test project.
-
-3. Define a simple class ``DynamicClass`` for adding two integers.
+2. Define a simple class ``DynamicClass`` for adding two integers.
 
 .. code-block:: java
 
@@ -385,7 +364,7 @@ This feature is similar to the dynamic anonymous object for interface, but it al
         }
     }
 
-4. Create an instance of a class which takes an instance of the ``DynamicClass``.
+3. Create an instance of a class which takes an instance of the ``DynamicClass``.
 
 .. code-block:: java
 
@@ -397,7 +376,7 @@ This feature is similar to the dynamic anonymous object for interface, but it al
         }
     };
 
-5. Inject the implementation from JavaScript. Please note that dynamic object support is disabled by default and ``JavetReflectionObjectFactory`` needs to be set to the converter config for ``JavetProxyConverter`` to enable this feature.
+4. Inject the implementation from JavaScript. Please note that dynamic object support is disabled by default and ``JavetReflectionObjectFactory`` needs to be set to the converter config for ``JavetProxyConverter`` to enable this feature.
 
 .. code-block:: java
 

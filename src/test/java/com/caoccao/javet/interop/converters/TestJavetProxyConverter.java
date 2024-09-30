@@ -18,6 +18,7 @@ package com.caoccao.javet.interop.converters;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.annotations.*;
+import com.caoccao.javet.buddy.interop.proxy.JavetReflectionObjectFactory;
 import com.caoccao.javet.enums.JavetErrorType;
 import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.enums.V8ProxyMode;
@@ -31,7 +32,6 @@ import com.caoccao.javet.interfaces.IJavetEntityError;
 import com.caoccao.javet.interfaces.IJavetUniFunction;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.proxy.IJavetDirectProxyHandler;
-import com.caoccao.javet.interop.proxy.JavetReflectionObjectFactory;
 import com.caoccao.javet.mock.MockCallbackReceiver;
 import com.caoccao.javet.mock.MockDirectProxyFunctionHandler;
 import com.caoccao.javet.mock.MockDirectProxyListHandler;

@@ -17,13 +17,13 @@
 package com.caoccao.javet.tutorial;
 
 import com.caoccao.javet.annotations.V8Function;
+import com.caoccao.javet.buddy.interop.proxy.JavetReflectionObjectFactory;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interception.jvm.JavetJVMInterceptor;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.converters.JavetProxyConverter;
-import com.caoccao.javet.interop.proxy.JavetReflectionObjectFactory;
 
 public class TestAccessTheWholeJVM {
 

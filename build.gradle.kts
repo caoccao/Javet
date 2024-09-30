@@ -51,6 +51,9 @@ object Config {
         // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
         const val JACKSON_DATABIND = "com.fasterxml.jackson.core:jackson-databind:${Versions.JACKSON_DATABIND}"
 
+        // https://mvnrepository.com/artifact/com.caoccao.javet.buddy/javet-buddy
+        const val JAVET_BUDDY = "com.caoccao.javet.buddy:javet-buddy:${Versions.JAVET_BUDDY}"
+
         // https://mvnrepository.com/artifact/org.eclipse.jetty.websocket/javax-websocket-server-impl
         const val JETTY_JAVAX_WEBSOCKET_SERVER_IMPL =
             "org.eclipse.jetty.websocket:javax-websocket-server-impl:${Versions.JETTY_WEBSOCKET}"
@@ -73,6 +76,7 @@ object Config {
         const val JACKSON_DATABIND = "2.16.0"
         const val JAVA_VERSION = "1.8"
         const val JAVET = "3.1.8"
+        const val JAVET_BUDDY = "0.1.0"
         const val JETTY_WEBSOCKET = "9.4.53.v20231009"
         const val JUNIT = "5.10.1"
     }
@@ -103,10 +107,12 @@ java {
 dependencies {
     testImplementation(Config.Projects.BYTE_BUDDY)
     testImplementation(Config.Projects.JACKSON_DATABIND)
+    testImplementation(Config.Projects.JAVET_BUDDY)
     testImplementation(Config.Projects.JETTY_JAVAX_WEBSOCKET_SERVER_IMPL)
     testImplementation(Config.Projects.JETTY_WEBSOCKET_SERVER)
     testImplementation(Config.Projects.JUNIT_JUPITER_API)
     testImplementation(Config.Projects.JUNIT_JUPITER_PARAMS)
+//    testImplementation(files("../JavetBuddy/build/libs/javet-buddy-${Config.Versions.JAVET_BUDDY}.jar"))
     testRuntimeOnly(Config.Projects.JUNIT_JUPITER_ENGINE)
 }
 
