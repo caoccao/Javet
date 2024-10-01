@@ -1757,18 +1757,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Has scheduled exception.
-     *
-     * @return true : yes, false : no
-     * @throws JavetException the javet exception
-     * @since 1.0.4
-     */
-    @SuppressWarnings("RedundantThrows")
-    public boolean hasScheduledException() throws JavetException {
-        return v8Native.hasScheduledException(handle);
-    }
-
-    /**
      * Initialize V8 value cache.
      *
      * @since 0.7.4
@@ -3042,18 +3030,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8ValuePromise.getHandle(), iV8ValuePromise.getType().getId(),
                 functionFulfilledHandle.getHandle(),
                 functionRejectedHandle == null ? 0L : functionRejectedHandle.getHandle());
-    }
-
-    /**
-     * Promote scheduled exception.
-     *
-     * @return true : success, false : failure
-     * @throws JavetException the javet exception
-     * @since 1.0.4
-     */
-    @SuppressWarnings("RedundantThrows")
-    public boolean promoteScheduledException() throws JavetException {
-        return v8Native.promoteScheduledException(handle);
     }
 
     /**

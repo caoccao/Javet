@@ -216,9 +216,6 @@ class V8Native implements IV8Native {
     public native boolean hasPendingMessage(long v8RuntimeHandle);
 
     @Override
-    public native boolean hasScheduledException(long v8RuntimeHandle);
-
-    @Override
     public native Object integerObjectCreate(long v8RuntimeHandle, int intValue);
 
     @Override
@@ -515,9 +512,6 @@ class V8Native implements IV8Native {
     public native Object promiseThen(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             long v8ValueFunctionFulfilledHandle, long v8ValueFunctionRejectedHandle);
-
-    @Override
-    public native boolean promoteScheduledException(long v8RuntimeHandle);
 
     @Override
     public native Object proxyCreate(long v8RuntimeHandle, Object target);

@@ -150,8 +150,6 @@ public interface IV8Native {
 
     boolean hasPendingMessage(long v8RuntimeHandle);
 
-    boolean hasScheduledException(long v8RuntimeHandle);
-
     Object integerObjectCreate(long v8RuntimeHandle, int intValue);
 
     Object integerObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -337,8 +335,6 @@ public interface IV8Native {
     Object promiseThen(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             long v8ValueFunctionFulfilledHandle, long v8ValueFunctionRejectedHandle);
-
-    boolean promoteScheduledException(long v8RuntimeHandle);
 
     Object proxyCreate(long v8RuntimeHandle, Object target);
 

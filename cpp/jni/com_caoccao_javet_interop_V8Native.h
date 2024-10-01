@@ -441,14 +441,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingMes
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    hasScheduledException
- * Signature: (J)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasScheduledException
-  (JNIEnv *, jobject, jlong);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
  * Method:    integerObjectCreate
  * Signature: (JI)Ljava/lang/Object;
  */
@@ -1142,14 +1134,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promiseResolv
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_promiseThen
   (JNIEnv *, jobject, jlong, jlong, jint, jlong, jlong);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    promoteScheduledException
- * Signature: (J)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promoteScheduledException
-  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
