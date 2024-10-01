@@ -73,11 +73,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionCanDi
         auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
         auto v8InternalShared = v8InternalFunction.shared();
         if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
-#ifdef ENABLE_NODE
-            return v8InternalShared.CanDiscardCompiled();
-#else
             return v8InternalShared->CanDiscardCompiled();
-#endif
         }
     }
     return false;
@@ -157,11 +153,11 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionCopyS
                 v8::internal::handle(sourceV8InternalShared, v8InternalIsolate));
             // Clone the scope info
 #ifdef ENABLE_NODE
-            auto sourceScopeInfo = sourceV8InternalShared.scope_info();
+            auto sourceScopeInfo = sourceV8InternalShared->scope_info();
             auto emptyBlocklistHandle = V8InternalStringSet::New(v8InternalIsolate);
             auto targetScopeInfo = *V8InternalScopeInfo::RecreateWithBlockList(
                 v8InternalIsolate, v8::internal::handle(sourceScopeInfo, v8InternalIsolate), emptyBlocklistHandle);
-            targetV8InternalShared.set_raw_scope_info(targetScopeInfo);
+            targetV8InternalShared->set_raw_scope_info(targetScopeInfo);
 #else
             auto sourceScopeInfo = sourceV8InternalShared->scope_info();
             const int length = (sourceScopeInfo->AllocatedSize() - V8InternalHeapObject::kHeaderSize) / v8::internal::kTaggedSize;
@@ -219,39 +215,30 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionDisca
         auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
         auto v8InternalShared = v8InternalFunction.shared();
         if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
-#ifdef ENABLE_NODE
-            if (v8InternalShared.CanDiscardCompiled()) {
-#else
             if (v8InternalShared->CanDiscardCompiled()) {
-#endif
                 auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
                 V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
                 return true;
             }
-            }
         }
-    return false;
     }
+    return false;
+}
 
 JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetArguments
-(JNIEnv * jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_FUNCTION(v8ValueType)) {
         auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
         auto v8InternalShared = v8InternalFunction.shared();
-#ifdef ENABLE_NODE
-        if (IS_USER_DEFINED_FUNCTION(v8InternalShared) && v8InternalShared.is_wrapped()) {
-#else
         if (IS_USER_DEFINED_FUNCTION(v8InternalShared) && v8InternalShared->is_wrapped()) {
-#endif
             auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
 #ifdef ENABLE_NODE
-            auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
-            auto wrappedArguments = v8InternalScript.wrapped_arguments();
+            auto v8InternalScript = V8InternalScript::cast(v8InternalShared->script());
 #else
             auto v8InternalScript = v8::internal::Cast<V8InternalScript>(v8InternalShared->script());
-            auto wrappedArguments = *v8InternalScript->wrapped_arguments();
 #endif
+            auto wrappedArguments = *v8InternalScript->wrapped_arguments();
             auto length = wrappedArguments.length();
             if (length > 0) {
                 jobjectArray arguments = jniEnv->NewObjectArray(length, Javet::Converter::jclassString, nullptr);
@@ -266,7 +253,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_functionG
         }
     }
     return nullptr;
-    }
+}
 
 JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetCachedData
 (JNIEnv * jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
@@ -276,12 +263,11 @@ JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_functionGet
         auto v8InternalShared = v8InternalFunction.shared();
         if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
 #ifdef ENABLE_NODE
-            auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
-            if (v8InternalScript.is_wrapped()) {
+            auto v8InternalScript = V8InternalScript::cast(v8InternalShared->script());
 #else
             auto v8InternalScript = v8::internal::Cast<V8InternalScript>(v8InternalShared->script());
-            if (v8InternalScript->is_wrapped()) {
 #endif
+            if (v8InternalScript->is_wrapped()) {
                 V8TryCatch v8TryCatch(v8Context->GetIsolate());
                 std::unique_ptr<V8ScriptCompilerCachedData> cachedDataPointer;
                 cachedDataPointer.reset(v8::ScriptCompiler::CreateCodeCacheForFunction(v8LocalValue.As<v8::Function>()));
@@ -293,8 +279,8 @@ JNIEXPORT jbyteArray JNICALL Java_com_caoccao_javet_interop_V8Native_functionGet
                     return Javet::Converter::ToJavaByteArray(jniEnv, cachedDataPointer.get());
                 }
             }
-            }
         }
+    }
     return nullptr;
 }
 
@@ -338,11 +324,7 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetJSFunc
     using namespace Javet::Enums::JSFunctionType;
     if (IS_V8_FUNCTION(v8ValueType)) {
         auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
-#ifdef ENABLE_NODE
-        auto v8InternalShared = v8InternalFunction.shared();
-#else
         auto v8InternalShared = *v8InternalFunction.shared();
-#endif
         if (v8InternalShared.native()) {
             return Native;
         }
@@ -361,13 +343,8 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetJSScop
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_FUNCTION(v8ValueType)) {
         auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
-#ifdef ENABLE_NODE
-        auto v8InternalShared = v8InternalFunction.shared();
-        auto v8InternalScopeInfo = v8InternalShared.scope_info();
-#else
         auto v8InternalShared = *v8InternalFunction.shared();
         auto v8InternalScopeInfo = *v8InternalShared.scope_info();
-#endif
         return v8InternalScopeInfo.scope_type();
     }
     return Javet::Enums::JSScopeType::Unknown;
@@ -382,13 +359,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetSco
         V8InternalDisallowGarbageCollection disallowGarbageCollection;
         auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
         auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
-#ifdef ENABLE_NODE
-        auto v8InternalShared = v8InternalFunction.shared();
-        auto v8InternalScopeInfo = v8InternalShared.scope_info();
-#else
         auto v8InternalShared = *v8InternalFunction.shared();
         auto v8InternalScopeInfo = *v8InternalShared.scope_info();
-#endif
         V8InternalScopeIterator scopeIterator(v8InternalIsolate, v8::internal::handle(v8InternalFunction, v8InternalIsolate));
         uint32_t index = 0;
         for (; !scopeIterator.Done(); scopeIterator.Next()) {
@@ -408,7 +380,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetSco
             v8LocalArray->Set(v8Context, index, innerV8LocalArray).ToChecked();
             ++index;
         }
-}
+    }
     return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalArray);
 }
 
@@ -421,32 +393,26 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetScr
         auto v8InternalShared = v8InternalFunction.shared();
         if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
 #ifdef ENABLE_NODE
-            auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
-            auto v8InternalSource = V8InternalString::cast(v8InternalScript.source());
-            const int startPosition = v8InternalShared.StartPosition();
-            const int endPosition = v8InternalShared.EndPosition();
-            const int sourceLength = v8InternalSource.length();
-            auto sourceCode = v8InternalSource.ToCString(
-                V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
-                0, sourceLength);
+            auto v8InternalScript = V8InternalScript::cast(v8InternalShared->script());
+            auto v8InternalSource = V8InternalString::cast(v8InternalScript->source());
 #else
             auto v8InternalScript = v8::internal::Cast<V8InternalScript>(v8InternalShared->script());
             auto v8InternalSource = v8::internal::Cast<V8InternalString>(v8InternalScript->source());
+#endif
             const int startPosition = v8InternalShared->StartPosition();
             const int endPosition = v8InternalShared->EndPosition();
             const int sourceLength = v8InternalSource->length();
             auto sourceCode = v8InternalSource->ToCString(
                 V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
                 0, sourceLength);
-#endif
             return jniEnv->NewObject(
                 Javet::Converter::jclassIV8ValueFunctionScriptSource,
                 Javet::Converter::jmethodIDIV8ValueFunctionScriptSourceConstructor,
                 Javet::Converter::ToJavaString(jniEnv, sourceCode.get()),
                 startPosition,
                 endPosition);
-}
-}
+        }
+    }
     return nullptr;
 }
 
@@ -458,25 +424,20 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetSou
         auto v8InternalShared = v8InternalFunction.shared();
         if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
 #ifdef ENABLE_NODE
-            auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
-            auto v8InternalSource = V8InternalString::cast(v8InternalScript.source());
-            const int startPosition = v8InternalShared.StartPosition();
-            const int endPosition = v8InternalShared.EndPosition();
-            auto sourceCode = v8InternalSource.ToCString(
-                V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
-                startPosition, endPosition - startPosition);
+            auto v8InternalScript = V8InternalScript::cast(v8InternalShared->script());
+            auto v8InternalSource = V8InternalString::cast(v8InternalScript->source());
 #else
             auto v8InternalScript = v8::internal::Cast<V8InternalScript>(v8InternalShared->script());
             auto v8InternalSource = v8::internal::Cast<V8InternalString>(v8InternalScript->source());
+#endif
             const int startPosition = v8InternalShared->StartPosition();
             const int endPosition = v8InternalShared->EndPosition();
             auto sourceCode = v8InternalSource->ToCString(
                 V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
                 startPosition, endPosition - startPosition);
-#endif
             return Javet::Converter::ToJavaString(jniEnv, sourceCode.get());
+        }
     }
-}
     return nullptr;
 }
 
@@ -487,11 +448,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionIsCom
         auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
         auto v8InternalShared = v8InternalFunction.shared();
         if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
-#ifdef ENABLE_NODE
-            return v8InternalShared.is_compiled();
-#else
             return v8InternalShared->is_compiled();
-#endif
         }
     }
     return false;
@@ -504,11 +461,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionIsWra
         auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
         auto v8InternalShared = v8InternalFunction.shared();
         if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
-#ifdef ENABLE_NODE
-            return v8InternalShared.is_wrapped();
-#else
             return v8InternalShared->is_wrapped();
-#endif
         }
     }
     return false;
@@ -521,7 +474,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetCo
     if (IS_V8_FUNCTION(v8ValueType)) {
         V8InternalDisallowGarbageCollection disallowGarbageCollection;
         V8LocalContext v8ContextValue = Javet::Converter::ToV8Context(jniEnv, v8Context, mV8ContextValue);
-        V8InternalContext v8InternalContext = Javet::Converter::ToV8InternalContext(v8ContextValue);
+        V8InternalNativeContext v8InternalContext = Javet::Converter::ToV8InternalContext(v8ContextValue);
         auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
         v8InternalFunction.set_context(v8InternalContext);
         success = true;
@@ -538,75 +491,45 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSc
         auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
         auto v8InternalShared = v8InternalFunction.shared();
         if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
-#ifdef ENABLE_NODE
-            auto v8InternalScopeInfo = v8InternalShared.scope_info();
-            if (v8InternalScopeInfo.scope_type() == V8InternalScopeType::FUNCTION_SCOPE) {
-#else
             auto v8InternalScopeInfo = v8InternalShared->scope_info();
             if (v8InternalScopeInfo->scope_type() == V8InternalScopeType::FUNCTION_SCOPE) {
-#endif
                 auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
                 auto mSourceCode = (jstring)jniEnv->CallObjectMethod(mScriptSource, Javet::Converter::jmethodIDIV8ValueFunctionScriptGetCode);
                 auto umSourceCode = Javet::Converter::ToV8String(jniEnv, v8Context, mSourceCode);
                 const int startPosition = jniEnv->CallIntMethod(mScriptSource, Javet::Converter::jmethodIDIV8ValueFunctionScriptGetStartPosition);
                 const int endPosition = jniEnv->CallIntMethod(mScriptSource, Javet::Converter::jmethodIDIV8ValueFunctionScriptGetEndPosition);
 #ifdef ENABLE_NODE
-                auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
-                auto v8InternalSource = v8::Utils::OpenHandle(*umSourceCode);
-                bool sourceCodeEquals = v8InternalScript.source().StrictEquals(*v8InternalSource);
-                bool positionEquals = startPosition == v8InternalShared.StartPosition() && endPosition == v8InternalShared.EndPosition();
+                auto v8InternalScript = V8InternalScript::cast(v8InternalShared->script());
 #else
                 auto v8InternalScript = v8::internal::Cast<V8InternalScript>(v8InternalShared->script());
+#endif
                 auto v8InternalSource = v8::Utils::OpenHandle(*umSourceCode);
                 bool sourceCodeEquals = V8InternalObject::StrictEquals(v8InternalScript->source(), *v8InternalSource);
                 bool positionEquals = startPosition == v8InternalShared->StartPosition() && endPosition == v8InternalShared->EndPosition();
-#endif
                 if (!sourceCodeEquals || !positionEquals) {
-#ifdef ENABLE_NODE
-                    if (v8InternalShared.CanDiscardCompiled()) {
-#else
                     if (v8InternalShared->CanDiscardCompiled()) {
-#endif
                         V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
-#ifdef ENABLE_NODE
-                        v8InternalShared.set_allows_lazy_compilation(true);
-#else
                         v8InternalShared->set_allows_lazy_compilation(true);
-#endif
                     }
                     if (!sourceCodeEquals) {
                         auto v8InternalScriptHandle = v8::internal::handle(v8InternalScript, v8InternalIsolate);
                         if (mCloneScript) {
-#ifdef ENABLE_NODE
-                            auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8InternalScriptHandle);
-                            clonedV8InternalScript->set_source(*v8InternalSource, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
-                            v8InternalShared.set_script(*clonedV8InternalScript);
-#else
                             auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8InternalScriptHandle, v8InternalSource);
                             v8InternalShared->set_script(*clonedV8InternalScript, v8::kReleaseStore);
-#endif
                         }
                         else {
-#ifdef ENABLE_NODE
-                            v8InternalScript.set_source(*v8InternalSource, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
-#else
                             V8InternalScript::SetSource(v8InternalIsolate, v8InternalScriptHandle, v8InternalSource);
-#endif
                         }
                     }
                     if (!positionEquals) {
-#ifdef ENABLE_NODE
-                        v8InternalScopeInfo.SetPositionInfo(startPosition, endPosition);
-#else
                         v8InternalScopeInfo->SetPositionInfo(startPosition, endPosition);
-#endif
                     }
                     success = true;
                 }
                 DELETE_LOCAL_REF(jniEnv, mSourceCode);
             }
-            }
         }
+    }
     return success;
 }
 
@@ -619,27 +542,19 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
         auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
         auto v8InternalShared = v8InternalFunction.shared();
         if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
-#ifdef ENABLE_NODE
-            auto v8InternalScopeInfo = v8InternalShared.scope_info();
-            while (v8InternalScopeInfo.scope_type() == V8InternalScopeType::FUNCTION_SCOPE) {
-#else
             auto v8InternalScopeInfo = v8InternalShared->scope_info();
             while (v8InternalScopeInfo->scope_type() == V8InternalScopeType::FUNCTION_SCOPE) {
-#endif
                 auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
 #ifdef ENABLE_NODE
-                auto v8InternalScript = V8InternalScript::cast(v8InternalShared.script());
-                auto v8InternalSource = V8InternalString::cast(v8InternalScript.source());
-                const int startPosition = v8InternalShared.StartPosition();
-                const int endPosition = v8InternalShared.EndPosition();
-                const int sourceLength = v8InternalSource.length();
+                auto v8InternalScript = V8InternalScript::cast(v8InternalShared->script());
+                auto v8InternalSource = V8InternalString::cast(v8InternalScript->source());
 #else
                 auto v8InternalScript = v8::internal::Cast<V8InternalScript>(v8InternalShared->script());
                 auto v8InternalSource = v8::internal::Cast<V8InternalString>(v8InternalScript->source());
+#endif
                 const int startPosition = v8InternalShared->StartPosition();
                 const int endPosition = v8InternalShared->EndPosition();
                 const int sourceLength = v8InternalSource->length();
-#endif
 
                 // Build the new source code.
                 auto umSourceCode = Javet::Converter::ToV8String(jniEnv, v8Context, mSourceCode);
@@ -647,15 +562,9 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
                 V8LocalString newSourceCode;
                 if (startPosition > 0) {
                     int utf8Length = 0;
-#ifdef ENABLE_NODE
-                    auto stdStringHeader(v8InternalSource.ToCString(
-                        V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
-                        0, startPosition, &utf8Length));
-#else
                     auto stdStringHeader(v8InternalSource->ToCString(
                         V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
                         0, startPosition, &utf8Length));
-#endif
                     auto v8MaybeLocalStringHeader = v8::String::NewFromUtf8(
                         v8Context->GetIsolate(), stdStringHeader.get(), v8::NewStringType::kNormal, utf8Length);
                     if (v8MaybeLocalStringHeader.IsEmpty()) {
@@ -673,15 +582,9 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
                 }
                 if (endPosition < sourceLength) {
                     int utf8Length = 0;
-#ifdef ENABLE_NODE
-                    auto stdStringFooter(v8InternalSource.ToCString(
-                        V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
-                        endPosition, sourceLength - endPosition, &utf8Length));
-#else
                     auto stdStringFooter(v8InternalSource->ToCString(
                         V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
                         endPosition, sourceLength - endPosition, &utf8Length));
-#endif
                     auto v8MaybeLocalStringFooter = v8::String::NewFromUtf8(
                         v8Context->GetIsolate(), stdStringFooter.get(), v8::NewStringType::kNormal, utf8Length);
                     if (v8MaybeLocalStringFooter.IsEmpty()) {
@@ -709,59 +612,33 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
                 const int newEndPosition = startPosition + newSourceLength;
 
                 auto newV8InternalSource = v8::Utils::OpenHandle(*newSourceCode);
-#ifdef ENABLE_NODE
-                bool sourceCodeEquals = v8InternalSource.StrictEquals(*newV8InternalSource);
-                bool positionEquals = newEndPosition == v8InternalShared.EndPosition();
-#else
                 bool sourceCodeEquals = V8InternalObject::StrictEquals(v8InternalSource, *newV8InternalSource);
                 bool positionEquals = newEndPosition == v8InternalShared->EndPosition();
-#endif
 
                 if (!sourceCodeEquals || !positionEquals) {
                     // Discard compiled data and set lazy compile.
-#ifdef ENABLE_NODE
-                    if (v8InternalShared.CanDiscardCompiled()) {
-                        V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
-                        v8InternalShared.set_allows_lazy_compilation(true);
-                    }
-#else
                     if (v8InternalShared->CanDiscardCompiled()) {
                         V8InternalSharedFunctionInfo::DiscardCompiled(v8InternalIsolate, v8::internal::handle(v8InternalShared, v8InternalIsolate));
                         v8InternalShared->set_allows_lazy_compilation(true);
                     }
-#endif
                     if (!sourceCodeEquals) {
                         auto v8InternalScriptHandle = v8::internal::handle(v8InternalScript, v8InternalIsolate);
                         if (mCloneScript) {
-#ifdef ENABLE_NODE
-                            auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8InternalScriptHandle);
-                            clonedV8InternalScript->set_source(*newV8InternalSource, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
-                            v8InternalShared.set_script(*clonedV8InternalScript);
-#else
                             auto clonedV8InternalScript = v8InternalIsolate->factory()->CloneScript(v8InternalScriptHandle, newV8InternalSource);
                             v8InternalShared->set_script(*clonedV8InternalScript, v8::kReleaseStore);
-#endif
                         }
                         else {
-#ifdef ENABLE_NODE
-                            v8InternalScript.set_source(*newV8InternalSource, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
-#else
                             V8InternalScript::SetSource(v8InternalIsolate, v8InternalScriptHandle, newV8InternalSource);
-#endif
                         }
                     }
                     if (!positionEquals) {
-#ifdef ENABLE_NODE
-                        v8InternalScopeInfo.SetPositionInfo(startPosition, newEndPosition);
-#else
                         v8InternalScopeInfo->SetPositionInfo(startPosition, newEndPosition);
-#endif
                     }
                     success = true;
                 }
                 break;
+            }
         }
-}
     }
     return success;
 }

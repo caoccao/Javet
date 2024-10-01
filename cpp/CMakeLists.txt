@@ -115,17 +115,13 @@ if(DEFINED NODE_DIR)
         ${NODE_DIR}/deps/uv/include
         ${NODE_DIR}/deps/v8
         ${NODE_DIR}/deps/v8/include
+        ${NODE_DIR}/deps/v8/third_party/abseil-cpp
+        ${NODE_DIR}/deps/ncrypto
         ${NODE_DIR}/src)
     list(APPEND importLibraries
-        ada base64 brotli cares histogram llhttp nghttp2 nghttp3 ngtcp2 openssl simdutf torque_base uvwasi
-        v8_base_without_compiler v8_compiler v8_init v8_initializers
+        ada brotli cares histogram llhttp nbytes ncrypto nghttp2 nghttp3 ngtcp2 openssl simdjson simdutf sqlite torque_base uvwasi
+        v8_abseil v8_base_without_compiler v8_compiler v8_init v8_initializers v8_initializers_slow
         v8_libbase v8_libplatform v8_snapshot v8_turboshaft v8_zlib zlib)
-    # base64
-    if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)" OR CMAKE_ANDROID_ARCH STREQUAL "arm64")
-        list(APPEND importLibraries base64_neon64)
-    elseif(NOT CMAKE_ANDROID_ARCH STREQUAL "arm")
-        list(APPEND importLibraries base64_avx base64_avx2 base64_avx512 base64_sse41 base64_sse42 base64_ssse3)
-    endif()
     # node, uv
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         list(APPEND importLibraries libnode libuv)

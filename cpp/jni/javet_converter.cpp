@@ -588,26 +588,26 @@ namespace Javet {
             JNIEnv* jniEnv,
             const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
-            const V8InternalObject& v8InternalObject) noexcept {
+            const v8::internal::Tagged<V8InternalObject>& v8InternalObject) noexcept {
             auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
-            if (v8InternalObject.IsJSObject() || v8InternalObject.IsPrimitive()
-                || v8InternalObject.IsJSArray() || v8InternalObject.IsJSTypedArray()) {
+            if (v8::internal::IsJSObject(v8InternalObject) || v8::internal::IsPrimitive(v8InternalObject)
+                || v8::internal::IsJSArray(v8InternalObject) || v8::internal::IsJSTypedArray(v8InternalObject)) {
                 auto v8LocalObject = v8::Utils::ToLocal(v8::internal::handle(v8InternalObject, v8InternalIsolate));
                 return ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8LocalObject);
             }
-            else if (v8InternalObject.IsContext()) {
-                auto v8InternalContext = V8InternalContext::cast(v8InternalObject);
+            else if (v8::internal::IsContext(v8InternalObject)) {
+                auto v8InternalContext = V8InternalNativeContext::cast(v8InternalObject);
                 auto v8LocalContext = v8::Utils::ToLocal(v8::internal::handle(v8InternalContext, v8InternalIsolate));
                 return ToExternalV8Context(jniEnv, v8Runtime, v8Context, v8LocalContext);
             }
-            else if (v8InternalObject.IsModule()) {
+            else if (v8::internal::IsModule(v8InternalObject)) {
                 auto v8LocalModule = v8::Utils::ToLocal(v8::internal::handle(V8InternalModule::cast(v8InternalObject), v8InternalIsolate));
                 return ToExternalV8Module(jniEnv, v8Runtime, v8Context, v8LocalModule);
             }
-            else if (v8InternalObject.IsScript()) {
+            else if (v8::internal::IsScript(v8InternalObject)) {
                 LOG_DEBUG("Converter: Script is not supported.");
             }
-            else if (v8InternalObject.IsCode()) {
+            else if (v8::internal::IsCode(v8InternalObject)) {
                 LOG_DEBUG("Converter: Code is not supported.");
             }
             return ToExternalV8ValueUndefined(jniEnv, v8Runtime);

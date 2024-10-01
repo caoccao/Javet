@@ -50,7 +50,7 @@ arm         ✔️        ❌      ❌       ❌
 arm64       ✔️        ✔️       ✔️        ❌
 =========== ======= ======= ======= =======
 
-* Node.js ``v20.17.0`` + V8 ``v12.9.202.18``
+* Node.js ``v22.9.0`` + V8 ``v12.9.202.18``
 * Dynamic switch between Node.js and V8 mode
 * Polyfill V8 mode with `Javenode <https://github.com/caoccao/Javenode>`_
 * V8 API exposure in JVM
@@ -78,21 +78,21 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>3.1.8</version>
+        <version>4.0.0</version>
     </dependency>
 
     <!-- Linux (arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-linux-arm64</artifactId>
-        <version>3.1.8</version>
+        <version>4.0.0</version>
     </dependency>
 
     <!-- Mac OS (x86_64 and arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-macos</artifactId>
-        <version>3.1.8</version>
+        <version>4.0.0</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -100,22 +100,22 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:3.1.8") // Linux and Windows (x86_64)
-    implementation("com.caoccao.javet:javet-linux-arm64:3.1.8") // Linux (arm64)
-    implementation("com.caoccao.javet:javet-macos:3.1.8") // Mac OS (x86_64 and arm64)
-    implementation("com.caoccao.javet:javet-android-node:3.1.8") // Android Node (arm, arm64, x86 and x86_64)
-    implementation("com.caoccao.javet:javet-android-v8:3.1.8") // Android V8 (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet:4.0.0") // Linux and Windows (x86_64)
+    implementation("com.caoccao.javet:javet-linux-arm64:4.0.0") // Linux (arm64)
+    implementation("com.caoccao.javet:javet-macos:4.0.0") // Mac OS (x86_64 and arm64)
+    implementation("com.caoccao.javet:javet-android-node:4.0.0") // Android Node (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet-android-v8:4.0.0") // Android V8 (arm, arm64, x86 and x86_64)
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:3.1.8' // Linux and Windows (x86_64)
-    implementation 'com.caoccao.javet:javet-linux-arm64:3.1.8' // Linux (arm64)
-    implementation 'com.caoccao.javet:javet-macos:3.1.8' // Mac OS (x86_64 and arm64)
-    implementation 'com.caoccao.javet:javet-android-node:3.1.8' // Android Node (arm, arm64, x86 and x86_64)
-    implementation 'com.caoccao.javet:javet-android-v8:3.1.8' // Android V8 (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet:4.0.0' // Linux and Windows (x86_64)
+    implementation 'com.caoccao.javet:javet-linux-arm64:4.0.0' // Linux (arm64)
+    implementation 'com.caoccao.javet:javet-macos:4.0.0' // Mac OS (x86_64 and arm64)
+    implementation 'com.caoccao.javet:javet-android-node:4.0.0' // Android Node (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet-android-v8:4.0.0' // Android V8 (arm, arm64, x86 and x86_64)
 
 Hello Javet
 -----------

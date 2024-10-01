@@ -152,11 +152,7 @@ namespace Javet {
             JNIEnv* jniEnv,
             const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
-#ifdef ENABLE_NODE
-            const V8InternalObject& v8InternalObject) noexcept;
-#else
             const v8::internal::Tagged<V8InternalObject>& v8InternalObject) noexcept;
-#endif
 
         jobject ToExternalV8Value(
             JNIEnv* jniEnv,
@@ -327,10 +323,10 @@ namespace Javet {
             const V8LocalContext& v8Context,
             const jobjectArray mValues) noexcept;
 
-        static inline V8InternalContext ToV8InternalContext(
+        static inline V8InternalNativeContext ToV8InternalContext(
             const V8LocalContext& v8LocalContext) noexcept {
 #ifdef ENABLE_NODE
-            return V8InternalContext::cast(*v8::Utils::OpenHandle(*v8LocalContext));
+            return *V8InternalNativeContext::cast(*v8::Utils::OpenHandle(*v8LocalContext));
 #else
             return *v8::internal::Cast<V8InternalContext>(*v8::Utils::OpenHandle(*v8LocalContext));
 #endif
@@ -339,7 +335,7 @@ namespace Javet {
         static inline V8InternalJSFunction ToV8InternalJSFunction(
             const V8LocalValue& v8LocalValue) noexcept {
 #ifdef ENABLE_NODE
-            return V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+            return *V8InternalJSFunction::cast(*v8::Utils::OpenHandle(*v8LocalValue));
 #else
             return *v8::internal::Cast<V8InternalJSFunction>(*v8::Utils::OpenHandle(*v8LocalValue));
 #endif
@@ -348,7 +344,7 @@ namespace Javet {
         static inline V8InternalJSObject ToV8InternalJSObject(
             const V8LocalValue& v8LocalValue) noexcept {
 #ifdef ENABLE_NODE
-            return V8InternalJSObject::cast(*v8::Utils::OpenHandle(*v8LocalValue));
+            return *V8InternalJSObject::cast(*v8::Utils::OpenHandle(*v8LocalValue));
 #else
             return *v8::internal::Cast<V8InternalJSObject>(*v8::Utils::OpenHandle(*v8LocalValue));
 #endif
@@ -357,7 +353,7 @@ namespace Javet {
         static inline V8InternalModule ToV8InternalModule(
             const V8LocalModule& v8LocalModule) noexcept {
 #ifdef ENABLE_NODE
-            return V8InternalModule::cast(*v8::Utils::OpenHandle(*v8LocalModule));
+            return *V8InternalModule::cast(*v8::Utils::OpenHandle(*v8LocalModule));
 #else
             return *v8::internal::Cast<V8InternalModule>(*v8::Utils::OpenHandle(*v8LocalModule));
 #endif
@@ -366,7 +362,7 @@ namespace Javet {
         static inline V8InternalScript ToV8InternalScript(
             const V8LocalScript& v8LocalScript) noexcept {
 #ifdef ENABLE_NODE
-            return V8InternalScript::cast(*v8::Utils::OpenHandle(*v8LocalScript));
+            return *V8InternalScript::cast(*v8::Utils::OpenHandle(*v8LocalScript));
 #else
             return *v8::internal::Cast<V8InternalScript>(*v8::Utils::OpenHandle(*v8LocalScript));
 #endif

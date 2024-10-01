@@ -644,7 +644,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectIsFroze
     if (v8LocalValue->IsObject()) {
         auto v8InternalJSObject = Javet::Converter::ToV8InternalJSObject(v8LocalValue);
 #ifdef ENABLE_NODE
-        auto elementKind = V8InternalJSObject::cast(v8InternalJSObject).GetElementsKind();
+        auto elementKind = V8InternalJSObject::cast(v8InternalJSObject)->GetElementsKind();
 #else
         auto elementKind = v8::internal::Cast<V8InternalJSObject>(v8InternalJSObject)->GetElementsKind();
 #endif
@@ -659,7 +659,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectIsSeale
     if (v8LocalValue->IsObject()) {
         auto v8InternalJSObject = Javet::Converter::ToV8InternalJSObject(v8LocalValue);
 #ifdef ENABLE_NODE
-        auto elementKind = V8InternalJSObject::cast(v8InternalJSObject).GetElementsKind();
+        auto elementKind = V8InternalJSObject::cast(v8InternalJSObject)->GetElementsKind();
 #else
         auto elementKind = v8::internal::Cast<V8InternalJSObject>(v8InternalJSObject)->GetElementsKind();
 #endif
