@@ -306,6 +306,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
                 target_link_libraries(Javet PUBLIC -force_load ${importLibrary})
                 target_link_libraries(JavetStatic PUBLIC -force_load ${importLibrary})
             endforeach(importLibrary)
+            # From V8 v11.7 abseil is somehow not built properly.
+            # This is a patch build.
+            # https://github.com/abseil/abseil-cpp/blob/master/CMake/README.md
+            add_subdirectory(${NODE_DIR}/deps/v8/third_party/abseil-cpp ${NODE_DIR}/out/Release/third_party/abseil-cpp)
+            target_link_libraries(Javet PUBLIC absl::base absl::crc32c absl::time)
             target_link_libraries(Javet PUBLIC v8_init)
             target_link_libraries(JavetStatic PUBLIC v8_init)
         endif()
