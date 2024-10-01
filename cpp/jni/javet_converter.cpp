@@ -625,7 +625,7 @@ namespace Javet {
                 return ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8LocalObject);
             }
             else if (v8::internal::IsContext(v8InternalObject)) {
-                auto v8InternalContext = v8::internal::Cast<V8InternalContext>(v8InternalObject);
+                auto v8InternalContext = v8::internal::Cast<V8InternalNativeContext>(v8InternalObject);
                 auto v8LocalContext = v8::Utils::ToLocal(v8::internal::handle(v8InternalContext, v8InternalIsolate));
                 return ToExternalV8Context(jniEnv, v8Runtime, v8Context, v8LocalContext);
             }

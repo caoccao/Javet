@@ -207,10 +207,10 @@ class V8Native implements IV8Native {
     public native String getVersion();
 
     @Override
-    public native boolean hasInternalType(long v8RuntimeHandle, long v8ValueHandle, int internalTypeId);
+    public native boolean hasException(long v8RuntimeHandle);
 
     @Override
-    public native boolean hasPendingException(long v8RuntimeHandle);
+    public native boolean hasInternalType(long v8RuntimeHandle, long v8ValueHandle, int internalTypeId);
 
     @Override
     public native boolean hasPendingMessage(long v8RuntimeHandle);

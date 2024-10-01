@@ -144,9 +144,9 @@ public interface IV8Native {
 
     String getVersion();
 
-    boolean hasInternalType(long v8RuntimeHandle, long v8ValueHandle, int internalTypeId);
+    boolean hasException(long v8RuntimeHandle);
 
-    boolean hasPendingException(long v8RuntimeHandle);
+    boolean hasInternalType(long v8RuntimeHandle, long v8ValueHandle, int internalTypeId);
 
     boolean hasPendingMessage(long v8RuntimeHandle);
 

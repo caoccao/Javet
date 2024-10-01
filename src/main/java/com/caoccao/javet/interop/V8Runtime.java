@@ -1720,6 +1720,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Has pending exception.
+     *
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 1.0.4
+     */
+    @SuppressWarnings("RedundantThrows")
+    public boolean hasException() throws JavetException {
+        return v8Native.hasException(handle);
+    }
+
+    /**
      * Has internal type.
      *
      * @param iV8ValueObject the V8 value object
@@ -1730,18 +1742,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     boolean hasInternalType(IV8ValueObject iV8ValueObject, V8ValueInternalType internalType) {
         return v8Native.hasInternalType(
                 handle, iV8ValueObject.getHandle(), Objects.requireNonNull(internalType).getId());
-    }
-
-    /**
-     * Has pending exception.
-     *
-     * @return true : yes, false : no
-     * @throws JavetException the javet exception
-     * @since 1.0.4
-     */
-    @SuppressWarnings("RedundantThrows")
-    public boolean hasPendingException() throws JavetException {
-        return v8Native.hasPendingException(handle);
     }
 
     /**

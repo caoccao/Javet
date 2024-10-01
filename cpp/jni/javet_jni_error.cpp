@@ -35,7 +35,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_errorCreate
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
 }
 
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingException
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasException
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());

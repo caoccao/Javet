@@ -328,7 +328,7 @@ namespace Javet {
 #ifdef ENABLE_NODE
             return *V8InternalNativeContext::cast(*v8::Utils::OpenHandle(*v8LocalContext));
 #else
-            return *v8::internal::Cast<V8InternalContext>(*v8::Utils::OpenHandle(*v8LocalContext));
+            return *v8::internal::Cast<V8InternalNativeContext>(*v8::Utils::OpenHandle(*v8LocalContext));
 #endif
         }
 

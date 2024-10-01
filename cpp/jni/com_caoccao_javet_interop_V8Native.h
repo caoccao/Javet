@@ -417,19 +417,19 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getVersion
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    hasException
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasException
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    hasInternalType
  * Signature: (JJI)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasInternalType
   (JNIEnv *, jobject, jlong, jlong, jint);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    hasPendingException
- * Signature: (J)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingException
-  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
