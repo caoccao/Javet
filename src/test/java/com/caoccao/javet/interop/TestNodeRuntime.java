@@ -19,25 +19,25 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.enums.V8AwaitMode;
-import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.converters.JavetProxyConverter;
 import com.caoccao.javet.interop.options.NodeRuntimeOptions;
 import com.caoccao.javet.node.modules.NodeModuleAny;
 import com.caoccao.javet.node.modules.NodeModuleProcess;
 import com.caoccao.javet.utils.JavetOSUtils;
+import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueError;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
@@ -241,77 +241,20 @@ public class TestNodeRuntime extends BaseTestJavet {
         }
     }
 
+    @Tag("performance")
     @Test
-    public void testSqlite3InRootDirectoryWithDoubleDots() throws JavetException, IOException {
-        File sqlite3File = getScriptFile("../node_modules/sqlite3/sqlite3.js");
-        if (sqlite3File.exists()) {
-            File scriptFile = getScriptFile("test-node-module-sqlite3-sync.js");
-            File testModuleModeFile = getScriptFile("../test-module-mode.js");
-            try {
-                if (testModuleModeFile.exists()) {
-                    assertTrue(testModuleModeFile.delete());
-                }
-                Files.write(
-                        testModuleModeFile.toPath(),
-                        Files.readAllBytes(scriptFile.toPath()),
-                        StandardOpenOption.CREATE);
-                // It should pass in module mode.
-                try {
-                    nodeRuntime.getExecutor(testModuleModeFile).executeVoid();
-                } catch (Throwable t) {
-                    t.printStackTrace(System.err);
-                    fail(MessageFormat.format(
-                            "{0} should pass in module mode.",
-                            testModuleModeFile.getAbsolutePath()));
-                }
-            } finally {
-                assertTrue(testModuleModeFile.delete());
-            }
+    public void testSqlite() throws JavetException {
+        File scriptFile = getScriptFile("test-node-module-sqlite-sync.js");
+        List<Map<String, Object>> result = null;
+        try {
+            result = nodeRuntime.getExecutor(scriptFile).executeObject();
+        } catch (Throwable t) {
+            t.printStackTrace(System.err);
+            fail("The sqlite test should pass.");
         }
-    }
-
-    @Test
-    public void testSqlite3InRootDirectoryWithoutDoubleDots() throws JavetException, IOException {
-        File sqlite3File = getScriptFile("../node_modules/sqlite3/sqlite3.js");
-        if (sqlite3File.exists()) {
-            File scriptFile = getScriptFile("test-node-module-sqlite3-sync.js");
-            File testModuleModeFile = new File(JavetOSUtils.WORKING_DIRECTORY, "scripts/node/test-module-mode.js");
-            try {
-                if (testModuleModeFile.exists()) {
-                    assertTrue(testModuleModeFile.delete());
-                }
-                Files.write(
-                        testModuleModeFile.toPath(),
-                        Files.readAllBytes(scriptFile.toPath()),
-                        StandardOpenOption.CREATE);
-                // It should fail in module mode.
-                try {
-                    nodeRuntime.getExecutor(testModuleModeFile).executeVoid();
-                    fail(MessageFormat.format(
-                            "{0} should fail in module mode.",
-                            testModuleModeFile.getAbsolutePath()));
-                } catch (JavetException e) {
-                    assertEquals(JavetError.ExecutionFailure, e.getError());
-                    assertTrue(e.getMessage().startsWith("Error: Cannot find module 'sqlite3'"));
-                }
-            } finally {
-                assertTrue(testModuleModeFile.delete());
-            }
-        }
-    }
-
-    @Test
-    public void testSqlite3InSubDirectory() throws JavetException {
-        File sqlite3File = getScriptFile("../node_modules/sqlite3/sqlite3.js");
-        if (sqlite3File.exists()) {
-            File scriptFile = getScriptFile("test-node-module-sqlite3-sync.js");
-            try {
-                nodeRuntime.getExecutor(scriptFile).executeVoid();
-            } catch (Throwable t) {
-                t.printStackTrace(System.err);
-                fail(MessageFormat.format("{0} should pass.", scriptFile.getAbsolutePath()));
-            }
-        }
+        assertEquals(2, result.size());
+        assertEquals(SimpleMap.of("key", 1, "value", "a"), result.get(0));
+        assertEquals(SimpleMap.of("key", 2, "value", "b"), result.get(1));
     }
 
     @Test

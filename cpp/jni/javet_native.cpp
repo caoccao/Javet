@@ -145,7 +145,7 @@ namespace Javet {
             else {
 #ifdef ENABLE_NODE
                 uv_setup_args(0, nullptr);
-                std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
+                std::vector<std::string> args{ DEFAULT_SCRIPT_NAME, "--experimental-sqlite" };
                 std::shared_ptr<node::InitializationResult> result = node::InitializeOncePerProcess(
                     args, {
                         node::ProcessInitializationFlags::kNoFlags,

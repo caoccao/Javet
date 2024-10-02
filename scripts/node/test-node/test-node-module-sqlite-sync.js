@@ -17,18 +17,19 @@
 
 "use strict";
 
-const sqlite3 = require('sqlite3');
+const sqlite = require("node:sqlite");
 
-const db = new sqlite3.Database(':memory:', (e) => {
-  if (e) {
-    return console.error(e.message);
-  }
-  console.log('Connected to the in-memory sqlite3 database.');
-});
-
-db.close((e) => {
-  if (e) {
-    return console.error(e.message);
-  }
-  console.log('Closed the database connection.');
-});
+const db = new sqlite.DatabaseSync(":memory:");
+db.exec(`
+  CREATE TABLE data(
+    key INTEGER PRIMARY KEY,
+    value TEXT
+  ) STRICT
+`);
+const insert = db.prepare("INSERT INTO data (key, value) VALUES (?, ?)");
+insert.run(1, "a");
+insert.run(2, "b");
+const query = db.prepare("SELECT * FROM data ORDER BY key");
+const result = query.all();
+db.close();
+result;
