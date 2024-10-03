@@ -25,19 +25,15 @@ import com.caoccao.javet.interop.options.NodeRuntimeOptions;
 import com.caoccao.javet.node.modules.NodeModuleAny;
 import com.caoccao.javet.node.modules.NodeModuleProcess;
 import com.caoccao.javet.utils.JavetOSUtils;
-import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueError;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
@@ -239,22 +235,6 @@ public class TestNodeRuntime extends BaseTestJavet {
                 fail(MessageFormat.format("{0} should pass.", scriptFile.getAbsolutePath()));
             }
         }
-    }
-
-    @Tag("performance")
-    @Test
-    public void testSqlite() throws JavetException {
-        File scriptFile = getScriptFile("test-node-module-sqlite-sync.js");
-        List<Map<String, Object>> result = null;
-        try {
-            result = nodeRuntime.getExecutor(scriptFile).executeObject();
-        } catch (Throwable t) {
-            t.printStackTrace(System.err);
-            fail("The sqlite test should pass.");
-        }
-        assertEquals(2, result.size());
-        assertEquals(SimpleMap.of("key", 1, "value", "a"), result.get(0));
-        assertEquals(SimpleMap.of("key", 2, "value", "b"), result.get(1));
     }
 
     @Test

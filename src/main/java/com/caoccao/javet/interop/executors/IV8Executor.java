@@ -227,6 +227,7 @@ public interface IV8Executor extends IV8Executable {
                 nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_DIRNAME, parentFile.getAbsolutePath());
                 nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_FILENAME, resourceFile.getAbsolutePath());
                 nodeRuntime.getNodeModule(NodeModuleModule.class).setRequireRootDirectory(parentFile.getAbsoluteFile());
+                // If --allow-fs-read or --allow-fs-write is set, this call will fail.
                 nodeRuntime.getNodeModule(NodeModuleProcess.class).setWorkingDirectory(parentFile.getAbsolutePath());
             } catch (Throwable t) {
                 v8Runtime.getLogger().logError(t, "Failed to set resource name for Node.js runtime.");

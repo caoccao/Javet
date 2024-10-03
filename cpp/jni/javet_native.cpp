@@ -145,7 +145,26 @@ namespace Javet {
             else {
 #ifdef ENABLE_NODE
                 uv_setup_args(0, nullptr);
-                std::vector<std::string> args{ DEFAULT_SCRIPT_NAME, "--experimental-sqlite" };
+                std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
+                jclass jclassNodeRuntimeOptions = jniEnv->FindClass("com/caoccao/javet/interop/options/NodeRuntimeOptions");
+                jfieldID jfieldIDNodeRuntimeOptionsNodeFlags = jniEnv->GetStaticFieldID(jclassNodeRuntimeOptions, "NODE_FLAGS", "Lcom/caoccao/javet/interop/options/NodeFlags;");
+                jclass jclassNodeFlags = jniEnv->FindClass("com/caoccao/javet/interop/options/NodeFlags");
+                jmethodID jmethodIDNodeFlagsSeal = jniEnv->GetMethodID(jclassNodeFlags, "seal", "()Lcom/caoccao/javet/interop/options/NodeFlags;");
+                jmethodID jmethodIDNodeFlagsToArray = jniEnv->GetMethodID(jclassNodeFlags, "toArray", "()[Ljava/lang/String;");
+                jobject mNodeFlags = jniEnv->GetStaticObjectField(jclassNodeRuntimeOptions, jfieldIDNodeRuntimeOptionsNodeFlags);
+                jobjectArray mNodeFlagsStringArray = (jobjectArray)jniEnv->CallObjectMethod(mNodeFlags, jmethodIDNodeFlagsToArray);
+                if (mNodeFlagsStringArray != nullptr) {
+                    const int length = jniEnv->GetArrayLength(mNodeFlagsStringArray);
+                    for (int i = 0; i < length; ++i) {
+                        jstring mFlagString = (jstring)jniEnv->GetObjectArrayElement(mNodeFlagsStringArray, i);
+                        auto flagString = Javet::Converter::ToStdString(jniEnv, mFlagString);
+                        args.push_back(*flagString);
+                        jniEnv->DeleteLocalRef(mFlagString);
+                    }
+                }
+                jniEnv->DeleteLocalRef(jniEnv->CallObjectMethod(mNodeFlags, jmethodIDNodeFlagsSeal));
+                jniEnv->DeleteLocalRef(mNodeFlags);
+                jniEnv->DeleteLocalRef(mNodeFlagsStringArray);
                 std::shared_ptr<node::InitializationResult> result = node::InitializeOncePerProcess(
                     args, {
                         node::ProcessInitializationFlags::kNoFlags,

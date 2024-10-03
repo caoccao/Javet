@@ -9,3 +9,6 @@ Release Notes 4.0.x
 * Renamed ``V8Runtime.hasPendingException()`` to ``V8Runtime.hasException()``
 * Removed ``V8Runtime.hasScheduledException()`` and ``V8Runtime.promoteScheduledException()``
 * Moved ``JavetReflectionObjectFactory`` to ``JavetBuddy``
+* Added ``NodeFlags``
+* Added ``NODE_FLAGS`` to ``NodeRuntimeOptions``
+* Supported ``node:sqlite``
