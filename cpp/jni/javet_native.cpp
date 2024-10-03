@@ -161,10 +161,10 @@ namespace Javet {
                         args.push_back(*flagString);
                         jniEnv->DeleteLocalRef(mFlagString);
                     }
+                    jniEnv->DeleteLocalRef(mNodeFlagsStringArray);
                 }
                 jniEnv->DeleteLocalRef(jniEnv->CallObjectMethod(mNodeFlags, jmethodIDNodeFlagsSeal));
                 jniEnv->DeleteLocalRef(mNodeFlags);
-                jniEnv->DeleteLocalRef(mNodeFlagsStringArray);
                 std::shared_ptr<node::InitializationResult> result = node::InitializeOncePerProcess(
                     args, {
                         node::ProcessInitializationFlags::kNoFlags,
@@ -195,7 +195,7 @@ namespace Javet {
             if (!GlobalV8ArrayBufferAllocator) {
                 GlobalV8ArrayBufferAllocator = std::shared_ptr<V8ArrayBufferAllocator>();
                 GlobalV8ArrayBufferAllocator.reset(V8ArrayBufferAllocator::NewDefaultAllocator());
-        }
+            }
 #endif
             LOG_INFO("V8::Initialize() ends.");
         }

@@ -87,6 +87,17 @@ public final class StringUtils {
     }
 
     /**
+     * Is not blank.
+     *
+     * @param str the str
+     * @return true : not blank, false : blank
+     * @since 4.0.0
+     */
+    public static boolean isNotBlank(String str) {
+        return !isBlank(str);
+    }
+
+    /**
      * Is not empty.
      *
      * @param str the str

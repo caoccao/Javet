@@ -16,6 +16,11 @@
 
 package com.caoccao.javet.interop.options;
 
+import com.caoccao.javet.utils.ArrayUtils;
+import com.caoccao.javet.utils.StringUtils;
+
+import java.util.stream.Stream;
+
 /**
  * The type Node runtime options.
  *
@@ -64,7 +69,13 @@ public final class NodeRuntimeOptions extends RuntimeOptions<NodeRuntimeOptions>
      * @since 1.0.0
      */
     public NodeRuntimeOptions setConsoleArguments(String[] consoleArguments) {
-        this.consoleArguments = consoleArguments;
+        if (ArrayUtils.isEmpty(consoleArguments)) {
+            this.consoleArguments = null;
+        } else {
+            this.consoleArguments = Stream.of(consoleArguments)
+                    .filter(StringUtils::isNotBlank)
+                    .toArray(String[]::new);
+        }
         return this;
     }
 }

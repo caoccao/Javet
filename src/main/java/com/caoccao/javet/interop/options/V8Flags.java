@@ -20,7 +20,6 @@ import com.caoccao.javet.utils.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -355,7 +354,7 @@ public final class V8Flags {
         if (useStrict) {
             tokens.add(FLAG_USE_STRICT);
         }
-        Collections.sort(tokens, String::compareTo);
+        tokens.sort(String::compareTo);
         if (StringUtils.isNotEmpty(customFlags)) {
             tokens.add(customFlags);
         }

@@ -20,9 +20,9 @@ import com.caoccao.javet.utils.ArrayUtils;
 import com.caoccao.javet.utils.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * The type Node flags defines some built-in Node command line options.
@@ -198,7 +198,9 @@ public final class NodeFlags {
             if (ArrayUtils.isEmpty(allowFsRead)) {
                 this.allowFsRead = null;
             } else {
-                this.allowFsRead = Arrays.copyOf(allowFsRead, allowFsRead.length);
+                this.allowFsRead = Stream.of(allowFsRead)
+                        .filter(StringUtils::isNotBlank)
+                        .toArray(String[]::new);
                 this.experimentalPermission = true;
             }
         }
@@ -217,7 +219,9 @@ public final class NodeFlags {
             if (ArrayUtils.isEmpty(allowFsWrite)) {
                 this.allowFsWrite = null;
             } else {
-                this.allowFsWrite = Arrays.copyOf(allowFsWrite, allowFsWrite.length);
+                this.allowFsWrite = Stream.of(allowFsWrite)
+                        .filter(StringUtils::isNotBlank)
+                        .toArray(String[]::new);
                 this.experimentalPermission = true;
             }
         }
@@ -233,7 +237,13 @@ public final class NodeFlags {
      */
     public NodeFlags setCustomFlags(String[] customFlags) {
         if (!sealed) {
-            this.customFlags = ArrayUtils.isEmpty(customFlags) ? null : Arrays.copyOf(customFlags, customFlags.length);
+            if (ArrayUtils.isEmpty(customFlags)) {
+                this.customFlags = null;
+            } else {
+                this.customFlags = Stream.of(customFlags)
+                        .filter(StringUtils::isNotBlank)
+                        .toArray(String[]::new);
+            }
         }
         return this;
     }
@@ -288,18 +298,16 @@ public final class NodeFlags {
     public String[] toArray() {
         List<String> tokens = new ArrayList<>();
         if (ArrayUtils.isNotEmpty(allowFsRead)) {
-            for (String path : allowFsRead) {
-                if (StringUtils.isNotEmpty(path)) {
-                    tokens.add(ALLOW_FS_READ + EQUAL + path.trim());
-                }
-            }
+            Stream.of(allowFsRead)
+                    .filter(StringUtils::isNotBlank)
+                    .map(path -> ALLOW_FS_READ + EQUAL + path.trim())
+                    .forEach(tokens::add);
         }
         if (ArrayUtils.isNotEmpty(allowFsWrite)) {
-            for (String path : allowFsWrite) {
-                if (StringUtils.isNotEmpty(path)) {
-                    tokens.add(ALLOW_FS_WRITE + EQUAL + path.trim());
-                }
-            }
+            Stream.of(allowFsWrite)
+                    .filter(StringUtils::isNotBlank)
+                    .map(path -> ALLOW_FS_WRITE + EQUAL + path.trim())
+                    .forEach(tokens::add);
         }
         if (experimentalPermission) {
             tokens.add(EXPERIMENTAL_PERMISSION);
@@ -310,7 +318,7 @@ public final class NodeFlags {
         if (noWarnings) {
             tokens.add(NO_WARNINGS);
         }
-        Collections.sort(tokens, String::compareTo);
+        tokens.sort(String::compareTo);
         if (ArrayUtils.isNotEmpty(customFlags)) {
             Collections.addAll(tokens, customFlags);
         }
