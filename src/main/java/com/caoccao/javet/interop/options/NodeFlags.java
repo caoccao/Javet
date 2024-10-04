@@ -50,6 +50,12 @@ public final class NodeFlags {
      */
     public static final String EXPERIMENTAL_PERMISSION = "--experimental-permission";
     /**
+     * The constant EXPERIMENTAL_REQUIRE_MODULE.
+     *
+     * @since 4.0.0
+     */
+    public static final String EXPERIMENTAL_REQUIRE_MODULE = "--experimental-require-module";
+    /**
      * The constant EXPERIMENTAL_SQLITE.
      *
      * @since 4.0.0
@@ -67,6 +73,7 @@ public final class NodeFlags {
     private String[] allowFsWrite;
     private String[] customFlags;
     private boolean experimentalPermission;
+    private boolean experimentalRequireModule;
     private boolean experimentalSqlite;
     private boolean noWarnings;
     private boolean sealed;
@@ -81,6 +88,7 @@ public final class NodeFlags {
         allowFsWrite = null;
         customFlags = null;
         experimentalPermission = false;
+        experimentalRequireModule = false;
         experimentalSqlite = false;
         noWarnings = false;
         sealed = false;
@@ -141,6 +149,16 @@ public final class NodeFlags {
      */
     public boolean isExperimentalPermission() {
         return experimentalPermission;
+    }
+
+    /**
+     * Supports loading a synchronous ES module graph in require().
+     *
+     * @return true : yes, false: no
+     * @since 4.0.0
+     */
+    public boolean isExperimentalRequireModule() {
+        return experimentalRequireModule;
     }
 
     /**
@@ -263,6 +281,20 @@ public final class NodeFlags {
     }
 
     /**
+     * Sets experimental require module.
+     *
+     * @param experimentalRequireModule the experimental require module
+     * @return the self
+     * @since 4.0.0
+     */
+    public NodeFlags setExperimentalRequireModule(boolean experimentalRequireModule) {
+        if (!sealed) {
+            this.experimentalRequireModule = experimentalRequireModule;
+        }
+        return this;
+    }
+
+    /**
      * Sets experimental sqlite.
      *
      * @param experimentalSqlite the experimental sqlite
@@ -311,6 +343,9 @@ public final class NodeFlags {
         }
         if (experimentalPermission) {
             tokens.add(EXPERIMENTAL_PERMISSION);
+        }
+        if (experimentalRequireModule) {
+            tokens.add(EXPERIMENTAL_REQUIRE_MODULE);
         }
         if (experimentalSqlite) {
             tokens.add(EXPERIMENTAL_SQLITE);

@@ -16,16 +16,31 @@
 
 package com.caoccao.javet.interop.options;
 
+import com.caoccao.javet.utils.SimpleList;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestNodeFlags {
+    protected static final List<GetterAndSetter> SWITCHES = SimpleList.of(
+            new GetterAndSetter(NodeFlags::isExperimentalRequireModule, NodeFlags::setExperimentalRequireModule),
+            new GetterAndSetter(NodeFlags::isExperimentalSqlite, NodeFlags::setExperimentalSqlite),
+            new GetterAndSetter(NodeFlags::isNoWarnings, NodeFlags::setNoWarnings)
+    );
+
     @Test
     public void testSeal() {
-        NodeFlags nodeFlags = new NodeFlags();
+        final NodeFlags nodeFlags = new NodeFlags();
         // Open
         assertFalse(nodeFlags.isSealed());
+        SWITCHES.forEach(getterAndSetter -> {
+            assertFalse(getterAndSetter.getter.apply(nodeFlags));
+            assertTrue(getterAndSetter.getter.apply(getterAndSetter.setter.apply(nodeFlags, true)));
+        });
         assertFalse(nodeFlags.isExperimentalPermission());
         assertNull(nodeFlags.getAllowFsRead());
         assertArrayEquals(new String[]{"/a", "/b"}, nodeFlags.setAllowFsRead(new String[]{"/a", "/b"}).getAllowFsRead());
@@ -36,16 +51,13 @@ public class TestNodeFlags {
         assertTrue(nodeFlags.isExperimentalPermission());
         assertNull(nodeFlags.getCustomFlags());
         assertArrayEquals(new String[]{"abc", "def"}, nodeFlags.setCustomFlags(new String[]{"abc", "def"}).getCustomFlags());
-        assertFalse(nodeFlags.isExperimentalSqlite());
-        assertTrue(nodeFlags.setExperimentalSqlite(true).isExperimentalSqlite());
-        assertFalse(nodeFlags.isNoWarnings());
-        assertTrue(nodeFlags.setNoWarnings(true).isNoWarnings());
         // Sealed
         assertTrue(nodeFlags.seal().isSealed());
         assertNotNull(nodeFlags.setAllowFsRead(null).getAllowFsRead());
         assertArrayEquals(new String[]{"abc", "def"}, nodeFlags.setCustomFlags(new String[]{"123", "456"}).getCustomFlags());
-        assertTrue(nodeFlags.setExperimentalSqlite(false).isExperimentalSqlite());
-        assertTrue(nodeFlags.setNoWarnings(false).isNoWarnings());
+        SWITCHES.forEach(getterAndSetter -> {
+            assertTrue(getterAndSetter.getter.apply(getterAndSetter.setter.apply(nodeFlags, false)));
+        });
     }
 
     @Test
@@ -65,5 +77,19 @@ public class TestNodeFlags {
         assertEquals(
                 "--no-warnings",
                 nodeFlags.setNoWarnings(true).toString());
+        nodeFlags.setNoWarnings(false);
+        assertEquals(
+                "--experimental-require-module",
+                nodeFlags.setExperimentalRequireModule(true).toString());
+    }
+
+    protected static class GetterAndSetter {
+        public Function<NodeFlags, Boolean> getter;
+        public BiFunction<NodeFlags, Boolean, NodeFlags> setter;
+
+        public GetterAndSetter(Function<NodeFlags, Boolean> getter, BiFunction<NodeFlags, Boolean, NodeFlags> setter) {
+            this.getter = getter;
+            this.setter = setter;
+        }
     }
 }
