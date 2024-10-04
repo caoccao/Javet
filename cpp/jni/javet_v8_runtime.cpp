@@ -273,31 +273,23 @@ namespace Javet {
         auto v8ContextScope = GetV8ContextScope(v8LocalContext);
         // Create and load the environment only once per isolate.
         if (!nodeEnvironment) {
-            std::vector<std::string> args;
+            std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
             std::vector<std::string> execArgs;
-            bool addDefaultScriptName = true;
             if (mRuntimeOptions != nullptr) {
                 jobjectArray mConsoleArguments = (jobjectArray)jniEnv->CallObjectMethod(mRuntimeOptions, jmethodNodeRuntimeOptionsGetConsoleArguments);
                 if (mConsoleArguments != nullptr) {
                     int consoleArgumentCount = jniEnv->GetArrayLength(mConsoleArguments);
                     LOG_DEBUG("Node.js console argument count is " << consoleArgumentCount);
                     if (consoleArgumentCount > 0) {
-                        addDefaultScriptName = false;
                         for (int i = 0; i < consoleArgumentCount; ++i) {
                             jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
                             auto consoleArgumentPointer = Javet::Converter::ToStdString(jniEnv, mConsoleArgument);
-                            auto umConsoleArgument = *consoleArgumentPointer.get();
-                            LOG_DEBUG("    " << i << ": " << umConsoleArgument);
-                            if (umConsoleArgument == "-v" || umConsoleArgument == "--version") {
-                                LOG_DIRECT(NODE_VERSION);
-                            }
-                            args.push_back(umConsoleArgument);
+                            auto umConsoleArgument = consoleArgumentPointer.get();
+                            LOG_DEBUG("    " << i << ": " << *umConsoleArgument);
+                            args.push_back(*umConsoleArgument);
                         }
                     }
                 }
-            }
-            if (addDefaultScriptName) {
-                args.push_back(DEFAULT_SCRIPT_NAME);
             }
             // node::CreateEnvironment is not thread-safe.
             std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
@@ -406,7 +398,7 @@ namespace Javet {
             return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, this, v8Context, v8TryCatch);
         }
         return externalV8Value;
-    }
+        }
 
     jobject V8Runtime::SafeToExternalV8Value(
         JNIEnv* jniEnv,
@@ -425,5 +417,5 @@ namespace Javet {
         CloseV8Context();
         CloseV8Isolate();
     }
-}
+        }
 

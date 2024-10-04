@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.nio.file.Path;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
@@ -160,10 +161,13 @@ public class TestNodeRuntime extends BaseTestJavet {
 
     @Test
     public void testConsoleArguments() throws JavetException {
-        NodeRuntimeOptions runtimeOptions = new NodeRuntimeOptions();
-        runtimeOptions.setConsoleArguments(new String[]{"--version"});
-        try (NodeRuntime testNodeRuntime = v8Host.createV8Runtime(runtimeOptions)) {
-            assertNotNull(testNodeRuntime);
+        NodeRuntimeOptions nodeRuntimeOptions = new NodeRuntimeOptions();
+        nodeRuntimeOptions.setConsoleArguments(new String[]{"--abc", "--def"});
+        try (NodeRuntime testNodeRuntime = v8Host.createV8Runtime(nodeRuntimeOptions)) {
+            List<String> consoleArguments = testNodeRuntime.getExecutor("process.argv;").executeObject();
+            assertEquals(3, consoleArguments.size());
+            assertEquals("--abc", consoleArguments.get(1));
+            assertEquals("--def", consoleArguments.get(2));
         }
     }
 

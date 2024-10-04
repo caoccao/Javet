@@ -154,11 +154,13 @@ namespace Javet {
                 jobject mNodeFlags = jniEnv->GetStaticObjectField(jclassNodeRuntimeOptions, jfieldIDNodeRuntimeOptionsNodeFlags);
                 jobjectArray mNodeFlagsStringArray = (jobjectArray)jniEnv->CallObjectMethod(mNodeFlags, jmethodIDNodeFlagsToArray);
                 if (mNodeFlagsStringArray != nullptr) {
-                    const int length = jniEnv->GetArrayLength(mNodeFlagsStringArray);
-                    for (int i = 0; i < length; ++i) {
+                    const int nodeFlagCount = jniEnv->GetArrayLength(mNodeFlagsStringArray);
+                    LOG_DEBUG("Node.js flag count is " << nodeFlagCount);
+                    for (int i = 0; i < nodeFlagCount; ++i) {
                         jstring mFlagString = (jstring)jniEnv->GetObjectArrayElement(mNodeFlagsStringArray, i);
-                        auto flagString = Javet::Converter::ToStdString(jniEnv, mFlagString);
-                        args.push_back(*flagString);
+                        auto umFlagString = Javet::Converter::ToStdString(jniEnv, mFlagString);
+                        LOG_DEBUG("    " << i << ": " << *umFlagString);
+                        args.push_back(*umFlagString);
                         jniEnv->DeleteLocalRef(mFlagString);
                     }
                     jniEnv->DeleteLocalRef(mNodeFlagsStringArray);
@@ -186,7 +188,7 @@ namespace Javet {
 #endif
                 v8::V8::InitializePlatform(Javet::V8Native::GlobalV8Platform.get());
                 v8::V8::Initialize();
-            }
+                }
 #ifdef ENABLE_NODE
             auto pageAllocator = Javet::V8Native::GlobalV8Platform->GetPageAllocator();
             LOG_INFO("Calling cppgc::InitializeProcess().");
