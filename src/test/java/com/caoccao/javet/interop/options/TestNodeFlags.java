@@ -50,11 +50,14 @@ public class TestNodeFlags {
         assertArrayEquals(new String[]{"/a", "/b"}, nodeFlags.setAllowFsWrite(new String[]{"/a", "/b"}).getAllowFsWrite());
         assertTrue(nodeFlags.isExperimentalPermission());
         assertNull(nodeFlags.getCustomFlags());
+        assertNull(nodeFlags.getIcuDataDir());
+        assertEquals("abc", nodeFlags.setIcuDataDir("abc").getIcuDataDir());
         assertArrayEquals(new String[]{"abc", "def"}, nodeFlags.setCustomFlags(new String[]{"abc", "def"}).getCustomFlags());
         // Sealed
         assertTrue(nodeFlags.seal().isSealed());
         assertNotNull(nodeFlags.setAllowFsRead(null).getAllowFsRead());
         assertArrayEquals(new String[]{"abc", "def"}, nodeFlags.setCustomFlags(new String[]{"123", "456"}).getCustomFlags());
+        assertEquals("abc", nodeFlags.setIcuDataDir("def").getIcuDataDir());
         SWITCHES.forEach(getterAndSetter -> {
             assertTrue(getterAndSetter.getter.apply(getterAndSetter.setter.apply(nodeFlags, false)));
         });
@@ -74,13 +77,14 @@ public class TestNodeFlags {
                 "--allow-fs-write=/a --allow-fs-write=/b --experimental-permission",
                 nodeFlags.setAllowFsWrite(new String[]{"/a", "/b"}).toString());
         nodeFlags.setAllowFsWrite(null).setExperimentalPermission(false);
-        assertEquals(
-                "--no-warnings",
-                nodeFlags.setNoWarnings(true).toString());
+        assertEquals("--no-warnings", nodeFlags.setNoWarnings(true).toString());
         nodeFlags.setNoWarnings(false);
         assertEquals(
                 "--experimental-require-module",
                 nodeFlags.setExperimentalRequireModule(true).toString());
+        nodeFlags.setExperimentalRequireModule(false);
+        assertEquals("--icu-data-dir=abc", nodeFlags.setIcuDataDir("abc").toString());
+        nodeFlags.setIcuDataDir(null);
     }
 
     protected static class GetterAndSetter {

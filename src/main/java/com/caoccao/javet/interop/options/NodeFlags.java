@@ -61,6 +61,13 @@ public final class NodeFlags {
      * @since 4.0.0
      */
     public static final String EXPERIMENTAL_SQLITE = "--experimental-sqlite";
+
+    /**
+     * The constant ICU_DATA_DIR.
+     *
+     * @since 4.0.0
+     */
+    public static final String ICU_DATA_DIR = "--icu-data-dir";
     /**
      * The constant NO_WARNINGS.
      *
@@ -75,6 +82,7 @@ public final class NodeFlags {
     private boolean experimentalPermission;
     private boolean experimentalRequireModule;
     private boolean experimentalSqlite;
+    private String icuDataDir;
     private boolean noWarnings;
     private boolean sealed;
 
@@ -134,6 +142,16 @@ public final class NodeFlags {
      */
     public String[] getCustomFlags() {
         return customFlags;
+    }
+
+    /**
+     * Gets icu data dir that contains icudt*.dat files.
+     *
+     * @return the icu data dir
+     * @since 4.0.0
+     */
+    public String getIcuDataDir() {
+        return icuDataDir;
     }
 
     /**
@@ -309,6 +327,20 @@ public final class NodeFlags {
     }
 
     /**
+     * Sets icu data dir.
+     *
+     * @param icuDataDir the icu data dir
+     * @return the icu data dir
+     * @since 4.0.0
+     */
+    public NodeFlags setIcuDataDir(String icuDataDir) {
+        if (!sealed) {
+            this.icuDataDir = icuDataDir;
+        }
+        return this;
+    }
+
+    /**
      * Sets no warnings.
      *
      * @param noWarnings the no warnings
@@ -323,9 +355,9 @@ public final class NodeFlags {
     }
 
     /**
-     * To array string [ ].
+     * To string array.
      *
-     * @return the string [ ]
+     * @return the string array
      */
     public String[] toArray() {
         List<String> tokens = new ArrayList<>();
@@ -349,6 +381,9 @@ public final class NodeFlags {
         }
         if (experimentalSqlite) {
             tokens.add(EXPERIMENTAL_SQLITE);
+        }
+        if (StringUtils.isNotBlank(icuDataDir)) {
+            tokens.add(ICU_DATA_DIR + EQUAL + icuDataDir.trim());
         }
         if (noWarnings) {
             tokens.add(NO_WARNINGS);

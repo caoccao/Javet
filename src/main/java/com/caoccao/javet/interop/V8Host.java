@@ -33,10 +33,7 @@ import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryType;
 import java.time.Duration;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -60,6 +57,7 @@ public final class V8Host {
     private final V8Notifier v8Notifier;
     private final ConcurrentHashMap<Long, V8Runtime> v8RuntimeMap;
     private final V8StatisticsFutureDaemon v8StatisticsFutureDaemon;
+    private Optional<Boolean> i18nEnabled;
     private boolean isolateCreated;
     private JavetClassLoader javetClassLoader;
     private JavetException lastException;
@@ -77,6 +75,7 @@ public final class V8Host {
         v8RuntimeMap = new ConcurrentHashMap<>();
         v8Native = null;
         isolateCreated = false;
+        i18nEnabled = Optional.empty();
         this.jsRuntimeType = jsRuntimeType;
         v8GuardDaemon = new V8GuardDaemon();
         v8StatisticsFutureDaemon = new V8StatisticsFutureDaemon();
@@ -424,6 +423,19 @@ public final class V8Host {
      */
     public V8SharedMemoryStatistics getV8SharedMemoryStatistics() {
         return (V8SharedMemoryStatistics) v8Native.getV8SharedMemoryStatistics();
+    }
+
+    /**
+     * Is i18n enabled.
+     *
+     * @return true: yes, false: no
+     * @since 4.0.0
+     */
+    public boolean isI18nEnabled() {
+        if (!i18nEnabled.isPresent()) {
+            i18nEnabled = Optional.of(v8Native.isI18nEnabled());
+        }
+        return i18nEnabled.get();
     }
 
     /**

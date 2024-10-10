@@ -225,6 +225,9 @@ class V8Native implements IV8Native {
     public native boolean isDead(long v8RuntimeHandle);
 
     @Override
+    public native boolean isI18nEnabled();
+
+    @Override
     public native boolean isInUse(long v8RuntimeHandle);
 
     @Override

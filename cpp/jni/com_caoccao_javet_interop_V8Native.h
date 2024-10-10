@@ -465,6 +465,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isDead
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    isI18nEnabled
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isI18nEnabled
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    isInUse
  * Signature: (J)Z
  */

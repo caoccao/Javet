@@ -189,8 +189,8 @@ Build Node.js on Windows
     cd %NODE_HOME%
     vcbuild.bat static without-intl vs2022
 
-Build Javet
-===========
+Build Javet JNI Library
+=======================
 
 Once Node.js and V8 are ready, please navigate to ``${JAVET_HOME}/cpp``, make sure CMake is accessible and execute corresponding build script.
 
@@ -240,12 +240,13 @@ x86     ``x86/libjavet-v8-android.v.*.*.*.so``
 x86_64  ``x86_64/libjavet-v8-android.v.*.*.*.so``
 ======= ==============================================================================================================
 
-.. note::
+Build Javet JNI Library with i18n
+=================================
 
-    * To enable i18n support for V8 mode, please append ``-DENABLE_I18N`` to the command.
+To enable i18n support, please append ``-DENABLE_I18N=1`` to the command.
 
-Build Javet
-===========
+Build Javet Jar
+===============
 
 Build Javet for Linux, Mac OS and Windows
 -----------------------------------------

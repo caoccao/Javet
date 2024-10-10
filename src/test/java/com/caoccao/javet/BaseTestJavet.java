@@ -25,6 +25,7 @@ import com.caoccao.javet.interop.options.V8Flags;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetOSUtils;
+import com.caoccao.javet.utils.StringUtils;
 
 import java.io.File;
 import java.time.ZonedDateTime;
@@ -37,6 +38,16 @@ import static org.junit.jupiter.api.Assertions.*;
 public abstract class BaseTestJavet {
     public static final double DELTA = 0.001;
     public static final long DEFAULT_INTERVAL_IN_MILLISECONDS = 10;
+
+    static {
+        if (!NodeRuntimeOptions.NODE_FLAGS.isSealed()) {
+            File icuDataDir = new File(JavetOSUtils.WORKING_DIRECTORY).toPath().resolve("../node/deps/icu-tmp").toFile();
+            if (icuDataDir.exists() && icuDataDir.isDirectory()) {
+                NodeRuntimeOptions.NODE_FLAGS.setIcuDataDir(icuDataDir.getAbsolutePath());
+            }
+        }
+    }
+
     protected IJavetLogger logger;
     protected V8Host v8Host;
 
@@ -81,6 +92,16 @@ public abstract class BaseTestJavet {
         } catch (Exception e) {
             fail(e.getMessage());
         }
+    }
+
+    public boolean isI18nEnabled() {
+        if (v8Host.isI18nEnabled()) {
+            if (v8Host.getJSRuntimeType().isNode()) {
+                return StringUtils.isNotBlank(NodeRuntimeOptions.NODE_FLAGS.getIcuDataDir());
+            }
+            return true;
+        }
+        return false;
     }
 
     public int runAndWait(

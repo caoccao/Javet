@@ -135,9 +135,11 @@ namespace Javet {
             jmethodIDV8HostIsLibraryReloadable = jniEnv->GetStaticMethodID(jclassV8Host, "isLibraryReloadable", "()Z");
 
             LOG_INFO("V8::Initialize() begins.");
+#ifndef ENABLE_NODE
 #ifdef ENABLE_I18N
             LOG_INFO("Calling v8::V8::InitializeICU().");
             v8::V8::InitializeICU();
+#endif
 #endif
             if (Javet::V8Native::GlobalV8Platform) {
                 LOG_INFO("V8::Initialize() is skipped.");

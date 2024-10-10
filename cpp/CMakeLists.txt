@@ -118,6 +118,11 @@ if(DEFINED NODE_DIR)
         ${NODE_DIR}/deps/v8/third_party/abseil-cpp
         ${NODE_DIR}/deps/ncrypto
         ${NODE_DIR}/src)
+    if(DEFINED ENABLE_I18N)
+        add_definitions(-DENABLE_I18N -DV8_INTL_SUPPORT -DNODE_HAVE_I18N_SUPPORT)
+        list(APPEND includeDirs
+            ${NODE_DIR}/deps/icu-small/source/common)
+    endif()
     list(APPEND importLibraries
         ada brotli cares histogram llhttp nbytes ncrypto nghttp2 nghttp3 ngtcp2 openssl simdjson simdutf sqlite torque_base uvwasi
         v8_abseil v8_base_without_compiler v8_compiler v8_init v8_initializers v8_initializers_slow
@@ -144,6 +149,10 @@ if(DEFINED NODE_DIR)
         if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)")
             list(APPEND importLibraries zlib_arm_crc32)
         endif()
+    endif()
+    # icu
+    if(DEFINED ENABLE_I18N)
+        list(APPEND importLibraries icudata icui18n icutools icuucx)
     endif()
     add_definitions(-DENABLE_NODE)
     set(JAVET_LIB_TYPE "node")

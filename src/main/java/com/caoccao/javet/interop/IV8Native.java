@@ -156,6 +156,8 @@ public interface IV8Native {
 
     boolean isDead(long v8RuntimeHandle);
 
+    boolean isI18nEnabled();
+
     boolean isInUse(long v8RuntimeHandle);
 
     boolean isWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
