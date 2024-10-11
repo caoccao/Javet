@@ -18,9 +18,11 @@ jobs:
       matrix:
         include:
           - name: i18n
-            flag: v8_enable_i18n_support=true
+            cmake_flag: -DENABLE_I18N=1
+            v8_flag: v8_enable_i18n_support=true
           - name: non-i18n
-            flag: v8_enable_i18n_support=false
+            cmake_flag:
+            v8_flag: v8_enable_i18n_support=false
 
     name: Build Javet V8 ${{ matrix.name }}
     runs-on: macos-14
@@ -59,7 +61,7 @@ jobs:
         cd ..
         gclient sync -D
         cd v8
-        python3 tools/dev/v8gen.py arm64.release -- v8_monolithic=true 'target_cpu="arm64"' v8_use_external_startup_data=false is_component_build=false ${{ matrix.flag }} v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
+        python3 tools/dev/v8gen.py arm64.release -- v8_monolithic=true 'target_cpu="arm64"' v8_use_external_startup_data=false is_component_build=false ${{ matrix.v8_flag }} v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
         gn gen out.gn/arm64.release
         ninja -C out.gn/arm64.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
         ninja -C out.gn/arm64.release v8_monolith
@@ -85,7 +87,7 @@ jobs:
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
         sed -i '.bak' 's/`nproc`/2/g' build-macos.sh
-        sh ./build-macos.sh -DV8_DIR=${{ env.ROOT }}/google/v8
+        sh ./build-macos.sh -DV8_DIR=${{ env.ROOT }}/google/v8 ${{ matrix.cmake_flag }}
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
@@ -105,9 +107,11 @@ jobs:
       matrix:
         include:
           - name: i18n
-            flag: --with-intl=full-icu
+            cmake_flag: -DENABLE_I18N=1
+            node_flag: --with-intl=full-icu
           - name: non-i18n
-            flag: --without-intl
+            cmake_flag:
+            node_flag: --without-intl
 
     name: Build Javet Node ${{ matrix.name }}
     runs-on: macos-14
@@ -128,7 +132,7 @@ jobs:
         git clone https://github.com/nodejs/node.git
         cd node
         git checkout v${{ env.JAVET_NODE_VERSION }}
-        ./configure --enable-static ${{ matrix.flag }}
+        ./configure --enable-static ${{ matrix.node_flag }}
         make -j4
 
     - name: Copy the i18n
@@ -152,7 +156,7 @@ jobs:
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
         sed -i '.bak' 's/`nproc`/2/g' build-macos.sh
-        sh ./build-macos.sh -DNODE_DIR=${{ env.ROOT }}/node
+        sh ./build-macos.sh -DNODE_DIR=${{ env.ROOT }}/node ${{ matrix.cmake_flag }}
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
