@@ -222,14 +222,14 @@ jobs:
     - name: Download Javet Node
       uses: actions/download-artifact@v4
       with:
-        name: javet-windows-v8-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
-        path: src\main\resources
+        name: javet-windows-node-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
+        path: src\main\resources\
 
     - name: Download Javet V8
       uses: actions/download-artifact@v4
       with:
         name: javet-windows-v8-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
-        path: src\main\resources
+        path: src\main\resources\
 
     - name: Prepare i18n Location
       if: matrix.name == 'i18n'
