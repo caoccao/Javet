@@ -152,7 +152,7 @@ if(DEFINED NODE_DIR)
     endif()
     # icu
     if(DEFINED ENABLE_I18N)
-        list(APPEND importLibraries icudata icui18n icutools icuucx)
+        list(APPEND importLibraries icudata icui18n icuucx)
     endif()
     add_definitions(-DENABLE_NODE)
     set(JAVET_LIB_TYPE "node")

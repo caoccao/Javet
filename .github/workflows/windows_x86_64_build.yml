@@ -258,8 +258,6 @@ jobs:
         move icu-node\*.dat ..\node\deps\icu-tmp
         mkdir ..\google\v8\third_party\icu\common
         move icu-v8\*.dat ..\google\v8\third_party\icu\common
-        rd /s/q icu-node
-        rd /s/q icu-v8
 
     - name: Build the Artifact
       shell: bash
