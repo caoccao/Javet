@@ -100,7 +100,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: javet-windows-v8-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
-        path: src\main\resources\*.dll
+        path: src/main/resources/*.dll
 
     - name: Upload the i18n
       uses: actions/upload-artifact@v4
@@ -175,14 +175,14 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: javet-windows-node-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
-        path: src\main\resources\*.dll
+        path: src/main/resources/*.dll
 
     - name: Upload the i18n
       uses: actions/upload-artifact@v4
       if: matrix.name == 'i18n'
       with:
         name: icu-node
-        path: icu-node\*.dat
+        path: icu-node/*.dat
 
   build_javet_jar:
     needs: [build_javet_v8, build_javet_node]
@@ -223,13 +223,13 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: javet-windows-v8-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
-        path: src\main\resources\
+        path: src/main/resources/
 
     - name: Download Javet V8
       uses: actions/download-artifact@v4
       with:
         name: javet-windows-v8-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
-        path: src\main\resources\
+        path: src/main/resources/
 
     - name: Prepare i18n Location
       if: matrix.name == 'i18n'
@@ -267,15 +267,15 @@ jobs:
         touch src/main/resources/libjavet-node*
         gradle test --rerun-tasks --debug
         gradle build generatePomFileForGeneratePomPublication
-        7z d build\libs\javet-${{ env.JAVET_VERSION }}-sources.jar *.dll
+        7z d build/libs/javet-${{ env.JAVET_VERSION }}-sources.jar *.dll
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
       with:
         name: javet-windows-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
         path: |
-          build\libs\*.jar
-          build\libs\*.pom
+          build/libs/*.jar
+          build/libs/*.pom
 
     - name: Delete Javet Node
       uses: geekyeggo/delete-artifact@v4
