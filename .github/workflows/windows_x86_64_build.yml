@@ -72,7 +72,7 @@ jobs:
       if: matrix.name == 'i18n'
       run: |
         mkdir icu-v8
-        copy ../google/v8/third_party/icu/common/*.dat icu-v8
+        copy ..\google\v8\third_party\icu\common\*.dat icu-v8
 
     - name: Setup JDK 8
       uses: actions/setup-java@v4
@@ -100,7 +100,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: javet-windows-v8-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
-        path: src/main/resources/*.dll
+        path: src\main\resources\*.dll
 
     - name: Upload the i18n
       uses: actions/upload-artifact@v4
@@ -168,21 +168,21 @@ jobs:
 
     - name: Build Javet JNI
       run: |
-        cd ${{ env.ROOT }}/Javet/cpp
+        cd ${{ env.ROOT }}\Javet\cpp
         .\build-windows.cmd -DNODE_DIR=${{ env.ROOT }}\node ${{ matrix.cmake_flag }}
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
       with:
         name: javet-windows-node-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
-        path: src/main/resources/*.dll
+        path: src\main\resources\*.dll
 
     - name: Upload the i18n
       uses: actions/upload-artifact@v4
       if: matrix.name == 'i18n'
       with:
         name: icu-node
-        path: icu-node/*.dat
+        path: icu-node\*.dat
 
   build_javet_jar:
     needs: [build_javet_v8, build_javet_node]
@@ -223,13 +223,13 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: javet-windows-v8-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
-        path: src/main/resources/
+        path: src\main\resources
 
     - name: Download Javet V8
       uses: actions/download-artifact@v4
       with:
         name: javet-windows-v8-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
-        path: src/main/resources/
+        path: src\main\resources
 
     - name: Prepare i18n Location
       if: matrix.name == 'i18n'
@@ -262,10 +262,11 @@ jobs:
     - name: Build the Artifact
       shell: bash
       run: |
+        ls -l
         touch src/main/resources/libjavet-v8*
-        gradle build test --rerun-tasks --debug
+        gradle build test --rerun-tasks
         touch src/main/resources/libjavet-node*
-        gradle test --rerun-tasks --debug
+        gradle test --rerun-tasks
         gradle build generatePomFileForGeneratePomPublication
         7z d build/libs/javet-${{ env.JAVET_VERSION }}-sources.jar *.dll
 
@@ -274,8 +275,8 @@ jobs:
       with:
         name: javet-windows-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
         path: |
-          build/libs/*.jar
-          build/libs/*.pom
+          build\libs\*.jar
+          build\libs\*.pom
 
     - name: Delete Javet Node
       uses: geekyeggo/delete-artifact@v4
