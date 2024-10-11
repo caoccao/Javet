@@ -237,8 +237,6 @@ jobs:
         mv icu-node/*.dat ../node/deps/icu-tmp
         mkdir -p ../google/v8/third_party/icu/common
         mv icu-v8/*.dat ../google/v8/third_party/icu/common
-        rm -rf icu-node
-        rm -rf icu-v8
 
     - name: Build the Artifact
       run: |
@@ -267,13 +265,3 @@ jobs:
       uses: geekyeggo/delete-artifact@v4
       with:
         name: javet-macos-v8-arm64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
-
-    - name: Delete i18n Node
-      uses: geekyeggo/delete-artifact@v4
-      with:
-        name: icu-node
-
-    - name: Delete i18n V8
-      uses: geekyeggo/delete-artifact@v4
-      with:
-        name: icu-v8
