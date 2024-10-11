@@ -262,7 +262,6 @@ jobs:
     - name: Build the Artifact
       shell: bash
       run: |
-        ls -l
         touch src/main/resources/libjavet-v8*
         gradle build test --rerun-tasks
         touch src/main/resources/libjavet-node*

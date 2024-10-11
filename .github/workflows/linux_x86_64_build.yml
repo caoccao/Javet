@@ -14,7 +14,17 @@ env:
 
 jobs:
   build_javet_v8:
-    name: Build Javet V8
+    strategy:
+      matrix:
+        include:
+          - name: i18n
+            cmake_flag: -DENABLE_I18N=1
+            v8_flag: v8_enable_i18n_support=true
+          - name: non-i18n
+            cmake_flag:
+            v8_flag: v8_enable_i18n_support=false
+
+    name: Build Javet V8 ${{ matrix.name }}
     runs-on: ubuntu-latest
 
     steps:
@@ -51,11 +61,17 @@ jobs:
         cd ..
         gclient sync -D
         cd v8
-        python3 tools/dev/v8gen.py x64.release -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
+        python3 tools/dev/v8gen.py x64.release -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false ${{ matrix.v8_flag }} v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
         sed -i '/#include "src\/libplatform\//a #include <cstdlib>' src/libplatform/default-thread-isolated-allocator.cc
         sed -i '/bool KernelHasPkruFix()/a const char* env = std::getenv("JAVET_DISABLE_PKU"); if (env && std::strlen(env) > 0) { return false; }' src/libplatform/default-thread-isolated-allocator.cc
         ninja -C out.gn/x64.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
         ninja -C out.gn/x64.release v8_monolith
+
+    - name: Copy the i18n
+      if: matrix.name == 'i18n'
+      run: |
+        mkdir icu-v8
+        copy ../google/v8/third_party/icu/common/*.dat icu-v8
 
     - name: Setup JDK 8
       uses: actions/setup-java@v4
@@ -71,16 +87,33 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
-        sh ./build-linux-x86_64.sh -DV8_DIR=${{ env.ROOT }}/google/v8
+        sh ./build-linux-x86_64.sh -DV8_DIR=${{ env.ROOT }}/google/v8 ${{ matrix.cmake_flag }}
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: javet-linux-v8-x86_64-${{ env.JAVET_VERSION }}
+        name: javet-linux-v8-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
         path: src/main/resources/*.so
 
+    - name: Upload the i18n
+      uses: actions/upload-artifact@v4
+      if: matrix.name == 'i18n'
+      with:
+        name: icu-v8
+        path: icu-v8/*.dat
+
   build_javet_node:
-    name: Build Javet Node
+    strategy:
+      matrix:
+        include:
+          - name: i18n
+            cmake_flag: -DENABLE_I18N=1
+            node_flag: full-icu
+          - name: non-i18n
+            cmake_flag:
+            node_flag: without-intl
+
+    name: Build Javet Node ${{ matrix.name }}
     runs-on: ubuntu-latest
 
     steps:
@@ -104,9 +137,15 @@ jobs:
         cd node
         git checkout v${{ env.JAVET_NODE_VERSION }}
         python3 ${{ env.ROOT }}/Javet/scripts/python/patch_node_build.py -p ./
-        ./configure --enable-static --without-intl
+        ./configure --enable-static ${{ matrix.node_flag }}
         python3 ${{ env.ROOT }}/Javet/scripts/python/patch_node_build.py -p ./
         make -j4
+
+    - name: Copy the i18n
+      if: matrix.name == 'i18n'
+      run: |
+        mkdir icu-node
+        copy ../node/deps/icu-tmp/*.dat icu-node
 
     - name: Setup JDK 8
       uses: actions/setup-java@v4
@@ -122,17 +161,30 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
-        sh ./build-linux-x86_64.sh -DNODE_DIR=${{ env.ROOT }}/node
+        sh ./build-linux-x86_64.sh -DNODE_DIR=${{ env.ROOT }}/node ${{ matrix.cmake_flag }}
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: javet-linux-node-x86_64-${{ env.JAVET_VERSION }}
+        name: javet-linux-node-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
         path: src/main/resources/*.so
+
+    - name: Upload the i18n
+      uses: actions/upload-artifact@v4
+      if: matrix.name == 'i18n'
+      with:
+        name: icu-node
+        path: icu-node/*.dat
 
   build_javet_jar:
     needs: [build_javet_v8, build_javet_node]
-    name: Build Javet Jar
+    strategy:
+      matrix:
+        include:
+          - name: i18n
+          - name: non-i18n
+
+    name: Build Javet Jar ${{ matrix.name }}
     runs-on: ubuntu-latest
 
     steps:
@@ -151,17 +203,45 @@ jobs:
       with:
         gradle-version: 8.5
 
+    - name: Download Javet Node
+      uses: actions/download-artifact@v4
+      with:
+        name: javet-linux-node-x86_64-${{ env.JAVET_VERSION }}
+        path: src/main/resources/
+
     - name: Download Javet V8
       uses: actions/download-artifact@v4
       with:
         name: javet-linux-v8-x86_64-${{ env.JAVET_VERSION }}
         path: src/main/resources/
 
-    - name: Download Javet Node
+    - name: Prepare i18n Location
+      if: matrix.name == 'i18n'
+      run: |
+        mkdir -p icu-node
+        mkdir -p icu-v8
+
+    - name: Download i18n node
       uses: actions/download-artifact@v4
+      if: matrix.name == 'i18n'
       with:
-        name: javet-linux-node-x86_64-${{ env.JAVET_VERSION }}
-        path: src/main/resources/
+        name: icu-node
+        path: icu-node
+
+    - name: Download i18n V8
+      uses: actions/download-artifact@v4
+      if: matrix.name == 'i18n'
+      with:
+        name: icu-v8
+        path: icu-v8
+
+    - name: Copy the i18n
+      if: matrix.name == 'i18n'
+      run: |
+        mkdir -p ../node/deps/icu-tmp
+        mv icu-node/*.dat ../node/deps/icu-tmp
+        mkdir -p ../google/v8/third_party/icu/common
+        mv icu-v8/*.dat ../google/v8/third_party/icu/common
 
     - name: Build the Artifact
       run: |
@@ -180,7 +260,7 @@ jobs:
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: javet-linux-x86_64-${{ env.JAVET_VERSION }}
+        name: javet-linux-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
         path: |
           build/libs/*.jar
           build/libs/*.pom
@@ -188,9 +268,9 @@ jobs:
     - name: Delete Javet V8
       uses: geekyeggo/delete-artifact@v4
       with:
-        name: javet-linux-v8-x86_64-${{ env.JAVET_VERSION }}
+        name: javet-linux-v8-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
 
     - name: Delete Javet Node
       uses: geekyeggo/delete-artifact@v4
       with:
-        name: javet-linux-node-x86_64-${{ env.JAVET_VERSION }}
+        name: javet-linux-node-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
