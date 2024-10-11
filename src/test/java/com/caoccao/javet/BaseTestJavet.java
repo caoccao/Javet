@@ -20,6 +20,7 @@ import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.loader.JavetLibLoader;
+import com.caoccao.javet.interop.options.NodeFlags;
 import com.caoccao.javet.interop.options.NodeRuntimeOptions;
 import com.caoccao.javet.interop.options.V8Flags;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
@@ -40,8 +41,22 @@ public abstract class BaseTestJavet {
     public static final long DEFAULT_INTERVAL_IN_MILLISECONDS = 10;
 
     static {
+        if (!V8RuntimeOptions.V8_FLAGS.isSealed()) {
+            File icuDataFile = new File(JavetOSUtils.WORKING_DIRECTORY)
+                    .toPath()
+                    .resolve("../google/v8/third_party/icu/common/icudtl.dat")
+                    .normalize()
+                    .toFile();
+            if (icuDataFile.exists() && icuDataFile.isFile()) {
+                V8RuntimeOptions.V8_FLAGS.setIcuDataFile(icuDataFile.getAbsolutePath());
+            }
+        }
         if (!NodeRuntimeOptions.NODE_FLAGS.isSealed()) {
-            File icuDataDir = new File(JavetOSUtils.WORKING_DIRECTORY).toPath().resolve("../node/deps/icu-tmp").toFile();
+            File icuDataDir = new File(JavetOSUtils.WORKING_DIRECTORY)
+                    .toPath()
+                    .resolve("../node/deps/icu-tmp")
+                    .normalize()
+                    .toFile();
             if (icuDataDir.exists() && icuDataDir.isDirectory()) {
                 NodeRuntimeOptions.NODE_FLAGS.setIcuDataDir(icuDataDir.getAbsolutePath());
             }
@@ -97,9 +112,18 @@ public abstract class BaseTestJavet {
     public boolean isI18nEnabled() {
         if (v8Host.isI18nEnabled()) {
             if (v8Host.getJSRuntimeType().isNode()) {
-                return StringUtils.isNotBlank(NodeRuntimeOptions.NODE_FLAGS.getIcuDataDir());
+                if (StringUtils.isNotBlank(NodeRuntimeOptions.NODE_FLAGS.getIcuDataDir())) {
+                    return true;
+                } else {
+                    fail(NodeFlags.ICU_DATA_DIR + " is not set.");
+                }
+            } else {
+                if (StringUtils.isNotBlank(V8RuntimeOptions.V8_FLAGS.getIcuDataFile())) {
+                    return true;
+                } else {
+                    fail("Icu data file is not set.");
+                }
             }
-            return true;
         }
         return false;
     }

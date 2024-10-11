@@ -12,3 +12,4 @@ Advanced
     access_the_whole_jvm
     expose_json_node_in_v8
     cli_options_in_node_js
+    internationalization_i18n

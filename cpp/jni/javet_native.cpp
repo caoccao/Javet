@@ -137,8 +137,17 @@ namespace Javet {
             LOG_INFO("V8::Initialize() begins.");
 #ifndef ENABLE_NODE
 #ifdef ENABLE_I18N
-            LOG_INFO("Calling v8::V8::InitializeICU().");
-            v8::V8::InitializeICU();
+            jclass jclassV8RuntimeOptions = jniEnv->FindClass("com/caoccao/javet/interop/options/V8RuntimeOptions");
+            jfieldID jfieldIDV8RuntimeOptionsV8Flags = jniEnv->GetStaticFieldID(jclassV8RuntimeOptions, "V8_FLAGS", "Lcom/caoccao/javet/interop/options/V8Flags;");
+            jclass jclassV8Flags = jniEnv->FindClass("com/caoccao/javet/interop/options/V8Flags");
+            jmethodID jmethodIDV8FlagsGetIcuDataFile = jniEnv->GetMethodID(jclassV8Flags, "getIcuDataFile", "()Ljava/lang/String;");
+            jobject mV8Flags = jniEnv->GetStaticObjectField(jclassV8RuntimeOptions, jfieldIDV8RuntimeOptionsV8Flags);
+            jstring mIcuDataFile = (jstring)jniEnv->CallObjectMethod(mV8Flags, jmethodIDV8FlagsGetIcuDataFile);
+            auto umIcuDataFile = Javet::Converter::ToStdString(jniEnv, mIcuDataFile);
+            LOG_INFO("Calling v8::V8::InitializeICU(\"" << *umIcuDataFile << "\").");
+            v8::V8::InitializeICU(umIcuDataFile->c_str());
+            jniEnv->DeleteLocalRef(mIcuDataFile);
+            jniEnv->DeleteLocalRef(mV8Flags);
 #endif
 #endif
             if (Javet::V8Native::GlobalV8Platform) {
@@ -183,14 +192,14 @@ namespace Javet {
                     });
                 if (result->exit_code() != 0) {
                     LOG_ERROR("Failed to call node::InitializeOncePerProcess().");
-                }
+            }
                 Javet::V8Native::GlobalV8Platform = node::MultiIsolatePlatform::Create(4);
 #else
                 Javet::V8Native::GlobalV8Platform = v8::platform::NewDefaultPlatform();
 #endif
                 v8::V8::InitializePlatform(Javet::V8Native::GlobalV8Platform.get());
                 v8::V8::Initialize();
-                }
+            }
 #ifdef ENABLE_NODE
             auto pageAllocator = Javet::V8Native::GlobalV8Platform->GetPageAllocator();
             LOG_INFO("Calling cppgc::InitializeProcess().");

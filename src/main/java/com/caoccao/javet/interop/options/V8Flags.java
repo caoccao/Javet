@@ -76,6 +76,7 @@ public final class V8Flags {
     private String customFlags;
     private boolean exposeGC;
     private boolean exposeInspectorScripts;
+    private String icuDataFile;
     private int initialHeapSize;
     private int maxHeapSize;
     private int maxOldSpaceSize;
@@ -92,6 +93,7 @@ public final class V8Flags {
         customFlags = null;
         exposeGC = false;
         exposeInspectorScripts = false;
+        icuDataFile = null;
         initialHeapSize = 0;
         maxHeapSize = 0;
         maxOldSpaceSize = 0;
@@ -111,6 +113,16 @@ public final class V8Flags {
      */
     public String getCustomFlags() {
         return customFlags;
+    }
+
+    /**
+     * Gets icu data file.
+     *
+     * @return the icu data file
+     * @since 4.0.0
+     */
+    public String getIcuDataFile() {
+        return icuDataFile;
     }
 
     /**
@@ -258,6 +270,20 @@ public final class V8Flags {
     public V8Flags setExposeInspectorScripts(boolean exposeInspectorScripts) {
         if (!sealed) {
             this.exposeInspectorScripts = exposeInspectorScripts;
+        }
+        return this;
+    }
+
+    /**
+     * Sets icu data file.
+     *
+     * @param icuDataFile the icu data file
+     * @return the icu data file
+     * @since 4.0.0
+     */
+    public V8Flags setIcuDataFile(String icuDataFile) {
+        if (!sealed) {
+            this.icuDataFile = icuDataFile;
         }
         return this;
     }
