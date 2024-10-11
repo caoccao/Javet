@@ -108,10 +108,10 @@ jobs:
         include:
           - name: i18n
             cmake_flag: -DENABLE_I18N=1
-            node_flag: full-icu
+            node_flag: --with-intl=full-icu
           - name: non-i18n
             cmake_flag:
-            node_flag: without-intl
+            node_flag: --without-intl
 
     name: Build Javet Node ${{ matrix.name }}
     runs-on: ubuntu-latest
