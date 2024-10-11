@@ -2,8 +2,8 @@
 Internationalization (i18n)
 ===========================
 
-Why i18n is not Supported by Default?
-=====================================
+Why isn't i18n Supported by Default?
+====================================
 
 The default Javet releases don't support i18n for the following reasons.
 
@@ -14,8 +14,10 @@ The default Javet releases don't support i18n for the following reasons.
 How to Enable i18n?
 ===================
 
+* Download the snapshot builds from `Actions <https://github.com/caoccao/Javet/actions>`_.
+* Reference the snapshot builds in the project.
 * Download and save ``icudt*.dat`` files from somewhere to a local directory. E.g. ``v8/third_party/icu``, ``node/deps/icu-tmp``.
-* Set a flag as follows.
+* Set a flag as follows before the first Node.js or V8 runtime is created.
 
 .. code-block:: java
 
