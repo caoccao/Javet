@@ -14,7 +14,17 @@ env:
 
 jobs:
   build_javet_v8:
-    name: Build Javet V8
+    strategy:
+      matrix:
+        include:
+          - name: i18n
+            flag: v8_enable_i18n_support=true
+            suffix: -i18n
+          - name: non-i18n
+            flag: v8_enable_i18n_support=false
+            suffix: -non-i18n
+
+    name: Build Javet V8 ${{ matrix.name }}
     runs-on: macos-14
 
     steps:
@@ -51,7 +61,7 @@ jobs:
         cd ..
         gclient sync -D
         cd v8
-        python3 tools/dev/v8gen.py arm64.release -- v8_monolithic=true 'target_cpu="arm64"' v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
+        python3 tools/dev/v8gen.py arm64.release -- v8_monolithic=true 'target_cpu="arm64"' v8_use_external_startup_data=false is_component_build=false ${{ matrix.flag }} v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
         gn gen out.gn/arm64.release
         ninja -C out.gn/arm64.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
         ninja -C out.gn/arm64.release v8_monolith
@@ -76,11 +86,28 @@ jobs:
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: javet-macos-v8-arm64-${{ env.JAVET_VERSION }}
+        name: javet-macos-v8-arm64-${{ env.JAVET_VERSION }}${{ matrix.suffix }}
         path: src/main/resources/*.dylib
 
+    - name: Upload the i18n
+      uses: actions/upload-artifact@v4
+      if: matrix.name == 'i18n'
+      with:
+        name: icu-v8
+        path: ../google/v8/third_party/icu/common/*.dat
+
   build_javet_node:
-    name: Build Javet Node
+    strategy:
+      matrix:
+        include:
+          - name: i18n
+            flag: full-icu
+            suffix: -i18n
+          - name: non-i18n
+            flag: --without-intl
+            suffix: -non-i18n
+
+    name: Build Javet Node ${{ matrix.name }}
     runs-on: macos-14
 
     steps:
@@ -99,7 +126,7 @@ jobs:
         git clone https://github.com/nodejs/node.git
         cd node
         git checkout v${{ env.JAVET_NODE_VERSION }}
-        ./configure --enable-static --without-intl
+        ./configure --enable-static ${{ matrix.flag }}
         make -j4
 
     - name: Setup JDK 8
@@ -122,12 +149,27 @@ jobs:
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: javet-macos-node-arm64-${{ env.JAVET_VERSION }}
+        name: javet-macos-node-arm64-${{ env.JAVET_VERSION }}${{ matrix.suffix }}
         path: src/main/resources/*.dylib
+
+    - name: Upload the i18n
+      uses: actions/upload-artifact@v4
+      if: matrix.name == 'i18n'
+      with:
+        name: icu-node
+        path: ../node/deps/icu-tmp/*.dat
 
   build_javet_jar:
     needs: [build_javet_v8, build_javet_node]
-    name: Build Javet Jar
+    strategy:
+      matrix:
+        include:
+          - name: i18n
+            suffix: -i18n
+          - name: non-i18n
+            suffix: -non-i18n
+
+    name: Build Javet Jar ${{ matrix.name }}
     runs-on: macos-14
 
     steps:
@@ -146,17 +188,37 @@ jobs:
       with:
         gradle-version: 8.5
 
-    - name: Download Javet V8
-      uses: actions/download-artifact@v4
-      with:
-        name: javet-macos-v8-arm64-${{ env.JAVET_VERSION }}
-        path: src/main/resources/
-
     - name: Download Javet Node
       uses: actions/download-artifact@v4
       with:
-        name: javet-macos-node-arm64-${{ env.JAVET_VERSION }}
+        name: javet-macos-node-arm64-${{ env.JAVET_VERSION }}${{ matrix.suffix }}
         path: src/main/resources/
+
+    - name: Download Javet V8
+      uses: actions/download-artifact@v4
+      with:
+        name: javet-macos-v8-arm64-${{ env.JAVET_VERSION }}${{ matrix.suffix }}
+        path: src/main/resources/
+
+    - name: Prepare i18n Location
+      if: matrix.name == 'i18n'
+      run: |
+        mkdir -p ../google/v8/third_party/icu/common
+        mkdir -p ../node/deps/icu-tmp
+
+    - name: Download i18n node
+      uses: actions/download-artifact@v4
+      if: matrix.name == 'i18n'
+      with:
+        name: icu-node
+        path: ../node/deps/icu-tmp/
+
+    - name: Download i18n V8
+      uses: actions/download-artifact@v4
+      if: matrix.name == 'i18n'
+      with:
+        name: icu-v8
+        path: ../google/v8/third_party/icu/common/
 
     - name: Build the Artifact
       run: |
@@ -171,17 +233,27 @@ jobs:
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: javet-macos-arm64-${{ env.JAVET_VERSION }}
+        name: javet-macos-arm64-${{ env.JAVET_VERSION }}${{ matrix.suffix }}
         path: |
           build/libs/*.jar
           build/libs/*.pom
 
-    - name: Delete Javet V8
-      uses: geekyeggo/delete-artifact@v4
-      with:
-        name: javet-macos-v8-arm64-${{ env.JAVET_VERSION }}
-
     - name: Delete Javet Node
       uses: geekyeggo/delete-artifact@v4
       with:
-        name: javet-macos-node-arm64-${{ env.JAVET_VERSION }}
+        name: javet-macos-node-arm64-${{ env.JAVET_VERSION }}${{ matrix.suffix }}
+
+    - name: Delete Javet V8
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: javet-macos-v8-arm64-${{ env.JAVET_VERSION }}${{ matrix.suffix }}
+
+    - name: Delete i18n Node
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: icu-node
+
+    - name: Delete i18n V8
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: icu-v8
