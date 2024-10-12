@@ -203,6 +203,7 @@ jobs:
 
     - name: Delete Javet arm
       uses: geekyeggo/delete-artifact@v4
+      if: matrix.i18n_name == 'non-i18n'
       with:
         name: javet-android-node-arm-${{ env.JAVET_VERSION }}-${{ matrix.i18n_name }}
 
@@ -213,6 +214,7 @@ jobs:
 
     - name: Delete Javet x86
       uses: geekyeggo/delete-artifact@v4
+      if: matrix.i18n_name == 'non-i18n'
       with:
         name: javet-android-node-x86-${{ env.JAVET_VERSION }}-${{ matrix.i18n_name }}
 
