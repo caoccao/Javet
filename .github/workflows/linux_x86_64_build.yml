@@ -71,7 +71,7 @@ jobs:
       if: matrix.name == 'i18n'
       run: |
         mkdir icu-v8
-        copy ../google/v8/third_party/icu/common/*.dat icu-v8
+        cp ../google/v8/third_party/icu/common/*.dat icu-v8
 
     - name: Setup JDK 8
       uses: actions/setup-java@v4
@@ -145,7 +145,7 @@ jobs:
       if: matrix.name == 'i18n'
       run: |
         mkdir icu-node
-        copy ../node/deps/icu-tmp/*.dat icu-node
+        cp ../node/deps/icu-tmp/*.dat icu-node
 
     - name: Setup JDK 8
       uses: actions/setup-java@v4
