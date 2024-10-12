@@ -217,3 +217,8 @@ ABI  Javet Version      V8 Version
 23+  v1.1.0 - v2.1.1    v9.7 - v11.2
 24+  v2.1.2+            v11.3+
 ==== ================== ====================
+
+Internationalization (i18n)
+===========================
+
+The office builds do not support i18n, but there are snapshot builds supporting i18n. Please refer to :doc:`../advanced/internationalization_i18n` for detail.
