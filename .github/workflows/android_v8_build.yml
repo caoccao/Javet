@@ -124,7 +124,7 @@ jobs:
         ninja -C out.gn/${{ matrix.v8_release }}.release v8_monolith
 
     - name: Copy the i18n
-      if: matrix.i18n_name == 'i18n'
+      if: matrix.i18n_name == 'i18n' && matrix.android_arch == 'arm64'
       run: |
         mkdir icu-v8
         cp ../google/v8/third_party/icu/android/*.dat icu-v8
@@ -153,7 +153,7 @@ jobs:
 
     - name: Upload the i18n
       uses: actions/upload-artifact@v4
-      if: matrix.i18n_name == 'i18n'
+      if: matrix.i18n_name == 'i18n' && matrix.android_arch == 'arm64'
       with:
         name: icu-v8
         path: icu-v8/*.dat
