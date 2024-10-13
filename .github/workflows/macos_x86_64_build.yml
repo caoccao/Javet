@@ -173,13 +173,7 @@ jobs:
 
   build_javet_jar:
     needs: [build_javet_v8, build_javet_node]
-    strategy:
-      matrix:
-        include:
-          - name: i18n
-          - name: non-i18n
-
-    name: Build Javet Jar ${{ matrix.name }}
+    name: Build Javet Jar
     runs-on: macos-13
 
     steps:
@@ -198,40 +192,48 @@ jobs:
       with:
         gradle-version: 8.5
 
-    - name: Download Javet Node
+    - name: Download Javet Node i18n
       uses: actions/download-artifact@v4
       with:
-        name: javet-macos-node-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
+        name: javet-macos-node-x86_64-${{ env.JAVET_VERSION }}-i18n
         path: src/main/resources/
 
-    - name: Download Javet V8
+    - name: Download Javet Node non-i18n
       uses: actions/download-artifact@v4
       with:
-        name: javet-macos-v8-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
+        name: javet-macos-node-x86_64-${{ env.JAVET_VERSION }}-non-i18n
+        path: src/main/resources/
+
+    - name: Download Javet V8 i18n
+      uses: actions/download-artifact@v4
+      with:
+        name: javet-macos-v8-x86_64-${{ env.JAVET_VERSION }}-i18n
+        path: src/main/resources/
+
+    - name: Download Javet V8 non-i18n
+      uses: actions/download-artifact@v4
+      with:
+        name: javet-macos-v8-x86_64-${{ env.JAVET_VERSION }}-non-i18n
         path: src/main/resources/
 
     - name: Prepare i18n Location
-      if: matrix.name == 'i18n'
       run: |
         mkdir -p icu-node
         mkdir -p icu-v8
 
     - name: Download i18n node
       uses: actions/download-artifact@v4
-      if: matrix.name == 'i18n'
       with:
         name: icu-node
         path: icu-node
 
     - name: Download i18n V8
       uses: actions/download-artifact@v4
-      if: matrix.name == 'i18n'
       with:
         name: icu-v8
         path: icu-v8
 
     - name: Copy the i18n
-      if: matrix.name == 'i18n'
       run: |
         mkdir -p ../node/deps/icu-tmp
         mv icu-node/*.dat ../node/deps/icu-tmp
@@ -241,27 +243,41 @@ jobs:
     - name: Build the Artifact
       run: |
         cd ${{ env.ROOT }}/Javet
-        touch src/main/resources/libjavet-v8*
-        gradle build test --rerun-tasks --debug
-        touch src/main/resources/libjavet-node*
-        gradle test --rerun-tasks --debug
+        touch src/main/resources/libjavet-v8-*-x86_64.v*
+        gradle build test --rerun-tasks
+        touch src/main/resources/libjavet-node-*-x86_64.v*
+        gradle build test --rerun-tasks
+        touch src/main/resources/libjavet-v8-*-x86_64-i18n.v*
+        gradle build test --rerun-tasks
+        touch src/main/resources/libjavet-node-*-x86_64-i18n.v*
+        gradle build test --rerun-tasks
         gradle build generatePomFileForGeneratePomPublication
         zip -d build/libs/javet-${{ env.JAVET_VERSION }}-sources.jar *.dylib
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: javet-macos-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
+        name: javet-macos-x86_64-${{ env.JAVET_VERSION }}
         path: |
           build/libs/*.jar
           build/libs/*.pom
 
-    - name: Delete Javet Node
+    - name: Delete Javet Node i18n
       uses: geekyeggo/delete-artifact@v4
       with:
-        name: javet-macos-node-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
+        name: javet-macos-node-x86_64-${{ env.JAVET_VERSION }}-i18n
 
-    - name: Delete Javet V8
+    - name: Delete Javet Node non-i18n
       uses: geekyeggo/delete-artifact@v4
       with:
-        name: javet-macos-v8-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
+        name: javet-macos-node-x86_64-${{ env.JAVET_VERSION }}-non-i18n
+
+    - name: Delete Javet V8 i18n
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: javet-macos-v8-x86_64-${{ env.JAVET_VERSION }}-i18n
+
+    - name: Delete Javet V8 non-i18n
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: javet-macos-v8-x86_64-${{ env.JAVET_VERSION }}-non-i18n

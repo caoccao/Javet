@@ -271,7 +271,7 @@ jobs:
         touch src/main/resources/libjavet-v8-*-x86_64-i18n.v*
         gradle build test --rerun-tasks
         touch src/main/resources/libjavet-node-*-x86_64-i18n.v*
-        gradle test --rerun-tasks
+        gradle build test --rerun-tasks
         gradle build generatePomFileForGeneratePomPublication
         7z d build/libs/javet-${{ env.JAVET_VERSION }}-sources.jar *.dll
 
