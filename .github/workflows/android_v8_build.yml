@@ -241,10 +241,20 @@ jobs:
         name: javet-android-v8-${{ env.JAVET_VERSION }}
         path: android/javet-android/build/outputs/aar/javet*release.aar
 
+    - name: Delete Javet arm i18n
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: javet-android-v8-arm-${{ env.JAVET_VERSION }}-i18n
+
     - name: Delete Javet arm64 i18n
       uses: geekyeggo/delete-artifact@v4
       with:
         name: javet-android-v8-arm64-${{ env.JAVET_VERSION }}-i18n
+
+    - name: Delete Javet x86 i18n
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: javet-android-v8-x86-${{ env.JAVET_VERSION }}-i18n
 
     - name: Delete Javet x86_64 i18n
       uses: geekyeggo/delete-artifact@v4
