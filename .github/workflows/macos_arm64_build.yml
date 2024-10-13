@@ -65,6 +65,7 @@ jobs:
         gn gen out.gn/arm64.release
         ninja -C out.gn/arm64.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
         ninja -C out.gn/arm64.release v8_monolith
+        mv out.gn out.gn.${{ matrix.name }}
 
     - name: Copy the i18n
       if: matrix.name == 'i18n'
@@ -134,6 +135,7 @@ jobs:
         git checkout v${{ env.JAVET_NODE_VERSION }}
         ./configure --enable-static ${{ matrix.node_flag }}
         make -j4
+        mv out out.${{ matrix.name }}
 
     - name: Copy the i18n
       if: matrix.name == 'i18n'

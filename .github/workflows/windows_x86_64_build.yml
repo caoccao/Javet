@@ -67,6 +67,7 @@ jobs:
         ..\depot_tools\gn.bat gen out.gn/x64.release
         python3 ${{ env.ROOT }}\Javet\scripts\python\patch_v8_build.py -p .\
         ..\depot_tools\ninja.bat -C out.gn/x64.release v8_monolith
+        move out.gn out.gn.${{ matrix.name }}
 
     - name: Copy the i18n
       if: matrix.name == 'i18n'
@@ -148,6 +149,7 @@ jobs:
         cd node
         git checkout v${{ env.JAVET_NODE_VERSION }}
         .\vcbuild.bat static ${{ matrix.node_flag }} vs2022
+        move out out.${{ matrix.name }}
 
     - name: Copy the i18n
       if: matrix.name == 'i18n'
