@@ -1330,7 +1330,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testListOfStrings() throws JavetException {
+    public void testListOfStrings() throws JavetException, InterruptedException {
         v8Runtime.getGlobalObject().set("a", anonymous);
         String codeStringWithCast = "a.expectListOfStrings({\n" +
                 "  get: (index) => index == 0? 'a': null,\n" +
@@ -1340,10 +1340,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         String codeStringWithoutCast = "a.expectListOfStrings(['a', null]);";
         v8Runtime.getExecutor(codeStringWithoutCast).executeVoid();
         v8Runtime.getGlobalObject().delete("a");
-        System.gc();
-        System.runFinalization();
-        System.gc();
-        System.runFinalization();
+        runGC();
     }
 
     @Test

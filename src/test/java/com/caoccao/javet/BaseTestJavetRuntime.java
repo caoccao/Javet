@@ -23,6 +23,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -89,6 +90,18 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
             thread.join();
         } catch (InterruptedException e) {
             fail(e.getMessage());
+        }
+    }
+
+    protected void runGC() throws InterruptedException {
+        for (int i = 0; i < 10; i++) {
+            System.gc();
+            System.runFinalization();
+            if (v8Runtime.getReferenceCount() == 0) {
+                break;
+            } else {
+                TimeUnit.MILLISECONDS.sleep(50);
+            }
         }
     }
 }
