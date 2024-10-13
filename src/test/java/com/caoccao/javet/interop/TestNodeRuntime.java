@@ -45,7 +45,9 @@ public class TestNodeRuntime extends BaseTestJavet {
     protected NodeRuntime nodeRuntime;
 
     public TestNodeRuntime() {
-        super(JSRuntimeType.Node);
+        super(getLibFile(JSRuntimeType.Node) != null && getLibFile(JSRuntimeType.Node).exists()
+                ? JSRuntimeType.Node
+                : JSRuntimeType.NodeI18n);
     }
 
     @AfterEach

@@ -66,9 +66,12 @@ project(Javet)
 aux_source_directory("jni" sourceFiles)
 set(includeDirs $ENV{JAVA_HOME}/include)
 set(importLibraries)
-set(JAVET_LIB_PREFIX)
-set(JAVET_LIB_TYPE)
-set(JAVET_LIB_SYSTEM)
+set(JAVET_LIB_ARCH "")
+set(JAVET_LIB_I18N "")
+set(JAVET_LIB_PREFIX "")
+set(JAVET_LIB_SYSTEM "")
+set(JAVET_LIB_TYPE "")
+set(OUT_DIR_SUFFIX "")
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limited configs" FORCE)
 if(DEFINED ENABLE_LOGGING)
@@ -77,22 +80,28 @@ endif()
 
 # Preparation
 set(CMAKE_CXX_STANDARD 20)
+if(DEFINED ENABLE_I18N)
+    set(JAVET_LIB_I18N "-i18n")
+    set(OUT_DIR_SUFFIX "i18n")
+else()
+    set(OUT_DIR_SUFFIX "non-i18n")
+endif()
 if(DEFINED V8_DIR)
     if(CMAKE_SYSTEM_NAME STREQUAL "Android")
         if(CMAKE_ANDROID_ARCH STREQUAL "arm64")
-            set(V8_RELEASE_DIR ${V8_DIR}/out.gn/arm64.release)
+            set(V8_RELEASE_DIR ${V8_DIR}/out.gn.${OUT_DIR_SUFFIX}/arm64.release)
         elseif(CMAKE_ANDROID_ARCH STREQUAL "arm")
-            set(V8_RELEASE_DIR ${V8_DIR}/out.gn/arm.release)
+            set(V8_RELEASE_DIR ${V8_DIR}/out.gn.${OUT_DIR_SUFFIX}/arm.release)
         elseif(CMAKE_ANDROID_ARCH STREQUAL "x86")
-            set(V8_RELEASE_DIR ${V8_DIR}/out.gn/ia32.release)
+            set(V8_RELEASE_DIR ${V8_DIR}/out.gn.${OUT_DIR_SUFFIX}/ia32.release)
         elseif(CMAKE_ANDROID_ARCH STREQUAL "x86_64")
-            set(V8_RELEASE_DIR ${V8_DIR}/out.gn/x64.release)
+            set(V8_RELEASE_DIR ${V8_DIR}/out.gn.${OUT_DIR_SUFFIX}/x64.release)
         endif()
     else()
         if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)")
-            set(V8_RELEASE_DIR ${V8_DIR}/out.gn/arm64.release)
+            set(V8_RELEASE_DIR ${V8_DIR}/out.gn.${OUT_DIR_SUFFIX}/arm64.release)
         else()
-            set(V8_RELEASE_DIR ${V8_DIR}/out.gn/x64.release)
+            set(V8_RELEASE_DIR ${V8_DIR}/out.gn.${OUT_DIR_SUFFIX}/x64.release)
         endif()
     endif()
     list(APPEND includeDirs
@@ -165,8 +174,7 @@ endforeach(importLibrary)
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(JAVET_LIB_PREFIX "libjavet")
     set(JAVET_LIB_SYSTEM "windows")
-    set(JAVET_LIB_ARCH x86_64)
-    set(JAVET_LIB_ARCH x86_64)
+    set(JAVET_LIB_ARCH "-x86_64")
     # Generate PDB file
     # https://learn.microsoft.com/en-us/cpp/build/reference/zc-cplusplus
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi /MP /O2 /Ob2 /GS- /Zc:__cplusplus")
@@ -184,11 +192,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     endif()
     if(DEFINED NODE_DIR)
         list(APPEND includeDirs
-            ${NODE_DIR}/out/Release/obj/global_intermediate/generate-bytecode-output-root
-            ${NODE_DIR}/out/Release/obj/global_intermediate/inspector-generated-output-root
-            ${NODE_DIR}/out/Release/obj/global_intermediate)
+            ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/global_intermediate/generate-bytecode-output-root
+            ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/global_intermediate/inspector-generated-output-root
+            ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/global_intermediate)
         foreach(importLibrary ${importLibraries})
-            set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out/release/lib/${importLibrary}.lib)
+            set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/lib/${importLibrary}.lib)
         endforeach(importLibrary)
         set_target_properties(libnode PROPERTIES LINK_FLAGS "/WHOLEARCHIVE:libnode.lib")
         add_library(Javet SHARED ${sourceFiles} "jni/javet_resource_node.rc")
@@ -209,12 +217,12 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated -Wno-deprecated-declarations ")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-deprecated-declarations ")
         if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
-            set(JAVET_LIB_ARCH x86_64)
+            set(JAVET_LIB_ARCH "-x86_64")
             add_definitions(-D__x86_64__)
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m64 ")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64 ")
         else()
-            set(JAVET_LIB_ARCH arm64)
+            set(JAVET_LIB_ARCH "-arm64")
             add_definitions(-D__arm64__)
         endif()
         add_definitions(-D__linux__)
@@ -234,11 +242,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
         endif()
         if(DEFINED NODE_DIR)
             list(APPEND includeDirs
-                ${NODE_DIR}/out/Release/obj/gen/generate-bytecode-output-root
-                ${NODE_DIR}/out/Release/obj/gen/inspector-generated-output-root
-                ${NODE_DIR}/out/Release/obj/gen)
+                ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/gen/generate-bytecode-output-root
+                ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/gen/inspector-generated-output-root
+                ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/gen)
             foreach(importLibrary ${importLibraries})
-                set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out/Release/lib${importLibrary}.a)
+                set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/lib${importLibrary}.a)
             endforeach(importLibrary)
             list(REMOVE_ITEM importLibraries v8_init)
             target_link_libraries(Javet PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
@@ -265,11 +273,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
         endif()
         if(DEFINED NODE_DIR)
             list(APPEND includeDirs
-                ${NODE_DIR}/out.${CMAKE_ANDROID_ARCH}/Release/obj/gen/generate-bytecode-output-root
-                ${NODE_DIR}/out.${CMAKE_ANDROID_ARCH}/Release/obj/gen/inspector-generated-output-root
-                ${NODE_DIR}/out.${CMAKE_ANDROID_ARCH}/Release/obj/gen)
+                ${NODE_DIR}/out.${CMAKE_ANDROID_ARCH}.${OUT_DIR_SUFFIX}/Release/obj/gen/generate-bytecode-output-root
+                ${NODE_DIR}/out.${CMAKE_ANDROID_ARCH}.${OUT_DIR_SUFFIX}/Release/obj/gen/inspector-generated-output-root
+                ${NODE_DIR}/out.${CMAKE_ANDROID_ARCH}.${OUT_DIR_SUFFIX}/Release/obj/gen)
             foreach(importLibrary ${importLibraries})
-                set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out.${CMAKE_ANDROID_ARCH}/Release/lib${importLibrary}.a)
+                set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out.${CMAKE_ANDROID_ARCH}.${OUT_DIR_SUFFIX}/Release/lib${importLibrary}.a)
             endforeach(importLibrary)
             list(REMOVE_ITEM importLibraries v8_init)
             target_link_libraries(Javet PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
@@ -282,10 +290,10 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-ambiguous-reversed-operator ")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-ambiguous-reversed-operator ")
         if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
-            set(JAVET_LIB_ARCH arm64)
+            set(JAVET_LIB_ARCH "-arm64")
             add_definitions(-D__arm64__)
         else()
-            set(JAVET_LIB_ARCH x86_64)
+            set(JAVET_LIB_ARCH "-x86_64")
             add_definitions(-D__x86_64__)
         endif()
         add_definitions(-D__APPLE__)
@@ -304,11 +312,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
         endif()
         if(DEFINED NODE_DIR)
             list(APPEND includeDirs
-                ${NODE_DIR}/out/Release/obj/gen/generate-bytecode-output-root
-                ${NODE_DIR}/out/Release/obj/gen/inspector-generated-output-root
-                ${NODE_DIR}/out/Release/obj/gen)
+                ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/gen/generate-bytecode-output-root
+                ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/gen/inspector-generated-output-root
+                ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/gen)
             foreach(importLibrary ${importLibraries})
-                set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out/Release/lib${importLibrary}.a)
+                set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/lib${importLibrary}.a)
             endforeach(importLibrary)
             list(REMOVE_ITEM importLibraries v8_init)
             foreach(importLibrary ${importLibraries})
@@ -318,7 +326,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
             # From V8 v11.7 abseil is somehow not built properly.
             # This is a patch build.
             # https://github.com/abseil/abseil-cpp/blob/master/CMake/README.md
-            add_subdirectory(${NODE_DIR}/deps/v8/third_party/abseil-cpp ${NODE_DIR}/out/Release/third_party/abseil-cpp)
+            add_subdirectory(${NODE_DIR}/deps/v8/third_party/abseil-cpp ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/third_party/abseil-cpp)
             target_link_libraries(Javet PUBLIC absl::base absl::crc32c absl::time)
             target_link_libraries(Javet PUBLIC v8_init)
             target_link_libraries(JavetStatic PUBLIC v8_init)
@@ -328,19 +336,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
     else()
         message(FATAL_ERROR "Windows (arm64) is not supported.")
     endif()
-    if(DEFINED JAVET_LIB_ARCH)
-        set_target_properties(JavetStatic PROPERTIES OUTPUT_NAME "${JAVET_LIB_PREFIX}-${JAVET_LIB_TYPE}-${JAVET_LIB_SYSTEM}-${JAVET_LIB_ARCH}.v.${JAVET_VERSION}")
-    else()
-        set_target_properties(JavetStatic PROPERTIES OUTPUT_NAME "${JAVET_LIB_PREFIX}-${JAVET_LIB_TYPE}-${JAVET_LIB_SYSTEM}.v.${JAVET_VERSION}")
-    endif()
+    set_target_properties(JavetStatic PROPERTIES OUTPUT_NAME "${JAVET_LIB_PREFIX}-${JAVET_LIB_TYPE}-${JAVET_LIB_SYSTEM}${JAVET_LIB_ARCH}${JAVET_LIB_I18N}.v.${JAVET_VERSION}")
 else()
     message(FATAL_ERROR "Linux (x86-64, arm64), Mac OS (x86-64, arm64), Windows (x86-64) and Android are the only supported Operating Systems.")
 endif()
 
-if(DEFINED JAVET_LIB_ARCH)
-    set_target_properties(Javet PROPERTIES OUTPUT_NAME "${JAVET_LIB_PREFIX}-${JAVET_LIB_TYPE}-${JAVET_LIB_SYSTEM}-${JAVET_LIB_ARCH}.v.${JAVET_VERSION}")
-else()
-    set_target_properties(Javet PROPERTIES OUTPUT_NAME "${JAVET_LIB_PREFIX}-${JAVET_LIB_TYPE}-${JAVET_LIB_SYSTEM}.v.${JAVET_VERSION}")
-endif()
+set_target_properties(Javet PROPERTIES OUTPUT_NAME "${JAVET_LIB_PREFIX}-${JAVET_LIB_TYPE}-${JAVET_LIB_SYSTEM}${JAVET_LIB_ARCH}${JAVET_LIB_I18N}.v.${JAVET_VERSION}")
 include_directories(${includeDirs})
 add_custom_command(TARGET Javet POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:Javet> "${JAVA_RESOURCES_DIR}/$<TARGET_FILE_NAME:Javet>")

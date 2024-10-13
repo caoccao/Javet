@@ -20,8 +20,9 @@ import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.enums.JSRuntimeType;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.io.File;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -36,16 +37,21 @@ public class TestV8Native extends BaseTestJavet {
 
     @Test
     public void testGetVersion() {
-        assertEquals(JSRuntimeType.Node.getVersion(), V8Host.getNodeInstance().getV8Native().getVersion());
-        assertEquals(JSRuntimeType.V8.getVersion(), V8Host.getV8Instance().getV8Native().getVersion());
-        Arrays.stream(JSRuntimeType.values()).forEach(jsRuntimeType -> assertEquals(
-                jsRuntimeType.getVersion(),
-                Objects.requireNonNull(V8Host.getInstance(jsRuntimeType)).getV8Native().getVersion()));
+        Stream.of(JSRuntimeType.values())
+                .filter(type -> {
+                    File libFile = BaseTestJavet.getLibFile(type);
+                    return libFile != null && libFile.exists();
+                })
+                .forEach(type ->
+                        assertEquals(
+                                type.getVersion(),
+                                Objects.requireNonNull(V8Host.getInstance(type)).getV8Native().getVersion())
+                );
     }
 
     @Test
     public void testLockAndUnlock() {
-        final long handle = v8Native.createV8Runtime(JSRuntimeType.V8.getRuntimeOptions());
+        final long handle = v8Native.createV8Runtime(v8Host.getJSRuntimeType().getRuntimeOptions());
         try {
             final int iterations = 3;
             for (int i = 0; i < iterations; ++i) {

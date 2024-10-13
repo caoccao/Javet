@@ -43,7 +43,7 @@ Node.js Mode
             .normalize()
             .toFile();
     NodeRuntimeOptions.NODE_FLAGS.setIcuDataDir(icuDataDir.getAbsolutePath());
-    try (NodeRuntime nodeRuntime = V8Host.getNodeInstance().createV8Runtime()) {
+    try (NodeRuntime nodeRuntime = V8Host.getNodeI18nInstance().createV8Runtime()) {
         System.out.println(nodeRuntime.getExecutor("const a = 123456; a.toLocaleString('en-US');").executeString());
         // 123,456
         System.out.println(nodeRuntime.getExecutor("const us = new Intl.Locale('en-US'); us.language;").executeString());
@@ -63,7 +63,7 @@ V8 Mode
             .normalize()
             .toFile();
     V8RuntimeOptions.V8_FLAGS.setIcuDataFile(icuDataFile.getAbsolutePath());
-    try (V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime()) {
+    try (V8Runtime v8Runtime = V8Host.getV8I18nInstance().createV8Runtime()) {
         System.out.println(v8Runtime.getExecutor("const a = 123456; a.toLocaleString('en-US');").executeString());
         // 123,456
         System.out.println(v8Runtime.getExecutor("const us = new Intl.Locale('en-US'); us.language;").executeString());

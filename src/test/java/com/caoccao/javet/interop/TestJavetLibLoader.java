@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
@@ -24,9 +25,16 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestJavetLibLoader {
+    static {
+        BaseTestJavet.setIcuData();
+    }
+
     @AfterAll
     public static void afterAll() {
         V8Host.setLibraryReloadable(false);
@@ -39,8 +47,12 @@ public class TestJavetLibLoader {
 
     @Test
     public void testCustomClassLoader() {
-        testCustomClassLoader(JSRuntimeType.Node);
-        testCustomClassLoader(JSRuntimeType.V8);
+        Stream.of(JSRuntimeType.values())
+                .filter(type -> {
+                    File libFile = BaseTestJavet.getLibFile(type);
+                    return libFile != null && libFile.exists();
+                })
+                .forEach(this::testCustomClassLoader);
     }
 
     protected void testCustomClassLoader(JSRuntimeType jsRuntimeType) {
@@ -59,33 +71,40 @@ public class TestJavetLibLoader {
     }
 
     @Test
-    public void testLoadAndUnload() throws JavetException {
+    public void testLoadAndUnload() {
         if (JavetOSUtils.IS_WINDOWS) {
-            testLoadAndUnload(JSRuntimeType.Node);
-            testLoadAndUnload(JSRuntimeType.V8);
+            Stream.of(JSRuntimeType.values())
+                    .filter(type -> {
+                        File libFile = BaseTestJavet.getLibFile(type);
+                        return libFile != null && libFile.exists();
+                    })
+                    .forEach(this::testLoadAndUnload);
         }
     }
 
-    protected void testLoadAndUnload(JSRuntimeType jsRuntimeType) throws JavetException {
-        V8Host v8Host = V8Host.getInstance(jsRuntimeType);
-        assertNotNull(v8Host);
-        assertTrue(v8Host.isLibraryLoaded());
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-            assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
-        }
-        assertEquals(0, v8Host.getV8RuntimeCount());
-        assertTrue(v8Host.unloadLibrary());
-        assertFalse(v8Host.isLibraryLoaded());
+    protected void testLoadAndUnload(JSRuntimeType jsRuntimeType) {
         try {
-            v8Host.createV8Runtime();
+            V8Host v8Host = V8Host.getInstance(jsRuntimeType);
+            assertNotNull(v8Host);
+            assertTrue(v8Host.isLibraryLoaded());
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+                assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
+            }
+            assertEquals(0, v8Host.getV8RuntimeCount());
+            assertTrue(v8Host.unloadLibrary());
+            assertFalse(v8Host.isLibraryLoaded());
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            } catch (JavetException e) {
+                assertEquals(JavetError.LibraryNotLoaded, e.getError());
+            }
+            assertTrue(v8Host.loadLibrary());
+            assertTrue(v8Host.isLibraryLoaded());
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+                assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
+            }
+            assertEquals(0, v8Host.getV8RuntimeCount());
         } catch (JavetException e) {
-            assertEquals(JavetError.LibraryNotLoaded, e.getError());
+            fail(e);
         }
-        assertTrue(v8Host.loadLibrary());
-        assertTrue(v8Host.isLibraryLoaded());
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-            assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
-        }
-        assertEquals(0, v8Host.getV8RuntimeCount());
     }
 }

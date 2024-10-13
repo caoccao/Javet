@@ -32,7 +32,7 @@ public class TestI18nInV8 {
                 .normalize()
                 .toFile();
         V8RuntimeOptions.V8_FLAGS.setIcuDataFile(icuDataFile.getAbsolutePath());
-        try (V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime()) {
+        try (V8Runtime v8Runtime = V8Host.getV8I18nInstance().createV8Runtime()) {
             System.out.println(v8Runtime.getExecutor("const a = 123456; a.toLocaleString('en-US');").executeString());
             // 123,456
             System.out.println(v8Runtime.getExecutor("const us = new Intl.Locale('en-US'); us.language;").executeString());

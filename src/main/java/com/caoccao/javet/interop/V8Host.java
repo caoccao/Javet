@@ -93,10 +93,16 @@ public final class V8Host {
      * @since 0.7.0
      */
     public static V8Host getInstance(JSRuntimeType jsRuntimeType) {
-        if (Objects.requireNonNull(jsRuntimeType).isNode()) {
-            return getNodeInstance();
+        switch (Objects.requireNonNull(jsRuntimeType)) {
+            case Node:
+                return getNodeInstance();
+            case NodeI18n:
+                return getNodeI18nInstance();
+            case V8I18n:
+                return getV8I18nInstance();
+            default:
+                return getV8Instance();
         }
-        return getV8Instance();
     }
 
     /**
@@ -110,6 +116,18 @@ public final class V8Host {
     }
 
     /**
+     * Gets Node i18n instance.
+     * <p>
+     * Note: Node runtime library is loaded by a custom class loader.
+     *
+     * @return the Node i18n instance
+     * @since 4.0.0
+     */
+    public static V8Host getNodeI18nInstance() {
+        return NodeI18nInstanceHolder.INSTANCE;
+    }
+
+    /**
      * Gets Node instance.
      * <p>
      * Note: Node runtime library is loaded by a custom class loader.
@@ -119,6 +137,18 @@ public final class V8Host {
      */
     public static V8Host getNodeInstance() {
         return NodeInstanceHolder.INSTANCE;
+    }
+
+    /**
+     * Gets V8 i18n instance.
+     * <p>
+     * Note: V8 runtime library is loaded by a custom class loader.
+     *
+     * @return the V8 i18n instance
+     * @since 4.0.0
+     */
+    public static V8Host getV8I18nInstance() {
+        return V8I18nInstanceHolder.INSTANCE;
     }
 
     /**
@@ -291,9 +321,9 @@ public final class V8Host {
         isolateCreated = true;
         V8Runtime v8Runtime;
         if (jsRuntimeType.isNode()) {
-            v8Runtime = new NodeRuntime(this, handle, pooled, v8Native, runtimeOptions);
+            v8Runtime = new NodeRuntime(this, handle, pooled, v8Native, jsRuntimeType, runtimeOptions);
         } else {
-            v8Runtime = new V8Runtime(this, handle, pooled, v8Native, runtimeOptions);
+            v8Runtime = new V8Runtime(this, handle, pooled, v8Native, jsRuntimeType, runtimeOptions);
         }
         v8Native.registerV8Runtime(handle, v8Runtime);
         v8RuntimeMap.put(handle, v8Runtime);
@@ -542,6 +572,10 @@ public final class V8Host {
         return !libraryLoaded;
     }
 
+    private static class NodeI18nInstanceHolder {
+        private static final V8Host INSTANCE = new V8Host(JSRuntimeType.NodeI18n);
+    }
+
     private static class NodeInstanceHolder {
         private static final V8Host INSTANCE = new V8Host(JSRuntimeType.Node);
     }
@@ -615,6 +649,10 @@ public final class V8Host {
             assert sleepIntervalMillis > 0 : "sleepIntervalMillis must be greater than 0";
             this.sleepIntervalMillis = sleepIntervalMillis;
         }
+    }
+
+    private static class V8I18nInstanceHolder {
+        private static final V8Host INSTANCE = new V8Host(JSRuntimeType.V8I18n);
     }
 
     private static class V8InstanceHolder {

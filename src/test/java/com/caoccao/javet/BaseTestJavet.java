@@ -17,6 +17,7 @@
 package com.caoccao.javet;
 
 import com.caoccao.javet.enums.JSRuntimeType;
+import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.loader.JavetLibLoader;
@@ -41,6 +42,65 @@ public abstract class BaseTestJavet {
     public static final long DEFAULT_INTERVAL_IN_MILLISECONDS = 10;
 
     static {
+        setIcuData();
+    }
+
+    protected IJavetLogger logger;
+    protected V8Host v8Host;
+
+    public BaseTestJavet() {
+        this(null);
+    }
+
+    public BaseTestJavet(JSRuntimeType jsRuntimeType) {
+        try {
+            logger = new JavetDefaultLogger(getClass().getName());
+            if (jsRuntimeType == null) {
+                long lastModified = 0;
+                for (JSRuntimeType type : JSRuntimeType.values()) {
+                    File libFile = getLibFile(type);
+                    if (libFile != null && libFile.exists() && libFile.lastModified() > lastModified) {
+                        lastModified = libFile.lastModified();
+                        jsRuntimeType = type;
+                    }
+                }
+            }
+            for (V8Flags v8Flags : new V8Flags[]{NodeRuntimeOptions.V8_FLAGS, V8RuntimeOptions.V8_FLAGS}) {
+                if (!v8Flags.isSealed()) {
+                    v8Flags.setAllowNativesSyntax(true);
+                    v8Flags.setExposeGC(false);
+                    v8Flags.setExposeInspectorScripts(true);
+                    v8Flags.setMaxHeapSize(768);
+                    v8Flags.setMaxOldSpaceSize(512);
+                    v8Flags.setUseStrict(true);
+                }
+            }
+            assertNotNull(jsRuntimeType);
+            v8Host = V8Host.getInstance(jsRuntimeType);
+            if (jsRuntimeType.isNode()) {
+                assertTrue(NodeRuntimeOptions.NODE_FLAGS.isSealed());
+            } else {
+                assertTrue(V8RuntimeOptions.V8_FLAGS.isSealed());
+            }
+            assertEquals(jsRuntimeType, v8Host.getJSRuntimeType());
+            assertEquals(jsRuntimeType.isI18nEnabled(), v8Host.isI18nEnabled());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    public static File getLibFile(JSRuntimeType jsRuntimeType) {
+        JavetLibLoader javetLibLoader = new JavetLibLoader(jsRuntimeType);
+        String resourceDirPath = new File(
+                JavetOSUtils.WORKING_DIRECTORY, "src/main/resources").getAbsolutePath();
+        try {
+            return new File(resourceDirPath, javetLibLoader.getResourceFileName());
+        } catch (JavetException e) {
+            return null;
+        }
+    }
+
+    public static void setIcuData() {
         if (!V8RuntimeOptions.V8_FLAGS.isSealed()) {
             File icuDataFile = new File(JavetOSUtils.WORKING_DIRECTORY)
                     .toPath()
@@ -60,52 +120,6 @@ public abstract class BaseTestJavet {
             if (icuDataDir.exists() && icuDataDir.isDirectory()) {
                 NodeRuntimeOptions.NODE_FLAGS.setIcuDataDir(icuDataDir.getAbsolutePath());
             }
-        }
-    }
-
-    protected IJavetLogger logger;
-    protected V8Host v8Host;
-
-    public BaseTestJavet() {
-        this(null);
-    }
-
-    public BaseTestJavet(JSRuntimeType jsRuntimeType) {
-        try {
-            logger = new JavetDefaultLogger(getClass().getName());
-            if (jsRuntimeType == null) {
-                JavetLibLoader javetLibLoaderNode = new JavetLibLoader(JSRuntimeType.Node);
-                JavetLibLoader javetLibLoaderV8 = new JavetLibLoader(JSRuntimeType.V8);
-                String resourceDirPath = new File(
-                        JavetOSUtils.WORKING_DIRECTORY, "src/main/resources").getAbsolutePath();
-                File nodeLibFile = new File(resourceDirPath, javetLibLoaderNode.getResourceFileName());
-                File v8LibFile = new File(resourceDirPath, javetLibLoaderV8.getResourceFileName());
-                if (nodeLibFile.lastModified() > v8LibFile.lastModified()) {
-                    jsRuntimeType = JSRuntimeType.Node;
-                } else {
-                    jsRuntimeType = JSRuntimeType.V8;
-                }
-            }
-            for (V8Flags v8Flags : new V8Flags[]{NodeRuntimeOptions.V8_FLAGS, V8RuntimeOptions.V8_FLAGS}) {
-                if (!v8Flags.isSealed()) {
-                    v8Flags.setAllowNativesSyntax(true);
-                    v8Flags.setExposeGC(false);
-                    v8Flags.setExposeInspectorScripts(true);
-                    v8Flags.setMaxHeapSize(768);
-                    v8Flags.setMaxOldSpaceSize(512);
-                    v8Flags.setUseStrict(true);
-                }
-            }
-            if (jsRuntimeType.isNode()) {
-                v8Host = V8Host.getNodeInstance();
-                assertTrue(NodeRuntimeOptions.V8_FLAGS.isSealed());
-            } else {
-                v8Host = V8Host.getV8Instance();
-                assertTrue(V8RuntimeOptions.V8_FLAGS.isSealed());
-            }
-            assertEquals(jsRuntimeType, v8Host.getJSRuntimeType());
-        } catch (Exception e) {
-            fail(e.getMessage());
         }
     }
 
