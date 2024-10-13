@@ -94,6 +94,12 @@ jobs:
         make -j4
         mv out out.${{ matrix.android_arch }}.${{ matrix.i18n_name }}
 
+    - name: Copy the i18n
+      if: matrix.i18n_name == 'i18n' && matrix.android_arch == 'arm64'
+      run: |
+        mkdir icu-node
+        cp ../node/deps/icu-tmp/*.dat icu-node
+
     - name: Setup JDK 11
       uses: actions/setup-java@v4
       with:
@@ -115,6 +121,13 @@ jobs:
       with:
         name: javet-android-node-${{ matrix.android_arch }}-${{ env.JAVET_VERSION }}-${{ matrix.i18n_name }}
         path: android/javet-android/src/main/jniLibs/${{ matrix.android_abi }}/*.so
+
+    - name: Upload the i18n
+      uses: actions/upload-artifact@v4
+      if: matrix.i18n_name == 'i18n' && matrix.android_arch == 'arm64'
+      with:
+        name: icu-node
+        path: icu-node/*.dat
 
   build_javet_aar:
     needs: [build_javet_lib]
