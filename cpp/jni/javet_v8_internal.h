@@ -58,11 +58,6 @@
 using V8InternalAllowNullsFlag = v8::internal::AllowNullsFlag;
 using V8internalBlockingBehavior = v8::internal::BlockingBehavior;
 using V8InternalBuiltin = v8::internal::Builtin;
-#ifdef ENABLE_NODE
-using V8InternalContext = v8::internal::Context;
-#else
-using V8InternalContext = v8::internal::NativeContext;
-#endif
 using V8InternalDisallowCompilation = v8::internal::DisallowCompilation;
 using V8InternalDisallowGarbageCollection = v8::internal::DisallowGarbageCollection;
 using V8InternalFlagList = v8::internal::FlagList;
@@ -72,6 +67,7 @@ using V8InternalIsolate = v8::internal::Isolate;
 using V8InternalJSFunction = v8::internal::JSFunction;
 using V8InternalJSObject = v8::internal::JSObject;
 using V8InternalModule = v8::internal::Module;
+using V8InternalNativeContext = v8::internal::NativeContext;
 using V8InternalObject = v8::internal::Object;
 using V8InternalRobustnessFlag = v8::internal::RobustnessFlag;
 using V8InternalScopeInfo = v8::internal::ScopeInfo;
@@ -92,19 +88,11 @@ constexpr auto CONVERT_OFFSET_FOR_SCOPE_INFO(T offset) {
 }
 
 template<typename T>
-constexpr auto HAS_PENDING_EXCEPTION(T v8InternalIsolate) {
-#ifdef ENABLE_NODE
-    return v8InternalIsolate->has_pending_exception();
-#else
+constexpr auto HAS_EXCEPTION(T v8InternalIsolate) {
     return v8InternalIsolate->has_exception();
-#endif
 }
 
 template<typename T>
 constexpr auto IS_USER_DEFINED_FUNCTION(T v8InternalShared) {
-#ifdef ENABLE_NODE
-    return !v8InternalShared.native() && !v8InternalShared.IsApiFunction() && v8InternalShared.IsUserJavaScript();
-#else
     return !v8InternalShared->native() && !v8InternalShared->IsApiFunction() && v8InternalShared->IsUserJavaScript();
-#endif
 }

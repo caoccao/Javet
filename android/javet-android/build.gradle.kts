@@ -73,7 +73,7 @@ object Config {
         const val ANDROIDX_TEST = "1.1.5"
         const val APPCOMPAT = "1.3.1"
         const val DESUGAR_JDK_LIBS = "2.0.4"
-        const val JAVET = "3.1.8"
+        const val JAVET = "4.0.0"
         const val JUNIT = "5.10.1"
     }
 }

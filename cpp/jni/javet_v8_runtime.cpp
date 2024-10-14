@@ -280,15 +280,14 @@ namespace Javet {
                 if (mConsoleArguments != nullptr) {
                     int consoleArgumentCount = jniEnv->GetArrayLength(mConsoleArguments);
                     LOG_DEBUG("Node.js console argument count is " << consoleArgumentCount);
-                    for (int i = 0; i < consoleArgumentCount; ++i) {
-                        jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
-                        auto consoleArgumentPointer = Javet::Converter::ToStdString(jniEnv, mConsoleArgument);
-                        auto umConsoleArgument = *consoleArgumentPointer.get();
-                        LOG_DEBUG("    " << i << ": " << umConsoleArgument);
-                        if (umConsoleArgument == "-v" || umConsoleArgument == "--version") {
-                            LOG_DIRECT(NODE_VERSION);
+                    if (consoleArgumentCount > 0) {
+                        for (int i = 0; i < consoleArgumentCount; ++i) {
+                            jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
+                            auto consoleArgumentPointer = Javet::Converter::ToStdString(jniEnv, mConsoleArgument);
+                            auto umConsoleArgument = consoleArgumentPointer.get();
+                            LOG_DEBUG("    " << i << ": " << *umConsoleArgument);
+                            args.push_back(*umConsoleArgument);
                         }
-                        args.push_back(umConsoleArgument);
                     }
                 }
             }
@@ -391,11 +390,7 @@ namespace Javet {
     jobject V8Runtime::SafeToExternalV8Value(
         JNIEnv* jniEnv,
         const V8LocalContext& v8Context,
-#ifdef ENABLE_NODE
-        const V8InternalObject& v8InternalObject) noexcept {
-#else
         const v8::internal::Tagged<V8InternalObject>& v8InternalObject) noexcept {
-#endif
         V8TryCatch v8TryCatch(v8Context->GetIsolate());
         jobject externalV8Value = Javet::Converter::ToExternalV8Value(jniEnv, this, v8Context, v8InternalObject);
         if (v8TryCatch.HasCaught()) {
@@ -403,12 +398,12 @@ namespace Javet {
             return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, this, v8Context, v8TryCatch);
         }
         return externalV8Value;
-    }
+        }
 
     jobject V8Runtime::SafeToExternalV8Value(
-        JNIEnv * jniEnv,
-        const V8LocalContext & v8Context,
-        const V8LocalValue & v8Value) noexcept {
+        JNIEnv* jniEnv,
+        const V8LocalContext& v8Context,
+        const V8LocalValue& v8Value) noexcept {
         V8TryCatch v8TryCatch(v8Context->GetIsolate());
         jobject externalV8Value = Javet::Converter::ToExternalV8Value(jniEnv, this, v8Context, v8Value);
         if (v8TryCatch.HasCaught()) {
@@ -422,5 +417,5 @@ namespace Javet {
         CloseV8Context();
         CloseV8Isolate();
     }
-}
+        }
 

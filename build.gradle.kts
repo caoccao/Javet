@@ -45,9 +45,6 @@ object Config {
     }
 
     object Projects {
-        // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy
-        const val BYTE_BUDDY = "net.bytebuddy:byte-buddy:${Versions.BYTE_BUDDY}"
-
         // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
         const val JACKSON_DATABIND = "com.fasterxml.jackson.core:jackson-databind:${Versions.JACKSON_DATABIND}"
 
@@ -72,11 +69,10 @@ object Config {
     }
 
     object Versions {
-        const val BYTE_BUDDY = "1.14.10"
         const val JACKSON_DATABIND = "2.16.0"
         const val JAVA_VERSION = "1.8"
-        const val JAVET = "3.1.8"
-        const val JAVET_BUDDY = "0.1.0"
+        const val JAVET = "4.0.0"
+        const val JAVET_BUDDY = "0.2.0"
         const val JETTY_WEBSOCKET = "9.4.53.v20231009"
         const val JUNIT = "5.10.1"
     }
@@ -105,7 +101,6 @@ java {
 }
 
 dependencies {
-    testImplementation(Config.Projects.BYTE_BUDDY)
     testImplementation(Config.Projects.JACKSON_DATABIND)
     testImplementation(Config.Projects.JAVET_BUDDY)
     testImplementation(Config.Projects.JETTY_JAVAX_WEBSOCKET_SERVER_IMPL)

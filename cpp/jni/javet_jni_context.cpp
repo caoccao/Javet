@@ -22,7 +22,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_contextGet
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_CONTEXT(v8ValueType)) {
         V8LocalContext v8ContextValue = v8LocalValue.As<v8::Context>();
-        V8InternalContext v8InternalContext = Javet::Converter::ToV8InternalContext(v8ContextValue);
+        V8InternalNativeContext v8InternalContext = Javet::Converter::ToV8InternalContext(v8ContextValue);
         if (index >= 0 && index < v8InternalContext.length()) {
             auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
             auto v8InternalObject = v8InternalContext.get(index);
@@ -37,7 +37,7 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_contextGetLength
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_CONTEXT(v8ValueType)) {
         V8LocalContext v8ContextValue = v8LocalValue.As<v8::Context>();
-        V8InternalContext v8InternalContext = Javet::Converter::ToV8InternalContext(v8ContextValue);
+        V8InternalNativeContext v8InternalContext = Javet::Converter::ToV8InternalContext(v8ContextValue);
         return v8InternalContext.length();
     }
     return 0;
@@ -48,7 +48,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_contextIsCont
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_CONTEXT(v8ValueType)) {
         V8LocalContext v8ContextValue = v8LocalValue.As<v8::Context>();
-        V8InternalContext v8InternalContext = Javet::Converter::ToV8InternalContext(v8ContextValue);
+        V8InternalNativeContext v8InternalContext = Javet::Converter::ToV8InternalContext(v8ContextValue);
         using namespace Javet::Enums::V8ContextType;
         switch (contextTypeId) {
         case Await: return v8InternalContext.IsAwaitContext(); // 0
@@ -73,7 +73,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_contextSetLen
     jboolean success = false;
     if (IS_V8_CONTEXT(v8ValueType)) {
         V8LocalContext v8ContextValue = v8LocalValue.As<v8::Context>();
-        V8InternalContext v8InternalContext = Javet::Converter::ToV8InternalContext(v8ContextValue);
+        V8InternalNativeContext v8InternalContext = Javet::Converter::ToV8InternalContext(v8ContextValue);
         v8InternalContext.set_length(length);
         success = true;
     }

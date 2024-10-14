@@ -72,7 +72,11 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         // valueOf()
         assertEquals(bigInteger, v8Runtime.getExecutor("l.valueOf()").executeBigInteger());
         // toLocaleString()
-        assertEquals("36893488147419103232", v8Runtime.getExecutor("l.toLocaleString()").executeString());
+        if (isI18nEnabled()) {
+            assertEquals("36,893,488,147,419,103,232", v8Runtime.getExecutor("l.toLocaleString('en-US')").executeString());
+        } else {
+            assertEquals("36893488147419103232", v8Runtime.getExecutor("l.toLocaleString('en-US')").executeString());
+        }
         // Symbol.toPrimitive
         assertEquals(bigInteger, v8Runtime.getExecutor("l[Symbol.toPrimitive]()").executeBigInteger());
         // +
@@ -132,7 +136,7 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         // toFixed()
         assertEquals("1.2300", v8Runtime.getExecutor("d.toFixed(4)").executeString());
         // toLocaleString()
-        assertEquals("1.23", v8Runtime.getExecutor("d.toLocaleString()").executeString());
+        assertEquals("1.23", v8Runtime.getExecutor("d.toLocaleString('en-US')").executeString());
         // toPrecision()
         assertEquals("1.2300", v8Runtime.getExecutor("d.toPrecision(5)").executeString());
         // Symbol.toPrimitive
@@ -184,7 +188,11 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         // toFixed()
         assertEquals("12345.00", v8Runtime.getExecutor("i.toFixed(2)").executeString());
         // toLocaleString()
-        assertEquals("12345", v8Runtime.getExecutor("i.toLocaleString()").executeString());
+        if (isI18nEnabled()) {
+            assertEquals("12,345", v8Runtime.getExecutor("i.toLocaleString('en-US')").executeString());
+        } else {
+            assertEquals("12345", v8Runtime.getExecutor("i.toLocaleString('en-US')").executeString());
+        }
         // toPrecision()
         assertEquals("1.23e+4", v8Runtime.getExecutor("i.toPrecision(3)").executeString());
         // Symbol.toPrimitive
@@ -252,7 +260,11 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         // valueOf()
         assertEquals(12345L, v8Runtime.getExecutor("l.valueOf()").executeLong());
         // toLocaleString()
-        assertEquals("12345", v8Runtime.getExecutor("l.toLocaleString()").executeString());
+        if (isI18nEnabled()) {
+            assertEquals("12,345", v8Runtime.getExecutor("l.toLocaleString('en-US')").executeString());
+        } else {
+            assertEquals("12345", v8Runtime.getExecutor("l.toLocaleString('en-US')").executeString());
+        }
         // Symbol.toPrimitive
         assertEquals(12345L, v8Runtime.getExecutor("l[Symbol.toPrimitive]()").executeLong());
         // +
@@ -368,8 +380,12 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         // lastIndexOf()
         assertEquals(1, v8Runtime.getExecutor("s.lastIndexOf('e')").executeInteger());
         // localeCompare()
-        assertEquals(0, v8Runtime.getExecutor("s.localeCompare('test')").executeInteger());
-        assertEquals(-132, v8Runtime.getExecutor("s.localeCompare('tést')").executeInteger());
+        assertEquals(0, v8Runtime.getExecutor("s.localeCompare('test', 'en-US')").executeInteger());
+        if (isI18nEnabled()) {
+            assertEquals(-1, v8Runtime.getExecutor("s.localeCompare('tést', 'en-US')").executeInteger());
+        } else {
+            assertEquals(-132, v8Runtime.getExecutor("s.localeCompare('tést', 'en-US')").executeInteger());
+        }
         // match()
         assertTrue(v8Runtime.getExecutor("s.match(/^t/)").executeBoolean());
         assertFalse(v8Runtime.getExecutor("s.match(/123/)").executeBoolean());

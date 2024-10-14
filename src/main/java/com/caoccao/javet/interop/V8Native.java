@@ -207,16 +207,13 @@ class V8Native implements IV8Native {
     public native String getVersion();
 
     @Override
+    public native boolean hasException(long v8RuntimeHandle);
+
+    @Override
     public native boolean hasInternalType(long v8RuntimeHandle, long v8ValueHandle, int internalTypeId);
 
     @Override
-    public native boolean hasPendingException(long v8RuntimeHandle);
-
-    @Override
     public native boolean hasPendingMessage(long v8RuntimeHandle);
-
-    @Override
-    public native boolean hasScheduledException(long v8RuntimeHandle);
 
     @Override
     public native Object integerObjectCreate(long v8RuntimeHandle, int intValue);
@@ -226,6 +223,9 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean isDead(long v8RuntimeHandle);
+
+    @Override
+    public native boolean isI18nEnabled();
 
     @Override
     public native boolean isInUse(long v8RuntimeHandle);
@@ -515,9 +515,6 @@ class V8Native implements IV8Native {
     public native Object promiseThen(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
             long v8ValueFunctionFulfilledHandle, long v8ValueFunctionRejectedHandle);
-
-    @Override
-    public native boolean promoteScheduledException(long v8RuntimeHandle);
 
     @Override
     public native Object proxyCreate(long v8RuntimeHandle, Object target);

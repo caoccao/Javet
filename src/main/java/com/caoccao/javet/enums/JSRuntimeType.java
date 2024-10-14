@@ -37,7 +37,19 @@ public enum JSRuntimeType {
      */
     Node(
             "node",
-            "11.3.244.8-node.23", // node -p process.versions.v8
+            false,
+            "12.4.254.21-node.19", // node -p process.versions.v8
+            NodeRuntimeOptions::new,
+            o -> o instanceof NodeRuntimeOptions),
+    /**
+     * Node.js with i18n.
+     *
+     * @since 4.0.0
+     */
+    NodeI18n(
+            "node",
+            true,
+            "12.4.254.21-node.19", // node -p process.versions.v8
             NodeRuntimeOptions::new,
             o -> o instanceof NodeRuntimeOptions),
     /**
@@ -47,10 +59,23 @@ public enum JSRuntimeType {
      */
     V8(
             "v8",
-            "12.9.202.18",
+            false,
+            "13.0.245.16",
+            V8RuntimeOptions::new,
+            o -> o instanceof V8RuntimeOptions),
+    /**
+     * V8 with i18n.
+     *
+     * @since 4.0.0
+     */
+    V8I18n(
+            "v8",
+            true,
+            "13.0.245.16",
             V8RuntimeOptions::new,
             o -> o instanceof V8RuntimeOptions);
 
+    private final boolean i18nEnabled;
     private final String name;
     private final IJavaSupplier<? extends RuntimeOptions<?>> runtimeOptionsConstructor;
     private final IJavaFunction<RuntimeOptions<?>, Boolean> runtimeOptionsValidator;
@@ -58,12 +83,14 @@ public enum JSRuntimeType {
 
     JSRuntimeType(
             String name,
+            boolean i18nEnabled,
             String version,
             IJavaSupplier<RuntimeOptions<?>> runtimeOptionsConstructor,
             IJavaFunction<RuntimeOptions<?>, Boolean> runtimeOptionsValidator) {
         this.runtimeOptionsConstructor = Objects.requireNonNull(runtimeOptionsConstructor);
         this.runtimeOptionsValidator = Objects.requireNonNull(runtimeOptionsValidator);
         this.name = name;
+        this.i18nEnabled = i18nEnabled;
         this.version = version;
     }
 
@@ -100,13 +127,23 @@ public enum JSRuntimeType {
     }
 
     /**
+     * Is i18n enabled.
+     *
+     * @return true : i18n enabled, false : i18n not enabled
+     * @since 4.0.0
+     */
+    public boolean isI18nEnabled() {
+        return i18nEnabled;
+    }
+
+    /**
      * Is Node.js mode.
      *
      * @return true : Node.js mode, false : not Node.js mode
      * @since 0.8.0
      */
     public boolean isNode() {
-        return this == Node;
+        return this == Node || this == NodeI18n;
     }
 
     /**
@@ -127,7 +164,7 @@ public enum JSRuntimeType {
      * @since 0.8.0
      */
     public boolean isV8() {
-        return this == V8;
+        return this == V8 || this == V8I18n;
     }
 
     @Override

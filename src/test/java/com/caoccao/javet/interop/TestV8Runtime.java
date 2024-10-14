@@ -162,10 +162,8 @@ public class TestV8Runtime extends BaseTestJavet {
     @Test
     public void testPending() throws JavetException {
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-            assertFalse(v8Runtime.hasPendingException());
+            assertFalse(v8Runtime.hasException());
             assertFalse(v8Runtime.hasPendingMessage());
-            assertFalse(v8Runtime.hasScheduledException());
-            assertFalse(v8Runtime.promoteScheduledException());
             assertFalse(v8Runtime.reportPendingMessages());
         }
     }

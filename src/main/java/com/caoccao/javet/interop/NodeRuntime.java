@@ -73,22 +73,24 @@ public class NodeRuntime extends V8Runtime {
      * @param handle         the handle
      * @param pooled         the pooled
      * @param v8Native       the V8 native
+     * @param jsRuntimeType  the js runtime type
      * @param runtimeOptions the runtime options
      * @since 0.8.0
      */
-    NodeRuntime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, RuntimeOptions<?> runtimeOptions) {
-        super(v8Host, handle, pooled, v8Native, runtimeOptions);
+    NodeRuntime(
+            V8Host v8Host,
+            long handle,
+            boolean pooled,
+            IV8Native v8Native,
+            JSRuntimeType jsRuntimeType,
+            RuntimeOptions<?> runtimeOptions) {
+        super(v8Host, handle, pooled, v8Native, jsRuntimeType, runtimeOptions);
         nodeModuleMap = new HashMap<>();
     }
 
     @Override
     public byte[] createSnapshot() throws JavetException {
         throw new JavetException(JavetError.RuntimeCreateSnapshotDisabled);
-    }
-
-    @Override
-    public JSRuntimeType getJSRuntimeType() {
-        return JSRuntimeType.Node;
     }
 
     /**

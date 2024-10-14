@@ -22,20 +22,27 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.io.File;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8Host extends BaseTestJavet {
     @Test
-    public void testBothNodeAndV8() throws JavetException {
-        try (V8Runtime v8Runtime = V8Host.getNodeInstance().createV8Runtime()) {
-            assertNotNull(v8Runtime);
-            assertTrue(v8Runtime.getJSRuntimeType().isNode());
-        }
-        try (V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime()) {
-            assertNotNull(v8Runtime);
-            assertTrue(v8Runtime.getJSRuntimeType().isV8());
-        }
+    public void testAllRuntimes() {
+        Stream.of(JSRuntimeType.values())
+                .filter(type -> {
+                    File libFile = BaseTestJavet.getLibFile(type);
+                    return libFile != null && libFile.exists();
+                })
+                .forEach(type -> {
+                    try (V8Runtime v8Runtime = V8Host.getInstance(type).createV8Runtime()) {
+                        assertNotNull(v8Runtime);
+                        assertEquals(type, v8Runtime.getJSRuntimeType());
+                    } catch (JavetException e) {
+                        fail(e);
+                    }
+                });
     }
 
     @Test

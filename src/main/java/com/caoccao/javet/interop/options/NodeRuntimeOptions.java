@@ -16,12 +16,23 @@
 
 package com.caoccao.javet.interop.options;
 
+import com.caoccao.javet.utils.ArrayUtils;
+import com.caoccao.javet.utils.StringUtils;
+
+import java.util.stream.Stream;
+
 /**
  * The type Node runtime options.
  *
  * @since 1.0.0
  */
 public final class NodeRuntimeOptions extends RuntimeOptions<NodeRuntimeOptions> {
+    /**
+     * The constant NODE_FLAGS.
+     *
+     * @since 4.0.0
+     */
+    public static final NodeFlags NODE_FLAGS = new NodeFlags();
     /**
      * The constant V8_FLAGS.
      *
@@ -58,7 +69,13 @@ public final class NodeRuntimeOptions extends RuntimeOptions<NodeRuntimeOptions>
      * @since 1.0.0
      */
     public NodeRuntimeOptions setConsoleArguments(String[] consoleArguments) {
-        this.consoleArguments = consoleArguments;
+        if (ArrayUtils.isEmpty(consoleArguments)) {
+            this.consoleArguments = null;
+        } else {
+            this.consoleArguments = Stream.of(consoleArguments)
+                    .filter(StringUtils::isNotBlank)
+                    .toArray(String[]::new);
+        }
         return this;
     }
 }

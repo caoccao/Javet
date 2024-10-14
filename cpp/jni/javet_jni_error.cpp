@@ -35,11 +35,11 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_errorCreate
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
 }
 
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingException
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasException
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
-    return HAS_PENDING_EXCEPTION(v8InternalIsolate);
+    return HAS_EXCEPTION(v8InternalIsolate);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingMessage
@@ -47,30 +47,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingMes
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
     return v8InternalIsolate->has_pending_message();
-}
-
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasScheduledException
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
-#ifdef ENABLE_NODE
-    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
-    return v8InternalIsolate->has_scheduled_exception();
-#else
-    return false;
-#endif
-}
-
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promoteScheduledException
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
-#ifdef ENABLE_NODE
-    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
-    if (v8InternalIsolate->has_scheduled_exception()) {
-        v8InternalIsolate->PromoteScheduledException();
-        return true;
-    }
-#endif
-    return false;
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_reportPendingMessages

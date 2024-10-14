@@ -417,6 +417,14 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getVersion
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    hasException
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasException
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    hasInternalType
  * Signature: (JJI)Z
  */
@@ -425,26 +433,10 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasInternalTy
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    hasPendingException
- * Signature: (J)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingException
-  (JNIEnv *, jobject, jlong);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
  * Method:    hasPendingMessage
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingMessage
-  (JNIEnv *, jobject, jlong);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    hasScheduledException
- * Signature: (J)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasScheduledException
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -470,6 +462,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_integerObjectV
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isDead
   (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    isI18nEnabled
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isI18nEnabled
+  (JNIEnv *, jobject);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -1142,14 +1142,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promiseResolv
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_promiseThen
   (JNIEnv *, jobject, jlong, jlong, jint, jlong, jlong);
-
-/*
- * Class:     com_caoccao_javet_interop_V8Native
- * Method:    promoteScheduledException
- * Signature: (J)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promoteScheduledException
-  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

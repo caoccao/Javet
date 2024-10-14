@@ -135,9 +135,20 @@ namespace Javet {
             jmethodIDV8HostIsLibraryReloadable = jniEnv->GetStaticMethodID(jclassV8Host, "isLibraryReloadable", "()Z");
 
             LOG_INFO("V8::Initialize() begins.");
+#ifndef ENABLE_NODE
 #ifdef ENABLE_I18N
-            LOG_INFO("Calling v8::V8::InitializeICU().");
-            v8::V8::InitializeICU();
+            jclass jclassV8RuntimeOptions = jniEnv->FindClass("com/caoccao/javet/interop/options/V8RuntimeOptions");
+            jfieldID jfieldIDV8RuntimeOptionsV8Flags = jniEnv->GetStaticFieldID(jclassV8RuntimeOptions, "V8_FLAGS", "Lcom/caoccao/javet/interop/options/V8Flags;");
+            jclass jclassV8Flags = jniEnv->FindClass("com/caoccao/javet/interop/options/V8Flags");
+            jmethodID jmethodIDV8FlagsGetIcuDataFile = jniEnv->GetMethodID(jclassV8Flags, "getIcuDataFile", "()Ljava/lang/String;");
+            jobject mV8Flags = jniEnv->GetStaticObjectField(jclassV8RuntimeOptions, jfieldIDV8RuntimeOptionsV8Flags);
+            jstring mIcuDataFile = (jstring)jniEnv->CallObjectMethod(mV8Flags, jmethodIDV8FlagsGetIcuDataFile);
+            auto umIcuDataFile = Javet::Converter::ToStdString(jniEnv, mIcuDataFile);
+            LOG_INFO("Calling v8::V8::InitializeICU(\"" << *umIcuDataFile << "\").");
+            v8::V8::InitializeICU(umIcuDataFile->c_str());
+            jniEnv->DeleteLocalRef(mIcuDataFile);
+            jniEnv->DeleteLocalRef(mV8Flags);
+#endif
 #endif
             if (Javet::V8Native::GlobalV8Platform) {
                 LOG_INFO("V8::Initialize() is skipped.");
@@ -146,7 +157,28 @@ namespace Javet {
 #ifdef ENABLE_NODE
                 uv_setup_args(0, nullptr);
                 std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
-                std::unique_ptr<node::InitializationResult> result = node::InitializeOncePerProcess(
+                jclass jclassNodeRuntimeOptions = jniEnv->FindClass("com/caoccao/javet/interop/options/NodeRuntimeOptions");
+                jfieldID jfieldIDNodeRuntimeOptionsNodeFlags = jniEnv->GetStaticFieldID(jclassNodeRuntimeOptions, "NODE_FLAGS", "Lcom/caoccao/javet/interop/options/NodeFlags;");
+                jclass jclassNodeFlags = jniEnv->FindClass("com/caoccao/javet/interop/options/NodeFlags");
+                jmethodID jmethodIDNodeFlagsSeal = jniEnv->GetMethodID(jclassNodeFlags, "seal", "()Lcom/caoccao/javet/interop/options/NodeFlags;");
+                jmethodID jmethodIDNodeFlagsToArray = jniEnv->GetMethodID(jclassNodeFlags, "toArray", "()[Ljava/lang/String;");
+                jobject mNodeFlags = jniEnv->GetStaticObjectField(jclassNodeRuntimeOptions, jfieldIDNodeRuntimeOptionsNodeFlags);
+                jobjectArray mNodeFlagsStringArray = (jobjectArray)jniEnv->CallObjectMethod(mNodeFlags, jmethodIDNodeFlagsToArray);
+                if (mNodeFlagsStringArray != nullptr) {
+                    const int nodeFlagCount = jniEnv->GetArrayLength(mNodeFlagsStringArray);
+                    LOG_DEBUG("Node.js flag count is " << nodeFlagCount);
+                    for (int i = 0; i < nodeFlagCount; ++i) {
+                        jstring mFlagString = (jstring)jniEnv->GetObjectArrayElement(mNodeFlagsStringArray, i);
+                        auto umFlagString = Javet::Converter::ToStdString(jniEnv, mFlagString);
+                        LOG_DEBUG("    " << i << ": " << *umFlagString);
+                        args.push_back(*umFlagString);
+                        jniEnv->DeleteLocalRef(mFlagString);
+                    }
+                    jniEnv->DeleteLocalRef(mNodeFlagsStringArray);
+                }
+                jniEnv->DeleteLocalRef(jniEnv->CallObjectMethod(mNodeFlags, jmethodIDNodeFlagsSeal));
+                jniEnv->DeleteLocalRef(mNodeFlags);
+                std::shared_ptr<node::InitializationResult> result = node::InitializeOncePerProcess(
                     args, {
                         node::ProcessInitializationFlags::kNoFlags,
                         node::ProcessInitializationFlags::kNoStdioInitialization,
@@ -160,7 +192,7 @@ namespace Javet {
                     });
                 if (result->exit_code() != 0) {
                     LOG_ERROR("Failed to call node::InitializeOncePerProcess().");
-                }
+            }
                 Javet::V8Native::GlobalV8Platform = node::MultiIsolatePlatform::Create(4);
 #else
                 Javet::V8Native::GlobalV8Platform = v8::platform::NewDefaultPlatform();
@@ -176,7 +208,7 @@ namespace Javet {
             if (!GlobalV8ArrayBufferAllocator) {
                 GlobalV8ArrayBufferAllocator = std::shared_ptr<V8ArrayBufferAllocator>();
                 GlobalV8ArrayBufferAllocator.reset(V8ArrayBufferAllocator::NewDefaultAllocator());
-        }
+            }
 #endif
             LOG_INFO("V8::Initialize() ends.");
         }

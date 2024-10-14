@@ -196,6 +196,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     final List<IJavetGCCallback> gcPrologueCallbacks;
     /**
+     * The JS runtime type.
+     *
+     * @since 4.0.0
+     */
+    final JSRuntimeType jsRuntimeType;
+    /**
      * The Primitive flags is for passing the calling succession in JNI calls.
      * Its length is 1. True: success. False: failure.
      *
@@ -342,10 +348,17 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @param handle         the handle
      * @param pooled         the pooled
      * @param v8Native       the V8 native
+     * @param jsRuntimeType  the js runtime type
      * @param runtimeOptions the runtime options
      * @since 0.7.0
      */
-    V8Runtime(V8Host v8Host, long handle, boolean pooled, IV8Native v8Native, RuntimeOptions<?> runtimeOptions) {
+    V8Runtime(
+            V8Host v8Host,
+            long handle,
+            boolean pooled,
+            IV8Native v8Native,
+            JSRuntimeType jsRuntimeType,
+            RuntimeOptions<?> runtimeOptions) {
         assert handle != INVALID_HANDLE : ERROR_HANDLE_MUST_BE_VALID;
         callbackContextLock = new Object();
         callbackContextMap = new HashMap<>();
@@ -365,6 +378,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         this.v8Host = Objects.requireNonNull(v8Host);
         v8Inspector = null;
         this.v8Native = Objects.requireNonNull(v8Native);
+        this.jsRuntimeType = Objects.requireNonNull(jsRuntimeType);
         v8ModuleLock = new Object();
         v8ModuleMap = new HashMap<>();
         v8ModuleResolver = null;
@@ -1508,7 +1522,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.9.1
      */
     public JSRuntimeType getJSRuntimeType() {
-        return JSRuntimeType.V8;
+        return jsRuntimeType;
     }
 
     /**
@@ -1720,6 +1734,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Has pending exception.
+     *
+     * @return true : yes, false : no
+     * @throws JavetException the javet exception
+     * @since 1.0.4
+     */
+    @SuppressWarnings("RedundantThrows")
+    public boolean hasException() throws JavetException {
+        return v8Native.hasException(handle);
+    }
+
+    /**
      * Has internal type.
      *
      * @param iV8ValueObject the V8 value object
@@ -1733,18 +1759,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Has pending exception.
-     *
-     * @return true : yes, false : no
-     * @throws JavetException the javet exception
-     * @since 1.0.4
-     */
-    @SuppressWarnings("RedundantThrows")
-    public boolean hasPendingException() throws JavetException {
-        return v8Native.hasPendingException(handle);
-    }
-
-    /**
      * Has pending message.
      *
      * @return true : yes, false : no
@@ -1754,18 +1768,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     public boolean hasPendingMessage() throws JavetException {
         return v8Native.hasPendingMessage(handle);
-    }
-
-    /**
-     * Has scheduled exception.
-     *
-     * @return true : yes, false : no
-     * @throws JavetException the javet exception
-     * @since 1.0.4
-     */
-    @SuppressWarnings("RedundantThrows")
-    public boolean hasScheduledException() throws JavetException {
-        return v8Native.hasScheduledException(handle);
     }
 
     /**
@@ -3042,18 +3044,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, iV8ValuePromise.getHandle(), iV8ValuePromise.getType().getId(),
                 functionFulfilledHandle.getHandle(),
                 functionRejectedHandle == null ? 0L : functionRejectedHandle.getHandle());
-    }
-
-    /**
-     * Promote scheduled exception.
-     *
-     * @return true : success, false : failure
-     * @throws JavetException the javet exception
-     * @since 1.0.4
-     */
-    @SuppressWarnings("RedundantThrows")
-    public boolean promoteScheduledException() throws JavetException {
-        return v8Native.promoteScheduledException(handle);
     }
 
     /**

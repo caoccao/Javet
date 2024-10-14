@@ -1655,14 +1655,14 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     assertEquals(3, scopeInfos.size());
                     assertTrue(scopeInfos.hasVariablesInClosure());
                     IV8ValueFunction.ScopeInfo scopeInfo2 = scopeInfos.get(2);
-                    List<String> keys = scopeInfo2.getScopeObject().getOwnPropertyNameStrings();
+                    Set<String> keys = new HashSet<>(scopeInfo2.getScopeObject().getOwnPropertyNameStrings());
                     if (v8Runtime.getJSRuntimeType().isNode()) {
-                        Set<String> globalVariables = SimpleSet.of((
-                                "global,queueMicrotask,clearImmediate,setImmediate," +
-                                        "structuredClone,clearInterval,clearTimeout,setInterval," +
-                                        "setTimeout,atob,btoa,crypto,performance,fetch,require").split(","));
-                        assertEquals(globalVariables.size(), keys.size());
-                        keys.forEach(key -> assertTrue(globalVariables.contains(key), key + " is not found"));
+                        Set<String> globalVariables = SimpleSet.of(
+                                "global", "clearImmediate", "setImmediate", "clearInterval", "clearTimeout",
+                                "setInterval", "setTimeout", "queueMicrotask", "structuredClone", "atob",
+                                "btoa", "performance", "fetch", "navigator", "crypto",
+                                "require");
+                        assertEquals(globalVariables, keys);
                     } else {
                         assertEquals(0, keys.size());
                     }

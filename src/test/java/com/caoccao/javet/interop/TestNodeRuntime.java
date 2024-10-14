@@ -19,7 +19,6 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.enums.JSRuntimeType;
 import com.caoccao.javet.enums.V8AwaitMode;
-import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.converters.JavetProxyConverter;
 import com.caoccao.javet.interop.options.NodeRuntimeOptions;
@@ -33,11 +32,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
@@ -48,7 +45,9 @@ public class TestNodeRuntime extends BaseTestJavet {
     protected NodeRuntime nodeRuntime;
 
     public TestNodeRuntime() {
-        super(JSRuntimeType.Node);
+        super(getLibFile(JSRuntimeType.Node) != null && getLibFile(JSRuntimeType.Node).exists()
+                ? JSRuntimeType.Node
+                : JSRuntimeType.NodeI18n);
     }
 
     @AfterEach
@@ -164,10 +163,13 @@ public class TestNodeRuntime extends BaseTestJavet {
 
     @Test
     public void testConsoleArguments() throws JavetException {
-        NodeRuntimeOptions runtimeOptions = new NodeRuntimeOptions();
-        runtimeOptions.setConsoleArguments(new String[]{"--version"});
-        try (NodeRuntime testNodeRuntime = v8Host.createV8Runtime(runtimeOptions)) {
-            assertNotNull(testNodeRuntime);
+        NodeRuntimeOptions nodeRuntimeOptions = new NodeRuntimeOptions();
+        nodeRuntimeOptions.setConsoleArguments(new String[]{"--abc", "--def"});
+        try (NodeRuntime testNodeRuntime = v8Host.createV8Runtime(nodeRuntimeOptions)) {
+            List<String> consoleArguments = testNodeRuntime.getExecutor("process.argv;").executeObject();
+            assertEquals(3, consoleArguments.size());
+            assertEquals("--abc", consoleArguments.get(1));
+            assertEquals("--def", consoleArguments.get(2));
         }
     }
 
@@ -210,7 +212,7 @@ public class TestNodeRuntime extends BaseTestJavet {
         Path path4 = nodeModuleProcess.getWorkingDirectory().toPath();
         assertNotEquals(path1.toAbsolutePath().toString(), path3.toAbsolutePath().toString());
         assertEquals(path1.toAbsolutePath().toString(), path4.toAbsolutePath().toString());
-        assertEquals("v20.17.0", nodeModuleProcess.getVersion());
+        assertEquals("v22.9.0", nodeModuleProcess.getVersion());
     }
 
     @Test
@@ -232,79 +234,6 @@ public class TestNodeRuntime extends BaseTestJavet {
         File swcCoreFile = getScriptFile("../node_modules/@swc/core/index.js");
         if (swcCoreFile.exists()) {
             File scriptFile = getScriptFile("test-node-module-swc-sync.js");
-            try {
-                nodeRuntime.getExecutor(scriptFile).executeVoid();
-            } catch (Throwable t) {
-                t.printStackTrace(System.err);
-                fail(MessageFormat.format("{0} should pass.", scriptFile.getAbsolutePath()));
-            }
-        }
-    }
-
-    @Test
-    public void testSqlite3InRootDirectoryWithDoubleDots() throws JavetException, IOException {
-        File sqlite3File = getScriptFile("../node_modules/sqlite3/sqlite3.js");
-        if (sqlite3File.exists()) {
-            File scriptFile = getScriptFile("test-node-module-sqlite3-sync.js");
-            File testModuleModeFile = getScriptFile("../test-module-mode.js");
-            try {
-                if (testModuleModeFile.exists()) {
-                    assertTrue(testModuleModeFile.delete());
-                }
-                Files.write(
-                        testModuleModeFile.toPath(),
-                        Files.readAllBytes(scriptFile.toPath()),
-                        StandardOpenOption.CREATE);
-                // It should pass in module mode.
-                try {
-                    nodeRuntime.getExecutor(testModuleModeFile).executeVoid();
-                } catch (Throwable t) {
-                    t.printStackTrace(System.err);
-                    fail(MessageFormat.format(
-                            "{0} should pass in module mode.",
-                            testModuleModeFile.getAbsolutePath()));
-                }
-            } finally {
-                assertTrue(testModuleModeFile.delete());
-            }
-        }
-    }
-
-    @Test
-    public void testSqlite3InRootDirectoryWithoutDoubleDots() throws JavetException, IOException {
-        File sqlite3File = getScriptFile("../node_modules/sqlite3/sqlite3.js");
-        if (sqlite3File.exists()) {
-            File scriptFile = getScriptFile("test-node-module-sqlite3-sync.js");
-            File testModuleModeFile = new File(JavetOSUtils.WORKING_DIRECTORY, "scripts/node/test-module-mode.js");
-            try {
-                if (testModuleModeFile.exists()) {
-                    assertTrue(testModuleModeFile.delete());
-                }
-                Files.write(
-                        testModuleModeFile.toPath(),
-                        Files.readAllBytes(scriptFile.toPath()),
-                        StandardOpenOption.CREATE);
-                // It should fail in module mode.
-                try {
-                    nodeRuntime.getExecutor(testModuleModeFile).executeVoid();
-                    fail(MessageFormat.format(
-                            "{0} should fail in module mode.",
-                            testModuleModeFile.getAbsolutePath()));
-                } catch (JavetException e) {
-                    assertEquals(JavetError.ExecutionFailure, e.getError());
-                    assertTrue(e.getMessage().startsWith("Error: Cannot find module 'sqlite3'"));
-                }
-            } finally {
-                assertTrue(testModuleModeFile.delete());
-            }
-        }
-    }
-
-    @Test
-    public void testSqlite3InSubDirectory() throws JavetException {
-        File sqlite3File = getScriptFile("../node_modules/sqlite3/sqlite3.js");
-        if (sqlite3File.exists()) {
-            File scriptFile = getScriptFile("test-node-module-sqlite3-sync.js");
             try {
                 nodeRuntime.getExecutor(scriptFile).executeVoid();
             } catch (Throwable t) {

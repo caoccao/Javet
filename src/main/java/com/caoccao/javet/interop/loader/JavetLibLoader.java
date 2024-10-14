@@ -45,7 +45,7 @@ public final class JavetLibLoader {
      *
      * @since 0.8.0
      */
-    public static final String LIB_VERSION = "3.1.8";
+    public static final String LIB_VERSION = "4.0.0";
     private static final String ANDROID_ABI_ARM = "armeabi-v7a";
     private static final String ANDROID_ABI_ARM64 = "arm64-v8a";
     private static final String ANDROID_ABI_X86 = "x86";
@@ -57,12 +57,13 @@ public final class JavetLibLoader {
     private static final int BUFFER_LENGTH = 4096;
     private static final String CHMOD = "chmod";
     private static final String DOT = ".";
+    private static final String I18N_SUFFIX = "-i18n";
     private static final String LIB_FILE_EXTENSION_ANDROID = "so";
     private static final String LIB_FILE_EXTENSION_LINUX = "so";
     private static final String LIB_FILE_EXTENSION_MACOS = "dylib";
     private static final String LIB_FILE_EXTENSION_WINDOWS = "dll";
-    private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-{1}-{2}.v.{3}.{4}";
-    private static final String LIB_FILE_NAME_FOR_ANDROID_FORMAT = "libjavet-{0}-{1}.v.{2}.{3}";
+    private static final String LIB_FILE_NAME_FORMAT = "libjavet-{0}-{1}-{2}{3}.v.{4}.{5}";
+    private static final String LIB_FILE_NAME_FOR_ANDROID_FORMAT = "libjavet-{0}-{1}{2}.v.{3}.{4}";
     private static final String LIB_FILE_NAME_PREFIX = "lib";
     private static final IJavetLogger LOGGER = new JavetDefaultLogger(JavetLibLoader.class.getName());
     private static final long MIN_LAST_MODIFIED_GAP_IN_MILLIS = 60L * 1000L; // 1 minute
@@ -202,6 +203,7 @@ public final class JavetLibLoader {
                     LIB_FILE_NAME_FOR_ANDROID_FORMAT,
                     jsRuntimeType.getName(),
                     osName,
+                    jsRuntimeType.isI18nEnabled() ? I18N_SUFFIX : StringUtils.EMPTY,
                     LIB_VERSION,
                     fileExtension);
         } else {
@@ -216,6 +218,7 @@ public final class JavetLibLoader {
                     jsRuntimeType.getName(),
                     osName,
                     osArch,
+                    jsRuntimeType.isI18nEnabled() ? I18N_SUFFIX : StringUtils.EMPTY,
                     LIB_VERSION,
                     fileExtension);
         }
