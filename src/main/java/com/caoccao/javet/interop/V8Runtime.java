@@ -996,11 +996,28 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     @CheckReturnValue
     public V8ValueTypedArray createV8ValueTypedArray(V8ValueReferenceType type, int length) throws JavetException {
-        try (V8Value v8Value = getGlobalObject().get(type.getName())) {
-            if (v8Value instanceof V8ValueFunction) {
-                V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Value;
-                return v8ValueFunction.callAsConstructor(createV8ValueInteger(length));
-            }
+        switch (type) {
+            case Int8Array:
+            case Uint8Array:
+            case Uint8ClampedArray:
+            case Int16Array:
+            case Uint16Array:
+            case Int32Array:
+            case Uint32Array:
+            case Float16Array:
+            case Float32Array:
+            case Float64Array:
+            case BigInt64Array:
+            case BigUint64Array:
+                try (V8Value v8Value = getGlobalObject().get(type.getName())) {
+                    if (v8Value instanceof V8ValueFunction) {
+                        V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Value;
+                        return v8ValueFunction.callAsConstructor(createV8ValueInteger(length));
+                    }
+                }
+                break;
+            default:
+                break;
         }
         throw new JavetException(JavetError.NotSupported, SimpleMap.of(PARAMETER_FEATURE, type.getName()));
     }

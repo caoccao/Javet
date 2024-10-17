@@ -54,6 +54,12 @@ public final class V8Flags {
      */
     public static final String FLAG_INITIAL_HEAP_SIZE = "--initial-heap-size";
     /**
+     * The constant FLAG_JS_FLOAT_16_ARRAY.
+     *
+     * @since 4.1.0
+     */
+    public static final String FLAG_JS_FLOAT_16_ARRAY = "--js-float16array";
+    /**
      * The constant FLAG_MAX_OLD_SPACE_SIZE.
      *
      * @since 0.9.13
@@ -78,6 +84,7 @@ public final class V8Flags {
     private boolean exposeInspectorScripts;
     private String icuDataFile;
     private int initialHeapSize;
+    private boolean jsFloat16Array;
     private int maxHeapSize;
     private int maxOldSpaceSize;
     private boolean sealed;
@@ -95,6 +102,7 @@ public final class V8Flags {
         exposeInspectorScripts = false;
         icuDataFile = null;
         initialHeapSize = 0;
+        jsFloat16Array = false;
         maxHeapSize = 0;
         maxOldSpaceSize = 0;
         sealed = false;
@@ -183,6 +191,16 @@ public final class V8Flags {
      */
     public boolean isExposeInspectorScripts() {
         return exposeInspectorScripts;
+    }
+
+    /**
+     * Is js float 16 array enabled.
+     *
+     * @return true : yes, false: no
+     * @since 4.1.0
+     */
+    public boolean isJsFloat16Array() {
+        return jsFloat16Array;
     }
 
     /**
@@ -304,6 +322,20 @@ public final class V8Flags {
     }
 
     /**
+     * Sets js float 16 array.
+     *
+     * @param jsFloat16Array the js float 16 array
+     * @return the self
+     * @since 4.1.0
+     */
+    public V8Flags setJsFloat16Array(boolean jsFloat16Array) {
+        if (!sealed) {
+            this.jsFloat16Array = jsFloat16Array;
+        }
+        return this;
+    }
+
+    /**
      * Sets max heap size.
      * <p>
      * Currently, by default V8 has a memory limit of 512mb on 32-bit systems,
@@ -370,6 +402,9 @@ public final class V8Flags {
         }
         if (initialHeapSize > 0) {
             tokens.add(fromInteger(FLAG_INITIAL_HEAP_SIZE, initialHeapSize));
+        }
+        if (jsFloat16Array) {
+            tokens.add(FLAG_JS_FLOAT_16_ARRAY);
         }
         if (maxHeapSize > 0) {
             tokens.add(fromInteger(FLAG_MAX_HEAP_SIZE, maxHeapSize));

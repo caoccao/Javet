@@ -42,7 +42,7 @@ public abstract class BaseTestJavet {
     public static final long DEFAULT_INTERVAL_IN_MILLISECONDS = 10;
 
     static {
-        setIcuData();
+        setFlags();
     }
 
     protected IJavetLogger logger;
@@ -100,7 +100,7 @@ public abstract class BaseTestJavet {
         }
     }
 
-    public static void setIcuData() {
+    public static void setFlags() {
         if (!V8RuntimeOptions.V8_FLAGS.isSealed()) {
             File icuDataFile = new File(JavetOSUtils.WORKING_DIRECTORY)
                     .toPath()
@@ -110,6 +110,7 @@ public abstract class BaseTestJavet {
             if (icuDataFile.exists() && icuDataFile.isFile()) {
                 V8RuntimeOptions.V8_FLAGS.setIcuDataFile(icuDataFile.getAbsolutePath());
             }
+            V8RuntimeOptions.V8_FLAGS.setJsFloat16Array(true);
         }
         if (!NodeRuntimeOptions.NODE_FLAGS.isSealed()) {
             File icuDataDir = new File(JavetOSUtils.WORKING_DIRECTORY)
@@ -120,6 +121,7 @@ public abstract class BaseTestJavet {
             if (icuDataDir.exists() && icuDataDir.isDirectory()) {
                 NodeRuntimeOptions.NODE_FLAGS.setIcuDataDir(icuDataDir.getAbsolutePath());
             }
+            NodeRuntimeOptions.NODE_FLAGS.setJsFloat16Array(true);
         }
     }
 

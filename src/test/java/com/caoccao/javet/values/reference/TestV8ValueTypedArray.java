@@ -19,9 +19,11 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.utils.Float16;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,21 +33,20 @@ public class TestV8ValueTypedArray extends BaseTestJavetRuntime {
     @Test
     public void testByte() throws JavetException {
         final int length = 16;
+        final int size = 1;
         V8ValueReferenceType[] types = new V8ValueReferenceType[]{
                 V8ValueReferenceType.Int8Array,
                 V8ValueReferenceType.Uint8Array,
-                V8ValueReferenceType.Uint8ClampedArray};
+                V8ValueReferenceType.Uint8ClampedArray,
+        };
         byte[] bytes = new byte[length];
         new Random().nextBytes(bytes);
-        for (int i = 0; i < length; i++) {
-            bytes[i] = (byte) (bytes[i] & 0x7F);
-        }
-        for (int i = 0; i < types.length; ++i) {
-            final V8ValueReferenceType type = types[i];
+        IntStream.range(0, length).forEach(i -> bytes[i] = (byte) (bytes[i] & 0x7F));
+        for (final V8ValueReferenceType type : types) {
             try (V8ValueTypedArray v8ValueTypedArray = v8Runtime.getExecutor(
                     "const a = new " + type.getName() + "(" + length + "); a;").execute()) {
                 assertEquals(length, v8ValueTypedArray.getLength());
-                assertEquals(1, v8ValueTypedArray.getSizeInBytes());
+                assertEquals(size, v8ValueTypedArray.getSizeInBytes());
                 assertEquals(length, v8ValueTypedArray.getByteLength());
                 assertEquals(0, v8ValueTypedArray.getByteOffset());
                 assertEquals(type, v8ValueTypedArray.getType());
@@ -58,7 +59,7 @@ public class TestV8ValueTypedArray extends BaseTestJavetRuntime {
             }
             try (V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(type, length)) {
                 assertEquals(length, v8ValueTypedArray.getLength());
-                assertEquals(1, v8ValueTypedArray.getSizeInBytes());
+                assertEquals(size, v8ValueTypedArray.getSizeInBytes());
                 assertEquals(length, v8ValueTypedArray.getByteLength());
                 assertEquals(0, v8ValueTypedArray.getByteOffset());
                 assertEquals(type, v8ValueTypedArray.getType());
@@ -115,9 +116,7 @@ public class TestV8ValueTypedArray extends BaseTestJavetRuntime {
         final int byteLength = length * size;
         final float[] floats = new float[length];
         Random random = new Random();
-        for (int i = 0; i < length; i++) {
-            floats[i] = random.nextFloat();
-        }
+        IntStream.range(0, length).forEach(i -> floats[i] = random.nextFloat());
         try (V8ValueTypedArray v8ValueTypedArray = v8Runtime.getExecutor(
                 "const a = new " + type.getName() + "(" + length + "); a;").execute()) {
             assertEquals(length, v8ValueTypedArray.getLength());
@@ -145,19 +144,62 @@ public class TestV8ValueTypedArray extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testInteger() throws JavetException {
-        final int length = 16;
-        int[] sizes = new int[]{4, 4};
-        V8ValueReferenceType[] types = new V8ValueReferenceType[]{V8ValueReferenceType.Int32Array, V8ValueReferenceType.Uint32Array};
-        final int[] integers = new Random().ints(length).toArray();
-        for (int i = 0; i < length; i++) {
-            if (integers[i] < 0) {
-                integers[i] = 0 - integers[i];
+    public void testFloat16Array() throws JavetException {
+        final float[] floats = new float[]{0f, 1f, -1f, 12.345f, -12.345f};
+        final short[] shorts = new short[floats.length + 2];
+        final int size = 2;
+        final int length = shorts.length;
+        final int byteLength = length * size;
+        final V8ValueReferenceType type = V8ValueReferenceType.Float16Array;
+        for (int i = 0; i < length - 2; i++) {
+            shorts[i] = Float16.toHalf(floats[i]);
+        }
+        shorts[length - 2] = Float16.MAX_VALUE;
+        shorts[length - 1] = Float16.MIN_VALUE;
+        try (V8ValueTypedArray v8ValueTypedArray = v8Runtime.getExecutor(
+                "const a = new " + type.getName() + "(" + length + "); a;").execute()) {
+            assertEquals(length, v8ValueTypedArray.getLength());
+            assertEquals(size, v8ValueTypedArray.getSizeInBytes());
+            assertEquals(byteLength, v8ValueTypedArray.getByteLength());
+            assertEquals(0, v8ValueTypedArray.getByteOffset());
+            assertEquals(type, v8ValueTypedArray.getType());
+            assertTrue(v8ValueTypedArray.fromShorts(shorts));
+            for (int j = 0; j < length; j++) {
+                assertEquals(
+                        Float16.toFloat(shorts[j]),
+                        v8Runtime.getExecutor("a[" + j + "];").executeDouble(),
+                        0.001F);
             }
         }
-        for (int i = 0; i < types.length; ++i) {
-            final int size = sizes[i];
-            final V8ValueReferenceType type = types[i];
+        try (V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(type, length)) {
+            assertEquals(length, v8ValueTypedArray.getLength());
+            assertEquals(size, v8ValueTypedArray.getSizeInBytes());
+            assertEquals(byteLength, v8ValueTypedArray.getByteLength());
+            assertEquals(0, v8ValueTypedArray.getByteOffset());
+            assertEquals(type, v8ValueTypedArray.getType());
+            assertTrue(v8ValueTypedArray.fromShorts(shorts));
+            v8Runtime.getGlobalObject().set("b", v8ValueTypedArray);
+            for (int j = 0; j < length; j++) {
+                assertEquals(
+                        Float16.toFloat(shorts[j]),
+                        v8Runtime.getExecutor("b[" + j + "];").executeDouble(),
+                        0.001F);
+            }
+        }
+        resetContext();
+    }
+
+    @Test
+    public void testInteger() throws JavetException {
+        final int length = 16;
+        final int size = 4;
+        V8ValueReferenceType[] types = new V8ValueReferenceType[]{
+                V8ValueReferenceType.Int32Array,
+                V8ValueReferenceType.Uint32Array,
+        };
+        final int[] integers = new Random().ints(length).toArray();
+        IntStream.range(0, length).forEach(i -> integers[i] = Math.abs(integers[i]));
+        for (final V8ValueReferenceType type : types) {
             final int byteLength = length * size;
             try (V8ValueTypedArray v8ValueTypedArray = v8Runtime.getExecutor(
                     "const a = new " + type.getName() + "(" + length + "); a;").execute()) {
@@ -190,17 +232,14 @@ public class TestV8ValueTypedArray extends BaseTestJavetRuntime {
     @Test
     public void testLong() throws JavetException {
         final int length = 16;
-        int[] sizes = new int[]{8, 8};
-        V8ValueReferenceType[] types = new V8ValueReferenceType[]{V8ValueReferenceType.BigInt64Array, V8ValueReferenceType.BigUint64Array};
+        final int size = 8;
+        V8ValueReferenceType[] types = new V8ValueReferenceType[]{
+                V8ValueReferenceType.BigInt64Array,
+                V8ValueReferenceType.BigUint64Array,
+        };
         final long[] longs = new Random().longs(length).toArray();
-        for (int i = 0; i < length; i++) {
-            if (longs[i] < 0) {
-                longs[i] = 0 - longs[i];
-            }
-        }
-        for (int i = 0; i < types.length; ++i) {
-            final int size = sizes[i];
-            final V8ValueReferenceType type = types[i];
+        IntStream.range(0, length).forEach(i -> longs[i] = Math.abs(longs[i]));
+        for (final V8ValueReferenceType type : types) {
             final int byteLength = length * size;
             try (V8ValueTypedArray v8ValueTypedArray = v8Runtime.getExecutor(
                     "const a = new " + type.getName() + "(" + length + "); a;").execute()) {
@@ -233,16 +272,16 @@ public class TestV8ValueTypedArray extends BaseTestJavetRuntime {
     @Test
     public void testShort() throws JavetException {
         final int length = 16;
-        int[] sizes = new int[]{2, 2};
-        V8ValueReferenceType[] types = new V8ValueReferenceType[]{V8ValueReferenceType.Int16Array, V8ValueReferenceType.Uint16Array};
+        final int size = 2;
+        V8ValueReferenceType[] types = new V8ValueReferenceType[]{
+                V8ValueReferenceType.Int16Array,
+                V8ValueReferenceType.Uint16Array,
+                V8ValueReferenceType.Float16Array,
+        };
         final short[] shorts = new short[length];
         Random random = new Random();
-        for (int i = 0; i < length; i++) {
-            shorts[i] = (short) (random.nextInt() & 0x7FFF);
-        }
-        for (int i = 0; i < types.length; ++i) {
-            final int size = sizes[i];
-            final V8ValueReferenceType type = types[i];
+        IntStream.range(0, length).forEach(i -> shorts[i] = (short) (random.nextInt() & 0x7FFF));
+        for (final V8ValueReferenceType type : types) {
             final int byteLength = length * size;
             try (V8ValueTypedArray v8ValueTypedArray = v8Runtime.getExecutor(
                     "const a = new " + type.getName() + "(" + length + "); a;").execute()) {
@@ -252,8 +291,10 @@ public class TestV8ValueTypedArray extends BaseTestJavetRuntime {
                 assertEquals(0, v8ValueTypedArray.getByteOffset());
                 assertEquals(type, v8ValueTypedArray.getType());
                 assertTrue(v8ValueTypedArray.fromShorts(shorts));
-                for (int j = 0; j < length; j++) {
-                    assertEquals(shorts[j], v8Runtime.getExecutor("a[" + j + "];").executeInteger());
+                if (type != V8ValueReferenceType.Float16Array) {
+                    for (int j = 0; j < length; j++) {
+                        assertEquals(shorts[j], v8Runtime.getExecutor("a[" + j + "];").executeInteger());
+                    }
                 }
             }
             try (V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(type, length)) {
@@ -264,8 +305,10 @@ public class TestV8ValueTypedArray extends BaseTestJavetRuntime {
                 assertEquals(type, v8ValueTypedArray.getType());
                 assertTrue(v8ValueTypedArray.fromShorts(shorts));
                 v8Runtime.getGlobalObject().set("b", v8ValueTypedArray);
-                for (int j = 0; j < length; j++) {
-                    assertEquals(shorts[j], v8Runtime.getExecutor("b[" + j + "];").executeInteger());
+                if (type != V8ValueReferenceType.Float16Array) {
+                    for (int j = 0; j < length; j++) {
+                        assertEquals(shorts[j], v8Runtime.getExecutor("b[" + j + "];").executeInteger());
+                    }
                 }
             }
             resetContext();

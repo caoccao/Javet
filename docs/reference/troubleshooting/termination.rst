@@ -33,7 +33,7 @@ With Engine Pool
 Please refer to the :extsource3:`source code <../../../src/test/java/com/caoccao/javet/interop/engine/TestJavetEnginePool.java>` for more detail.
 
 Without Engine Pool
-----------------
+-------------------
 
 .. code-block:: java
 

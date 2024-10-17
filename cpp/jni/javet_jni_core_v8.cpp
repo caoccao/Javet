@@ -217,15 +217,16 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasInternalTy
     case Int16Array: return v8LocalValue->IsInt16Array(); // 42
     case Uint32Array: return v8LocalValue->IsUint32Array(); // 43
     case Int32Array: return v8LocalValue->IsInt32Array(); // 44
-    case Float32Array: return v8LocalValue->IsFloat32Array(); // 45
-    case Float64Array: return v8LocalValue->IsFloat64Array(); // 46
-    case BigInt64Array: return v8LocalValue->IsBigInt64Array(); // 47
-    case BigUint64Array: return v8LocalValue->IsBigUint64Array(); // 48
-    case DataView: return v8LocalValue->IsDataView(); // 49
-    case SharedArrayBuffer: return v8LocalValue->IsSharedArrayBuffer(); // 50
-    case Proxy: return v8LocalValue->IsProxy(); // 51
-    case WasmModuleObject: return v8LocalValue->IsWasmModuleObject(); // 52
-    case ModuleNamespaceObject: return v8LocalValue->IsModuleNamespaceObject(); // 53
+    case Float16Array: return v8LocalValue->IsFloat16Array(); // 45
+    case Float32Array: return v8LocalValue->IsFloat32Array(); // 46
+    case Float64Array: return v8LocalValue->IsFloat64Array(); // 47
+    case BigInt64Array: return v8LocalValue->IsBigInt64Array(); // 48
+    case BigUint64Array: return v8LocalValue->IsBigUint64Array(); // 49
+    case DataView: return v8LocalValue->IsDataView(); // 50
+    case SharedArrayBuffer: return v8LocalValue->IsSharedArrayBuffer(); // 51
+    case Proxy: return v8LocalValue->IsProxy(); // 52
+    case WasmModuleObject: return v8LocalValue->IsWasmModuleObject(); // 53
+    case ModuleNamespaceObject: return v8LocalValue->IsModuleNamespaceObject(); // 54
     default:
         break;
     }

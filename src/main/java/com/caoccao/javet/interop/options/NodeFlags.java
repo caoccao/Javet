@@ -61,13 +61,18 @@ public final class NodeFlags {
      * @since 4.0.0
      */
     public static final String EXPERIMENTAL_SQLITE = "--experimental-sqlite";
-
     /**
      * The constant ICU_DATA_DIR.
      *
      * @since 4.0.0
      */
     public static final String ICU_DATA_DIR = "--icu-data-dir";
+    /**
+     * The constant JS_FLOAT_16_ARRAY.
+     *
+     * @since 4.1.0
+     */
+    public static final String JS_FLOAT_16_ARRAY = "--js-float16array";
     /**
      * The constant NO_WARNINGS.
      *
@@ -83,6 +88,7 @@ public final class NodeFlags {
     private boolean experimentalRequireModule;
     private boolean experimentalSqlite;
     private String icuDataDir;
+    private boolean jsFloat16Array;
     private boolean noWarnings;
     private boolean sealed;
 
@@ -98,6 +104,7 @@ public final class NodeFlags {
         experimentalPermission = false;
         experimentalRequireModule = false;
         experimentalSqlite = false;
+        jsFloat16Array = false;
         noWarnings = false;
         sealed = false;
     }
@@ -187,6 +194,16 @@ public final class NodeFlags {
      */
     public boolean isExperimentalSqlite() {
         return experimentalSqlite;
+    }
+
+    /**
+     * Is js float 16 array enabled.
+     *
+     * @return true : yes, false: no
+     * @since 4.1.0
+     */
+    public boolean isJsFloat16Array() {
+        return jsFloat16Array;
     }
 
     /**
@@ -330,12 +347,26 @@ public final class NodeFlags {
      * Sets icu data dir.
      *
      * @param icuDataDir the icu data dir
-     * @return the icu data dir
+     * @return the self
      * @since 4.0.0
      */
     public NodeFlags setIcuDataDir(String icuDataDir) {
         if (!sealed) {
             this.icuDataDir = icuDataDir;
+        }
+        return this;
+    }
+
+    /**
+     * Sets js float 16 array.
+     *
+     * @param jsFloat16Array the js float 16 array
+     * @return the self
+     * @since 4.1.0
+     */
+    public NodeFlags setJsFloat16Array(boolean jsFloat16Array) {
+        if (!sealed) {
+            this.jsFloat16Array = jsFloat16Array;
         }
         return this;
     }
@@ -384,6 +415,9 @@ public final class NodeFlags {
         }
         if (StringUtils.isNotBlank(icuDataDir)) {
             tokens.add(ICU_DATA_DIR + EQUAL + icuDataDir.trim());
+        }
+        if (jsFloat16Array) {
+            tokens.add(JS_FLOAT_16_ARRAY);
         }
         if (noWarnings) {
             tokens.add(NO_WARNINGS);

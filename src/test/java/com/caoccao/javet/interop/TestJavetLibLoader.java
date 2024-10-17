@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestJavetLibLoader {
     static {
-        BaseTestJavet.setIcuData();
+        BaseTestJavet.setFlags();
     }
 
     @AfterAll

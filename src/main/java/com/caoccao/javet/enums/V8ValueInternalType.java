@@ -69,15 +69,16 @@ public enum V8ValueInternalType {
     Int16Array(42, "Int16Array"),
     Uint32Array(43, "Uint32Array"),
     Int32Array(44, "Int32Array"),
-    Float32Array(45, "Float32Array"),
-    Float64Array(46, "Float64Array"),
-    BigInt64Array(47, "BigInt64Array"),
-    BigUint64Array(48, "BigUint64Array"),
-    DataView(49, "DataView"),
-    SharedArrayBuffer(50, "SharedArrayBuffer"),
-    Proxy(51, "Proxy"),
-    WasmModuleObject(52, "WasmModuleObject"),
-    ModuleNamespaceObject(53, "ModuleNamespaceObject");
+    Float16Array(45, "Float16Array"),
+    Float32Array(46, "Float32Array"),
+    Float64Array(47, "Float64Array"),
+    BigInt64Array(48, "BigInt64Array"),
+    BigUint64Array(49, "BigUint64Array"),
+    DataView(50, "DataView"),
+    SharedArrayBuffer(51, "SharedArrayBuffer"),
+    Proxy(52, "Proxy"),
+    WasmModuleObject(53, "WasmModuleObject"),
+    ModuleNamespaceObject(54, "ModuleNamespaceObject");
 
     private static final int LENGTH = values().length;
     private static final V8ValueInternalType[] TYPES = new V8ValueInternalType[LENGTH];
