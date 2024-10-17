@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Usage: docker build \
-#  -t sjtucaocao/javet:arm64-4.0.0 \
+#  -t sjtucaocao/javet:arm64-4.1.0 \
 #  --build-arg JAVET_REPO=sjtucaocao/javet \
 #  -f docker/linux-arm64/base_gradle.Dockerfile .
 

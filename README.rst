@@ -79,21 +79,21 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>4.0.0</version>
+        <version>4.1.0</version>
     </dependency>
 
     <!-- Linux (arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-linux-arm64</artifactId>
-        <version>4.0.0</version>
+        <version>4.1.0</version>
     </dependency>
 
     <!-- Mac OS (x86_64 and arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-macos</artifactId>
-        <version>4.0.0</version>
+        <version>4.1.0</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -101,22 +101,22 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:4.0.0") // Linux and Windows (x86_64)
-    implementation("com.caoccao.javet:javet-linux-arm64:4.0.0") // Linux (arm64)
-    implementation("com.caoccao.javet:javet-macos:4.0.0") // Mac OS (x86_64 and arm64)
-    implementation("com.caoccao.javet:javet-node-android:4.0.0") // Android Node (arm, arm64, x86 and x86_64)
-    implementation("com.caoccao.javet:javet-v8-android:4.0.0") // Android V8 (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet:4.1.0") // Linux and Windows (x86_64)
+    implementation("com.caoccao.javet:javet-linux-arm64:4.1.0") // Linux (arm64)
+    implementation("com.caoccao.javet:javet-macos:4.1.0") // Mac OS (x86_64 and arm64)
+    implementation("com.caoccao.javet:javet-node-android:4.1.0") // Android Node (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet-v8-android:4.1.0") // Android V8 (arm, arm64, x86 and x86_64)
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:4.0.0' // Linux and Windows (x86_64)
-    implementation 'com.caoccao.javet:javet-linux-arm64:4.0.0' // Linux (arm64)
-    implementation 'com.caoccao.javet:javet-macos:4.0.0' // Mac OS (x86_64 and arm64)
-    implementation 'com.caoccao.javet:javet-node-android:4.0.0' // Android Node (arm, arm64, x86 and x86_64)
-    implementation 'com.caoccao.javet:javet-v8-android:4.0.0' // Android V8 (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet:4.1.0' // Linux and Windows (x86_64)
+    implementation 'com.caoccao.javet:javet-linux-arm64:4.1.0' // Linux (arm64)
+    implementation 'com.caoccao.javet:javet-macos:4.1.0' // Mac OS (x86_64 and arm64)
+    implementation 'com.caoccao.javet:javet-node-android:4.1.0' // Android Node (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet-v8-android:4.1.0' // Android V8 (arm, arm64, x86 and x86_64)
 
 For more detail, please visit the `installation <https://www.caoccao.com/Javet/tutorial/basic/installation.html>`_ page.
 

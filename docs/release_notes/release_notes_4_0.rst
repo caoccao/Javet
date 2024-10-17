@@ -1,6 +1,11 @@
-===================
-Release Notes 4.0.x
-===================
+===========================
+Release Notes 4.0.x - 4.1.x
+===========================
+
+4.1.0
+-----
+
+* Switched to core dependency + individual native dependency
 
 4.0.0
 -----
