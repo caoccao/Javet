@@ -210,7 +210,7 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
       with:
-        gradle-version: 8.5
+        gradle-version: 8.10.2
 
     - name: Install 7zip
       run: choco install 7zip.install
