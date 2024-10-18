@@ -395,6 +395,27 @@ This feature is similar to the dynamic anonymous object for interface, but it al
 
 Voilà aussi! It works again.
 
+How to handle custom constructor? Well, it's easy. Just specify a property ``$`` as an array of arguments for the constructor as follows.
+
+.. code-block:: java
+
+    IJavetAnonymous anonymous = new IJavetAnonymous() {
+        @V8Function
+        public void test(File file) throws Exception {
+            assertTrue(file.exists());
+            ((AutoCloseable) file).close();
+        }
+    };
+    v8Runtime.getGlobalObject().set("a", anonymous);
+    String codeString = "a.test({\n" +
+            "  $: ['/tmp/not-exist-file'],\n" +
+            "  exists: () => true,\n" +
+            "});";
+    v8Runtime.getExecutor(codeString).executeVoid();
+    v8Runtime.getGlobalObject().delete("a");
+
+One of the constructors of ``java.io.File`` needs a ``String`` as the path. So ``$: ['/tmp/not-exist-file']`` is passed for JavetBuddy to construct ``File`` correctly. Obviously that file doesn't exists, but the return value of ``exists()`` is ``true`` because it comes from the derived class created by ByteBuddy.
+
 .. note::
 
     The JavaScript implementation is backed up by ``V8ValueObject`` which is an orphan object. After its internal ``V8Runtime`` is closed, it will no longer be callable. It's recommended to have the interface or the object implement ``AutoCloseable`` as the sample shows so that the orphan ``V8ValueObject`` can be recycled explicitly.

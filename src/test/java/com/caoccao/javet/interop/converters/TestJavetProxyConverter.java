@@ -892,6 +892,29 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testDynamicFile() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public void test(File file) throws Exception {
+                assertTrue(file.exists());
+                ((AutoCloseable) file).close();
+            }
+        };
+        try {
+            javetProxyConverter.getConfig().setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance());
+            v8Runtime.getGlobalObject().set("a", anonymous);
+            String codeString = "a.test({\n" +
+                    "  $: ['/tmp/not-exist-file'],\n" +
+                    "  exists: () => true,\n" +
+                    "});";
+            v8Runtime.getExecutor(codeString).executeVoid();
+            v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            javetProxyConverter.getConfig().setReflectionObjectFactory(null);
+        }
+    }
+
+    @Test
     public void testEnum() throws JavetException {
         v8Runtime.getGlobalObject().set("JavetErrorType", JavetErrorType.class);
         assertEquals(JavetErrorType.Converter, v8Runtime.getExecutor("JavetErrorType.Converter").executeObject());
