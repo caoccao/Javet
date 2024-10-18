@@ -21,7 +21,7 @@ The following dependency must be added.
 
     <dependency>
         <groupId>com.caoccao.javet</groupId>
-        <artifactId>javet-core</artifactId>
+        <artifactId>javet</artifactId>
         <version>4.1.0</version>
     </dependency>
 
@@ -560,7 +560,7 @@ Gradle Kotlin DSL - Desktop
 
     .. code-block:: kotlin
 
-        implementation("com.caoccao.javet:javet-core:4.1.0") // Must-have
+        implementation("com.caoccao.javet:javet:4.1.0") // Must-have
         implementation("com.caoccao.javet:javet-node-linux-arm64:4.1.0")
         implementation("com.caoccao.javet:javet-node-linux-arm64-i18n:4.1.0")
         implementation("com.caoccao.javet:javet-node-linux-x86_64:4.1.0")
@@ -598,7 +598,7 @@ Gradle Kotlin DSL - Desktop
             if (os.isMacOsX) "macos" else
             if (os.isLinux) "linux" else ""
         val archType = if (arch == "aarch64" || arch == "arm64") "arm64" else "x86_64"
-        implementation("com.caoccao.javet:javet-core:4.1.0")
+        implementation("com.caoccao.javet:javet:4.1.0")
         implementation("com.caoccao.javet:javet-$jsRuntimeTimeType-$osType-$archType$i18nType:4.0.0")
 
 Gradle Groovy DSL - Desktop
@@ -606,7 +606,7 @@ Gradle Groovy DSL - Desktop
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet-core:4.1.0' // Must-have
+    implementation 'com.caoccao.javet:javet:4.1.0' // Must-have
     implementation 'com.caoccao.javet:javet-node-linux-arm64:4.1.0'
     implementation 'com.caoccao.javet:javet-node-linux-arm64-i18n:4.1.0'
     implementation 'com.caoccao.javet:javet-node-linux-x86_64:4.1.0'

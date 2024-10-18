@@ -1,6 +1,6 @@
 .. include:: ../README.rst
     :start-line: 0
-    :end-line: 160
+    :end-line: 228
 
 .. toctree::
    :maxdepth: 2
