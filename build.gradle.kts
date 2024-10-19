@@ -72,7 +72,7 @@ object Config {
     }
 
     object Versions {
-        const val BYTE_BUDDY = "1.14.10"
+        const val BYTE_BUDDY = "1.15.5"
         const val JACKSON_DATABIND = "2.16.0"
         const val JAVA_VERSION = "1.8"
         const val JAVET = "4.1.0"
