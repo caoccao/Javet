@@ -8,6 +8,7 @@ Release Notes 4.0.x - 4.1.x
 * Switched to core dependency + individual native dependency
 * Supported ``Float16Array``
 * Added ``Float16``
+* Fixed ``JavetJVMInterceptor`` to allow arbitrary name
 
 4.0.0
 -----

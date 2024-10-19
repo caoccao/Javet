@@ -132,7 +132,7 @@ public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
         try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
             v8ValueObject.bind(this);
             for (IV8ValueObject iV8ValueObject : iV8ValueObjects) {
-                successful = iV8ValueObject.set(DEFAULT_NAME, v8ValueObject) & successful;
+                successful = iV8ValueObject.set(name, v8ValueObject) & successful;
             }
             return successful;
         }
@@ -152,7 +152,7 @@ public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
     public boolean unregister(IV8ValueObject... iV8ValueObjects) throws JavetException {
         boolean successful = true;
         for (IV8ValueObject iV8ValueObject : iV8ValueObjects) {
-            successful = iV8ValueObject.delete(DEFAULT_NAME) & successful;
+            successful = iV8ValueObject.delete(name) & successful;
         }
         return successful;
     }
