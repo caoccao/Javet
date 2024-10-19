@@ -9,6 +9,7 @@ Release Notes 4.0.x - 4.1.x
 * Supported ``Float16Array``
 * Added ``Float16``
 * Fixed ``JavetJVMInterceptor`` to allow arbitrary name
+* Added ``addCallbackContexts()`` to ``JavetJVMInterceptor``
 
 4.0.0
 -----

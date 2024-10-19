@@ -25,6 +25,7 @@ import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.converters.JavetProxyConverter;
 import com.caoccao.javet.interop.proxy.IJavetDirectProxyHandler;
 import com.caoccao.javet.utils.JavetResourceUtils;
+import com.caoccao.javet.utils.SimpleList;
 import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.utils.V8ValueUtils;
 import com.caoccao.javet.values.V8Value;
@@ -84,6 +85,12 @@ public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
      */
     protected static final String JS_PROPERTY_V8 = "v8";
     /**
+     * The Callback contexts.
+     *
+     * @since 4.1.0
+     */
+    protected List<JavetCallbackContext> callbackContexts;
+    /**
      * The Name injected in V8.
      *
      * @since 3.0.3
@@ -99,21 +106,34 @@ public class JavetJVMInterceptor extends BaseJavetDirectCallableInterceptor {
     public JavetJVMInterceptor(V8Runtime v8Runtime) {
         super(v8Runtime);
         assert v8Runtime.getConverter() instanceof JavetProxyConverter : ERROR_THE_CONVERTER_MUST_BE_INSTANCE_OF_JAVET_PROXY_CONVERTER;
+        callbackContexts = SimpleList.of(
+                new JavetCallbackContext(
+                        JS_PROPERTY_V8,
+                        this, JavetCallbackType.DirectCallGetterAndNoThis,
+                        (GetterAndNoThis<Exception>) () ->
+                                new JavetV8(v8Runtime).toV8Value()),
+                new JavetCallbackContext(
+                        JS_PROPERTY_PACKAGE,
+                        this, JavetCallbackType.DirectCallGetterAndNoThis,
+                        (GetterAndNoThis<Exception>) () ->
+                                new JavetVirtualPackage(v8Runtime, StringUtils.EMPTY).toV8Value()));
         name = DEFAULT_NAME;
+    }
+
+    /**
+     * Add callback contexts to extend the capabilities of the interceptor.
+     * It must be called before {@link #register(IV8ValueObject...)} is called.
+     *
+     * @param callbackContexts the callback contexts
+     * @since 4.1.0
+     */
+    public void addCallbackContexts(JavetCallbackContext... callbackContexts) {
+        Collections.addAll(this.callbackContexts, callbackContexts);
     }
 
     @Override
     public JavetCallbackContext[] getCallbackContexts() {
-        return new JavetCallbackContext[]{
-                new JavetCallbackContext(
-                        JS_PROPERTY_V8,
-                        this, JavetCallbackType.DirectCallGetterAndNoThis,
-                        (GetterAndNoThis<Exception>) () -> new JavetV8(v8Runtime).toV8Value()),
-                new JavetCallbackContext(
-                        JS_PROPERTY_PACKAGE,
-                        this, JavetCallbackType.DirectCallGetterAndNoThis,
-                        (GetterAndNoThis<Exception>) () -> new JavetVirtualPackage(v8Runtime, StringUtils.EMPTY).toV8Value()),
-        };
+        return callbackContexts.toArray(new JavetCallbackContext[0]);
     }
 
     /**
