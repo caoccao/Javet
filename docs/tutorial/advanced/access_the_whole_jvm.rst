@@ -84,6 +84,47 @@ Play with Dynamic Object
     v8Runtime.getGlobalObject().delete("a");
     // Output: 3
 
+Extend a Java Class
+===================
+
+``JavetReflectionObjectFactory`` also allows extending arbitrary non-final Java class by JavaScript. Let's extend ``ArrayList`` as follows.
+
+.. code-block:: java
+
+    // Add a callback context named "extend" to the JVM interceptor.
+    javetJVMInterceptor.addCallbackContexts(new JavetCallbackContext(
+            "extend",
+            this, JavetCallbackType.DirectCallNoThisAndResult,
+            (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                if (v8Values.length >= 2) {
+                    Object object = v8Runtime.toObject(v8Values[0]);
+                    if (object instanceof Class) {
+                        Class<?> clazz = (Class<?>) object;
+                        V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
+                        if (v8ValueObject != null) {
+                            Class<?> childClass = JavetReflectionObjectFactory.getInstance()
+                                    .extend(clazz, v8ValueObject);
+                            return v8Runtime.toV8Value(childClass);
+                        }
+                    }
+                }
+                return v8Runtime.createV8ValueUndefined();
+            }));
+
+    // Enable the proxy for java.util.List
+    v8Runtime.getConverter().getConfig().setProxyListEnabled(true);
+    String codeString = "let ChildArrayList = javet.extend(javet.package.java.util.ArrayList, {\n" +
+            "  isEmpty: () => !$super.isEmpty(),\n" +
+            "});\n" +
+            "let list = new ChildArrayList([1, 2, 3]);\n" +
+            "JSON.stringify([list.isEmpty(), list.size()]);";
+    System.out.pringln(v8Runtime.getExecutor(codeString).executeString());
+    // Output: [true,3]
+    // Clean up
+    v8Runtime.getExecutor("ChildArrayList = undefined; list = undefined;").executeVoid();
+    // Disable the proxy for java.util.List
+    v8Runtime.getConverter().getConfig().setProxyListEnabled(false);
+
 Cleanup
 =======
 
@@ -95,7 +136,9 @@ As the tutorial leaves a couple of Java objects in the V8 runtime and a couple o
     v8Runtime.getExecutor("java = sb = thread = undefined;").executeVoid();
     // Step 8: Unregister the JVM interceptor.
     javetJVMInterceptor.unregister(v8Runtime.getGlobalObject());
-    // Step 9: Enforce the GC to avoid memory leak. (Optional)
+    // Step 9: Clear all V8 value objects stored in the factory. (Optional) 
+    JavetReflectionObjectFactory.getInstance().clear();
+    // Step 10: Enforce the GC to avoid memory leak. (Optional)
     System.gc();
     System.runFinalization();
     v8Runtime.lowMemoryNotification();

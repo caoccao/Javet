@@ -76,7 +76,7 @@ object Config {
         const val JACKSON_DATABIND = "2.16.0"
         const val JAVA_VERSION = "1.8"
         const val JAVET = "4.1.0"
-        const val JAVET_BUDDY = "0.3.0"
+        const val JAVET_BUDDY = "0.4.0"
         const val JETTY_WEBSOCKET = "9.4.53.v20231009"
         const val JUNIT = "5.10.1"
     }
@@ -105,6 +105,7 @@ java {
 }
 
 dependencies {
+    testImplementation(Config.Projects.BYTE_BUDDY)
     testImplementation(Config.Projects.JACKSON_DATABIND)
     testImplementation(Config.Projects.JAVET_BUDDY)
     testImplementation(Config.Projects.JETTY_JAVAX_WEBSOCKET_SERVER_IMPL)
@@ -112,7 +113,6 @@ dependencies {
     testImplementation(Config.Projects.JUNIT_JUPITER_API)
     testImplementation(Config.Projects.JUNIT_JUPITER_PARAMS)
 //    testImplementation(files("../JavetBuddy/build/libs/javet-buddy-${Config.Versions.JAVET_BUDDY}.jar"))
-//    testImplementation(Config.Projects.BYTE_BUDDY)
     testRuntimeOnly(Config.Projects.JUNIT_JUPITER_ENGINE)
 }
 

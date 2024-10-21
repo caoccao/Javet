@@ -19,7 +19,12 @@ package com.caoccao.javet.interception.jvm;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.buddy.interop.proxy.JavetReflectionObjectFactory;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.callback.IJavetDirectCallable;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.interop.converters.JavetProxyConverter;
+import com.caoccao.javet.utils.V8ValueUtils;
+import com.caoccao.javet.values.reference.V8ValueObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +38,11 @@ public class TestJavetJVMInterceptor extends BaseTestJavetRuntime {
     @Override
     public void afterEach() throws JavetException {
         assertTrue(javetJVMInterceptor.unregister(v8Runtime.getGlobalObject()));
+        try {
+            JavetReflectionObjectFactory.getInstance().clear();
+        } catch (Exception e) {
+            fail(e);
+        }
         v8Runtime.lowMemoryNotification();
         super.afterEach();
     }
@@ -45,7 +55,38 @@ public class TestJavetJVMInterceptor extends BaseTestJavetRuntime {
         javetProxyConverter.getConfig().setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance());
         v8Runtime.setConverter(javetProxyConverter);
         javetJVMInterceptor = new JavetJVMInterceptor(v8Runtime);
+        javetJVMInterceptor.addCallbackContexts(new JavetCallbackContext(
+                "extend",
+                this, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    if (v8Values.length >= 2) {
+                        Object object = v8Runtime.toObject(v8Values[0]);
+                        if (object instanceof Class) {
+                            Class<?> clazz = (Class<?>) object;
+                            V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
+                            if (v8ValueObject != null) {
+                                Class<?> childClass = JavetReflectionObjectFactory.getInstance()
+                                        .extend(clazz, v8ValueObject);
+                                return v8Runtime.toV8Value(childClass);
+                            }
+                        }
+                    }
+                    return v8Runtime.createV8ValueUndefined();
+                }));
         assertTrue(javetJVMInterceptor.register(v8Runtime.getGlobalObject()));
+    }
+
+    @Test
+    public void testExtendArrayList() throws JavetException {
+        v8Runtime.getConverter().getConfig().setProxyListEnabled(true);
+        String codeString = "let ChildArrayList = javet.extend(javet.package.java.util.ArrayList, {\n" +
+                "  isEmpty: () => !$super.isEmpty(),\n" +
+                "});\n" +
+                "let list = new ChildArrayList([1, 2, 3]);\n" +
+                "JSON.stringify([list.isEmpty(), list.size()]);";
+        assertEquals("[true,3]", v8Runtime.getExecutor(codeString).executeString());
+        v8Runtime.getExecutor("ChildArrayList = undefined; list = undefined;").executeVoid();
+        v8Runtime.getConverter().getConfig().setProxyListEnabled(false);
     }
 
     @Test

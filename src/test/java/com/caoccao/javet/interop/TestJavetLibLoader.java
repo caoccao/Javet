@@ -23,6 +23,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetOSUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -71,6 +72,7 @@ public class TestJavetLibLoader {
     }
 
     @Test
+    @Tag("performance")
     public void testLoadAndUnload() {
         if (JavetOSUtils.IS_WINDOWS) {
             Stream.of(JSRuntimeType.values())
