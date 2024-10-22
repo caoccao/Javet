@@ -60,15 +60,6 @@ object Config {
 
         // https://mvnrepository.com/artifact/org.eclipse.jetty.websocket/websocket-server
         const val JETTY_WEBSOCKET_SERVER = "org.eclipse.jetty.websocket:websocket-server:${Versions.JETTY_WEBSOCKET}"
-
-        // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
-        const val JUNIT_JUPITER_API = "org.junit.jupiter:junit-jupiter-api:${Versions.JUNIT}"
-
-        // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
-        const val JUNIT_JUPITER_ENGINE = "org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT}"
-
-        // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params
-        const val JUNIT_JUPITER_PARAMS = "org.junit.jupiter:junit-jupiter-params:${Versions.JUNIT}"
     }
 
     object Versions {
@@ -78,7 +69,7 @@ object Config {
         const val JAVET = "4.1.0"
         const val JAVET_BUDDY = "0.4.0"
         const val JETTY_WEBSOCKET = "9.4.53.v20231009"
-        const val JUNIT = "5.10.1"
+        const val JUNIT = "5.11.3"
     }
 }
 
@@ -110,10 +101,7 @@ dependencies {
     testImplementation(Config.Projects.JAVET_BUDDY)
     testImplementation(Config.Projects.JETTY_JAVAX_WEBSOCKET_SERVER_IMPL)
     testImplementation(Config.Projects.JETTY_WEBSOCKET_SERVER)
-    testImplementation(Config.Projects.JUNIT_JUPITER_API)
-    testImplementation(Config.Projects.JUNIT_JUPITER_PARAMS)
 //    testImplementation(files("../JavetBuddy/build/libs/javet-buddy-${Config.Versions.JAVET_BUDDY}.jar"))
-    testRuntimeOnly(Config.Projects.JUNIT_JUPITER_ENGINE)
 }
 
 afterEvaluate {
@@ -144,6 +132,16 @@ task<Exec>("buildJNIHeaders") {
 tasks.jar {
     manifest {
         attributes["Automatic-Module-Name"] = Config.GROUP_ID
+    }
+}
+
+testing {
+    suites {
+        // Configure the built-in test suite
+        val test by getting(JvmTestSuite::class) {
+            // Use JUnit Jupiter test framework
+            useJUnitJupiter(Config.Versions.JUNIT)
+        }
     }
 }
 
