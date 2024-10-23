@@ -5,6 +5,7 @@ Release Notes 4.0.x - 4.1.x
 4.1.0
 -----
 
+* Upgraded Node.js to ``v22.10.0`` `(2024-10-16) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V22.md#22.10.0>`_
 * Switched to core dependency + individual native dependency
 * Supported ``Float16Array``
 * Added ``Float16``
