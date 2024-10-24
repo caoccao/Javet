@@ -62,6 +62,7 @@ arm64       ✔️        ✔️       ✔️        ❌
 * Live debug with Chrome DevTools
 * AST analysis with `swc4j <https://github.com/caoccao/swc4j>`_
 * JS, TS, JSX, TSX transformation and transpilation with `swc4j <https://github.com/caoccao/swc4j>`_
+* Enhance JVM via Byte-code with `JavetBuddy <https://github.com/caoccao/JavetBuddy>`_
 * Live interaction with `JavetShell <https://github.com/caoccao/JavetShell>`_
 
 Quick Start
