@@ -221,7 +221,7 @@ Here is an example. Assuming ``test.js`` depends on ``module.js``, the code look
     // Step 1: Assign a resource name to a piece of code.
     IV8Executor iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./module.js");
     // Step 2: Compile the module.js.
-    try (V8Module v8Module = iV8Executor.compileModule()) {
+    try (V8Module v8Module = iV8Executor.compileV8Module()) {
         // Step 3: Evaluate the module.js.
         v8Module.executeVoid();
         if (v8Runtime.containsModule("./module.js")) {
