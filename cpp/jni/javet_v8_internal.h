@@ -24,6 +24,7 @@
   */
 
 #pragma warning(disable: 4065)
+#pragma warning(disable: 4018)
 #pragma warning(disable: 4146)
 #pragma warning(disable: 4244)
 #pragma warning(disable: 4267)
@@ -48,6 +49,7 @@
 #include <src/inspector/v8-inspector-impl.h>
 
 #pragma warning(default: 4065)
+#pragma warning(default: 4018)
 #pragma warning(default: 4146)
 #pragma warning(default: 4244)
 #pragma warning(default: 4267)

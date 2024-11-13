@@ -8,7 +8,7 @@ on:
 
 env:
   JAVET_NODE_VERSION: 22.11.0
-  JAVET_V8_VERSION: 13.0.245.16
+  JAVET_V8_VERSION: 13.1.201.8
   JAVET_VERSION: 4.1.0
   ROOT: D:\a\Javet
 
@@ -66,6 +66,7 @@ jobs:
         python3 tools\dev\v8gen.py x64.release -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false ${{ matrix.v8_flag }} v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
         ..\depot_tools\gn.bat gen out.gn/x64.release
         python3 ${{ env.ROOT }}\Javet\scripts\python\patch_v8_build.py -p .\
+        ..\depot_tools\ninja.bat -C out.gn/x64.release v8_monolith || python3 ${{ env.ROOT }}\Javet\scripts\python\patch_v8_build.py -p .\
         ..\depot_tools\ninja.bat -C out.gn/x64.release v8_monolith
         move out.gn out.gn.${{ matrix.name }}
 

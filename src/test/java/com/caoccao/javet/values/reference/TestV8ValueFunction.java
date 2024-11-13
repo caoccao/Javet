@@ -1592,7 +1592,8 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     crackedV8ValueFunction.canDiscardCompiled(),
                     "The cracked function should support discard compiled.");
             assertEquals(2, originalV8ValueFunction.callInteger(null));
-            assertEquals(originalScriptSource, originalV8ValueFunction.getScriptSource());
+            assertEquals(originalScriptSource.getCode(), originalV8ValueFunction.getScriptSource().getCode());
+            assertTrue(originalV8ValueFunction.setScriptSource(originalScriptSource));
             assertFalse(
                     originalV8ValueFunction.setScriptSource(originalScriptSource),
                     "The original function remains unchanged.");
