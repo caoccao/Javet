@@ -86,8 +86,7 @@ jobs:
 
     - name: Setup Clang
       run: |
-        sudo rm -rf /Library/Developer/CommandLineTools
-        xcode-select --install
+        sudo port install clang-16
 
     - name: Build Javet JNI
       run: |
