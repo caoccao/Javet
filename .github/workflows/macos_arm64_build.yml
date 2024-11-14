@@ -84,6 +84,11 @@ jobs:
       with:
         cmake-version: '3.23.x'
 
+    - name: Setup Clang
+      run: |
+        sudo rm -rf /Library/Developer/CommandLineTools
+        xcode-select --install
+
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
