@@ -85,6 +85,9 @@ jobs:
         cmake-version: '3.23.x'
 
     - name: Build Javet JNI
+      env:
+        CC: ${{ env.ROOT }}/google/v8/third_party/llvm-build/Release+Asserts/bin/clang
+        CXX: ${{ env.ROOT }}/google/v8/third_party/llvm-build/Release+Asserts/bin/clang
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
         sed -i '.bak' 's/`nproc`/2/g' build-macos.sh
