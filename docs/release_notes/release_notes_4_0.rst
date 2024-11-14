@@ -7,6 +7,7 @@ Release Notes 4.0.x - 4.1.x
 
 * Upgraded Node.js to ``v22.11.0`` `(2024-10-29) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V22.md#22.11.0>`_
 * Upgraded V8 to ``v13.1.201.8`` (2024-11-11)
+* Upgraded clang to v20 for V8 mode on MacOS
 * Switched to core dependency + individual native dependency
 * Supported ``Float16Array``
 * Added ``Float16``

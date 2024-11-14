@@ -308,7 +308,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
             # This is a patch build.
             # https://github.com/abseil/abseil-cpp/blob/master/CMake/README.md
             add_subdirectory(${V8_DIR}/third_party/abseil-cpp ${V8_RELEASE_DIR}/third_party/abseil-cpp)
-            target_link_libraries(Javet PUBLIC absl::base absl::time)
+            target_link_libraries(Javet PUBLIC -lc++ absl::base absl::time)
         endif()
         if(DEFINED NODE_DIR)
             list(APPEND includeDirs
