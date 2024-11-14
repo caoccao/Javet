@@ -84,9 +84,12 @@ jobs:
       with:
         cmake-version: '3.23.x'
 
+    - name: Set up Homebrew
+      uses: Homebrew/actions/setup-homebrew@master
+
     - name: Setup Clang
       run: |
-        sudo port install clang-16
+        brew install llvm@16
 
     - name: Build Javet JNI
       run: |
