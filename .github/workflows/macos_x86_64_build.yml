@@ -40,7 +40,7 @@ jobs:
     - name: Setup XCode
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: latest-stable
+        xcode-version: latest
 
     - name: Setup Path
       run: |
@@ -83,13 +83,6 @@ jobs:
       uses: jwlawson/actions-setup-cmake@v2.0
       with:
         cmake-version: '3.23.x'
-
-    - name: Set up Homebrew
-      uses: Homebrew/actions/setup-homebrew@master
-
-    - name: Setup Clang
-      run: |
-        brew install llvm@16
 
     - name: Build Javet JNI
       run: |
