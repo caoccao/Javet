@@ -57,10 +57,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -128,6 +125,11 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     @AfterEach
     @Override
     public void afterEach() throws JavetException {
+        try {
+            JavetReflectionObjectFactory.getInstance().clear();
+        } catch (Exception e) {
+            fail(e);
+        }
         v8Runtime.lowMemoryNotification();
         assertFalse(javetProxyConverter.getConfig().isProxyArrayEnabled());
         assertFalse(javetProxyConverter.getConfig().isProxyListEnabled());
@@ -824,74 +826,6 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testDynamicClassAutoCloseable() throws JavetException {
-        IJavetAnonymous anonymous = new IJavetAnonymous() {
-            @V8Function
-            public void test(DynamicClassAutoCloseable mockedDynamicClass) throws Exception {
-                DynamicClassAutoCloseable regularDynamicClass = new DynamicClassAutoCloseable();
-                assertEquals(0, regularDynamicClass.add(1, 2));
-                assertEquals(3, mockedDynamicClass.add(1, 2), "Add should work.");
-                ((AutoCloseable) mockedDynamicClass).close();
-            }
-        };
-        try {
-            javetProxyConverter.getConfig().setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance());
-            v8Runtime.getGlobalObject().set("a", anonymous);
-            String codeString = "a.test({\n" +
-                    "  add: (a, b) => a + b,\n" +
-                    "});";
-            v8Runtime.getExecutor(codeString).executeVoid();
-            v8Runtime.getGlobalObject().delete("a");
-        } finally {
-            javetProxyConverter.getConfig().setReflectionObjectFactory(null);
-        }
-    }
-
-    @Test
-    public void testDynamicClassForceCloseable() throws JavetException {
-        IJavetAnonymous anonymous = new IJavetAnonymous() {
-            @V8Function
-            public void test(DynamicClassForceCloseable mockedDynamicClass) throws Exception {
-                DynamicClassForceCloseable regularDynamicClass = new DynamicClassForceCloseable();
-                assertEquals(0, regularDynamicClass.add(1, 2));
-                assertEquals(3, mockedDynamicClass.add(1, 2), "Add should work.");
-                assertEquals("a", regularDynamicClass.getDescription());
-                assertEquals("b", mockedDynamicClass.getDescription());
-                assertEquals("a", regularDynamicClass.getName());
-                assertEquals("b", mockedDynamicClass.getName(), "String function without arguments should work.");
-                assertEquals(1, regularDynamicClass.getNumber(2));
-                assertEquals(2, mockedDynamicClass.getNumber(2), "Int function with arguments should work.");
-                assertEquals("a", regularDynamicClass.getTitle());
-                assertEquals("b", mockedDynamicClass.getTitle(), "Property as function should work.");
-                assertEquals(0, regularDynamicClass.getValue());
-                assertEquals(1, mockedDynamicClass.getValue(), "Getter for value should work.");
-                mockedDynamicClass.setValue(2);
-                assertEquals(2, mockedDynamicClass.getValue(), "Setter for value should work.");
-                assertFalse(regularDynamicClass.isPassed());
-                assertTrue(mockedDynamicClass.isPassed());
-                ((AutoCloseable) mockedDynamicClass).close();
-            }
-        };
-        try {
-            javetProxyConverter.getConfig().setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance());
-            v8Runtime.getGlobalObject().set("a", anonymous);
-            String codeString = "a.test({\n" +
-                    "  add: (a, b) => a + b,\n" +
-                    "  description: 'b',\n" +
-                    "  getName: () => 'b',\n" +
-                    "  getNumber: (n) => n,\n" +
-                    "  getTitle: 'b',\n" +
-                    "  passed: true,\n" +
-                    "  value: 1,\n" +
-                    "});";
-            v8Runtime.getExecutor(codeString).executeVoid();
-            v8Runtime.getGlobalObject().delete("a");
-        } finally {
-            javetProxyConverter.getConfig().setReflectionObjectFactory(null);
-        }
-    }
-
-    @Test
     public void testEnum() throws JavetException {
         v8Runtime.getGlobalObject().set("JavetErrorType", JavetErrorType.class);
         assertEquals(JavetErrorType.Converter, v8Runtime.getExecutor("JavetErrorType.Converter").executeObject());
@@ -926,6 +860,65 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         } finally {
             v8Runtime.getGlobalObject().delete("a");
         }
+    }
+
+    @Test
+    public void testExtendHandlerArrayList() throws JavetException {
+        MockExtend mockExtend = new MockExtend(ArrayList.class);
+        javetProxyConverter.getConfig().setProxyListEnabled(true);
+        v8Runtime.getGlobalObject().bind(mockExtend);
+        v8Runtime.getGlobalObject().set("ArrayList", ArrayList.class);
+        String codeString = "let ChildArrayList = extend(ArrayList, {\n" +
+                "  isEmpty: () => !$super.isEmpty(),\n" +
+                "});\n" +
+                "let list = new ChildArrayList([1, 2, 3]);\n" +
+                "JSON.stringify([list.isEmpty(), list.size()]);";
+        assertEquals("[true,3]", v8Runtime.getExecutor(codeString).executeString());
+        v8Runtime.getExecutor("ChildArrayList = undefined; list = undefined;").executeVoid();
+        v8Runtime.getGlobalObject().unbind(mockExtend);
+        v8Runtime.getGlobalObject().delete("ArrayList");
+        javetProxyConverter.getConfig().setProxyListEnabled(false);
+    }
+
+    @Test
+    public void testExtendHandlerFile() throws JavetException {
+        MockExtend mockExtend = new MockExtend(File.class);
+        v8Runtime.getGlobalObject().bind(mockExtend);
+        v8Runtime.getGlobalObject().set("File", File.class);
+        String codeString = "let ChildFile = extend(File, {\n" +
+                "  exists: () => !$super.exists(),\n" +
+                "  isFile: () => true,\n" +
+                "  isDirectory: () => true,\n" +
+                "});\n" +
+                "let file = new ChildFile('/tmp/not-exist-file');\n" +
+                "JSON.stringify([file.exists(), file.isFile(), file.isDirectory(), file.getAbsolutePath()]);";
+        assertEquals(
+                "[true,true,true,\"" + (new File("/tmp/not-exist-file").getAbsolutePath().replace("\\", "\\\\")) + "\"]",
+                v8Runtime.getExecutor(codeString).executeString());
+        v8Runtime.getExecutor("ChildFile = undefined; file = undefined;").executeVoid();
+        v8Runtime.getGlobalObject().unbind(mockExtend);
+        v8Runtime.getGlobalObject().delete("File");
+    }
+
+    @Test
+    public void testExtendHandlerPojo() throws JavetException {
+        MockExtend mockExtend = new MockExtend(TestPojo.class);
+        v8Runtime.getGlobalObject().bind(mockExtend);
+        v8Runtime.getGlobalObject().set("TestPojo", TestPojo.class);
+        String codeString = "let ChildTestPojo = extend(TestPojo, {\n" +
+                "  getValue: () => $super.value + '!',\n" +
+                "  toJson: () => $super.toJson() + '!',\n" +
+                "});\n" +
+                "let pojo = new ChildTestPojo('name', 'value');\n" +
+                "pojo.name = 'newName';\n" +
+                "pojo.value = 'newValue';\n" +
+                "JSON.stringify([pojo.name, pojo.value, pojo.getValue(), pojo.toJson()]);";
+        assertEquals(
+                "[\"newName\",\"newValue!\",\"newValue!\",\"{\\\"name\\\":\\\"newName\\\",\\\"value\\\":\\\"newValue\\\"}!\"]",
+                v8Runtime.getExecutor(codeString).executeString());
+        v8Runtime.getExecutor("ChildTestPojo = undefined; pojo = undefined;").executeVoid();
+        v8Runtime.getGlobalObject().unbind(mockExtend);
+        v8Runtime.getGlobalObject().delete("TestPojo");
     }
 
     @Test
@@ -1030,6 +1023,97 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         assertEquals(IJavetClosable.class, v8Runtime.getExecutor("IJavetClosable").executeObject());
         v8Runtime.getGlobalObject().delete("AutoCloseable");
         v8Runtime.getGlobalObject().delete("IJavetClosable");
+    }
+
+    @Test
+    public void testInvocationHandlerAutoCloseable() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public void test(TestDynamicObjectAutoCloseable mockedDynamicClass) throws Exception {
+                TestDynamicObjectAutoCloseable regularDynamicClass = new TestDynamicObjectAutoCloseable();
+                assertEquals(0, regularDynamicClass.add(1, 2));
+                assertEquals(3, mockedDynamicClass.add(1, 2), "Add should work.");
+                ((AutoCloseable) mockedDynamicClass).close();
+            }
+        };
+        try {
+            javetProxyConverter.getConfig().setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance());
+            v8Runtime.getGlobalObject().set("a", anonymous);
+            String codeString = "a.test({\n" +
+                    "  add: (a, b) => a + b,\n" +
+                    "});";
+            v8Runtime.getExecutor(codeString).executeVoid();
+            v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            javetProxyConverter.getConfig().setReflectionObjectFactory(null);
+        }
+    }
+
+    @Test
+    public void testInvocationHandlerFile() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public void test(File file) throws Exception {
+                assertTrue(file.exists());
+                ((AutoCloseable) file).close();
+            }
+        };
+        try {
+            javetProxyConverter.getConfig().setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance());
+            v8Runtime.getGlobalObject().set("a", anonymous);
+            String codeString = "a.test({\n" +
+                    "  $: ['/tmp/not-exist-file'],\n" +
+                    "  exists: () => true,\n" +
+                    "});";
+            v8Runtime.getExecutor(codeString).executeVoid();
+            v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            javetProxyConverter.getConfig().setReflectionObjectFactory(null);
+        }
+    }
+
+    @Test
+    public void testInvocationHandlerForceAutoCloseable() throws JavetException {
+        IJavetAnonymous anonymous = new IJavetAnonymous() {
+            @V8Function
+            public void test(TestDynamicObjectForceCloseable mockedDynamicClass) throws Exception {
+                TestDynamicObjectForceCloseable regularDynamicClass = new TestDynamicObjectForceCloseable();
+                assertEquals(0, regularDynamicClass.add(1, 2));
+                assertEquals(3, mockedDynamicClass.add(1, 2), "Add should work.");
+                assertEquals("a", regularDynamicClass.getDescription());
+                assertEquals("b", mockedDynamicClass.getDescription());
+                assertEquals("a", regularDynamicClass.getName());
+                assertEquals("b", mockedDynamicClass.getName(), "String function without arguments should work.");
+                assertEquals(1, regularDynamicClass.getNumber(2));
+                assertEquals(2, mockedDynamicClass.getNumber(2), "Int function with arguments should work.");
+                assertEquals("a", regularDynamicClass.getTitle());
+                assertEquals("b", mockedDynamicClass.getTitle(), "Property as function should work.");
+                assertEquals(0, regularDynamicClass.getValue());
+                assertEquals(1, mockedDynamicClass.getValue(), "Getter for value should work.");
+                mockedDynamicClass.setValue(2);
+                assertEquals(2, mockedDynamicClass.getValue(), "Setter for value should work.");
+                assertFalse(regularDynamicClass.isPassed());
+                assertTrue(mockedDynamicClass.isPassed());
+                ((AutoCloseable) mockedDynamicClass).close();
+            }
+        };
+        try {
+            javetProxyConverter.getConfig().setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance());
+            v8Runtime.getGlobalObject().set("a", anonymous);
+            String codeString = "a.test({\n" +
+                    "  add: (a, b) => a + b,\n" +
+                    "  description: 'b',\n" +
+                    "  getName: () => 'b',\n" +
+                    "  getNumber: (n) => n,\n" +
+                    "  getTitle: 'b',\n" +
+                    "  passed: true,\n" +
+                    "  value: 1,\n" +
+                    "});";
+            v8Runtime.getExecutor(codeString).executeVoid();
+            v8Runtime.getGlobalObject().delete("a");
+        } finally {
+            javetProxyConverter.getConfig().setReflectionObjectFactory(null);
+        }
     }
 
     @Test
@@ -1788,46 +1872,17 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         }
     }
 
-    public static class DynamicClassAutoCloseable implements AutoCloseable {
-        public int add(int a, int b) {
-            return 0;
+    public static class MockExtend {
+        private final Class<?> clazz;
+
+        public MockExtend(Class<?> clazz) {
+            this.clazz = clazz;
         }
 
-        @Override
-        public void close() throws Exception {
-        }
-    }
-
-    public static class DynamicClassForceCloseable {
-        public int add(int a, int b) {
-            return 0;
-        }
-
-        public String getDescription() {
-            return "a";
-        }
-
-        public String getName() {
-            return "a";
-        }
-
-        public int getNumber(int n) {
-            return 1;
-        }
-
-        public String getTitle() {
-            return "a";
-        }
-
-        public int getValue() {
-            return 0;
-        }
-
-        public boolean isPassed() {
-            return false;
-        }
-
-        public void setValue(int value) {
+        @V8Function
+        public Class<?> extend(Class<?> clazz, V8ValueObject v8ValueObject) throws Exception {
+            assertEquals(this.clazz, clazz);
+            return JavetReflectionObjectFactory.getInstance().extend(clazz, v8ValueObject);
         }
     }
 
@@ -1911,12 +1966,78 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         }
     }
 
+    public static class TestDynamicObjectAutoCloseable implements AutoCloseable {
+        public int add(int a, int b) {
+            return 0;
+        }
+
+        @Override
+        public void close() throws Exception {
+        }
+    }
+
+    public static class TestDynamicObjectForceCloseable {
+        public int add(int a, int b) {
+            return 0;
+        }
+
+        public String getDescription() {
+            return "a";
+        }
+
+        public String getName() {
+            return "a";
+        }
+
+        public int getNumber(int n) {
+            return 1;
+        }
+
+        public String getTitle() {
+            return "a";
+        }
+
+        public int getValue() {
+            return 0;
+        }
+
+        public boolean isPassed() {
+            return false;
+        }
+
+        public void setValue(int value) {
+        }
+    }
+
+    public static class TestPojo {
+        public String name;
+
+        private String value;
+
+        public TestPojo(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        public String toJson() {
+            return "{\"name\":\"" + name + "\",\"value\":\"" + value + "\"}";
+        }
+    }
+
     @V8Convert(mode = V8ConversionMode.Transparent)
     public static class TransparentClass {
+        private final Map<String, String> map;
+
         @V8Property(name = "type")
         public String xType;
-
-        private Map<String, String> map;
 
         public TransparentClass() {
             map = new HashMap<>();

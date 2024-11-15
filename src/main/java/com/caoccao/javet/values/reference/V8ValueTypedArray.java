@@ -79,12 +79,6 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      */
     public static final String PROPERTY_BYTE_OFFSET = "byteOffset";
     /**
-     * The constant PROPERTY_NAME.
-     *
-     * @since 0.7.2
-     */
-    public static final String PROPERTY_NAME = "Name";
-    /**
      * The constant ONE_BYTE_PER_VALUE.
      *
      * @since 0.7.2
@@ -151,14 +145,16 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      */
     public boolean fromBytes(byte[] bytes) throws JavetException {
         Objects.requireNonNull(bytes);
-        if (getType() == V8ValueReferenceType.Int8Array ||
-                getType() == V8ValueReferenceType.Uint8Array ||
-                getType() == V8ValueReferenceType.Uint8ClampedArray) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
-                return v8ValueArrayBuffer.fromBytes(bytes);
-            }
+        switch (getType()) {
+            case Int8Array:
+            case Uint8Array:
+            case Uint8ClampedArray:
+                try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
+                    return v8ValueArrayBuffer.fromBytes(bytes);
+                }
+            default:
+                return false;
         }
-        return false;
     }
 
     /**
@@ -207,13 +203,15 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      */
     public boolean fromIntegers(int[] integers) throws JavetException {
         Objects.requireNonNull(integers);
-        if (getType() == V8ValueReferenceType.Int32Array ||
-                getType() == V8ValueReferenceType.Uint32Array) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
-                return v8ValueArrayBuffer.fromIntegers(integers);
-            }
+        switch (getType()) {
+            case Int32Array:
+            case Uint32Array:
+                try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
+                    return v8ValueArrayBuffer.fromIntegers(integers);
+                }
+            default:
+                return false;
         }
-        return false;
     }
 
     /**
@@ -226,13 +224,15 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      */
     public boolean fromLongs(long[] longs) throws JavetException {
         Objects.requireNonNull(longs);
-        if (getType() == V8ValueReferenceType.BigInt64Array ||
-                getType() == V8ValueReferenceType.BigUint64Array) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
-                return v8ValueArrayBuffer.fromLongs(longs);
-            }
+        switch (getType()) {
+            case BigInt64Array:
+            case BigUint64Array:
+                try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
+                    return v8ValueArrayBuffer.fromLongs(longs);
+                }
+            default:
+                return false;
         }
-        return false;
     }
 
     /**
@@ -245,13 +245,16 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      */
     public boolean fromShorts(short[] shorts) throws JavetException {
         Objects.requireNonNull(shorts);
-        if (getType() == V8ValueReferenceType.Int16Array ||
-                getType() == V8ValueReferenceType.Uint16Array) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
-                return v8ValueArrayBuffer.fromShorts(shorts);
-            }
+        switch (getType()) {
+            case Int16Array:
+            case Uint16Array:
+            case Float16Array:
+                try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
+                    return v8ValueArrayBuffer.fromShorts(shorts);
+                }
+            default:
+                return false;
         }
-        return false;
     }
 
     @Override
@@ -313,6 +316,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
                 break;
             case Int16Array:
             case Uint16Array:
+            case Float16Array:
                 sizeInBytes = TWO_BYTES_PER_VALUE;
                 break;
             case Int32Array:
@@ -341,14 +345,16 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @since 0.7.2
      */
     public byte[] toBytes() throws JavetException {
-        if (getType() == V8ValueReferenceType.Int8Array ||
-                getType() == V8ValueReferenceType.Uint8Array ||
-                getType() == V8ValueReferenceType.Uint8ClampedArray) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
-                return v8ValueArrayBuffer.toBytes();
-            }
+        switch (getType()) {
+            case Int8Array:
+            case Uint8Array:
+            case Uint8ClampedArray:
+                try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
+                    return v8ValueArrayBuffer.toBytes();
+                }
+            default:
+                return null;
         }
-        return null;
     }
 
     /**
@@ -391,13 +397,15 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @since 0.7.2
      */
     public int[] toIntegers() throws JavetException {
-        if (getType() == V8ValueReferenceType.Int32Array ||
-                getType() == V8ValueReferenceType.Uint32Array) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
-                return v8ValueArrayBuffer.toIntegers();
-            }
+        switch (getType()) {
+            case Int32Array:
+            case Uint32Array:
+                try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
+                    return v8ValueArrayBuffer.toIntegers();
+                }
+            default:
+                return null;
         }
-        return null;
     }
 
     /**
@@ -408,13 +416,15 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @since 0.7.2
      */
     public long[] toLongs() throws JavetException {
-        if (getType() == V8ValueReferenceType.BigInt64Array ||
-                getType() == V8ValueReferenceType.BigUint64Array) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
-                return v8ValueArrayBuffer.toLongs();
-            }
+        switch (getType()) {
+            case BigInt64Array:
+            case BigUint64Array:
+                try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
+                    return v8ValueArrayBuffer.toLongs();
+                }
+            default:
+                return null;
         }
-        return null;
     }
 
     /**
@@ -425,12 +435,15 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @since 0.7.2
      */
     public short[] toShorts() throws JavetException {
-        if (getType() == V8ValueReferenceType.Int16Array ||
-                getType() == V8ValueReferenceType.Uint16Array) {
-            try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
-                return v8ValueArrayBuffer.toShorts();
-            }
+        switch (getType()) {
+            case Int16Array:
+            case Uint16Array:
+            case Float16Array:
+                try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
+                    return v8ValueArrayBuffer.toShorts();
+                }
+            default:
+                return null;
         }
-        return null;
     }
 }

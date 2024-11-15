@@ -53,12 +53,13 @@ public enum V8ValueReferenceType {
     Uint16Array(37, "Uint16Array"), //  	0 to 65535 	2 	16-bit unsigned integer 	unsigned short 	uint16_t
     Int32Array(38, "Int32Array"), // -2147483648 to 2147483647 	4 	32-bit two's complement signed integer 	long 	int32_t
     Uint32Array(39, "Uint32Array"), // 0 to 4294967295 	4 	32-bit unsigned integer 	unsigned long 	uint32_t
-    Float32Array(40, "Float32Array"), // 1.2×10^-38 to 3.4×10^38 	4 	32-bit IEEE floating point number (7 significant digits e.g., 1.234567) 	unrestricted float 	float
-    Float64Array(41, "Float64Array"), // 5.0×10^-324 to 1.8×10^308 	8 	64-bit IEEE floating point number (16 significant digits e.g., 1.23456789012345) 	unrestricted double 	double
-    BigInt64Array(42, "BigInt64Array"), // -2^63 to 2^63-1 	8 	64-bit two's complement signed integer 	bigint 	int64_t (signed long long)
-    BigUint64Array(43, "BigUint64Array"); // 0 to 2^64-1 	8 	64-bit unsigned integer 	bigint 	uint64_t (unsigned long long)
+    Float16Array(40, "Float16Array"), // -65504 to 65504	2	N/A
+    Float32Array(41, "Float32Array"), // -3.4e38 to 3.4e38 	4 	32-bit IEEE floating point number (7 significant digits e.g., 1.234567) 	unrestricted float 	float
+    Float64Array(42, "Float64Array"), // -1.8e308 to 1.8e308 	8 	64-bit IEEE floating point number (16 significant digits e.g., 1.23456789012345) 	unrestricted double 	double
+    BigInt64Array(43, "BigInt64Array"), // -2^63 to 2^63-1 	8 	64-bit two's complement signed integer 	bigint 	int64_t (signed long long)
+    BigUint64Array(44, "BigUint64Array"); // 0 to 2^64-1 	8 	64-bit unsigned integer 	bigint 	uint64_t (unsigned long long)
 
-    private static final int LENGTH = 44;
+    private static final int LENGTH = 45;
     private static final V8ValueReferenceType[] TYPES = new V8ValueReferenceType[LENGTH];
 
     static {

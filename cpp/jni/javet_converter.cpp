@@ -672,6 +672,9 @@ namespace Javet {
                     else if (v8Value->IsBigUint64Array()) {
                         type = V8ValueReferenceType::BigUint64Array;
                     }
+                    else if (v8Value->IsFloat16Array()) {
+                        type = V8ValueReferenceType::Float16Array;
+                    }
                     else if (v8Value->IsFloat32Array()) {
                         type = V8ValueReferenceType::Float32Array;
                     }

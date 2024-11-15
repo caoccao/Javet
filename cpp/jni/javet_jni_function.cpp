@@ -151,25 +151,6 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionCopyS
             // Clone the shared function info
             targetV8InternalShared = *v8InternalIsolate->factory()->CloneSharedFunctionInfo(
                 v8::internal::handle(sourceV8InternalShared, v8InternalIsolate));
-            // Clone the scope info
-#ifdef ENABLE_NODE
-            auto sourceScopeInfo = sourceV8InternalShared->scope_info();
-            auto emptyBlocklistHandle = V8InternalStringSet::New(v8InternalIsolate);
-            auto targetScopeInfo = *V8InternalScopeInfo::RecreateWithBlockList(
-                v8InternalIsolate, v8::internal::handle(sourceScopeInfo, v8InternalIsolate), emptyBlocklistHandle);
-            targetV8InternalShared->set_raw_scope_info(targetScopeInfo);
-#else
-            auto sourceScopeInfo = sourceV8InternalShared->scope_info();
-            const int length = (sourceScopeInfo->AllocatedSize() - V8InternalHeapObject::kHeaderSize) / v8::internal::kTaggedSize;
-            auto targetScopeInfo = v8InternalIsolate->factory()->NewScopeInfo(length);
-            v8InternalIsolate->heap()->CopyRange(
-                *targetScopeInfo,
-                targetScopeInfo->data_start(),
-                sourceScopeInfo->data_start(),
-                length,
-                V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
-            targetV8InternalShared->set_raw_scope_info(*targetScopeInfo);
-#endif
             targetV8InternalFunction.set_shared(targetV8InternalShared, V8InternalWriteBarrierMode::UPDATE_WRITE_BARRIER);
             success = true;
         }

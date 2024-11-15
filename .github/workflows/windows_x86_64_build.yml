@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 22.9.0
-  JAVET_V8_VERSION: 13.0.245.16
-  JAVET_VERSION: 4.0.0
+  JAVET_NODE_VERSION: 22.11.0
+  JAVET_V8_VERSION: 13.1.201.8
+  JAVET_VERSION: 4.1.0
   ROOT: D:\a\Javet
 
 jobs:
@@ -49,25 +49,27 @@ jobs:
     - name: Build V8
       env:
         DEPOT_TOOLS_WIN_TOOLCHAIN: 0
+      shell: bash
       run: |
-        cd ${{ env.ROOT }}
+        cd ..
         mkdir google
         cd google
         git clone --depth=10 --branch=main https://chromium.googlesource.com/chromium/tools/depot_tools.git
         cd depot_tools
         git checkout remotes/origin/main
         cd ..
-        .\depot_tools\fetch.bat v8
+        depot_tools/fetch.bat v8
         cd v8
         git checkout ${{ env.JAVET_V8_VERSION }}
         cd ..
-        .\depot_tools\gclient.bat sync -D
+        depot_tools/gclient.bat sync -D
         cd v8
-        python3 tools\dev\v8gen.py x64.release -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false ${{ matrix.v8_flag }} v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-        ..\depot_tools\gn.bat gen out.gn/x64.release
-        python3 ${{ env.ROOT }}\Javet\scripts\python\patch_v8_build.py -p .\
-        ..\depot_tools\ninja.bat -C out.gn/x64.release v8_monolith
-        move out.gn out.gn.${{ matrix.name }}
+        python3 tools/dev/v8gen.py x64.release -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false ${{ matrix.v8_flag }} v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
+        ../depot_tools/gn.bat gen out.gn/x64.release
+        python3 ../../Javet/scripts/python/patch_v8_build.py -p ./
+        ../depot_tools/ninja.bat -C out.gn/x64.release v8_monolith || python3 ../../Javet/scripts/python/patch_v8_build.py -p ./
+        ../depot_tools/ninja.bat -C out.gn/x64.release v8_monolith
+        mv out.gn out.gn.${{ matrix.name }}
 
     - name: Copy the i18n
       if: matrix.name == 'i18n'
