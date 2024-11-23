@@ -599,7 +599,7 @@ Gradle Kotlin DSL - Desktop
             if (os.isLinux) "linux" else ""
         val archType = if (arch == "aarch64" || arch == "arm64") "arm64" else "x86_64"
         implementation("com.caoccao.javet:javet:4.1.1")
-        implementation("com.caoccao.javet:javet-$jsRuntimeTimeType-$osType-$archType$i18nType:4.0.0")
+        implementation("com.caoccao.javet:javet-$jsRuntimeTimeType-$osType-$archType$i18nType:4.1.1")
 
 Gradle Groovy DSL - Desktop
 ---------------------------

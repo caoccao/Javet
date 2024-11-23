@@ -116,7 +116,7 @@ class ChangeJavetVersion(object):
       'docs/tutorial/basic/installation.rst', '\n',
       re.compile(r'<version>(?P<version>\d+\.\d+\.\d+)</version>'),
       re.compile(r'<javet\.version>(?P<version>\d+\.\d+\.\d+)</javet\.version>$'),
-      re.compile(r'javet[\-\w]*:(?P<version>\d+\.\d+\.\d+)["\'@]{1}'),
+      re.compile(r'javet[\-\w$]*:(?P<version>\d+\.\d+\.\d+)["\'@]{1}'),
       re.compile(r'version: \'(?P<version>\d+\.\d+\.\d+)\''))
     self._update(
       'android/pom.xml', '\n',
