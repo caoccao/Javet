@@ -20,6 +20,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.NodeRuntime;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.node.modules.NodeModuleAny;
+import com.caoccao.javet.utils.StringUtils;
 import com.caoccao.javet.values.reference.IV8Module;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
@@ -48,7 +49,9 @@ public class JavetBuiltInModuleResolver implements IV8ModuleResolver {
             throws JavetException {
         IV8Module iV8Module = null;
         // It only works for Node.js runtime and module names starting with "node:".
-        if (v8Runtime.getJSRuntimeType().isNode() && resourceName != null && resourceName.startsWith(PREFIX_NODE)) {
+        if (v8Runtime.getJSRuntimeType().isNode()
+                && StringUtils.isNotEmpty(resourceName)
+                && resourceName.startsWith(PREFIX_NODE)) {
             NodeRuntime nodeRuntime = (NodeRuntime) v8Runtime;
             NodeModuleAny nodeModuleAny = nodeRuntime.getNodeModule(resourceName, NodeModuleAny.class);
             V8ValueObject v8ValueObject = nodeModuleAny.getModuleObject();
