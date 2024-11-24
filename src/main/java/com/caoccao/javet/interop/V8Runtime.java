@@ -1689,9 +1689,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @CheckReturnValue
     IV8Module getV8Module(String resourceName, IV8Module v8ModuleReferrer) throws JavetException {
         IV8Module iV8Module = null;
-        if (!StringUtils.isEmpty(resourceName)) {
+        String absoluteResourceName = v8ModuleResolver == null
+                ? resourceName
+                : v8ModuleResolver.getAbsoluteResourceName(this, resourceName, v8ModuleReferrer);
+        if (!StringUtils.isEmpty(absoluteResourceName)) {
             synchronized (v8ModuleLock) {
-                iV8Module = v8ModuleMap.get(resourceName);
+                iV8Module = v8ModuleMap.get(absoluteResourceName);
             }
             if (iV8Module == null && v8ModuleResolver != null) {
                 iV8Module = v8ModuleResolver.resolve(this, resourceName, v8ModuleReferrer);

@@ -6,6 +6,7 @@ Release Notes 4.0.x - 4.1.x
 -----
 
 * Upgraded Visual Studio 2022 to `v17.12.0 <https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.12>`_
+* Added ``getAbsoluteResourceName()`` to ``IV8ModuleResolver``
 
 4.1.0
 -----
