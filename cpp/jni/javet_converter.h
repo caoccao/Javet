@@ -202,7 +202,7 @@ namespace Javet {
                 jmethodIDV8ValuePrimitiveConstructor,
                 v8Runtime->externalV8Runtime,
                 mStringValue);
-            jniEnv->DeleteLocalRef(mStringValue);
+            DELETE_LOCAL_REF(jniEnv, mStringValue);
             return mV8ValuePrimitive;
         }
 
