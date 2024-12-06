@@ -5,9 +5,13 @@ Release Notes 4.0.x - 4.1.x
 4.1.1
 -----
 
-* Upgraded Visual Studio 2022 to `v17.12.0 <https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.12>`_
+* Upgraded Node.js to ``v22.12.0`` `(2024-12-03) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V22.md#22.12.0>`_
+* Upgraded Visual Studio 2022 to `v17.12.3 <https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.12>`_
 * Added ``getAbsoluteResourceName()`` to ``IV8ModuleResolver``
 * Fixed memory leaks in function callback in edge cases
+* `require(esm)` is enabled by default
+* Removed `isExperimentalRequireModule()`, `setExperimentalRequireModule` from `NodeFlags`
+* Added `isNoExperimentalRequireModule()`, `setNoExperimentalRequireModule` to `NodeFlags`
 
 4.1.0
 -----

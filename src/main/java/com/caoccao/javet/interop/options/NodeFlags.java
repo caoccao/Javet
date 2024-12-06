@@ -50,11 +50,11 @@ public final class NodeFlags {
      */
     public static final String EXPERIMENTAL_PERMISSION = "--experimental-permission";
     /**
-     * The constant EXPERIMENTAL_REQUIRE_MODULE.
+     * The constant NO_EXPERIMENTAL_REQUIRE_MODULE.
      *
-     * @since 4.0.0
+     * @since 4.1.1
      */
-    public static final String EXPERIMENTAL_REQUIRE_MODULE = "--experimental-require-module";
+    public static final String NO_EXPERIMENTAL_REQUIRE_MODULE = "--no-experimental-require-module";
     /**
      * The constant EXPERIMENTAL_SQLITE.
      *
@@ -85,10 +85,10 @@ public final class NodeFlags {
     private String[] allowFsWrite;
     private String[] customFlags;
     private boolean experimentalPermission;
-    private boolean experimentalRequireModule;
     private boolean experimentalSqlite;
     private String icuDataDir;
     private boolean jsFloat16Array;
+    private boolean noExperimentalRequireModule;
     private boolean noWarnings;
     private boolean sealed;
 
@@ -102,7 +102,7 @@ public final class NodeFlags {
         allowFsWrite = null;
         customFlags = null;
         experimentalPermission = false;
-        experimentalRequireModule = false;
+        noExperimentalRequireModule = false;
         experimentalSqlite = false;
         jsFloat16Array = false;
         noWarnings = false;
@@ -177,16 +177,6 @@ public final class NodeFlags {
     }
 
     /**
-     * Supports loading a synchronous ES module graph in require().
-     *
-     * @return true : yes, false: no
-     * @since 4.0.0
-     */
-    public boolean isExperimentalRequireModule() {
-        return experimentalRequireModule;
-    }
-
-    /**
      * Is the experimental node:sqlite module enabled.
      *
      * @return true : yes, false: no
@@ -204,6 +194,16 @@ public final class NodeFlags {
      */
     public boolean isJsFloat16Array() {
         return jsFloat16Array;
+    }
+
+    /**
+     * Does not support loading a synchronous ES module graph in require().
+     *
+     * @return true : yes, false: no
+     * @since 4.1.1
+     */
+    public boolean isNoExperimentalRequireModule() {
+        return noExperimentalRequireModule;
     }
 
     /**
@@ -316,20 +316,6 @@ public final class NodeFlags {
     }
 
     /**
-     * Sets experimental require module.
-     *
-     * @param experimentalRequireModule the experimental require module
-     * @return the self
-     * @since 4.0.0
-     */
-    public NodeFlags setExperimentalRequireModule(boolean experimentalRequireModule) {
-        if (!sealed) {
-            this.experimentalRequireModule = experimentalRequireModule;
-        }
-        return this;
-    }
-
-    /**
      * Sets experimental sqlite.
      *
      * @param experimentalSqlite the experimental sqlite
@@ -372,6 +358,20 @@ public final class NodeFlags {
     }
 
     /**
+     * Sets no experimental require module.
+     *
+     * @param noExperimentalRequireModule the no experimental require module
+     * @return the self
+     * @since 4.1.1
+     */
+    public NodeFlags setNoExperimentalRequireModule(boolean noExperimentalRequireModule) {
+        if (!sealed) {
+            this.noExperimentalRequireModule = noExperimentalRequireModule;
+        }
+        return this;
+    }
+
+    /**
      * Sets no warnings.
      *
      * @param noWarnings the no warnings
@@ -407,8 +407,8 @@ public final class NodeFlags {
         if (experimentalPermission) {
             tokens.add(EXPERIMENTAL_PERMISSION);
         }
-        if (experimentalRequireModule) {
-            tokens.add(EXPERIMENTAL_REQUIRE_MODULE);
+        if (noExperimentalRequireModule) {
+            tokens.add(NO_EXPERIMENTAL_REQUIRE_MODULE);
         }
         if (experimentalSqlite) {
             tokens.add(EXPERIMENTAL_SQLITE);
