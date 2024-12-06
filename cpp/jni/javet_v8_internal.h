@@ -57,7 +57,9 @@
 #pragma warning(default: 4819)
 #pragma warning(default: 4996)
 
+#ifdef ENABLE_NODE
 using V8InternalAllowNullsFlag = v8::internal::AllowNullsFlag;
+#endif
 using V8internalBlockingBehavior = v8::internal::BlockingBehavior;
 using V8InternalBuiltin = v8::internal::Builtin;
 using V8InternalDisallowCompilation = v8::internal::DisallowCompilation;
@@ -71,7 +73,9 @@ using V8InternalJSObject = v8::internal::JSObject;
 using V8InternalModule = v8::internal::Module;
 using V8InternalNativeContext = v8::internal::NativeContext;
 using V8InternalObject = v8::internal::Object;
+#ifdef ENABLE_NODE
 using V8InternalRobustnessFlag = v8::internal::RobustnessFlag;
+#endif
 using V8InternalScopeInfo = v8::internal::ScopeInfo;
 using V8InternalScopeIterator = v8::internal::ScopeIterator;
 using V8InternalScopeType = v8::internal::ScopeType;
