@@ -10,9 +10,9 @@ Release Notes 4.0.x - 4.1.x
 * Upgraded Visual Studio 2022 to `v17.12.3 <https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.12>`_
 * Added ``getAbsoluteResourceName()`` to ``IV8ModuleResolver``
 * Fixed memory leaks in function callback in edge cases
-* `require(esm)` is enabled by default
-* Removed `isExperimentalRequireModule()`, `setExperimentalRequireModule` from `NodeFlags`
-* Added `isNoExperimentalRequireModule()`, `setNoExperimentalRequireModule` to `NodeFlags`
+* ``require(esm)`` is enabled by default
+* Removed ``isExperimentalRequireModule()``, ``setExperimentalRequireModule`` from ``NodeFlags``
+* Added ``isNoExperimentalRequireModule()``, ``setNoExperimentalRequireModule`` to ``NodeFlags``
 
 4.1.0
 -----
