@@ -16,6 +16,14 @@ How to Enable i18n?
 
 * Follow :doc:`../basic/installation` to turn i18n on.
 * Download and save ``icudt*.dat`` files from somewhere to a local directory. E.g. ``v8/third_party/icu``, ``node/deps/icu-tmp``.
+
+.. note::
+
+    There are 2 typical ways of getting the i18n files.
+
+    1. Clone Node.js or V8, then copy the files over.
+    2. Visit `Actions <https://github.com/caoccao/Javet/actions>`_, then download the files from the latest successful builds.
+
 * Set a flag as follows before the first Node.js or V8 runtime is created.
 
 .. code-block:: java

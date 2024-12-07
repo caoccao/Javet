@@ -63,7 +63,7 @@ public class V8Script extends V8ValueReference implements IV8Script {
     @Override
     public String getResourceName() throws JavetException {
         if (resourceName == null) {
-            return checkV8Runtime().getV8Internal().scriptGetResourceName(this);
+            resourceName = checkV8Runtime().getV8Internal().scriptGetResourceName(this);
         }
         return resourceName;
     }

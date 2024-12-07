@@ -27,6 +27,24 @@ import com.caoccao.javet.values.reference.IV8Module;
  */
 public interface IV8ModuleResolver {
     /**
+     * Gets absolute resource name that is used as a key of the internal V8 module cache.
+     *
+     * @param v8Runtime        the V8 runtime
+     * @param resourceName     the resource name
+     * @param v8ModuleReferrer the V8 module referrer
+     * @return the absolute resource name
+     * @throws JavetException the javet exception
+     * @since 4.1.1
+     */
+    default String getAbsoluteResourceName(
+            V8Runtime v8Runtime,
+            String resourceName,
+            IV8Module v8ModuleReferrer)
+            throws JavetException {
+        return resourceName;
+    }
+
+    /**
      * Resolve V8 module.
      *
      * @param v8Runtime        the V8 runtime
@@ -36,5 +54,9 @@ public interface IV8ModuleResolver {
      * @throws JavetException the javet exception
      * @since 0.9.3
      */
-    IV8Module resolve(V8Runtime v8Runtime, String resourceName, IV8Module v8ModuleReferrer) throws JavetException;
+    IV8Module resolve(
+            V8Runtime v8Runtime,
+            String resourceName,
+            IV8Module v8ModuleReferrer)
+            throws JavetException;
 }

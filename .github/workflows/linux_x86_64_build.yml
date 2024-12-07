@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 22.11.0
-  JAVET_V8_VERSION: 13.1.201.8
-  JAVET_VERSION: 4.1.0
+  JAVET_NODE_VERSION: 22.12.0
+  JAVET_V8_VERSION: 13.2.152.16
+  JAVET_VERSION: 4.1.1
   ROOT: /home/runner/work/Javet
 
 jobs:
@@ -62,6 +62,7 @@ jobs:
         gclient sync -D
         cd v8
         python3 tools/dev/v8gen.py x64.release -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false ${{ matrix.v8_flag }} v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
+        gn gen out.gn/x64.release
         sed -i '/#include "src\/libplatform\//a #include <cstdlib>' src/libplatform/default-thread-isolated-allocator.cc
         sed -i '/bool KernelHasPkruFix()/a const char* env = std::getenv("JAVET_DISABLE_PKU"); if (env && std::strlen(env) > 0) { return false; }' src/libplatform/default-thread-isolated-allocator.cc
         ninja -C out.gn/x64.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./

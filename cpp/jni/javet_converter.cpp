@@ -720,21 +720,31 @@ namespace Javet {
                 }
                 if (v8Value->IsArrayBuffer()) {
                     auto v8ArrayBuffer = v8Value.As<v8::ArrayBuffer>();
-                    return jniEnv->NewObject(
+                    jobject directByteBuffer = jniEnv->NewDirectByteBuffer(
+                        v8ArrayBuffer->GetBackingStore()->Data(),
+                        v8ArrayBuffer->ByteLength());
+                    jobject v8ValueArrayBuffer = jniEnv->NewObject(
                         jclassV8ValueArrayBuffer,
                         jmethodIDV8ValueArrayBufferConstructor,
                         v8Runtime->externalV8Runtime,
                         ToV8PersistentReference(v8Context, v8Value),
-                        jniEnv->NewDirectByteBuffer(v8ArrayBuffer->GetBackingStore()->Data(), v8ArrayBuffer->ByteLength()));
+                        directByteBuffer);
+                    DELETE_LOCAL_REF(jniEnv, directByteBuffer);
+                    return v8ValueArrayBuffer;
                 }
                 if (v8Value->IsSharedArrayBuffer()) {
                     auto v8SharedArrayBuffer = v8Value.As<v8::SharedArrayBuffer>();
-                    return jniEnv->NewObject(
+                    jobject directByteBuffer = jniEnv->NewDirectByteBuffer(
+                        v8SharedArrayBuffer->GetBackingStore()->Data(),
+                        v8SharedArrayBuffer->ByteLength());
+                    jobject v8ValueSharedArrayBuffer = jniEnv->NewObject(
                         jclassV8ValueSharedArrayBuffer,
                         jmethodIDV8ValueSharedArrayBufferConstructor,
                         v8Runtime->externalV8Runtime,
                         ToV8PersistentReference(v8Context, v8Value),
-                        jniEnv->NewDirectByteBuffer(v8SharedArrayBuffer->GetBackingStore()->Data(), v8SharedArrayBuffer->ByteLength()));
+                        directByteBuffer);
+                    DELETE_LOCAL_REF(jniEnv, directByteBuffer);
+                    return v8ValueSharedArrayBuffer;
                 }
                 if (v8Value->IsArrayBufferView()) {
                     /*
@@ -939,12 +949,14 @@ namespace Javet {
                     v8LocalBigInt->ToWordsArray(&signBit, &wordCount, reinterpret_cast<uint64_t*>(mLongArrayPointer));
                     jniEnv->ReleaseLongArrayElements(mLongArray, mLongArrayPointer, 0);
                     jint signum = signBit == 0 ? 1 : -1;
-                    return jniEnv->NewObject(
+                    jobject v8ValueBigInteger = jniEnv->NewObject(
                         jclassV8ValueBigInteger,
                         jmethodIDV8ValueBigIntegerConstructor,
                         v8Runtime->externalV8Runtime,
                         signum,
                         mLongArray);
+                    DELETE_LOCAL_REF(jniEnv, mLongArray);
+                    return v8ValueBigInteger;
                 }
             }
             // Something is wrong. It defaults to toString().
@@ -968,7 +980,9 @@ namespace Javet {
                 // TODO: Memory leak might take place.
                 v8ValueArray = jniEnv->NewObjectArray(argLength, jclassV8Value, nullptr);
                 for (int i = 0; i < argLength; ++i) {
-                    jniEnv->SetObjectArrayElement(v8ValueArray, i, ToExternalV8Value(jniEnv, v8Runtime, v8Context, args[i]));
+                    jobject v8Value = ToExternalV8Value(jniEnv, v8Runtime, v8Context, args[i]);
+                    jniEnv->SetObjectArrayElement(v8ValueArray, i, v8Value);
+                    DELETE_LOCAL_REF(jniEnv, v8Value);
                 }
             }
             return v8ValueArray;
@@ -1016,8 +1030,9 @@ namespace Javet {
                     else {
                         v8LocalValue = v8MaybeLocalValue.ToLocalChecked();
                     }
-                    jniEnv->SetObjectArrayElement(
-                        v8Values, i, ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8LocalValue));
+                    jobject v8Value = ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8LocalValue);
+                    jniEnv->SetObjectArrayElement(v8Values, i, v8Value);
+                    DELETE_LOCAL_REF(jniEnv, v8Value);
                 }
                 return actualLength;
             }

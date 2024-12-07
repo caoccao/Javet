@@ -134,8 +134,11 @@ namespace Javet {
                 else {
                     FETCH_JNI_ENV(GlobalJavaVM);
                     auto externalV8Runtime = v8Runtime->externalV8Runtime;
-                    jobject mIV8Module = jniEnv->CallObjectMethod(
-                        externalV8Runtime, jmethodIDV8RuntimeReceiveGCEpilogueCallback, (jint)v8GCType, (jint)v8GCCallbackFlags);
+                    jniEnv->CallVoidMethod(
+                        externalV8Runtime,
+                        jmethodIDV8RuntimeReceiveGCEpilogueCallback,
+                        (jint)v8GCType,
+                        (jint)v8GCCallbackFlags);
                 }
             }
         }
@@ -156,8 +159,11 @@ namespace Javet {
                 else {
                     FETCH_JNI_ENV(GlobalJavaVM);
                     auto externalV8Runtime = v8Runtime->externalV8Runtime;
-                    jobject mIV8Module = jniEnv->CallObjectMethod(
-                        externalV8Runtime, jmethodIDV8RuntimeReceiveGCPrologueCallback, (jint)v8GCType, (jint)v8GCCallbackFlags);
+                    jniEnv->CallVoidMethod(
+                        externalV8Runtime,
+                        jmethodIDV8RuntimeReceiveGCPrologueCallback,
+                        (jint)v8GCType,
+                        (jint)v8GCCallbackFlags);
                 }
             }
         }
@@ -224,9 +230,11 @@ namespace Javet {
                         auto v8PersistentModule = TO_V8_PERSISTENT_MODULE_POINTER(mHandle);
                         LOG_DEBUG("JavetModuleResolveCallback: module '" << moduleNamePointer.get() << "' found");
                         resolvedV8MaybeLocalModule = v8PersistentModule->Get(v8Context->GetIsolate());
+                        DELETE_LOCAL_REF(jniEnv, mIV8Module);
                     }
                     if (mReferrerV8Module != nullptr) {
                         jniEnv->CallVoidMethod(mReferrerV8Module, jmethodIDIV8ValueReferenceClose, true);
+                        DELETE_LOCAL_REF(jniEnv, mReferrerV8Module);
                     }
                 }
             }
@@ -389,7 +397,7 @@ namespace Javet {
                     if (jniEnv->ExceptionCheck()) {
                         if (mResult != nullptr) {
                             jniEnv->CallStaticVoidMethod(jclassJavetResourceUtils, jmethodIDJavetResourceUtilsSafeClose, mResult);
-                            jniEnv->DeleteLocalRef(mResult);
+                            DELETE_LOCAL_REF(jniEnv, mResult);
                         }
                         Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in function callback");
                     }
@@ -404,7 +412,7 @@ namespace Javet {
                         }
                         if (mResult != nullptr) {
                             jniEnv->CallStaticVoidMethod(jclassJavetResourceUtils, jmethodIDJavetResourceUtilsSafeClose, mResult);
-                            jniEnv->DeleteLocalRef(mResult);
+                            DELETE_LOCAL_REF(jniEnv, mResult);
                         }
                     }
                 }
@@ -457,7 +465,7 @@ namespace Javet {
                     }
                     if (mResult != nullptr) {
                         jniEnv->CallStaticVoidMethod(jclassJavetResourceUtils, jmethodIDJavetResourceUtilsSafeClose, mResult);
-                        jniEnv->DeleteLocalRef(mResult);
+                        DELETE_LOCAL_REF(jniEnv, mResult);
                         if (jniEnv->ExceptionCheck()) {
                             Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in property getter callback");
                         }
@@ -511,7 +519,7 @@ namespace Javet {
                         }
                         if (mResult != nullptr) {
                             jniEnv->CallStaticVoidMethod(jclassJavetResourceUtils, jmethodIDJavetResourceUtilsSafeClose, mResult);
-                            jniEnv->DeleteLocalRef(mResult);
+                            DELETE_LOCAL_REF(jniEnv, mResult);
                             if (jniEnv->ExceptionCheck()) {
                                 Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in property setter callback");
                             }

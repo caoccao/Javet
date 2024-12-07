@@ -27,9 +27,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestNodeFlags {
     protected static final List<GetterAndSetter> SWITCHES = SimpleList.of(
-            new GetterAndSetter(NodeFlags::isExperimentalRequireModule, NodeFlags::setExperimentalRequireModule),
             new GetterAndSetter(NodeFlags::isExperimentalSqlite, NodeFlags::setExperimentalSqlite),
             new GetterAndSetter(NodeFlags::isJsFloat16Array, NodeFlags::setJsFloat16Array),
+            new GetterAndSetter(NodeFlags::isNoExperimentalRequireModule, NodeFlags::setNoExperimentalRequireModule),
             new GetterAndSetter(NodeFlags::isNoWarnings, NodeFlags::setNoWarnings)
     );
 
@@ -81,9 +81,9 @@ public class TestNodeFlags {
         assertEquals("--no-warnings", nodeFlags.setNoWarnings(true).toString());
         nodeFlags.setNoWarnings(false);
         assertEquals(
-                "--experimental-require-module",
-                nodeFlags.setExperimentalRequireModule(true).toString());
-        nodeFlags.setExperimentalRequireModule(false);
+                "--no-experimental-require-module",
+                nodeFlags.setNoExperimentalRequireModule(true).toString());
+        nodeFlags.setNoExperimentalRequireModule(false);
         assertEquals("--icu-data-dir=abc", nodeFlags.setIcuDataDir("abc").toString());
         nodeFlags.setIcuDataDir(null);
         assertEquals(

@@ -134,9 +134,7 @@ public class NodeRuntime extends V8Runtime {
             if (nodeModuleClass == NodeModuleProcess.class) {
                 moduleObject = getGlobalObject().get(name);
             } else {
-                try (V8ValueFunction requireFunction = getGlobalObject().get(FUNCTION_REQUIRE)) {
-                    moduleObject = requireFunction.call(null, name);
-                }
+                moduleObject = getGlobalObject().invoke(FUNCTION_REQUIRE, name);
             }
             try {
                 Constructor<Module> constructor = nodeModuleClass.getConstructor(
