@@ -192,11 +192,23 @@ jobs:
         mkdir -p android/javet-android/src/main/jniLibs/x86
         mkdir -p android/javet-android/src/main/jniLibs/x86_64
 
+    - name: Download Javet arm i18n
+      uses: actions/download-artifact@v4
+      with:
+        name: javet-android-v8-arm-${{ env.JAVET_VERSION }}-i18n
+        path: android/javet-android/src/main/jniLibs/armeabi-v7a
+
     - name: Download Javet arm64 i18n
       uses: actions/download-artifact@v4
       with:
         name: javet-android-v8-arm64-${{ env.JAVET_VERSION }}-i18n
         path: android/javet-android/src/main/jniLibs/arm64-v8a
+
+    - name: Download Javet x86 i18n
+      uses: actions/download-artifact@v4
+      with:
+        name: javet-android-v8-x86-${{ env.JAVET_VERSION }}-i18n
+        path: android/javet-android/src/main/jniLibs/x86
 
     - name: Download Javet x86_64 i18n
       uses: actions/download-artifact@v4
