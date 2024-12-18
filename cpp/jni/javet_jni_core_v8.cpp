@@ -22,10 +22,19 @@
   * 1. Omitting namespace is not recommended in this project.
   * 2. Methods are expected to be sorted alphabatically except JNI_OnLoad.
   */
+// Set a callback that disallows the code generation.
+v8::ModifyCodeGenerationFromStringsResult CodeGenerationDisallowed(V8LocalContext context, V8LocalValue source, bool is_code_like) {
+      return {false, {}};
+}
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_allowCodeGenerationFromStrings
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jboolean allow) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+#ifdef ENABLE_NODE
+    if(!allow) {
+       v8Context->GetIsolate()->SetModifyCodeGenerationFromStringsCallback(&CodeGenerationDisallowed);
+    }
+#endif
     v8Context->AllowCodeGenerationFromStrings(allow);
 }
 
