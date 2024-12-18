@@ -21,6 +21,7 @@ import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.utils.*;
+import io.github.pixee.security.SystemCommand;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -134,7 +135,7 @@ public final class JavetLibLoader {
                     }
                     if (JavetOSUtils.IS_LINUX || JavetOSUtils.IS_MACOS || JavetOSUtils.IS_ANDROID) {
                         try {
-                            Runtime.getRuntime().exec(new String[]{CHMOD, XRR, libFile.getAbsolutePath()}).waitFor();
+                            SystemCommand.runCommand(Runtime.getRuntime(), new String[]{CHMOD, XRR, libFile.getAbsolutePath()}).waitFor();
                         } catch (Throwable ignored) {
                         }
                     }
