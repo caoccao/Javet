@@ -27,6 +27,9 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_allowCodeGenerati
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jboolean allow) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     v8Context->AllowCodeGenerationFromStrings(allow);
+#ifdef ENABLE_NODE
+    v8Runtime->v8Isolate->SetModifyCodeGenerationFromStringsCallback(allow);
+#endif
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_await
