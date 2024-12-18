@@ -28,20 +28,13 @@ ModifyCodeGenerationFromStringsResult CodeGenerationDisallowed(
       return {false, {}};
 }
 
-ModifyCodeGenerationFromStringsResult ModifyCodeGeneration(
-    V8LocalContext context, V8LocalValue source, bool is_code_like) {
-  // Allow (passthrough, unmodified) all objects that are not strings.
-  if (!source->IsString()) {
-    return {/* codegen_allowed= */ true, V8MaybeLocalString()};
-  }
-
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_allowCodeGenerationFromStrings
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jboolean allow) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     v8Context->AllowCodeGenerationFromStrings(allow);
 #ifdef ENABLE_NODE
     if(!allow) {
-       v8Context->GetIsolate()->SetModifyCodeGenerationFromStringsCallback(&ModifyCodeGeneration);
+       v8Context->GetIsolate()->SetModifyCodeGenerationFromStringsCallback(&CodeGenerationDisallowed);
     }
 #endif
 }
