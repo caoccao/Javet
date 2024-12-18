@@ -23,7 +23,7 @@
   * 2. Methods are expected to be sorted alphabatically except JNI_OnLoad.
   */
 // Set a callback that disallows the code generation.
-V8Runtime::ModifyCodeGenerationFromStringsResult CodeGenerationDisallowed(
+ModifyCodeGenerationFromStringsResult CodeGenerationDisallowed(
     Local<Context> context, Local<Value> source, bool is_code_like) {
       return {false, {}};
 }
