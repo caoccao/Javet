@@ -333,7 +333,9 @@ This method is for binding a Java code based function in semi-manual way. The ca
 
     MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
     JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-            mockCallbackReceiver, mockCallbackReceiver.getMethod("blank"));
+            "blank",
+            mockCallbackReceiver,
+            mockCallbackReceiver.getMethod("blank"));
     V8ValueObject globalObject = v8Runtime.getGlobalObject();
     globalObject.bindFunction("blank", javetCallbackContext);
     v8Runtime.getExecutor("blank();").executeVoid();
@@ -355,7 +357,9 @@ This method is for binding a Java code based function in complete manual way. Th
 
     MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
     JavetCallbackContext javetCallbackContext = new JavetCallbackContext(
-            mockCallbackReceiver, mockCallbackReceiver.getMethod("blank"));
+            "blank",
+            mockCallbackReceiver,
+            mockCallbackReceiver.getMethod("blank"));
     V8ValueObject globalObject = v8Runtime.getGlobalObject();
     try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(javetCallbackContext);
             V8ValueObject a = v8Runtime.createV8ValueObject()) {
