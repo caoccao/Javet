@@ -2,6 +2,11 @@
 Release Notes 4.0.x - 4.1.x
 ===========================
 
+4.1.2
+-----
+
+* Moved float 16 detection to get better compatibility
+
 4.1.1
 -----
 
