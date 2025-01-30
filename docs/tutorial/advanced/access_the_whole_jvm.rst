@@ -125,6 +125,10 @@ Extend a Java Class
     // Disable the proxy for java.util.List
     v8Runtime.getConverter().getConfig().setProxyListEnabled(false);
 
+.. note::
+
+    byte-buddy doesn't support interface well. Please create an abstract class implementing that interface and use that abstract class instead.
+
 Cleanup
 =======
 
