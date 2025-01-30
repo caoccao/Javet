@@ -6,6 +6,7 @@ Release Notes 4.0.x - 4.1.x
 -----
 
 * Moved float 16 detection to get better compatibility
+* Fixed improper lowercasing of method name for the proxy converter
 
 4.1.1
 -----
