@@ -5,8 +5,10 @@ Release Notes 4.0.x - 4.1.x
 4.1.2
 -----
 
+* Upgraded Node.js to ``v22.14.0`` `(2025-02-11) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V22.md#22.14.0>`_
 * Moved float 16 detection to get better compatibility
 * Fixed improper lowercasing of method name for the proxy converter
+* Removed a warning in the engine pool when an empty engine is found by the daemon internally
 
 4.1.1
 -----
