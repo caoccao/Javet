@@ -281,7 +281,6 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetCon
 (JNIEnv * jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_FUNCTION(v8ValueType)) {
-        auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
         auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
         if (v8InternalFunction.has_context()) {
             return Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8InternalFunction.context());
@@ -352,8 +351,6 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetSco
         V8InternalDisallowGarbageCollection disallowGarbageCollection;
         auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
         auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
-        auto v8InternalShared = *v8InternalFunction.shared();
-        auto v8InternalScopeInfo = *v8InternalShared.scope_info();
         V8InternalScopeIterator scopeIterator(v8InternalIsolate, v8::internal::handle(v8InternalFunction, v8InternalIsolate));
         uint32_t index = 0;
         for (; !scopeIterator.Done(); scopeIterator.Next()) {
@@ -568,7 +565,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
                         V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
                         0, startPosition, &utf8Length));
 #else
-                    uint32_t utf8Length = 0;
+                    size_t utf8Length = 0;
                     auto stdStringHeader(v8InternalSource->ToCString(0, startPosition, &utf8Length));
 #endif
                     auto v8MaybeLocalStringHeader = v8::String::NewFromUtf8(
@@ -593,7 +590,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
                         V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
                         endPosition, sourceLength - endPosition, &utf8Length));
 #else
-                    uint32_t utf8Length = 0;
+                    size_t utf8Length = 0;
                     auto stdStringFooter(v8InternalSource->ToCString(endPosition, sourceLength - endPosition, &utf8Length));
 #endif
                     auto v8MaybeLocalStringFooter = v8::String::NewFromUtf8(

@@ -66,7 +66,6 @@ namespace Javet {
             const V8LocalMap& v8LocalMap,
             const jobject key,
             const V8LocalValue& v8LocalValueValue) {
-            V8MaybeBool v8MaybeBool = v8::Just(false);
             V8TryCatch v8TryCatch(v8Context->GetIsolate());
             auto v8LocalValueKey = Javet::Converter::ToV8Value(jniEnv, v8Context, key);
             if (v8TryCatch.HasCaught()) {

@@ -6,9 +6,13 @@ Release Notes 4.0.x - 4.1.x
 -----
 
 * Upgraded Node.js to ``v22.14.0`` `(2025-02-11) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V22.md#22.14.0>`_
+* Upgraded V8 to ``v13.5.212.10`` (2025-03-20)
+* Upgraded Visual Studio 2022 to `v17.13.5 <https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.13>`_
+* Switched from MSVC to Clang on Windows for V8 mode
 * Moved float 16 detection to get better compatibility
 * Fixed improper lowercasing of method name for the proxy converter
 * Removed a warning in the engine pool when an empty engine is found by the daemon internally
+* Known issue: Snapshot in V8 mode is broken
 
 4.1.1
 -----

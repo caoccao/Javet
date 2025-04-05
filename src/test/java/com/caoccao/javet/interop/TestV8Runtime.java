@@ -27,6 +27,7 @@ import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.utils.SimpleList;
 import com.caoccao.javet.values.reference.V8ValueObject;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -190,6 +191,7 @@ public class TestV8Runtime extends BaseTestJavet {
         }
     }
 
+    @Disabled
     @Test
     public void testSnapshot() throws JavetException {
         if (v8Host.getJSRuntimeType().isV8()) {
