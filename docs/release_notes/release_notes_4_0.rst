@@ -8,12 +8,15 @@ Release Notes 4.0.x - 4.1.x
 * Upgraded Node.js to ``v22.14.0`` `(2025-02-11) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V22.md#22.14.0>`_
 * Upgraded V8 to ``v13.5.212.10`` (2025-03-20)
 * Upgraded Visual Studio 2022 to `v17.13.5 <https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.13>`_
-* Switched from system libc++ to V8 libc++ on Linux for V8 mode
+* Upgraded GCC to v14.2.0
 * Switched from MSVC to Clang on Windows for V8 mode
+* Linux build started to reference libatomic
 * Moved float 16 detection to get better compatibility
 * Fixed improper lowercasing of method name for the proxy converter
 * Removed a warning in the engine pool when an empty engine is found by the daemon internally
-* Known issue: Snapshot in V8 mode is broken
+* Known issue: Snapshot in V8 mode is broken because of no time for investigation
+* Known issue: Linux x86_64 workflow is broken because of too many hacks
+* Known issue: Linux arm64 is broken because of no time for investigation
 
 4.1.1
 -----

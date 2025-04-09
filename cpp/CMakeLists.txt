@@ -235,12 +235,21 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
                 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flax-vector-conversions ")
                 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flax-vector-conversions ")
             endif()
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld")
+            set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=lld")
+            set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -fuse-ld=lld")
             foreach(importLibrary ${importLibraries})
                 set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/lib${importLibrary}.a)
             endforeach(importLibrary)
-            target_link_libraries(Javet PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
+            target_link_libraries(Javet PUBLIC
+                -latomic
+                -Wl,--compress-sections=.text=none
+                -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
                 debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
-            target_link_libraries(JavetStatic PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
+            target_link_libraries(JavetStatic PUBLIC
+                -latomic
+                -Wl,--compress-sections=.text=none
+                -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
                 debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
         endif()
         if(DEFINED NODE_DIR)
