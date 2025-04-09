@@ -110,6 +110,7 @@ if(DEFINED V8_DIR)
         ${V8_DIR}/third_party/abseil-cpp
         ${V8_DIR}/third_party/fp16/src/include
         ${V8_RELEASE_DIR}/gen)
+    add_definitions(-DV8_ENABLE_LEAPTIERING)
     if(DEFINED ENABLE_I18N)
         add_definitions(-DENABLE_I18N -DV8_INTL_SUPPORT)
         list(APPEND includeDirs
@@ -185,6 +186,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     if(DEFINED V8_DIR)
         add_definitions(-D_WIN32_WINNT)
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /clang:-Wno-invalid-offsetof")
         foreach(importLibrary ${importLibraries})
             set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/${importLibrary}.lib)
         endforeach(importLibrary)
