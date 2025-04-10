@@ -15,10 +15,15 @@ Release Notes 4.0.x - 4.1.x
 * Moved float 16 detection to get better compatibility
 * Fixed improper lowercasing of method name for the proxy converter
 * Removed a warning in the engine pool when an empty engine is found by the daemon internally
-* Known issue: Snapshot in V8 mode is broken because of no time for investigation
-* Known issue: Linux x86_64 workflow is broken because of too many hacks
-* Known issue: Linux arm64 is broken because of no time for investigation
-* Known issue: Android Node.js non-i18n is not packaged
+* Known issue: Snapshot in V8 mode is broken (1)
+* Known issue: Linux x86_64 workflow is broken (2)
+* Known issue: Linux arm64 is broken (1)
+* Known issue: Android Node.js non-i18n is not packaged (1)
+
+.. note::
+
+    1. This release took me 2 weeks of all spare time so that I don't have time to investigate.
+    2. The Linux x86_64 build process becomes very hacky because Google shipped a broken build environment.
 
 4.1.1
 -----

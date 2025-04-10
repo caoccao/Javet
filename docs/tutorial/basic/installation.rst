@@ -42,7 +42,7 @@ The following dependencies contain the non-i18n binaries for various OS / JS Run
         <dependency>
             <groupId>com.caoccao.javet</groupId>
             <artifactId>javet-node-linux-arm64</artifactId>
-            <version>4.1.2</version>
+            <version>4.1.1</version>
         </dependency>
 
         <!-- Mac OS (x86_64) -->
@@ -81,7 +81,7 @@ The following dependencies contain the non-i18n binaries for various OS / JS Run
         <dependency>
             <groupId>com.caoccao.javet</groupId>
             <artifactId>javet-v8-linux-arm64</artifactId>
-            <version>4.1.2</version>
+            <version>4.1.1</version>
         </dependency>
 
         <!-- Mac OS (x86_64) -->
@@ -306,7 +306,7 @@ The following dependencies contain the i18n binaries for various OS / JS Runtime
         <dependency>
             <groupId>com.caoccao.javet</groupId>
             <artifactId>javet-node-linux-arm64-i18n</artifactId>
-            <version>4.1.2</version>
+            <version>4.1.1</version>
         </dependency>
 
         <!-- Mac OS (x86_64) -->
@@ -345,7 +345,7 @@ The following dependencies contain the i18n binaries for various OS / JS Runtime
         <dependency>
             <groupId>com.caoccao.javet</groupId>
             <artifactId>javet-v8-linux-arm64-i18n</artifactId>
-            <version>4.1.2</version>
+            <version>4.1.1</version>
         </dependency>
 
         <!-- Mac OS (x86_64) -->
@@ -561,8 +561,8 @@ Gradle Kotlin DSL - Desktop
     .. code-block:: kotlin
 
         implementation("com.caoccao.javet:javet:4.1.2") // Must-have
-        implementation("com.caoccao.javet:javet-node-linux-arm64:4.1.2")
-        implementation("com.caoccao.javet:javet-node-linux-arm64-i18n:4.1.2")
+        implementation("com.caoccao.javet:javet-node-linux-arm64:4.1.1")
+        implementation("com.caoccao.javet:javet-node-linux-arm64-i18n:4.1.1")
         implementation("com.caoccao.javet:javet-node-linux-x86_64:4.1.2")
         implementation("com.caoccao.javet:javet-node-linux-x86_64-i18n:4.1.2")
         implementation("com.caoccao.javet:javet-node-macos-arm64:4.1.2")
@@ -571,8 +571,8 @@ Gradle Kotlin DSL - Desktop
         implementation("com.caoccao.javet:javet-node-macos-x86_64-i18n:4.1.2")
         implementation("com.caoccao.javet:javet-node-windows-x86_64:4.1.2")
         implementation("com.caoccao.javet:javet-node-windows-x86_64-i18n:4.1.2")
-        implementation("com.caoccao.javet:javet-v8-linux-arm64:4.1.2")
-        implementation("com.caoccao.javet:javet-v8-linux-arm64-i18n:4.1.2")
+        implementation("com.caoccao.javet:javet-v8-linux-arm64:4.1.1")
+        implementation("com.caoccao.javet:javet-v8-linux-arm64-i18n:4.1.1")
         implementation("com.caoccao.javet:javet-v8-linux-x86_64:4.1.2")
         implementation("com.caoccao.javet:javet-v8-linux-x86_64-i18n:4.1.2")
         implementation("com.caoccao.javet:javet-v8-macos-arm64:4.1.2")
@@ -607,8 +607,8 @@ Gradle Groovy DSL - Desktop
 .. code-block:: groovy
 
     implementation 'com.caoccao.javet:javet:4.1.2' // Must-have
-    implementation 'com.caoccao.javet:javet-node-linux-arm64:4.1.2'
-    implementation 'com.caoccao.javet:javet-node-linux-arm64-i18n:4.1.2'
+    implementation 'com.caoccao.javet:javet-node-linux-arm64:4.1.1'
+    implementation 'com.caoccao.javet:javet-node-linux-arm64-i18n:4.1.1'
     implementation 'com.caoccao.javet:javet-node-linux-x86_64:4.1.2'
     implementation 'com.caoccao.javet:javet-node-linux-x86_64-i18n:4.1.2'
     implementation 'com.caoccao.javet:javet-node-macos-arm64:4.1.2'
@@ -617,8 +617,8 @@ Gradle Groovy DSL - Desktop
     implementation 'com.caoccao.javet:javet-node-macos-x86_64-i18n:4.1.2'
     implementation 'com.caoccao.javet:javet-node-windows-x86_64:4.1.2'
     implementation 'com.caoccao.javet:javet-node-windows-x86_64-i18n:4.1.2'
-    implementation 'com.caoccao.javet:javet-v8-linux-arm64:4.1.2'
-    implementation 'com.caoccao.javet:javet-v8-linux-arm64-i18n:4.1.2'
+    implementation 'com.caoccao.javet:javet-v8-linux-arm64:4.1.1'
+    implementation 'com.caoccao.javet:javet-v8-linux-arm64-i18n:4.1.1'
     implementation 'com.caoccao.javet:javet-v8-linux-x86_64:4.1.2'
     implementation 'com.caoccao.javet:javet-v8-linux-x86_64-i18n:4.1.2'
     implementation 'com.caoccao.javet:javet-v8-macos-arm64:4.1.2'
@@ -636,7 +636,7 @@ Gradle Kotlin DSL - Android
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet-node-android:4.1.2") // Android Node (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet-node-android:4.1.1") // Android Node (arm, arm64, x86 and x86_64)
     implementation("com.caoccao.javet:javet-node-android-i18n:4.1.2") // Android Node (arm64 and x86_64)
     implementation("com.caoccao.javet:javet-v8-android:4.1.2") // Android V8 (arm, arm64, x86 and x86_64)
     implementation("com.caoccao.javet:javet-v8-android-i18n:4.1.2") // Android V8 (arm, arm64, x86 and x86_64)
@@ -646,7 +646,7 @@ Gradle Groovy DSL - Android
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet-node-android:4.1.2' // Android Node (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet-node-android:4.1.1' // Android Node (arm, arm64, x86 and x86_64)
     implementation 'com.caoccao.javet:javet-node-android-i18n:4.1.2' // Android Node (arm64 and x86_64)
     implementation 'com.caoccao.javet:javet-v8-android:4.1.2' // Android V8 (arm, arm64, x86 and x86_64)
     implementation 'com.caoccao.javet:javet-v8-android-i18n:4.1.2' // Android V8 (arm, arm64, x86 and x86_64)

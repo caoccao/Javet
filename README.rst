@@ -94,7 +94,7 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-node-linux-arm64</artifactId>
-        <version>4.1.2</version>
+        <version>4.1.1</version>
     </dependency>
 
     <!-- Node.js Mac OS (x86_64) -->
@@ -129,7 +129,7 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-v8-linux-arm64</artifactId>
-        <version>4.1.2</version>
+        <version>4.1.1</version>
     </dependency>
 
     <!-- V8 Mac OS (x86_64) -->
@@ -159,12 +159,12 @@ Gradle Kotlin DSL
 .. code-block:: kotlin
 
     implementation("com.caoccao.javet:javet:4.1.2") // Core (Must-have)
-    implementation("com.caoccao.javet:javet-node-linux-arm64:4.1.2")
+    implementation("com.caoccao.javet:javet-node-linux-arm64:4.1.1")
     implementation("com.caoccao.javet:javet-node-linux-x86_64:4.1.2")
     implementation("com.caoccao.javet:javet-node-macos-arm64:4.1.2")
     implementation("com.caoccao.javet:javet-node-macos-x86_64:4.1.2")
     implementation("com.caoccao.javet:javet-node-windows-x86_64:4.1.2")
-    implementation("com.caoccao.javet:javet-v8-linux-arm64:4.1.2")
+    implementation("com.caoccao.javet:javet-v8-linux-arm64:4.1.1")
     implementation("com.caoccao.javet:javet-v8-linux-x86_64:4.1.2")
     implementation("com.caoccao.javet:javet-v8-macos-arm64:4.1.2")
     implementation("com.caoccao.javet:javet-v8-macos-x86_64:4.1.2")
@@ -176,12 +176,12 @@ Gradle Groovy DSL
 .. code-block:: groovy
 
     implementation 'com.caoccao.javet:javet:4.1.2' // Core (Must-have)
-    implementation 'com.caoccao.javet:javet-node-linux-arm64:4.1.2'
+    implementation 'com.caoccao.javet:javet-node-linux-arm64:4.1.1'
     implementation 'com.caoccao.javet:javet-node-linux-x86_64:4.1.2'
     implementation 'com.caoccao.javet:javet-node-macos-arm64:4.1.2'
     implementation 'com.caoccao.javet:javet-node-macos-x86_64:4.1.2'
     implementation 'com.caoccao.javet:javet-node-windows-x86_64:4.1.2'
-    implementation 'com.caoccao.javet:javet-v8-linux-arm64:4.1.2'
+    implementation 'com.caoccao.javet:javet-v8-linux-arm64:4.1.1'
     implementation 'com.caoccao.javet:javet-v8-linux-x86_64:4.1.2'
     implementation 'com.caoccao.javet:javet-v8-macos-arm64:4.1.2'
     implementation 'com.caoccao.javet:javet-v8-macos-x86_64:4.1.2'
