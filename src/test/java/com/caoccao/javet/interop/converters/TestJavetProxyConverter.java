@@ -52,12 +52,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -698,6 +700,15 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertInstanceOf(ClassNotFoundException.class, e.getCause().getCause());
         }
         v8Runtime.getGlobalObject().delete("Class");
+    }
+
+    @Test
+    public void testColor() throws JavetException {
+        v8Runtime.getGlobalObject().set("Color", Color.class);
+        assertEquals(
+                Color.HSBtoRGB(1, 1, 1),
+                v8Runtime.getExecutor("Color.HSBtoRGB(1, 1, 1);").executeInteger());
+        v8Runtime.getGlobalObject().delete("Color");
     }
 
     @Test

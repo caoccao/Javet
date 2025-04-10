@@ -207,7 +207,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                     } else {
                         engine = engines[index];
                         if (engine == null) {
-                            logger.error("Idle engine cannot be null.");
+                            // The engine is either recycled or not created.
                             engine = createEngine();
                             engine.setIndex(index);
                             engines[index] = engine;

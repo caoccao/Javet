@@ -151,26 +151,27 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
         } else {
             String methodName = method.getName();
             String aliasMethodName = methodName.substring(startIndex);
-            Matcher matcher = PATTERN_CAPITALIZED_PREFIX.matcher(aliasMethodName);
-            if (matcher.find()) {
-                final int capitalizedPrefixLength = matcher.group().length();
-                if (capitalizedPrefixLength == 1) {
-                    aliasMethodName = methodName.substring(
-                            startIndex, startIndex + capitalizedPrefixLength).toLowerCase(Locale.ROOT)
-                            + methodName.substring(startIndex + capitalizedPrefixLength);
-                    List<Method> methods = map.computeIfAbsent(aliasMethodName, k -> new ArrayList<>());
-                    methods.add(method);
-                } else {
-                    for (int i = 1; i < capitalizedPrefixLength; ++i) {
-                        aliasMethodName = methodName.substring(startIndex, startIndex + i).toLowerCase(Locale.ROOT)
-                                + methodName.substring(startIndex + i);
-                        List<Method> methods = map.computeIfAbsent(aliasMethodName, k -> new ArrayList<>());
-                        methods.add(method);
+            if (startIndex > 0) {
+                Matcher matcher = PATTERN_CAPITALIZED_PREFIX.matcher(aliasMethodName);
+                if (matcher.find()) {
+                    final int capitalizedPrefixLength = matcher.group().length();
+                    if (capitalizedPrefixLength == 1) {
+                        aliasMethodName = methodName.substring(
+                                startIndex, startIndex + capitalizedPrefixLength).toLowerCase(Locale.ROOT)
+                                + methodName.substring(startIndex + capitalizedPrefixLength);
+                        map.computeIfAbsent(aliasMethodName, k -> new ArrayList<>()).add(method);
+                    } else {
+                        for (int i = 1; i < capitalizedPrefixLength; ++i) {
+                            aliasMethodName = methodName.substring(startIndex, startIndex + i).toLowerCase(Locale.ROOT)
+                                    + methodName.substring(startIndex + i);
+                            map.computeIfAbsent(aliasMethodName, k -> new ArrayList<>()).add(method);
+                        }
                     }
+                } else {
+                    map.computeIfAbsent(aliasMethodName, k -> new ArrayList<>()).add(method);
                 }
             } else {
-                List<Method> methods = map.computeIfAbsent(aliasMethodName, k -> new ArrayList<>());
-                methods.add(method);
+                map.computeIfAbsent(aliasMethodName, k -> new ArrayList<>()).add(method);
             }
         }
     }

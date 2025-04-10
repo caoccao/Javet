@@ -32,7 +32,6 @@
 #pragma warning(disable: 4819)
 #pragma warning(disable: 4996)
 
-#define V8_ENABLE_WEBASSEMBLY 1
 #include <src/objects/objects.h>
 #include <src/objects/objects-inl.h>
 #include <src/api/api-inl.h>

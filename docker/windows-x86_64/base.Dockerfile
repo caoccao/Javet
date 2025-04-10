@@ -29,10 +29,10 @@
 #       The following dockerfile has been out of date because it still uses
 #       Visual Studio 2019 Community. Please contact the maintainer if you want an upgrade.
 
-# Usage: docker build -t sjtucaocao/javet-windows:4.1.1 -m 4G -f docker/windows-x86_64/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-windows:4.1.2 -m 4G -f docker/windows-x86_64/base.Dockerfile .
 
-ARG JAVET_NODE_VERSION=22.12.0
-ARG JAVET_V8_VERSION=13.2.152.16
+ARG JAVET_NODE_VERSION=22.14.0
+ARG JAVET_V8_VERSION=13.5.212.10
 
 # https://hub.docker.com/_/microsoft-windows
 FROM mcr.microsoft.com/windows:20H2-amd64

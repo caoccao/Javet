@@ -58,7 +58,6 @@
     V8HandleScope v8HandleScope(v8Runtime->v8Isolate); \
     auto v8Context = v8Runtime->GetV8LocalContext(); \
     auto v8ContextScope = v8Runtime->GetV8ContextScope(v8Context); \
-    auto v8LocalData = v8PersistentDataPointer->Get(v8Context->GetIsolate());
 
 #define RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle) \
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \

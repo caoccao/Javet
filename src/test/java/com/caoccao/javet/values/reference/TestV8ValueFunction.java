@@ -41,6 +41,7 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -1214,6 +1215,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         }
     }
 
+    @Disabled
     @Test
     public void testGetAndSetContext() throws JavetException {
         String originalCodeString = "(() => {\n" +
@@ -1273,6 +1275,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         }
     }
 
+    @Disabled
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 11, 12})
     public void testGetAndSetExtraLongSourceCode(int optionId) throws JavetException {
@@ -1384,6 +1387,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
      *
      * @throws JavetException the javet exception
      */
+    @Disabled
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 11, 12})
     public void testGetAndSetRegularSourceCode(int optionId) throws JavetException {

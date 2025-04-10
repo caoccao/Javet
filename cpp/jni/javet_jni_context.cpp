@@ -24,7 +24,6 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_contextGet
         V8LocalContext v8ContextValue = v8LocalValue.As<v8::Context>();
         V8InternalNativeContext v8InternalContext = Javet::Converter::ToV8InternalContext(v8ContextValue);
         if (index >= 0 && index < v8InternalContext.length()) {
-            auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
             auto v8InternalObject = v8InternalContext.get(index);
             return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8InternalObject);
         }

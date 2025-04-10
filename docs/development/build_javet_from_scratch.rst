@@ -200,7 +200,7 @@ OS            Node.js Command                                                   
 Linux arm64   ``sh build-linux-arm64.sh -DNODE_DIR=${NODE_HOME}``                 ``sh build-linux-arm64.sh -DV8_DIR=${V8_HOME}``
 Linux x86_64  ``sh build-linux-x86_64.sh -DNODE_DIR=${NODE_HOME}``                ``sh build-linux-x86_64.sh -DV8_DIR=${V8_HOME}``
 Mac OS        ``sh build-macos.sh -DNODE_DIR=${NODE_HOME}``                       ``sh build-macos.sh -DV8_DIR=${V8_HOME}``
-Windows       ``build-windows.cmd -DNODE_DIR=%NODE_HOME%``                        ``build-windows.cmd -DV8_DIR=%V8_HOME%``
+Windows       ``build-windows.cmd -DNODE_DIR=%NODE_HOME%``                        ``build-windows.cmd -DV8_DIR=%V8_HOME% -T ClangCL``
 ============= =================================================================== ===================================================================
 
 After a while, the following libraries will be placed in folder ``${JAVET_HOME}/src/main/resources``.
