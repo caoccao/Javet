@@ -1,0 +1,14 @@
+dcheck_always_on = false
+is_debug = false
+target_cpu = "x64"
+
+# Additional command-line args:
+v8_monolithic=true
+v8_use_external_startup_data=false
+is_component_build=false
+v8_enable_i18n_support=true
+v8_enable_pointer_compression=false
+v8_static_library=true
+symbol_level=0
+use_custom_libcxx=false
+v8_enable_sandbox=false

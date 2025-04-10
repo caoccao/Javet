@@ -11,12 +11,14 @@ Release Notes 4.0.x - 4.1.x
 * Upgraded GCC to v14.2.0
 * Switched from MSVC to Clang on Windows for V8 mode
 * Linux build started to reference libatomic
+* Arm and x86 were not supported for Android Node.js
 * Moved float 16 detection to get better compatibility
 * Fixed improper lowercasing of method name for the proxy converter
 * Removed a warning in the engine pool when an empty engine is found by the daemon internally
 * Known issue: Snapshot in V8 mode is broken because of no time for investigation
 * Known issue: Linux x86_64 workflow is broken because of too many hacks
 * Known issue: Linux arm64 is broken because of no time for investigation
+* Known issue: Android Node.js non-i18n is not packaged
 
 4.1.1
 -----
