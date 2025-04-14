@@ -397,7 +397,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetScr
                 V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
                 0, sourceLength);
 #else
-            auto sourceCode = v8InternalSource->ToCString(0, sourceLength);
+            size_t utf8Length = 0;
+            auto sourceCode = v8InternalSource->ToCString(0, sourceLength, &utf8Length);
 #endif
             return jniEnv->NewObject(
                 Javet::Converter::jclassIV8ValueFunctionScriptSource,
@@ -431,7 +432,8 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetSou
                 V8InternalAllowNullsFlag::DISALLOW_NULLS, V8InternalRobustnessFlag::ROBUST_STRING_TRAVERSAL,
                 startPosition, endPosition - startPosition);
 #else
-            auto sourceCode = v8InternalSource->ToCString(startPosition, endPosition - startPosition);
+            size_t utf8Length = 0;
+            auto sourceCode = v8InternalSource->ToCString(startPosition, endPosition - startPosition, &utf8Length);
 #endif
             return Javet::Converter::ToJavaString(jniEnv, sourceCode.get());
         }
