@@ -67,6 +67,7 @@ jobs:
         sed -i '/static_assert(alignof(Type) <= alignof(decltype(/d' src/objects/tagged-field.h
         sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' src/execution/isolate.h
         sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' src/heap/local-heap.h
+        mkdir -p out.gn/x64.release
         cp ../../Javet/scripts/v8/gn/windows-x86_64-${{ matrix.name }}-args.gn out.gn/x64.release/args.gn
         ../depot_tools/gn.bat gen out.gn/x64.release
         python3 ../../Javet/scripts/python/patch_v8_build.py -p ./
