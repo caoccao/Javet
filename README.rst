@@ -36,7 +36,7 @@ Javet
 
 If you like my work, please **Star** this project. And, you may follow me `@sjtucaocao <https://twitter.com/sjtucaocao>`_, or visit https://blog.caoccao.com/ or https://caoccao.blogspot.com/. And the official support channel is at `discord <https://discord.gg/R4vvKU96gw>`_.
 
-💖 If you like my work, please `donate <https://opencollective.com/javet>`_ to support me. If you have a retired Mac OS (x86_64) device and are fine with mailing it to me, that will be great because I don't have such device to support the community. Thank you for supporting Javet.
+💖 If you like my work, please `donate <https://opencollective.com/javet>`_ to support me. By the way, I'm no longer able to renew my JetBrains open-source license with this project. Thank you for supporting Javet.
 
 Major Features
 ==============
