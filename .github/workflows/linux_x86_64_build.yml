@@ -34,7 +34,7 @@ jobs:
 
     - name: Setup Ubuntu
       run: |
-        sudo apt-get install -y execstack gcc-13 g++-13 cpp-13 libc++-dev libc++abi-dev libpthread-stubs0-dev
+        sudo apt-get install -y execstack
 
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -65,7 +65,7 @@ jobs:
         sed -i '/bool KernelHasPkruFix()/a const char* env = std::getenv("JAVET_DISABLE_PKU"); if (env && std::strlen(env) > 0) { return false; }' src/libplatform/default-thread-isolated-allocator.cc
         sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/__attribute__((tls_model("local-dynamic")))/g' src/execution/isolate.h
         sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/__attribute__((tls_model("local-dynamic")))/g' src/heap/local-heap.h
-        ln -s /usr/lib/gcc/x86_64-linux-gnu/13 build/linux/debian_bullseye_amd64-sysroot/usr/lib/gcc/x86_64-linux-gnu/13
+        ln -s /usr/lib/gcc/x86_64-linux-gnu/14 build/linux/debian_bullseye_amd64-sysroot/usr/lib/gcc/x86_64-linux-gnu/14
         mkdir -p out.gn.${{ matrix.name }}/x64.release
         cp ../../Javet/scripts/v8/gn/linux-x86_64-${{ matrix.name }}-args.gn out.gn.${{ matrix.name }}/x64.release/args.gn
         gn gen out.gn.${{ matrix.name }}/x64.release
