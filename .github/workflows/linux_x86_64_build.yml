@@ -65,7 +65,12 @@ jobs:
         sed -i '/bool KernelHasPkruFix()/a const char* env = std::getenv("JAVET_DISABLE_PKU"); if (env && std::strlen(env) > 0) { return false; }' src/libplatform/default-thread-isolated-allocator.cc
         sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/__attribute__((tls_model("local-dynamic")))/g' src/execution/isolate.h
         sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/__attribute__((tls_model("local-dynamic")))/g' src/heap/local-heap.h
-        ln -s /usr/lib/gcc/x86_64-linux-gnu/14 build/linux/debian_bullseye_amd64-sysroot/usr/lib/gcc/x86_64-linux-gnu/14
+        ln -s /usr/lib/gcc/x86_64-linux-gnu/13 build/linux/debian_bullseye_amd64-sysroot/usr/lib/gcc/x86_64-linux-gnu/13
+        ln -s /lib64 build/linux/debian_bullseye_amd64-sysroot/lib64
+        mkdir -p build/linux/debian_bullseye_amd64-sysroot/lib/gcc/x86_64-linux-gnu
+        ln -s /lib/gcc/x86_64-linux-gnu/13 build/linux/debian_bullseye_amd64-sysroot/lib/gcc/x86_64-linux-gnu/13
+        mv build/linux/debian_bullseye_amd64-sysroot/lib/x86_64-linux-gnu x86_64-linux-gnu.x
+        ln -s /lib/x86_64-linux-gnu build/linux/debian_bullseye_amd64-sysroot/lib/x86_64-linux-gnu
         mkdir -p out.gn.${{ matrix.name }}/x64.release
         cp ../../Javet/scripts/v8/gn/linux-x86_64-${{ matrix.name }}-args.gn out.gn.${{ matrix.name }}/x64.release/args.gn
         gn gen out.gn.${{ matrix.name }}/x64.release
