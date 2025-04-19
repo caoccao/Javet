@@ -34,7 +34,7 @@ jobs:
 
     - name: Setup Ubuntu
       run: |
-        sudo apt-get install -y execstack gcc-13 g++-13 cpp-13 libc++-dev libc++abi-dev
+        sudo apt-get install -y execstack gcc-13 g++-13 cpp-13 libc++-dev libc++abi-dev libpthread-stubs0-dev
 
     - name: Setup Python
       uses: actions/setup-python@v5
