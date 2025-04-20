@@ -15,79 +15,109 @@ Prepare V8
 
 Also, please make sure ``args.gn`` file looks like the following.
 
-.. code-block:: ini
+* x86_64-non-i18n
 
-    ; arm64
+.. include:: ../../scripts/v8/gn/linux-x86_64-non-i18n-args.gn
+    :code: ini
 
-    is_debug = false
-    target_cpu = "arm64"
-    v8_monolithic = true
-    v8_use_external_startup_data = false
-    is_component_build = false
-    v8_enable_i18n_support = false
-    v8_enable_pointer_compression = false
-    v8_static_library = true
-    symbol_level = 0
-    use_custom_libcxx = false
-    v8_enable_sandbox=false
+* x86_64-i18n
 
-    ; x86_64
+.. include:: ../../scripts/v8/gn/linux-x86_64-i18n-args.gn
+    :code: ini
 
-    is_debug = false
-    target_cpu = "x64"
-    v8_monolithic = true
-    v8_use_external_startup_data = false
-    is_component_build = false
-    v8_enable_i18n_support = false
-    v8_enable_pointer_compression = false
-    v8_static_library = true
-    symbol_level = 0
-    use_custom_libcxx = false
-    v8_enable_sandbox=false
+* arm64-non-i18n
 
-.. note::
+.. include:: ../../scripts/v8/gn/linux-arm64-non-i18n-args.gn
+    :code: ini
 
-    * To enable i18n support, please set ``v8_enable_i18n_support = true``.
+* arm64-i18n
+
+.. include:: ../../scripts/v8/gn/linux-arm64-i18n-args.gn
+    :code: ini
 
 Build V8 for Linux arm64
 ------------------------
 
 .. code-block:: shell
 
+    # non-i18n
     export PATH=${DEPOT_TOOLS_HOME}:$PATH
     cd ${V8_HOME}
-    ninja -C out.gn/arm64.release v8_monolith
-    python3 ${JAVET_HOME}/scripts/python/patch_v8_build.py -p ./
-    ninja -C out.gn/arm64.release v8_monolith
+    mkdir -p out.gn.non-i18n/arm64.release
+    cp ${JAVET_HOME}/scripts/v8/gn/linux-arm64-non-i18n-args.gn out.gn.non-i18n/arm64.release/args.gn
+    gn gen out.gn.non-i18n/arm64.release
+    ninja -C out.gn.non-i18n/arm64.release v8_monolith
+
+    # i18n
+    export PATH=${DEPOT_TOOLS_HOME}:$PATH
+    cd ${V8_HOME}
+    mkdir -p out.gn.i18n/arm64.release
+    cp ${JAVET_HOME}/scripts/v8/gn/linux-arm64-i18n-args.gn out.gn.i18n/arm64.release/args.gn
+    gn gen out.gn.i18n/arm64.release
+    ninja -C out.gn.i18n/arm64.release v8_monolith
 
 Build V8 for Linux x86_64
 -------------------------
 
 .. code-block:: shell
 
+    # non-i18n
     export PATH=${DEPOT_TOOLS_HOME}:$PATH
     cd ${V8_HOME}
-    ninja -C out.gn/x64.release v8_monolith
-    python3 ${JAVET_HOME}/scripts/python/patch_v8_build.py -p ./
-    ninja -C out.gn/x64.release v8_monolith
+    mkdir -p out.gn.non-i18n/x64.release
+    cp ${JAVET_HOME}/scripts/v8/gn/linux-x86_64-non-i18n-args.gn out.gn.non-i18n/x86_64.release/args.gn
+    gn gen out.gn.non-i18n/x64.release
+    ninja -C out.gn.non-i18n/x64.release v8_monolith
+
+    # i18n
+    export PATH=${DEPOT_TOOLS_HOME}:$PATH
+    cd ${V8_HOME}
+    mkdir -p out.gn.i18n/x64.release
+    cp ${JAVET_HOME}/scripts/v8/gn/linux-x86_64-i18n-args.gn out.gn.i18n/x86_64.release/args.gn
+    gn gen out.gn.i18n/x64.release
+    ninja -C out.gn.i18n/x64.release v8_monolith
 
 Build V8 for Mac OS arm64
 -------------------------
 
 .. code-block:: shell
 
+    # non-i18n
     export PATH=${DEPOT_TOOLS_HOME}:$PATH
     cd ${V8_HOME}
-    ninja -C out.gn/arm64.release v8_monolith
+    mkdir -p out.gn.non-i18n/arm64.release
+    cp ${JAVET_HOME}/scripts/v8/gn/macos-arm64-non-i18n-args.gn out.gn.non-i18n/arm64.release/args.gn
+    gn gen out.gn.non-i18n/arm64.release
+    ninja -C out.gn.non-i18n/arm64.release v8_monolith
+
+    # i18n
+    export PATH=${DEPOT_TOOLS_HOME}:$PATH
+    cd ${V8_HOME}
+    mkdir -p out.gn.i18n/arm64.release
+    cp ${JAVET_HOME}/scripts/v8/gn/macos-arm64-i18n-args.gn out.gn.i18n/arm64.release/args.gn
+    gn gen out.gn.i18n/arm64.release
+    ninja -C out.gn.i18n/arm64.release v8_monolith
 
 Build V8 for Mac OS x86_64
 --------------------------
 
 .. code-block:: shell
 
+    # non-i18n
     export PATH=${DEPOT_TOOLS_HOME}:$PATH
     cd ${V8_HOME}
-    ninja -C out.gn/x64.release v8_monolith
+    mkdir -p out.gn.non-i18n/x64.release
+    cp ${JAVET_HOME}/scripts/v8/gn/macos-x86_64-non-i18n-args.gn out.gn.non-i18n/x86_64.release/args.gn
+    gn gen out.gn.non-i18n/x64.release
+    ninja -C out.gn.non-i18n/x64.release v8_monolith
+
+    # i18n
+    export PATH=${DEPOT_TOOLS_HOME}:$PATH
+    cd ${V8_HOME}
+    mkdir -p out.gn.i18n/x64.release
+    cp ${JAVET_HOME}/scripts/v8/gn/macos-x86_64-i18n-args.gn out.gn.i18n/x86_64.release/args.gn
+    gn gen out.gn.i18n/x64.release
+    ninja -C out.gn.i18n/x64.release v8_monolith
 
 Build V8 for Windows
 --------------------
@@ -98,13 +128,31 @@ Build V8 for Windows
 
 .. code-block:: shell
 
+    # non-i18n
     set PATH=%DEPOT_TOOLS_HOME%;%PATH%
     set DEPOT_TOOLS_WIN_TOOLCHAIN=0
     cd %V8_HOME%
+    md out.gn\x64.release
+    copy %JAVET_HOME%\scripts\v8\gn\windows-x86_64-non-i18n-args.gn out.gn\x86_64.release\args.gn
+    gn gen out.gn/x64.release
     ninja -C out.gn/x64.release v8_monolith
     python %JAVET_HOME%\scripts\python\patch_v8_build.py -p .\
     ninja -C out.gn/x64.release v8_monolith
-    gn gen --ide=vs out.gn\x64.solution
+    move out.gn\x64.release out.gn.non-i18n
+    gn gen --ide=vs out.gn.non-i18n\x64.solution
+
+    # i18n
+    set PATH=%DEPOT_TOOLS_HOME%;%PATH%
+    set DEPOT_TOOLS_WIN_TOOLCHAIN=0
+    cd %V8_HOME%
+    md out.gn\x64.release
+    copy %JAVET_HOME%\scripts\v8\gn\windows-x86_64-i18n-args.gn out.gn\x86_64.release\args.gn
+    gn gen out.gn/x64.release
+    ninja -C out.gn/x64.release v8_monolith
+    python %JAVET_HOME%\scripts\python\patch_v8_build.py -p .\
+    ninja -C out.gn/x64.release v8_monolith
+    move out.gn\x64.release out.gn.i18n
+    gn gen --ide=vs out.gn.i18n\x64.solution
 
 Build V8 for Android
 --------------------
@@ -115,19 +163,11 @@ Build V8 for Android
     cd ${V8_HOME}
     python3 tools/dev/v8gen.py arm.release -- 'target_os="android"' 'target_cpu="arm"' 'v8_target_cpu="arm"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
     ninja -C out.gn/arm.release v8_monolith
-    python3 ${JAVET_HOME}/scripts/python/patch_v8_build.py -p ./
-    ninja -C out.gn/arm.release v8_monolith
     python3 tools/dev/v8gen.py arm64.release -- 'target_os="android"' 'target_cpu="arm64"' 'v8_target_cpu="arm64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-    ninja -C out.gn/arm64.release v8_monolith
-    python3 ${JAVET_HOME}/scripts/python/patch_v8_build.py -p ./
     ninja -C out.gn/arm64.release v8_monolith
     python3 tools/dev/v8gen.py ia32.release -- 'target_os="android"' 'target_cpu="x86"' 'v8_target_cpu="x86"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
     ninja -C out.gn/ia32.release v8_monolith
-    python3 ${JAVET_HOME}/scripts/python/patch_v8_build.py -p ./
-    ninja -C out.gn/ia32.release v8_monolith
     python3 tools/dev/v8gen.py x64.release -- 'target_os="android"' 'target_cpu="x64"' 'v8_target_cpu="x64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-    ninja -C out.gn/x64.release v8_monolith
-    python3 ${JAVET_HOME}/scripts/python/patch_v8_build.py -p ./
     ninja -C out.gn/x64.release v8_monolith
 
 Why Patching V8?
