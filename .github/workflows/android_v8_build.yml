@@ -18,49 +18,41 @@ jobs:
       matrix:
         include:
           - v8_release: arm
-            v8_arch: arm
             android_arch: arm
             android_abi: armeabi-v7a
             i18n_name: i18n
             cmake_flag: -DENABLE_I18N=1
           - v8_release: arm64
-            v8_arch: arm64
             android_arch: arm64
             android_abi: arm64-v8a
             i18n_name: i18n
             cmake_flag: -DENABLE_I18N=1
           - v8_release: ia32
-            v8_arch: x86
             android_arch: x86
             android_abi: x86
             i18n_name: i18n
             cmake_flag: -DENABLE_I18N=1
           - v8_release: x64
-            v8_arch: x64
             android_arch: x86_64
             android_abi: x86_64
             i18n_name: i18n
             cmake_flag: -DENABLE_I18N=1
           - v8_release: arm
-            v8_arch: arm
             android_arch: arm
             android_abi: armeabi-v7a
             i18n_name: non-i18n
             cmake_flag:
           - v8_release: arm64
-            v8_arch: arm64
             android_arch: arm64
             android_abi: arm64-v8a
             i18n_name: non-i18n
             cmake_flag:
           - v8_release: ia32
-            v8_arch: x86
             android_arch: x86
             android_abi: x86
             i18n_name: non-i18n
             cmake_flag:
           - v8_release: x64
-            v8_arch: x64
             android_arch: x86_64
             android_abi: x86_64
             i18n_name: non-i18n
@@ -112,7 +104,7 @@ jobs:
         gclient sync -D
         cd v8
         mkdir -p out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
-        cp ../../Javet/scripts/v8/gn/android-${{ matrix.v8_release }}-${{ matrix.i18n_name }}-args.gn out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release/args.gn
+        cp ../../Javet/scripts/v8/gn/android-${{ matrix.android_arch }}-${{ matrix.i18n_name }}-args.gn out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release/args.gn
         gn gen out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
         ninja -C out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release v8_monolith
 
