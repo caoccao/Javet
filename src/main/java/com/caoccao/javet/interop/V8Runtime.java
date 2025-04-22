@@ -34,6 +34,7 @@ import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
 import com.caoccao.javet.interop.monitoring.V8SharedMemoryStatistics;
 import com.caoccao.javet.interop.monitoring.V8StatisticsFuture;
 import com.caoccao.javet.interop.options.RuntimeOptions;
+import com.caoccao.javet.interop.proxy.IMethodInvoker;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.utils.SimpleMap;
@@ -340,6 +341,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.7.0
      */
     IV8Native v8Native;
+    /**
+     * The method invoker method.
+     */
+    IMethodInvoker methodInvoker;
 
     /**
      * Instantiates a new V8 runtime.
@@ -383,6 +388,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         v8ModuleMap = new HashMap<>();
         v8ModuleResolver = null;
         v8Internal = new V8Internal(this);
+        methodInvoker = Method::invoke;
         initializeV8ValueCache();
     }
 
@@ -3784,5 +3790,24 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @CheckReturnValue
     public <T, V extends V8Value> V toV8Value(T object) throws JavetException {
         return converter.toV8Value(this, object);
+    }
+
+    /** 
+     * Sets the method invoker to use in place of {@ref Method#invoke(Object, Object...)},
+     * for instrumenting calls to methods annotated with {@ref V8Function}.
+     *
+     * @param methodInvoker the method invoker
+     */
+    public void setMethodInvoker(IMethodInvoker methodInvoker) {
+        this.methodInvoker = methodInvoker;
+    }
+
+    /**
+     * Gets the method invoker.
+     *
+     * @return the method invoker
+     */
+    public IMethodInvoker getMethodInvoker() {
+        return methodInvoker;
     }
 }

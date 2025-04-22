@@ -345,9 +345,9 @@ public final class V8FunctionCallback {
                             Class<?>[] parameterTypes = method.getParameterTypes();
                             Class<?> parameterClass = parameterTypes[parameterTypes.length - 1];
                             Object varObject = Array.newInstance(parameterClass.getComponentType(), 0);
-                            resultObject = method.invoke(callbackReceiver, varObject);
+                            resultObject = v8Runtime.getMethodInvoker().invoke(method, callbackReceiver, varObject);
                         } else {
-                            resultObject = method.invoke(callbackReceiver);
+                            resultObject = v8Runtime.getMethodInvoker().invoke(method, callbackReceiver);
                         }
                     } else {
                         final int length = values.size();
@@ -380,7 +380,7 @@ public final class V8FunctionCallback {
                                 objectValues.add(convert(converter, parameterTypes[i], v8Value));
                             }
                         }
-                        resultObject = method.invoke(callbackReceiver, objectValues.toArray());
+                        resultObject = v8Runtime.getMethodInvoker().invoke(method, callbackReceiver, objectValues.toArray());
                     }
                 } else {
                     switch (javetCallbackContext.getCallbackType()) {
