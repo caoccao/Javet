@@ -134,9 +134,9 @@ if(DEFINED NODE_DIR)
             ${NODE_DIR}/deps/icu-small/source/common)
     endif()
     list(APPEND importLibraries
-        ada brotli cares crdtp histogram llhttp nbytes ncrypto nghttp2 nghttp3 ngtcp2 openssl simdjson simdutf sqlite torque_base uvwasi
+        ada brotli cares crdtp histogram llhttp nbytes ncrypto nghttp2 openssl simdjson simdutf sqlite torque_base uvwasi
         v8_abseil v8_base_without_compiler v8_compiler v8_init v8_initializers v8_initializers_slow
-        v8_libbase v8_libplatform v8_snapshot v8_turboshaft v8_zlib zlib)
+        v8_libbase v8_libplatform v8_snapshot v8_turboshaft v8_zlib zlib zstd)
     # node, uv
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         list(APPEND importLibraries libnode libuv)
