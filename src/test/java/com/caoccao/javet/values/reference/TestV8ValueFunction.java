@@ -41,7 +41,6 @@ import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.primitive.V8ValueUndefined;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -865,7 +864,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             assertEquals(3, iV8Executor.executeInteger());
             v8ValueObject.unbind(anonymous);
         } catch (JavetExecutionException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             fail(e.getScriptingError().toString());
         } finally {
             v8Runtime.lowMemoryNotification();
@@ -1131,7 +1130,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                                 Thread.sleep(10 + random.nextInt(20));
                                 v8Runtime.terminateExecution();
                             } catch (InterruptedException e) {
-                                e.printStackTrace();
+                                e.printStackTrace(System.err);
                             }
                         }
                     });
@@ -1185,7 +1184,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     //noinspection BusyWait
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    e.printStackTrace(System.err);
                 }
             }
             assertFalse(failed.get());
@@ -1215,134 +1214,136 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
         }
     }
 
-    @Disabled
     @Test
     public void testGetAndSetContext() throws JavetException {
-        String originalCodeString = "(() => {\n" +
-                "  let a = 1;\n" +
-                "  let b = 3;\n" +
-                "  return () => a + b + 1;\n" +
-                "})();";
-        String crackedCodeString = "(() => {\n" +
-                "  let a;\n" +
-                "  let b;\n" +
-                "  return () => {\n" +
-                "    a++;\n" +
-                "    return a + 2 * b + 2;\n" +
-                "  }\n" +
-                "})()";
-        try (V8ValueFunction originalV8ValueFunction = v8Runtime.createV8ValueFunction(originalCodeString)) {
-            IV8ValueFunction.ScriptSource originalScriptSource = originalV8ValueFunction.getScriptSource();
-            assertEquals("() => a + b + 1", originalScriptSource.getCodeSnippet(), "The code snippet should match.");
-            assertTrue(originalV8ValueFunction.getJSScopeType().isClass(), "The context is not ready.");
-            assertEquals(5, originalV8ValueFunction.callInteger(null), "Populate the context.");
-            if (v8Runtime.getJSRuntimeType().isNode()) {
-                assertTrue(originalV8ValueFunction.getJSScopeType().isFunction(), "The context is ready.");
-            } else {
-                assertTrue(originalV8ValueFunction.getJSScopeType().isScript(), "The context is ready.");
-            }
-            try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(crackedCodeString);
-                 V8Context v8Context = originalV8ValueFunction.getContext()) {
-                assertNotNull(v8Context);
-                assertEquals(4, v8Context.getLength());
-                assertTrue(v8Context.isDeclarationContext());
-                assertTrue(v8Context.isFunctionContext());
-                assertFalse(v8Context.isModuleContext());
-                assertFalse(v8Context.isScriptContext());
-                assertTrue(v8Context.getUndefined(0).isUndefined());
-                try (V8Context v8Context1 = v8Context.get(1)) {
-                    assertNotNull(v8Context1);
-                    assertTrue(v8Context1.getLength() > 0);
-                    assertTrue(v8Context1.isDeclarationContext());
+        if (!v8Host.getJSRuntimeType().isV8()) {
+            String originalCodeString = "(() => {\n" +
+                    "  let a = 1;\n" +
+                    "  let b = 3;\n" +
+                    "  return () => a + b + 1;\n" +
+                    "})();";
+            String crackedCodeString = "(() => {\n" +
+                    "  let a;\n" +
+                    "  let b;\n" +
+                    "  return () => {\n" +
+                    "    a++;\n" +
+                    "    return a + 2 * b + 2;\n" +
+                    "  }\n" +
+                    "})()";
+            try (V8ValueFunction originalV8ValueFunction = v8Runtime.createV8ValueFunction(originalCodeString)) {
+                IV8ValueFunction.ScriptSource originalScriptSource = originalV8ValueFunction.getScriptSource();
+                assertEquals("() => a + b + 1", originalScriptSource.getCodeSnippet(), "The code snippet should match.");
+                assertTrue(originalV8ValueFunction.getJSScopeType().isClass(), "The context is not ready.");
+                assertEquals(5, originalV8ValueFunction.callInteger(null), "Populate the context.");
+                if (v8Runtime.getJSRuntimeType().isNode()) {
+                    assertTrue(originalV8ValueFunction.getJSScopeType().isFunction(), "The context is ready.");
+                } else {
+                    assertTrue(originalV8ValueFunction.getJSScopeType().isScript(), "The context is ready.");
+                }
+                try (V8ValueFunction crackedV8ValueFunction = v8Runtime.createV8ValueFunction(crackedCodeString);
+                     V8Context v8Context = originalV8ValueFunction.getContext()) {
+                    assertNotNull(v8Context);
+                    assertEquals(4, v8Context.getLength());
+                    assertTrue(v8Context.isDeclarationContext());
                     assertTrue(v8Context.isFunctionContext());
                     assertFalse(v8Context.isModuleContext());
                     assertFalse(v8Context.isScriptContext());
+                    assertTrue(v8Context.getUndefined(0).isUndefined());
+                    try (V8Context v8Context1 = v8Context.get(1)) {
+                        assertNotNull(v8Context1);
+                        assertTrue(v8Context1.getLength() > 0);
+                        assertTrue(v8Context1.isDeclarationContext());
+                        assertTrue(v8Context.isFunctionContext());
+                        assertFalse(v8Context.isModuleContext());
+                        assertFalse(v8Context.isScriptContext());
+                    }
+                    assertEquals(1, v8Context.getInteger(2), "Initial value of 'a' should be 1.");
+                    assertEquals(3, v8Context.getInteger(3), "Initial value of 'b' should be 1.");
+                    assertTrue(crackedV8ValueFunction.setContext(v8Context));
+                    // Variable 'a' in the closure context is incremented by the next function call.
+                    assertEquals(10, crackedV8ValueFunction.callInteger(null),
+                            "The cracked function should be " + crackedCodeString + ".");
+                    assertEquals(2, v8Context.getInteger(2), "Updated value of 'a' should be 2.");
+                    assertEquals(3, v8Context.getInteger(3), "Updated value of 'b' should be 3.");
                 }
-                assertEquals(1, v8Context.getInteger(2), "Initial value of 'a' should be 1.");
-                assertEquals(3, v8Context.getInteger(3), "Initial value of 'b' should be 1.");
-                assertTrue(crackedV8ValueFunction.setContext(v8Context));
-                // Variable 'a' in the closure context is incremented by the next function call.
-                assertEquals(10, crackedV8ValueFunction.callInteger(null),
-                        "The cracked function should be " + crackedCodeString + ".");
-                assertEquals(2, v8Context.getInteger(2), "Updated value of 'a' should be 2.");
-                assertEquals(3, v8Context.getInteger(3), "Updated value of 'b' should be 3.");
+                assertFalse(originalV8ValueFunction.setScriptSource(originalScriptSource));
+                assertEquals(6, originalV8ValueFunction.callInteger(null),
+                        "The original function should be () => a + b + 1.");
+                IV8ValueFunction.ScriptSource newScriptSource = originalV8ValueFunction.getScriptSource();
+                assertEquals(originalScriptSource, newScriptSource, "The script source should match.");
             }
-            assertFalse(originalV8ValueFunction.setScriptSource(originalScriptSource));
-            assertEquals(6, originalV8ValueFunction.callInteger(null),
-                    "The original function should be () => a + b + 1.");
-            IV8ValueFunction.ScriptSource newScriptSource = originalV8ValueFunction.getScriptSource();
-            assertEquals(originalScriptSource, newScriptSource, "The script source should match.");
         }
     }
 
-    @Disabled
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 11, 12})
     public void testGetAndSetExtraLongSourceCode(int optionId) throws JavetException {
-        IV8ValueFunction.SetSourceCodeOptions options = getOptions(optionId);
-        IJavetAnonymous anonymous = new IJavetAnonymous() {
-            private int callCount = 0;
+        if (!v8Host.getJSRuntimeType().isV8()) {
+            IV8ValueFunction.SetSourceCodeOptions options = getOptions(optionId);
+            IJavetAnonymous anonymous = new IJavetAnonymous() {
+                private int callCount = 0;
 
-            @V8Function
-            public Integer intercept(V8ValueFunction v8ValueFunction) throws JavetException {
-                assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined());
-                if (v8ValueFunction.getJSScopeType().isClass()) {
-                    v8ValueFunction.callInteger(null, 0);
+                @V8Function
+                public Integer intercept(V8ValueFunction v8ValueFunction) throws JavetException {
+                    assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined());
+                    if (v8ValueFunction.getJSScopeType().isClass()) {
+                        v8ValueFunction.callInteger(null, 0);
+                    }
+                    if (v8Runtime.getJSRuntimeType().isNode()) {
+                        assertTrue(v8ValueFunction.getJSScopeType().isFunction());
+                    } else {
+                        assertTrue(v8ValueFunction.getJSScopeType().isScript());
+                    }
+                    String originalCodeString = v8ValueFunction.getSourceCode();
+                    String newCodeString = originalCodeString + " /*\n測試\nI am longer\n*/ + 1";
+                    v8ValueFunction.setSourceCode(newCodeString, options);
+                    int result = v8ValueFunction.callInteger(null, 1);
+                    if (v8Runtime.getJSRuntimeType().isNode()) {
+                        assertTrue(v8ValueFunction.getJSScopeType().isFunction());
+                    } else {
+                        assertTrue(v8ValueFunction.getJSScopeType().isScript());
+                    }
+                    v8ValueFunction.setSourceCode(originalCodeString, options);
+                    ++callCount;
+                    return result;
                 }
-                if (v8Runtime.getJSRuntimeType().isNode()) {
-                    assertTrue(v8ValueFunction.getJSScopeType().isFunction());
-                } else {
-                    assertTrue(v8ValueFunction.getJSScopeType().isScript());
-                }
-                String originalCodeString = v8ValueFunction.getSourceCode();
-                String newCodeString = originalCodeString + " /*\n測試\nI am longer\n*/ + 1";
-                v8ValueFunction.setSourceCode(newCodeString, options);
-                int result = v8ValueFunction.callInteger(null, 1);
-                if (v8Runtime.getJSRuntimeType().isNode()) {
-                    assertTrue(v8ValueFunction.getJSScopeType().isFunction());
-                } else {
-                    assertTrue(v8ValueFunction.getJSScopeType().isScript());
-                }
-                v8ValueFunction.setSourceCode(originalCodeString, options);
-                ++callCount;
-                return result;
+            };
+            String placeholder = "/*\n" + String.join("\n", ZoneId.getAvailableZoneIds()) + "\n*/";
+            try {
+                final int copyCount = 10;
+                v8Runtime.getGlobalObject().bind(anonymous);
+                StringBuilder sb = new StringBuilder();
+                sb.append("// Header x\n");
+                IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
+                sb.append("const a = [];\n");
+                IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
+                sb.append("for (let i = 0; i < 5; ++i) {\n");
+                IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
+                sb.append("  a.push(intercept( x => /* comment */ x + i + 0 /* comment */));\n");
+                IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
+                sb.append("  a.push(intercept( x => /* comment */ x + i + 1 /* comment */));\n");
+                IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
+                sb.append("  a.push(intercept( x => /* comment */ x + i + 2 /* comment */));\n");
+                IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
+                sb.append("  a.push(intercept( x => /* comment */ x + i + 3 /* comment */));\n");
+                IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
+                sb.append("  a.push(intercept( x => /* comment */ x + i + 4 /* comment */));\n");
+                IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
+                sb.append("}\n");
+                IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
+                sb.append("// Footer");
+                String sourceCode = sb.toString();
+                v8Runtime.getExecutor(sourceCode).executeVoid();
+                assertEquals(
+                        "[2,3,4,5,6,3,4,5,6,7,4,5,6,7,8,5,6,7,8,9,6,7,8,9,10]",
+                        v8Runtime.getExecutor("JSON.stringify(a);").executeString());
+                v8Runtime.getGlobalObject().unbind(anonymous);
+            } catch (JavetExecutionException e) {
+                e.printStackTrace(System.err);
+                fail(e.getScriptingError().toString());
+            } finally {
+                v8Runtime.lowMemoryNotification();
             }
-        };
-        String placeholder = "/*\n" + String.join("\n", ZoneId.getAvailableZoneIds()) + "\n*/";
-        try {
-            final int copyCount = 10;
-            v8Runtime.getGlobalObject().bind(anonymous);
-            StringBuilder sb = new StringBuilder();
-            sb.append("// Header x\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
-            sb.append("const a = [];\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
-            sb.append("for (let i = 0; i < 5; ++i) {\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
-            sb.append("  a.push(intercept( x => /* comment */ x + i + 0 /* comment */));\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
-            sb.append("  a.push(intercept( x => /* comment */ x + i + 1 /* comment */));\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
-            sb.append("  a.push(intercept( x => /* comment */ x + i + 2 /* comment */));\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
-            sb.append("  a.push(intercept( x => /* comment */ x + i + 3 /* comment */));\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
-            sb.append("  a.push(intercept( x => /* comment */ x + i + 4 /* comment */));\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
-            sb.append("}\n");
-            IntStream.range(0, copyCount).forEach(i -> sb.append(placeholder).append("\n"));
-            sb.append("// Footer");
-            String sourceCode = sb.toString();
-            v8Runtime.getExecutor(sourceCode).executeVoid();
-            assertEquals(
-                    "[2,3,4,5,6,3,4,5,6,7,4,5,6,7,8,5,6,7,8,9,6,7,8,9,10]",
-                    v8Runtime.getExecutor("JSON.stringify(a);").executeString());
-            v8Runtime.getGlobalObject().unbind(anonymous);
-        } catch (JavetExecutionException e) {
-            e.printStackTrace();
-            fail(e.getScriptingError().toString());
-        } finally {
-            v8Runtime.lowMemoryNotification();
         }
     }
 
@@ -1387,121 +1388,122 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
      *
      * @throws JavetException the javet exception
      */
-    @Disabled
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 11, 12})
     public void testGetAndSetRegularSourceCode(int optionId) throws JavetException {
-        final int functionCount = 5;
-        IV8ValueFunction.SetSourceCodeOptions options = getOptions(optionId);
-        String functionStatementTemplate = "var {0} = {1};\n";
-        String functionNameTemplate = "f{0}";
-        String[][] functionBodyTemplates = new String[][]{
-                // One Byte (0): Increase the length
-                new String[]{
-                        "() => /* One Byte (0) */ a[{0}]",
-                        "() => /* One Byte (0) */ a[{0}] + 1",
-                },
-                // One Byte (1): Decrease the length
-                new String[]{
-                        "() => /* One Byte (1) I am longer */ a[{0}]",
-                        "() => /* One Byte (1) */ a[{0}] + 1",
-                },
-                // Two Bytes (2): Increase the length
-                new String[]{
-                        "() => /* Two Bytes (2) 简体 繁體 にほんご français Español I am longer */ a[{0}]",
-                        "() => /* Two Bytes (2) 简体 繁體 にほんご français Español */ a[{0}] + 1",
-                },
-                // Two Bytes (3): Decrease the length
-                new String[]{
-                        "() => /* Two Bytes (3) 简体 繁體 にほんご français Español */ a[{0}]",
-                        "() => /* Two Bytes (3) 简体 繁體 にほんご français Español */ a[{0}] + 1",
-                },
-                // One Byte => Two Bytes (4): Increase the length
-                new String[]{
-                        "() => /* One Byte => Two Bytes (4) */ a[{0}]",
-                        "() => /* One Byte => Two Bytes (4) 简体 繁體 にほんご français Español */ a[{0}] + 1",
-                },
-                // One Byte => Two Bytes (5): Decrease the length
-                new String[]{
-                        "() => /* One Byte => Two Bytes (5) I am longer I am longer I am longer I am longer */ a[{0}]",
-                        "() => /* One Byte => Two Bytes (5) 简体 繁體 にほんご français Español */ a[{0}] + 1",
-                },
-                // Two Bytes => One Byte (6): Increase the length
-                new String[]{
-                        "() => /* Two Bytes => One Byte (6) 简体 繁體 にほんご français Español */ a[{0}]",
-                        "() => /* Two Bytes => One Byte (6) I am longer I am longer I am longer I am longer */ a[{0}] + 1",
-                },
-                // Two Bytes => One Byte (7): Decrease the length
-                new String[]{
-                        "() => /* Two Bytes => One Byte (7) 简体 繁體 にほんご français Español */ a[{0}]",
-                        "() => /* Two Bytes => One Byte (7) */ a[{0}] + 1",
-                },
-        };
-        for (String[] functionBodyTemplate : functionBodyTemplates) {
-            List<String> functionNames = new ArrayList<>(functionCount);
-            List<String> functionBodies = new ArrayList<>(functionCount);
-            final StringBuilder sb = new StringBuilder();
-            sb.append("const a = Array.from(Array(").append(functionCount).append(").keys());\n");
-            IntStream.range(0, functionCount).forEach(i -> {
-                String functionName = MessageFormat.format(functionNameTemplate, i);
-                String functionBody = MessageFormat.format(functionBodyTemplate[0], i);
-                functionNames.add(functionName);
-                functionBodies.add(functionBody);
-                String functionStatement = MessageFormat.format(functionStatementTemplate, functionName, functionBody);
-                sb.append(functionStatement);
-            });
-            String codeString = sb.toString();
-            v8Runtime.getExecutor(codeString).executeVoid();
-            for (int i = 0; i < functionCount; ++i) {
-                // Get, update and restore the source code.
-                try (V8ValueFunction v8ValueFunction = v8Runtime.getGlobalObject().get(functionNames.get(i))) {
-                    assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined(),
-                            "Function type should be user defined.");
-                    assertTrue(v8ValueFunction.getJSScopeType().isClass(),
-                            "The cache is not ready and the scope type should be [Class].");
-                    assertEquals(functionBodies.get(i), v8ValueFunction.getSourceCode(),
-                            "The source code should match.");
-                    assertTrue(v8ValueFunction.getJSScopeType().isClass(),
-                            "The cache is not ready and the scope type should be [Class].");
-                    assertEquals(i, v8ValueFunction.callInteger(null),
-                            "Calling the function to build the cache and the result should match.");
-                    if (v8Runtime.getJSRuntimeType().isNode()) {
-                        assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
-                                "The cache is ready and the scope type should be [Function].");
-                    } else {
-                        assertTrue(v8ValueFunction.getJSScopeType().isScript(),
-                                "The cache is ready and the scope type should be [Script].");
+        if (!v8Host.getJSRuntimeType().isV8()) {
+            final int functionCount = 5;
+            IV8ValueFunction.SetSourceCodeOptions options = getOptions(optionId);
+            String functionStatementTemplate = "var {0} = {1};\n";
+            String functionNameTemplate = "f{0}";
+            String[][] functionBodyTemplates = new String[][]{
+                    // One Byte (0): Increase the length
+                    new String[]{
+                            "() => /* One Byte (0) */ a[{0}]",
+                            "() => /* One Byte (0) */ a[{0}] + 1",
+                    },
+                    // One Byte (1): Decrease the length
+                    new String[]{
+                            "() => /* One Byte (1) I am longer */ a[{0}]",
+                            "() => /* One Byte (1) */ a[{0}] + 1",
+                    },
+                    // Two Bytes (2): Increase the length
+                    new String[]{
+                            "() => /* Two Bytes (2) 简体 繁體 にほんご français Español I am longer */ a[{0}]",
+                            "() => /* Two Bytes (2) 简体 繁體 にほんご français Español */ a[{0}] + 1",
+                    },
+                    // Two Bytes (3): Decrease the length
+                    new String[]{
+                            "() => /* Two Bytes (3) 简体 繁體 にほんご français Español */ a[{0}]",
+                            "() => /* Two Bytes (3) 简体 繁體 にほんご français Español */ a[{0}] + 1",
+                    },
+                    // One Byte => Two Bytes (4): Increase the length
+                    new String[]{
+                            "() => /* One Byte => Two Bytes (4) */ a[{0}]",
+                            "() => /* One Byte => Two Bytes (4) 简体 繁體 にほんご français Español */ a[{0}] + 1",
+                    },
+                    // One Byte => Two Bytes (5): Decrease the length
+                    new String[]{
+                            "() => /* One Byte => Two Bytes (5) I am longer I am longer I am longer I am longer */ a[{0}]",
+                            "() => /* One Byte => Two Bytes (5) 简体 繁體 にほんご français Español */ a[{0}] + 1",
+                    },
+                    // Two Bytes => One Byte (6): Increase the length
+                    new String[]{
+                            "() => /* Two Bytes => One Byte (6) 简体 繁體 にほんご français Español */ a[{0}]",
+                            "() => /* Two Bytes => One Byte (6) I am longer I am longer I am longer I am longer */ a[{0}] + 1",
+                    },
+                    // Two Bytes => One Byte (7): Decrease the length
+                    new String[]{
+                            "() => /* Two Bytes => One Byte (7) 简体 繁體 にほんご français Español */ a[{0}]",
+                            "() => /* Two Bytes => One Byte (7) */ a[{0}] + 1",
+                    },
+            };
+            for (String[] functionBodyTemplate : functionBodyTemplates) {
+                List<String> functionNames = new ArrayList<>(functionCount);
+                List<String> functionBodies = new ArrayList<>(functionCount);
+                final StringBuilder sb = new StringBuilder();
+                sb.append("const a = Array.from(Array(").append(functionCount).append(").keys());\n");
+                IntStream.range(0, functionCount).forEach(i -> {
+                    String functionName = MessageFormat.format(functionNameTemplate, i);
+                    String functionBody = MessageFormat.format(functionBodyTemplate[0], i);
+                    functionNames.add(functionName);
+                    functionBodies.add(functionBody);
+                    String functionStatement = MessageFormat.format(functionStatementTemplate, functionName, functionBody);
+                    sb.append(functionStatement);
+                });
+                String codeString = sb.toString();
+                v8Runtime.getExecutor(codeString).executeVoid();
+                for (int i = 0; i < functionCount; ++i) {
+                    // Get, update and restore the source code.
+                    try (V8ValueFunction v8ValueFunction = v8Runtime.getGlobalObject().get(functionNames.get(i))) {
+                        assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined(),
+                                "Function type should be user defined.");
+                        assertTrue(v8ValueFunction.getJSScopeType().isClass(),
+                                "The cache is not ready and the scope type should be [Class].");
+                        assertEquals(functionBodies.get(i), v8ValueFunction.getSourceCode(),
+                                "The source code should match.");
+                        assertTrue(v8ValueFunction.getJSScopeType().isClass(),
+                                "The cache is not ready and the scope type should be [Class].");
+                        assertEquals(i, v8ValueFunction.callInteger(null),
+                                "Calling the function to build the cache and the result should match.");
+                        if (v8Runtime.getJSRuntimeType().isNode()) {
+                            assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
+                                    "The cache is ready and the scope type should be [Function].");
+                        } else {
+                            assertTrue(v8ValueFunction.getJSScopeType().isScript(),
+                                    "The cache is ready and the scope type should be [Script].");
+                        }
+                        assertTrue(v8ValueFunction.setSourceCode(MessageFormat.format(functionBodyTemplate[1], i), options),
+                                "Updating the source code should pass.");
+                        assertEquals(i + 1, v8ValueFunction.callInteger(null),
+                                "Calling the new function and the result should match.");
+                        assertTrue(v8ValueFunction.setSourceCode(functionBodies.get(i), options),
+                                "Restoring the source code should pass.");
+                        if (v8Runtime.getJSRuntimeType().isNode()) {
+                            assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
+                                    "The cache is refreshed and the scope type should be [Function].");
+                        } else {
+                            assertTrue(v8ValueFunction.getJSScopeType().isScript(),
+                                    "The cache is refreshed and the scope type should be [Script].");
+                        }
                     }
-                    assertTrue(v8ValueFunction.setSourceCode(MessageFormat.format(functionBodyTemplate[1], i), options),
-                            "Updating the source code should pass.");
-                    assertEquals(i + 1, v8ValueFunction.callInteger(null),
-                            "Calling the new function and the result should match.");
-                    assertTrue(v8ValueFunction.setSourceCode(functionBodies.get(i), options),
-                            "Restoring the source code should pass.");
-                    if (v8Runtime.getJSRuntimeType().isNode()) {
-                        assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
-                                "The cache is refreshed and the scope type should be [Function].");
-                    } else {
-                        assertTrue(v8ValueFunction.getJSScopeType().isScript(),
-                                "The cache is refreshed and the scope type should be [Script].");
+                    // Verify the cache.
+                    try (V8ValueFunction v8ValueFunction = v8Runtime.getGlobalObject().get(functionNames.get(i))) {
+                        assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined(),
+                                "Function type should be user defined.");
+                        if (v8Runtime.getJSRuntimeType().isNode()) {
+                            assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
+                                    "The cache is restored and the scope type should be [Function].");
+                        } else {
+                            assertTrue(v8ValueFunction.getJSScopeType().isScript(),
+                                    "The cache is restored and the scope type should be [Script].");
+                        }
+                        assertEquals(i, v8ValueFunction.callInteger(null),
+                                "Calling the function from the cache and the result should match.");
                     }
                 }
-                // Verify the cache.
-                try (V8ValueFunction v8ValueFunction = v8Runtime.getGlobalObject().get(functionNames.get(i))) {
-                    assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined(),
-                            "Function type should be user defined.");
-                    if (v8Runtime.getJSRuntimeType().isNode()) {
-                        assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
-                                "The cache is restored and the scope type should be [Function].");
-                    } else {
-                        assertTrue(v8ValueFunction.getJSScopeType().isScript(),
-                                "The cache is restored and the scope type should be [Script].");
-                    }
-                    assertEquals(i, v8ValueFunction.callInteger(null),
-                            "Calling the function from the cache and the result should match.");
-                }
+                v8Runtime.resetContext();
             }
-            v8Runtime.resetContext();
         }
     }
 

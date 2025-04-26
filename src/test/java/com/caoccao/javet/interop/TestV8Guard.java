@@ -124,7 +124,7 @@ public class TestV8Guard extends BaseTestJavet {
                         try {
                             TimeUnit.MILLISECONDS.sleep(1);
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            e.printStackTrace(System.err);
                         }
                     }
                     // V8 runtime terminateExecution() does not require lock.

@@ -121,7 +121,7 @@ public class TestJavetCustomConverter extends BaseTestJavetRuntime {
                         try (V8Value v8ValueTemp = toV8Value(v8Runtime, method.invoke(object), depth + 1)) {
                             v8ValueObject.set(propertyName, v8ValueTemp);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            e.printStackTrace(System.err);
                         }
                     }
                 }
