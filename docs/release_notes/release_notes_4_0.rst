@@ -2,6 +2,15 @@
 Release Notes 4.0.x - 4.1.x
 ===========================
 
+4.1.3
+-----
+
+* Upgraded Node.js to ``v22.15.0`` `(2025-04-23) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V22.md#22.15.0>`_
+* Upgraded V8 to ``v13.6.233.5`` (2025-04-10)
+* Upgraded Visual Studio 2022 to `v17.13.6 <https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.13>`_
+* Fixed Linux arm64 build
+* Fixed Android Node.js non-i18n build
+
 4.1.2
 -----
 

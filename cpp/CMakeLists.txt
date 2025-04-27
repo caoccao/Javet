@@ -134,9 +134,9 @@ if(DEFINED NODE_DIR)
             ${NODE_DIR}/deps/icu-small/source/common)
     endif()
     list(APPEND importLibraries
-        ada brotli cares crdtp histogram llhttp nbytes ncrypto nghttp2 nghttp3 ngtcp2 openssl simdjson simdutf sqlite torque_base uvwasi
+        ada brotli cares crdtp histogram llhttp nbytes ncrypto nghttp2 openssl simdjson simdutf sqlite torque_base uvwasi
         v8_abseil v8_base_without_compiler v8_compiler v8_init v8_initializers v8_initializers_slow
-        v8_libbase v8_libplatform v8_snapshot v8_turboshaft v8_zlib zlib)
+        v8_libbase v8_libplatform v8_snapshot v8_turboshaft v8_zlib zlib zstd)
     # node, uv
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         list(APPEND importLibraries libnode libuv)
@@ -186,7 +186,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     if(DEFINED V8_DIR)
         add_definitions(-D_WIN32_WINNT)
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /clang:-Wno-invalid-offsetof")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /clang:-Wno-invalid-offsetof /clang:-Wno-nullability-completeness")
         foreach(importLibrary ${importLibraries})
             set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/${importLibrary}.lib)
         endforeach(importLibrary)
@@ -340,8 +340,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
             # This is a patch build.
             # https://github.com/abseil/abseil-cpp/blob/master/CMake/README.md
             add_subdirectory(${NODE_DIR}/deps/v8/third_party/abseil-cpp ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/third_party/abseil-cpp)
-            target_link_libraries(Javet PUBLIC v8_init absl::base absl::crc32c absl::time)
-            target_link_libraries(JavetStatic PUBLIC v8_init absl::base absl::crc32c absl::time)
+            target_link_libraries(Javet PUBLIC v8_init absl::base absl::crc32c absl::time "-framework Security")
+            target_link_libraries(JavetStatic PUBLIC v8_init absl::base absl::crc32c absl::time "-framework Security")
         endif()
         # https://caoccao.blogspot.com/2021/08/jni-symbol-conflicts-in-mac-os.html
         target_link_libraries(Javet PUBLIC -exported_symbols_list ${CMAKE_SOURCE_DIR}/jni/exported_symbols_list.txt)

@@ -63,7 +63,7 @@ public class TestV8Inspector extends BaseTestJavet {
                     v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Runtime.runIfWaitingForDebugger\",\"params\":{}}");
                     v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet() + ",\"method\":\"Runtime.evaluate\",\"params\":{\"expression\":\"a\",\"includeCommandLineAPI\":true,\"generatePreview\":true,\"userGesture\":false,\"awaitPromise\":false,\"throwOnSideEffect\":true,\"timeout\":500,\"disableBreaks\":true,\"replMode\":true}}");
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    e.printStackTrace(System.err);
                     fail("V8 inspector should not throw exception.");
                 }
             });

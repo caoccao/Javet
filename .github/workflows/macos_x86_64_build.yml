@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 22.14.0
-  JAVET_V8_VERSION: 13.5.212.10
-  JAVET_VERSION: 4.1.2
+  JAVET_NODE_VERSION: 22.15.0
+  JAVET_V8_VERSION: 13.6.233.5
+  JAVET_VERSION: 4.1.3
   ROOT: /Users/runner/work/Javet
 
 jobs:
@@ -61,11 +61,10 @@ jobs:
         cd ..
         gclient sync -D
         cd v8
-        python3 tools/dev/v8gen.py x64.release -- v8_monolithic=true v8_use_external_startup_data=false is_component_build=false ${{ matrix.v8_flag }} v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-        gn gen out.gn/x64.release
-        ninja -C out.gn/x64.release v8_monolith || python3 ${{ env.ROOT }}/Javet/scripts/python/patch_v8_build.py -p ./
-        ninja -C out.gn/x64.release v8_monolith
-        mv out.gn out.gn.${{ matrix.name }}
+        mkdir -p out.gn.${{ matrix.name }}/x64.release
+        cp ../../Javet/scripts/v8/gn/macos-x86_64-${{ matrix.name }}-args.gn out.gn.${{ matrix.name }}/x64.release/args.gn
+        gn gen out.gn.${{ matrix.name }}/x64.release
+        ninja -C out.gn.${{ matrix.name }}/x64.release v8_monolith
 
     - name: Copy the i18n
       if: matrix.name == 'i18n'
