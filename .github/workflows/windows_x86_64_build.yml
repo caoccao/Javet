@@ -8,7 +8,7 @@ on:
 
 env:
   JAVET_NODE_VERSION: 22.15.0
-  JAVET_V8_VERSION: 13.6.233.5
+  JAVET_V8_VERSION: 13.7.152.2
   JAVET_VERSION: 4.1.4
   ROOT: D:\a\Javet
 
@@ -64,9 +64,6 @@ jobs:
         cd ..
         depot_tools/gclient.bat sync -D
         cd v8
-        sed -i '/static_assert(alignof(Type) <= alignof(decltype(/d' src/objects/tagged-field.h
-        sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' src/execution/isolate.h
-        sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' src/heap/local-heap.h
         mkdir -p out.gn/x64.release
         cp ../../Javet/scripts/v8/gn/windows-x86_64-${{ matrix.name }}-args.gn out.gn/x64.release/args.gn
         ../depot_tools/gn.bat gen out.gn/x64.release

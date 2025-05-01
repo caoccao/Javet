@@ -2,6 +2,12 @@
 Release Notes 4.0.x - 4.1.x
 ===========================
 
+4.1.4
+-----
+
+* Upgraded V8 to ``v13.7.152.2`` (2025-04-30)
+* Fixed Snapshot in V8 mode
+
 4.1.3
 -----
 

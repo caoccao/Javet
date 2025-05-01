@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_V8_VERSION: 13.6.233.5
+  JAVET_V8_VERSION: 13.7.152.2
   JAVET_VERSION: 4.1.4
   ROOT: /home/runner/work/Javet
 

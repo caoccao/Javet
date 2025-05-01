@@ -191,7 +191,6 @@ public class TestV8Runtime extends BaseTestJavet {
         }
     }
 
-    @Disabled
     @Test
     public void testSnapshot() throws JavetException {
         if (v8Host.getJSRuntimeType().isV8()) {
