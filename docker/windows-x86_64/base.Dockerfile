@@ -32,7 +32,7 @@
 # Usage: docker build -t sjtucaocao/javet-windows:4.1.4 -m 4G -f docker/windows-x86_64/base.Dockerfile .
 
 ARG JAVET_NODE_VERSION=22.15.1
-ARG JAVET_V8_VERSION=13.7.152.2
+ARG JAVET_V8_VERSION=13.7.152.9
 
 # https://hub.docker.com/_/microsoft-windows
 FROM mcr.microsoft.com/windows:20H2-amd64

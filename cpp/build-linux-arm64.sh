@@ -9,7 +9,7 @@ cd build_linux_arm64
 mkdir -p ../../build/libs
 cmake ../ -DJAVET_VERSION=${JAVET_VERSION} "$@" \
   && make -j `nproc` \
-  && strip --strip-unneeded -R .note -R .comment ../../src/main/resources/libjavet-*-linux-arm64.v.${JAVET_VERSION}.so
+  && strip --strip-unneeded -R .note -R .comment ../../src/main/resources/libjavet-*-linux-*.v.${JAVET_VERSION}.so
 if [ $? -eq 0 ]; then
   cp -f *.a ../../build/libs
   echo Build Completed
