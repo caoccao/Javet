@@ -5,6 +5,7 @@ Release Notes 4.0.x - 4.1.x
 4.1.4
 -----
 
+* Upgraded Node.js to ``v22.15.1`` `(2025-05-14) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V22.md#22.15.1>`_
 * Upgraded V8 to ``v13.7.152.2`` (2025-04-30)
 * Fixed Snapshot in V8 mode
 
