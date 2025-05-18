@@ -103,8 +103,8 @@ jobs:
         echo 'target_os = ["android"]' >> .gclient
         gclient sync -D
         cd v8
-        git apply ../Javet/scripts/patches/android/v8/builtins-typed-array.cc.patch
-        git apply ../Javet/scripts/patches/android/v8/simd.cc.patch
+        git apply ../../Javet/scripts/patches/android/v8/builtins-typed-array.cc.patch
+        git apply ../../Javet/scripts/patches/android/v8/simd.cc.patch
         mkdir -p out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
         cp ../../Javet/scripts/v8/gn/android-${{ matrix.android_arch }}-${{ matrix.i18n_name }}-args.gn out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release/args.gn
         gn gen out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
