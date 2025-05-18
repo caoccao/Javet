@@ -103,13 +103,8 @@ jobs:
         echo 'target_os = ["android"]' >> .gclient
         gclient sync -D
         cd v8
-        sed -i '830d' src/builtins/builtins-typed-array.cc
-        sed -i '822,826d' src/builtins/builtins-typed-array.cc
-        sed -i '1089d' src/objects/simd.cc
-        sed -i '1084,1087d' src/objects/simd.cc
-        sed -i '652d' src/objects/simd.cc
-        sed -i '648,650d' src/objects/simd.cc
-        sed -i '480,494d' src/objects/simd.cc
+        git apply ../Javet/scripts/patches/android/v8/builtins-typed-array.cc.patch
+        git apply ../Javet/scripts/patches/android/v8/simd.cc.patch
         mkdir -p out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
         cp ../../Javet/scripts/v8/gn/android-${{ matrix.android_arch }}-${{ matrix.i18n_name }}-args.gn out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release/args.gn
         gn gen out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
