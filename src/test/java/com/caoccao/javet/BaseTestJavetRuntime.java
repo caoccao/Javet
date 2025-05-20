@@ -34,7 +34,7 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
     public void afterEach() throws JavetException {
         assertEquals(0, v8Runtime.getCallbackContextCount(),
                 "Callback context count should be 0 after test case is ended.");
-        if (v8Runtime.getJSRuntimeType().isNode()) {
+        if (isNode()) {
             NodeRuntime nodeRuntime = (NodeRuntime) v8Runtime;
             assertEquals(
                     nodeRuntime.getV8ModuleCount() + nodeRuntime.getNodeModuleCount(),

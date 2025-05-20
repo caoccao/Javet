@@ -47,7 +47,7 @@ public class TestV8Host extends BaseTestJavet {
 
     @Test
     public void testCreateV8RuntimeWithGlobalName() throws JavetException {
-        if (v8Host.getJSRuntimeType().isV8()) {
+        if (isV8()) {
             V8RuntimeOptions runtimeOptions = v8Host.getJSRuntimeType().getRuntimeOptions();
             runtimeOptions.setGlobalName("window");
             try (V8Runtime v8Runtime = v8Host.createV8Runtime(runtimeOptions)) {

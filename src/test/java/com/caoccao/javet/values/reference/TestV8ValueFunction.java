@@ -828,13 +828,13 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             @V8Function
             public Integer contextScope(V8ValueFunction v8ValueFunction) throws JavetException {
                 assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined());
-                if (v8Runtime.getJSRuntimeType().isNode()) {
+                if (isNode()) {
                     assertTrue(v8ValueFunction.getJSScopeType().isFunction());
                 } else {
                     assertTrue(v8ValueFunction.getJSScopeType().isScript());
                 }
                 if (v8ValueFunction.setSourceCode("() => a + 2", options)) {
-                    if (v8Runtime.getJSRuntimeType().isNode()) {
+                    if (isNode()) {
                         assertTrue(v8ValueFunction.getJSScopeType().isFunction());
                     } else {
                         assertTrue(v8ValueFunction.getJSScopeType().isScript());
@@ -1216,7 +1216,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
 
     @Test
     public void testGetAndSetContext() throws JavetException {
-        if (!v8Host.getJSRuntimeType().isV8()) {
+        if (isNode()) {
             String originalCodeString = "(() => {\n" +
                     "  let a = 1;\n" +
                     "  let b = 3;\n" +
@@ -1235,7 +1235,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                 assertEquals("() => a + b + 1", originalScriptSource.getCodeSnippet(), "The code snippet should match.");
                 assertTrue(originalV8ValueFunction.getJSScopeType().isClass(), "The context is not ready.");
                 assertEquals(5, originalV8ValueFunction.callInteger(null), "Populate the context.");
-                if (v8Runtime.getJSRuntimeType().isNode()) {
+                if (isNode()) {
                     assertTrue(originalV8ValueFunction.getJSScopeType().isFunction(), "The context is ready.");
                 } else {
                     assertTrue(originalV8ValueFunction.getJSScopeType().isScript(), "The context is ready.");
@@ -1278,7 +1278,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 11, 12})
     public void testGetAndSetExtraLongSourceCode(int optionId) throws JavetException {
-        if (!v8Host.getJSRuntimeType().isV8()) {
+        if (isNode()) {
             IV8ValueFunction.SetSourceCodeOptions options = getOptions(optionId);
             IJavetAnonymous anonymous = new IJavetAnonymous() {
                 private int callCount = 0;
@@ -1289,7 +1289,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     if (v8ValueFunction.getJSScopeType().isClass()) {
                         v8ValueFunction.callInteger(null, 0);
                     }
-                    if (v8Runtime.getJSRuntimeType().isNode()) {
+                    if (isNode()) {
                         assertTrue(v8ValueFunction.getJSScopeType().isFunction());
                     } else {
                         assertTrue(v8ValueFunction.getJSScopeType().isScript());
@@ -1298,7 +1298,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     String newCodeString = originalCodeString + " /*\n測試\nI am longer\n*/ + 1";
                     v8ValueFunction.setSourceCode(newCodeString, options);
                     int result = v8ValueFunction.callInteger(null, 1);
-                    if (v8Runtime.getJSRuntimeType().isNode()) {
+                    if (isNode()) {
                         assertTrue(v8ValueFunction.getJSScopeType().isFunction());
                     } else {
                         assertTrue(v8ValueFunction.getJSScopeType().isScript());
@@ -1391,7 +1391,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 11, 12})
     public void testGetAndSetRegularSourceCode(int optionId) throws JavetException {
-        if (!v8Host.getJSRuntimeType().isV8()) {
+        if (isNode()) {
             final int functionCount = 5;
             IV8ValueFunction.SetSourceCodeOptions options = getOptions(optionId);
             String functionStatementTemplate = "var {0} = {1};\n";
@@ -1466,7 +1466,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                                 "The cache is not ready and the scope type should be [Class].");
                         assertEquals(i, v8ValueFunction.callInteger(null),
                                 "Calling the function to build the cache and the result should match.");
-                        if (v8Runtime.getJSRuntimeType().isNode()) {
+                        if (isNode()) {
                             assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
                                     "The cache is ready and the scope type should be [Function].");
                         } else {
@@ -1479,7 +1479,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                                 "Calling the new function and the result should match.");
                         assertTrue(v8ValueFunction.setSourceCode(functionBodies.get(i), options),
                                 "Restoring the source code should pass.");
-                        if (v8Runtime.getJSRuntimeType().isNode()) {
+                        if (isNode()) {
                             assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
                                     "The cache is refreshed and the scope type should be [Function].");
                         } else {
@@ -1491,7 +1491,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     try (V8ValueFunction v8ValueFunction = v8Runtime.getGlobalObject().get(functionNames.get(i))) {
                         assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined(),
                                 "Function type should be user defined.");
-                        if (v8Runtime.getJSRuntimeType().isNode()) {
+                        if (isNode()) {
                             assertTrue(v8ValueFunction.getJSScopeType().isFunction(),
                                     "The cache is restored and the scope type should be [Function].");
                         } else {
@@ -1663,7 +1663,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     assertTrue(scopeInfos.hasVariablesInClosure());
                     IV8ValueFunction.ScopeInfo scopeInfo2 = scopeInfos.get(2);
                     Set<String> keys = new HashSet<>(scopeInfo2.getScopeObject().getOwnPropertyNameStrings());
-                    if (v8Runtime.getJSRuntimeType().isNode()) {
+                    if (isNode()) {
                         Set<String> globalVariables = SimpleSet.of(
                                 "global", "clearImmediate", "setImmediate", "clearInterval", "clearTimeout",
                                 "setInterval", "setTimeout", "queueMicrotask", "structuredClone", "atob",
