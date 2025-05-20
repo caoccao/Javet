@@ -335,9 +335,11 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetJSScop
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_FUNCTION(v8ValueType)) {
         auto v8InternalFunction = Javet::Converter::ToV8InternalJSFunction(v8LocalValue);
-        auto v8InternalShared = *v8InternalFunction.shared();
-        auto v8InternalScopeInfo = *v8InternalShared.scope_info();
-        return v8InternalScopeInfo.scope_type();
+        auto v8InternalShared = v8InternalFunction.shared();
+        auto v8InternalScopeInfo = v8InternalShared->scope_info();
+        if (v8InternalScopeInfo != nullptr && !v8InternalScopeInfo.is_null()) {
+            return v8InternalScopeInfo->scope_type();
+        }
     }
     return Javet::Enums::JSScopeType::Unknown;
 }
@@ -492,7 +494,9 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSc
         auto v8InternalShared = v8InternalFunction.shared();
         if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
             auto v8InternalScopeInfo = v8InternalShared->scope_info();
-            if (v8InternalScopeInfo->scope_type() == V8InternalScopeType::FUNCTION_SCOPE) {
+            if (v8InternalScopeInfo != nullptr
+                && !v8InternalScopeInfo.is_null()
+                && v8InternalScopeInfo->scope_type() == V8InternalScopeType::FUNCTION_SCOPE) {
                 auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
                 auto mSourceCode = (jstring)jniEnv->CallObjectMethod(mScriptSource, Javet::Converter::jmethodIDIV8ValueFunctionScriptGetCode);
                 auto umSourceCode = Javet::Converter::ToV8String(jniEnv, v8Context, mSourceCode);
@@ -543,7 +547,9 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetSo
         auto v8InternalShared = v8InternalFunction.shared();
         if (IS_USER_DEFINED_FUNCTION(v8InternalShared)) {
             auto v8InternalScopeInfo = v8InternalShared->scope_info();
-            while (v8InternalScopeInfo->scope_type() == V8InternalScopeType::FUNCTION_SCOPE) {
+            while (v8InternalScopeInfo != nullptr
+                && !v8InternalScopeInfo.is_null()
+                && v8InternalScopeInfo->scope_type() == V8InternalScopeType::FUNCTION_SCOPE) {
                 auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
 #ifdef ENABLE_NODE
                 auto v8InternalScript = V8InternalScript::cast(v8InternalShared->script());

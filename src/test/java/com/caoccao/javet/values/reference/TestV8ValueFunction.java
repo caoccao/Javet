@@ -828,17 +828,9 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             @V8Function
             public Integer contextScope(V8ValueFunction v8ValueFunction) throws JavetException {
                 assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined());
-                if (isNode()) {
-                    assertTrue(v8ValueFunction.getJSScopeType().isFunction());
-                } else {
-                    assertTrue(v8ValueFunction.getJSScopeType().isScript());
-                }
+                assertTrue(v8ValueFunction.getJSScopeType().isFunction());
                 if (v8ValueFunction.setSourceCode("() => a + 2", options)) {
-                    if (isNode()) {
-                        assertTrue(v8ValueFunction.getJSScopeType().isFunction());
-                    } else {
-                        assertTrue(v8ValueFunction.getJSScopeType().isScript());
-                    }
+                    assertTrue(v8ValueFunction.getJSScopeType().isFunction());
                     return v8ValueFunction.callInteger(null);
                 } else {
                     return 0;
@@ -1233,7 +1225,11 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             try (V8ValueFunction originalV8ValueFunction = v8Runtime.createV8ValueFunction(originalCodeString)) {
                 IV8ValueFunction.ScriptSource originalScriptSource = originalV8ValueFunction.getScriptSource();
                 assertEquals("() => a + b + 1", originalScriptSource.getCodeSnippet(), "The code snippet should match.");
-                assertTrue(originalV8ValueFunction.getJSScopeType().isClass(), "The context is not ready.");
+                if (isNode()) {
+                    assertTrue(originalV8ValueFunction.getJSScopeType().isClass(), "The context is not ready.");
+                } else {
+                    assertTrue(originalV8ValueFunction.getJSScopeType().isUnknown(), "The context is not ready.");
+                }
                 assertEquals(5, originalV8ValueFunction.callInteger(null), "Populate the context.");
                 if (isNode()) {
                     assertTrue(originalV8ValueFunction.getJSScopeType().isFunction(), "The context is ready.");
