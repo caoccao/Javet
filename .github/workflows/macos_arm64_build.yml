@@ -135,6 +135,9 @@ jobs:
         git clone https://github.com/nodejs/node.git
         cd node
         git checkout v${{ env.JAVET_NODE_VERSION }}
+        sed -i '' '/-msse4\.1/d' deps/v8/third_party/abseil-cpp/absl/copts/copts.py
+        sed -i '' '/-msse4\.1/d' deps/v8/third_party/abseil-cpp/absl/copts/GENERATED_AbseilCopts.cmake
+        sed -i '' '/-msse4\.1/d' deps/v8/third_party/abseil-cpp/absl/copts/GENERATED_copts.bzl
         ./configure --enable-static ${{ matrix.node_flag }}
         make -j4
         mv out out.${{ matrix.name }}
