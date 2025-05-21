@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
 
     /**
-     * Call a function by objects and return V8 value.
+     * Call a function by {@link Object[]} and return {@link V8Value}.
      *
      * @param <T>      the type parameter
      * @param receiver the receiver
@@ -58,7 +58,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     }
 
     /**
-     * Call a function by V8 values and return V8 value.
+     * Call a function by {@link V8Value[]} and return {@link V8Value}.
      *
      * @param <T>      the type parameter
      * @param receiver the receiver
@@ -73,7 +73,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     }
 
     /**
-     * Call a function as constructor by objects.
+     * Call a function as a constructor by {@link Object[]}.
      *
      * @param <T>     the type parameter
      * @param objects the objects
@@ -85,7 +85,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     <T extends V8Value> T callAsConstructor(Object... objects) throws JavetException;
 
     /**
-     * Call a function as constructor by V8 values.
+     * Call a function as a constructor by {@link V8Value[]}.
      *
      * @param <T>      the type parameter
      * @param v8Values the V8 values
@@ -97,11 +97,11 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     <T extends V8Value> T callAsConstructor(V8Value... v8Values) throws JavetException;
 
     /**
-     * Call a function by objects and return big integer.
+     * Call a function by objects and return {@link BigInteger}.
      *
      * @param receiver the receiver
      * @param objects  the objects
-     * @return the big integer
+     * @return the BigInteger
      * @throws JavetException the javet exception
      * @since 1.1.5
      */
@@ -118,7 +118,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     }
 
     /**
-     * Call a function by objects and return boolean.
+     * Call a function by objects and return {@link Boolean}.
      *
      * @param receiver the receiver
      * @param objects  the objects
@@ -137,7 +137,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     }
 
     /**
-     * Call a function by objects and return double.
+     * Call a function by objects and return {@link Double}.
      *
      * @param receiver the receiver
      * @param objects  the objects
@@ -156,7 +156,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     }
 
     /**
-     * Call a function by objects and return V8 value.
+     * Call a function by objects and return {@link V8Value}.
      *
      * @param <T>          the type parameter
      * @param receiver     the receiver
@@ -171,7 +171,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
             throws JavetException;
 
     /**
-     * Call a function by V8 values and return V8 value.
+     * Call a function by V8 values and return {@link V8Value}.
      *
      * @param <T>          the type parameter
      * @param receiver     the receiver
@@ -186,7 +186,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
             throws JavetException;
 
     /**
-     * Call a function by objects and return float.
+     * Call a function by objects and return {@link Float}.
      *
      * @param receiver the receiver
      * @param objects  the objects
@@ -200,7 +200,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     }
 
     /**
-     * Call a function by objects and return integer.
+     * Call a function by objects and return {@link Integer}.
      *
      * @param receiver the receiver
      * @param objects  the objects
@@ -219,7 +219,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     }
 
     /**
-     * Call a function by objects and return long.
+     * Call a function by objects and return {@link Long}.
      *
      * @param receiver the receiver
      * @param objects  the objects
@@ -238,7 +238,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     }
 
     /**
-     * Call a function by objects and return object.
+     * Call a function by objects and return an object.
      *
      * @param <T>      the type parameter
      * @param receiver the receiver
@@ -258,7 +258,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     }
 
     /**
-     * Call a function by objects and return string.
+     * Call a function by objects and return {@link String}.
      *
      * @param receiver the receiver
      * @param objects  the objects
@@ -280,7 +280,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     }
 
     /**
-     * Call a function by objects without return.
+     * Call a function by objects without a return.
      *
      * @param receiver the receiver
      * @param objects  the objects
@@ -293,7 +293,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     }
 
     /**
-     * Call a function by V8 values without return.
+     * Call a function by V8 values without a return.
      *
      * @param receiver the receiver
      * @param v8Values the V8 values
@@ -306,7 +306,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     }
 
     /**
-     * Call a function by objects and return zoned date time.
+     * Call a function by objects and return {@link ZonedDateTime}.
      *
      * @param receiver the receiver
      * @param objects  the objects
@@ -403,7 +403,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     IV8ValueArray getInternalProperties() throws JavetException;
 
     /**
-     * Gets JS function type.
+     * Gets {@link JSFunctionType}.
      *
      * @return the JS function type
      * @throws JavetException the javet exception
@@ -412,7 +412,9 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     JSFunctionType getJSFunctionType() throws JavetException;
 
     /**
-     * Gets JS scope type.
+     * Gets {@link JSScopeType}.
+     * <p>
+     * Note: If a function is not properly initialized, this call may crash the whole JVM.
      *
      * @return the JS scope type
      * @throws JavetException the javet exception
@@ -421,7 +423,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     JSScopeType getJSScopeType() throws JavetException;
 
     /**
-     * Gets scope infos.
+     * Gets {@link ScopeInfos}.
      *
      * @return the scope infos
      * @throws JavetException the javet exception
@@ -433,7 +435,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     }
 
     /**
-     * Gets scope infos.
+     * Gets {@link ScopeInfos} by {@link GetScopeInfosOptions}.
      *
      * @param options the options
      * @return the scope infos
@@ -444,7 +446,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     ScopeInfos getScopeInfos(GetScopeInfosOptions options) throws JavetException;
 
     /**
-     * Gets script source.
+     * Gets {@link ScriptSource}.
      * <p>
      * A user-defined JavaScript function is part of a script from start position to end position.
      * This method returns the source code of the whole script with the start position and end position.
