@@ -9,7 +9,8 @@ Release Notes 4.0.x - 4.1.x
 * Upgraded V8 to ``v13.7.152.9`` (2025-05-15)
 * Upgraded Android NDK to ``r27c``
 * Enabled 16K page size for Android
-* Fixed Snapshot in V8 mode
+* Fixed Snapshot for V8 mode
+* Revised ``JSScopeType`` for V8 mode
 
 4.1.3
 -----
