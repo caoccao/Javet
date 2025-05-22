@@ -723,6 +723,8 @@ ABI  Javet Version      V8 Version
 24+  v2.1.2+            v11.3+
 ==== ================== ====================
 
+16K page size is supported from v4.1.4.
+
 Internationalization (i18n)
 ===========================
 
