@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_V8_VERSION: 13.6.233.5
-  JAVET_VERSION: 4.1.3
+  JAVET_V8_VERSION: 13.7.152.9
+  JAVET_VERSION: 4.1.4
   ROOT: /home/runner/work/Javet
 
 jobs:
@@ -79,7 +79,7 @@ jobs:
       id: setup-ndk
       uses: nttld/setup-ndk@v1
       with:
-        ndk-version: r27
+        ndk-version: r27c
         local-cache: false
 
     - name: Setup Path
@@ -103,6 +103,8 @@ jobs:
         echo 'target_os = ["android"]' >> .gclient
         gclient sync -D
         cd v8
+        git apply ../../Javet/scripts/patches/android/v8/builtins-typed-array.cc.patch
+        git apply ../../Javet/scripts/patches/android/v8/simd.cc.patch
         mkdir -p out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
         cp ../../Javet/scripts/v8/gn/android-${{ matrix.android_arch }}-${{ matrix.i18n_name }}-args.gn out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release/args.gn
         gn gen out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release

@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestV8ValuePromise extends BaseTestJavetRuntime {
     @Test
     public void testAsyncGenerator() throws JavetException {
-        if (v8Runtime.getJSRuntimeType().isV8()) {
+        if (isV8()) {
             try (V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject()) {
                 v8ValueObject.bind(new IJavetAnonymous() {
                     @V8Property(symbolType = V8ValueSymbolType.BuiltIn)
@@ -156,7 +156,7 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
                 onRejectedCalled = false;
             }
         };
-        if (v8Runtime.getJSRuntimeType().isNode()) {
+        if (isNode()) {
             v8Runtime.getExecutor("process.on('unhandledRejection', () => {});").executeVoid();
         } else {
             v8Runtime.setPromiseRejectCallback((event, promise, value) -> {
@@ -184,7 +184,7 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
             v8ValuePromise.register(callback);
             v8Runtime.await();
             assertEquals(
-                    v8Runtime.getJSRuntimeType().isNode(),
+                    isNode(),
                     callback.getClass().getMethod("isOnCatchCalled").invoke(callback));
             v8Runtime.getExecutor("globalThis.a = undefined;").executeVoid();
         } finally {
@@ -198,7 +198,7 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
                 "new Promise((resolve, reject)=>{ resolve(1); }).then(x => x)").execute()) {
             assertNotNull(v8ValuePromise);
             assertFalse(v8ValuePromise.hasHandler());
-            if (v8Runtime.getJSRuntimeType().isNode()) {
+            if (isNode()) {
                 assertEquals(V8ValuePromise.STATE_PENDING, v8ValuePromise.getState());
                 assertTrue(v8ValuePromise.isPending());
                 assertTrue(v8ValuePromise.getResult().isUndefined());
@@ -214,7 +214,7 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
     public void testNoHandler() throws JavetException {
         List<JavetPromiseRejectEvent> events = new ArrayList<>();
         IJavetPromiseRejectCallback callback = (event, promise, value) -> events.add(event);
-        if (v8Host.getJSRuntimeType().isNode()) {
+        if (isNode()) {
             v8Runtime.getExecutor("var globalReason = null;\n" +
                     "process.on('unhandledRejection', (reason, promise) => {\n" +
                     "  globalReason = reason;\n" +
@@ -230,7 +230,7 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
             assertFalse(v8ValuePromise.hasHandler());
             assertEquals("a", v8ValuePromise.getResultString());
         }
-        if (v8Host.getJSRuntimeType().isNode()) {
+        if (isNode()) {
             v8Runtime.await();
             assertEquals("a", v8Runtime.getGlobalObject().getString("globalReason"));
         } else {
@@ -243,7 +243,7 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
     public void testNoHandlerAndHandlerAddedAfterReject() throws JavetException {
         List<JavetPromiseRejectEvent> events = new ArrayList<>();
         IJavetPromiseRejectCallback callback = (event, promise, value) -> events.add(event);
-        if (v8Host.getJSRuntimeType().isNode()) {
+        if (isNode()) {
             v8Runtime.getExecutor("process.on('unhandledRejection', (reason, promise) => {\n" +
                     "  console.log(reason);\n" +
                     "});").executeVoid();
@@ -253,7 +253,7 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
         try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
                 "new Promise((resolve, reject)=>{ reject('a'); }).then(r => r).catch(e => e)").execute()) {
             assertNotNull(v8ValuePromise);
-            if (v8Host.getJSRuntimeType().isNode()) {
+            if (isNode()) {
                 assertEquals(V8ValuePromise.STATE_PENDING, v8ValuePromise.getState());
                 assertTrue(v8ValuePromise.isPending());
             } else {
@@ -261,13 +261,13 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
                 assertTrue(v8ValuePromise.isFulfilled());
             }
             assertFalse(v8ValuePromise.hasHandler());
-            if (v8Host.getJSRuntimeType().isNode()) {
+            if (isNode()) {
                 assertTrue(v8ValuePromise.getResult().isUndefined());
             } else {
                 assertEquals("a", v8ValuePromise.getResultString());
             }
         }
-        if (v8Host.getJSRuntimeType().isV8()) {
+        if (isV8()) {
             assertEquals(2, events.size());
             assertEquals(JavetPromiseRejectEvent.PromiseRejectWithNoHandler, events.get(0));
             assertEquals(JavetPromiseRejectEvent.PromiseHandlerAddedAfterReject, events.get(1));
@@ -358,7 +358,7 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     public void testThen(boolean fulfilled) throws JavetException {
-        if (v8Runtime.getJSRuntimeType().isNode()) {
+        if (isNode()) {
             v8Runtime.getExecutor(" process.on('unhandledRejection', () => {});").executeVoid();
         }
         v8Runtime.getExecutor("const result = { fulfilled: false, rejected: false }").executeVoid();

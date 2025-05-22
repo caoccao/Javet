@@ -118,7 +118,7 @@ public class TestV8Runtime extends BaseTestJavet {
 
     @Test
     public void testGlobalName() throws JavetException {
-        if (v8Host.getJSRuntimeType().isV8()) {
+        if (isV8()) {
             V8RuntimeOptions runtimeOptions = v8Host.getJSRuntimeType().getRuntimeOptions();
             runtimeOptions.setGlobalName("window");
             try (V8Runtime v8Runtime = v8Host.createV8Runtime(runtimeOptions)) {
@@ -191,10 +191,9 @@ public class TestV8Runtime extends BaseTestJavet {
         }
     }
 
-    @Disabled
     @Test
     public void testSnapshot() throws JavetException {
-        if (v8Host.getJSRuntimeType().isV8()) {
+        if (isV8()) {
             RuntimeOptions<?> options = v8Host.getJSRuntimeType().getRuntimeOptions();
             // Set create snapshot enabled.
             options.setCreateSnapshotEnabled(true);

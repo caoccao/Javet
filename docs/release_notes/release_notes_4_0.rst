@@ -2,6 +2,16 @@
 Release Notes 4.0.x - 4.1.x
 ===========================
 
+4.1.4
+-----
+
+* Upgraded Node.js to ``v22.15.1`` `(2025-05-14) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V22.md#22.15.1>`_
+* Upgraded V8 to ``v13.7.152.9`` (2025-05-15)
+* Upgraded Android NDK to ``r27c``
+* Enabled 16K page size for Android
+* Fixed Snapshot for V8 mode
+* Revised ``JSScopeType`` for V8 mode
+
 4.1.3
 -----
 

@@ -110,7 +110,7 @@ public class TestJavetExecutionException extends BaseTestJavetRuntime {
             assertNotNull(v8ValueObject);
         } catch (JavetExecutionException e) {
             assertEquals(JavetError.ExecutionFailure, e.getError());
-            if (v8Runtime.getJSRuntimeType().isNode()) {
+            if (isNode()) {
                 assertTrue(e.getScriptingError().getDetailedMessage().startsWith("Error: Cannot find module 'decimal.js'"));
             } else {
                 assertEquals(

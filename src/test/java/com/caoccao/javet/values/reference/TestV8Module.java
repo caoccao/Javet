@@ -79,7 +79,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.containsV8Module(moduleName));
             assertTrue(v8Module.getIdentityHash() != 0);
             assertEquals(1, v8Runtime.getV8ModuleCount());
-            if (v8Runtime.getJSRuntimeType().isV8()) {
+            if (isV8()) {
                 assertTrue(3 <= v8Module.getScriptId() && v8Module.getScriptId() <= 4);
             }
             try (V8ValuePromise v8ValuePromise = v8Module.execute()) {
@@ -115,7 +115,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
             assertEquals(V8Module.Uninstantiated, v8Module1.getStatus());
             assertTrue(v8Runtime.containsV8Module(v8Module1.getResourceName()));
             assertEquals(1, v8Runtime.getV8ModuleCount());
-            if (v8Runtime.getJSRuntimeType().isV8()) {
+            if (isV8()) {
                 assertTrue(3 <= v8Module1.getScriptId() && v8Module1.getScriptId() <= 4);
             }
             assertTrue(v8Module1.instantiate());
@@ -132,7 +132,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 assertNull(v8Module2.getException());
                 assertTrue(v8Runtime.containsV8Module(v8Module2.getResourceName()));
                 assertEquals(2, v8Runtime.getV8ModuleCount());
-                if (v8Runtime.getJSRuntimeType().isV8()) {
+                if (isV8()) {
                     assertTrue(4 <= v8Module2.getScriptId() && v8Module2.getScriptId() <= 5);
                 }
                 assertThrows(JavetExecutionException.class, v8Module2::instantiate, "Function is invalid");
@@ -147,7 +147,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 assertNull(v8Module3.getException());
                 assertTrue(v8Runtime.containsV8Module(v8Module3.getResourceName()));
                 assertEquals(2, v8Runtime.getV8ModuleCount());
-                if (v8Runtime.getJSRuntimeType().isV8()) {
+                if (isV8()) {
                     assertTrue(5 <= v8Module3.getScriptId() && v8Module3.getScriptId() <= 6);
                 }
                 assertThrows(JavetExecutionException.class, v8Module3::instantiate, "Module is invalid");
@@ -163,7 +163,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
         try (V8Module v8Module = iV8Executor.compileV8Module()) {
             assertTrue(v8Module.isSourceTextModule());
             assertFalse(v8Module.isSyntheticModule());
-            if (v8Runtime.getJSRuntimeType().isNode()) {
+            if (isNode()) {
                 v8Runtime.getExecutor("var globalReason = null;\n" +
                         "process.on('unhandledRejection', (reason, promise) => {\n" +
                         "  globalReason = reason;\n" +
@@ -181,7 +181,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 V8ValuePromise v8ValuePromise = (V8ValuePromise) v8ValueObject;
                 assertTrue(v8ValuePromise.isFulfilled());
                 assertTrue(v8ValuePromise.getResult().isUndefined());
-                if (v8Runtime.getJSRuntimeType().isV8()) {
+                if (isV8()) {
                     assertFalse(v8Runtime.containsV8Module("./a.js"));
                 }
             }
@@ -209,7 +209,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
         try (V8Module v8Module1 = iV8Executor.compileV8Module()) {
             assertTrue(v8Runtime.containsV8Module(v8Module1.getResourceName()));
             assertEquals(1, v8Runtime.getV8ModuleCount());
-            if (v8Runtime.getJSRuntimeType().isV8()) {
+            if (isV8()) {
                 assertTrue(3 <= v8Module1.getScriptId() && v8Module1.getScriptId() <= 4);
             }
             assertTrue(v8Module1.instantiate());
@@ -227,7 +227,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
             try (V8Module v8Module2 = iV8Executor.compileV8Module()) {
                 assertTrue(v8Runtime.containsV8Module(v8Module2.getResourceName()));
                 assertEquals(2, v8Runtime.getV8ModuleCount());
-                if (v8Runtime.getJSRuntimeType().isV8()) {
+                if (isV8()) {
                     assertTrue(4 <= v8Module2.getScriptId() && v8Module2.getScriptId() <= 5);
                 }
                 assertTrue(v8Module2.instantiate());
@@ -278,7 +278,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
 
     @Test
     public void testJavetBuiltInModuleResolverWithDefault() throws JavetException {
-        if (v8Runtime.getJSRuntimeType().isNode()) {
+        if (isNode()) {
             v8Runtime.setV8ModuleResolver(new JavetBuiltInModuleResolver());
             v8Runtime.getExecutor(
                             "import fs from 'node:fs';\n" +
@@ -294,7 +294,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
 
     @Test
     public void testJavetBuiltInModuleResolverWithoutDefault() throws JavetException {
-        if (v8Runtime.getJSRuntimeType().isNode()) {
+        if (isNode()) {
             v8Runtime.setV8ModuleResolver(new JavetBuiltInModuleResolver());
             v8Runtime.getExecutor(
                             "import * as fs from 'node:fs';\n" +
@@ -310,7 +310,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
                 "export function test() { return 1; }").setResourceName("./test.js").compileV8Module()) {
             assertTrue(v8Runtime.containsV8Module(v8Module.getResourceName()));
             assertEquals(1, v8Runtime.getV8ModuleCount());
-            if (v8Runtime.getJSRuntimeType().isV8()) {
+            if (isV8()) {
                 assertTrue(3 <= v8Module.getScriptId() && v8Module.getScriptId() <= 4);
             }
             assertNotNull(v8Module);
@@ -332,7 +332,7 @@ public class TestV8Module extends BaseTestJavetRuntime {
     @Test
     public void testSyntheticModule() throws JavetException {
         final String moduleName = "test.js";
-        if (v8Runtime.getJSRuntimeType().isNode()) {
+        if (isNode()) {
             v8Runtime.getExecutor("process.on('unhandledRejection', (reason, promise) => {\n" +
                             "  globalThis.reason = reason.toString();\n" +
                             "});")

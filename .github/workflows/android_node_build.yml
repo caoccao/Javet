@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 22.15.0
-  JAVET_VERSION: 4.1.3
+  JAVET_NODE_VERSION: 22.15.1
+  JAVET_VERSION: 4.1.4
   ROOT: /home/runner/work/Javet
 
 jobs:
@@ -69,7 +69,7 @@ jobs:
       id: setup-ndk
       uses: nttld/setup-ndk@v1
       with:
-        ndk-version: r27
+        ndk-version: r27c
         local-cache: false
 
     - name: Setup Path
@@ -82,13 +82,13 @@ jobs:
         git clone https://github.com/nodejs/node.git
         cd node
         git checkout v${{ env.JAVET_NODE_VERSION }}
-        git apply < ../Javet/scripts/patches/android/node/android_configure.py.patch
-        git apply < ../Javet/scripts/patches/android/node/common.gypi.patch
-        git apply < ../Javet/scripts/patches/android/node/configure.py.patch
-        git apply < ../Javet/scripts/patches/android/node/constants-arm.h.patch
-        git apply < ../Javet/scripts/patches/android/node/push_registers_asm.cc.patch
-        git apply < ../Javet/scripts/patches/android/node/trap-handler.h.patch
-        git apply < ../Javet/scripts/patches/android/node/test_crypto_clienthello.cc.patch
+        git apply ../Javet/scripts/patches/android/node/android_configure.py.patch
+        git apply ../Javet/scripts/patches/android/node/common.gypi.patch
+        git apply ../Javet/scripts/patches/android/node/configure.py.patch
+        git apply ../Javet/scripts/patches/android/node/constants-arm.h.patch
+        git apply ../Javet/scripts/patches/android/node/push_registers_asm.cc.patch
+        git apply ../Javet/scripts/patches/android/node/trap-handler.h.patch
+        git apply ../Javet/scripts/patches/android/node/test_crypto_clienthello.cc.patch
         ${{ matrix.config_patch }}
         ./android-configure ${{ steps.setup-ndk.outputs.ndk-path }} 24 ${{ matrix.android_arch }}
         make -j4

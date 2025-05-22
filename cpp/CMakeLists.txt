@@ -40,11 +40,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     endif()
     if(NOT DEFINED CMAKE_ANDROID_ARCH)
         message(FATAL_ERROR "CMAKE_ANDROID_ARCH needs to be defined.")
-    elseif(CMAKE_ANDROID_ARCH STREQUAL "arm64")
-        set(CMAKE_ANDROID_ARCH_ABI arm64-v8a)
     elseif(CMAKE_ANDROID_ARCH STREQUAL "arm")
         set(CMAKE_ANDROID_ARCH_ABI armeabi-v7a)
         set(CMAKE_ANDROID_ARM_NEON 1)
+    elseif(CMAKE_ANDROID_ARCH STREQUAL "arm64")
+        set(CMAKE_ANDROID_ARCH_ABI arm64-v8a)
     elseif(CMAKE_ANDROID_ARCH STREQUAL "x86")
         set(CMAKE_ANDROID_ARCH_ABI x86)
     elseif(CMAKE_ANDROID_ARCH STREQUAL "x86_64")
@@ -279,8 +279,10 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
                 set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/lib${importLibrary}.a)
             endforeach(importLibrary)
             target_link_libraries(Javet PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
+                -Wl,-z,max-page-size=16384
                 -llog -static-libgcc -static-libstdc++ "${libgcc}")
             target_link_libraries(JavetStatic PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
+                -Wl,-z,max-page-size=16384
                 -llog -static-libgcc -static-libstdc++ "${libgcc}")
         endif()
         if(DEFINED NODE_DIR)
@@ -293,8 +295,10 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
             endforeach(importLibrary)
             list(REMOVE_ITEM importLibraries v8_init)
             target_link_libraries(Javet PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
+                -Wl,-z,max-page-size=16384
                 v8_init -llog -static-libgcc -static-libstdc++ "${libgcc}")
             target_link_libraries(JavetStatic PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
+                -Wl,-z,max-page-size=16384
                 v8_init -llog -static-libgcc -static-libstdc++ "${libgcc}")
         endif()
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|x86_64)")

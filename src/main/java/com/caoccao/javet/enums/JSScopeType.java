@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.enums;
 
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -24,21 +25,34 @@ import java.util.stream.Stream;
  * @since 0.8.8
  */
 public enum JSScopeType {
-    Class(0, "Class"),
-    Eval(1, "Eval"),
-    Function(2, "Function"),
-    Module(3, "Module"),
-    Script(4, "Script"),
-    Catch(5, "Catch"),
-    Block(6, "Block"),
-    With(7, "With"),
-    Unknown(8, "Unknown");
+    Script(0, "Script"),
+    ReplMode(1, "ReplMode"),
+    Class(2, "Class"),
+    Eval(3, "Eval"),
+    Function(4, "Function"),
+    Module(5, "Module"),
+    Catch(6, "Catch"),
+    Block(7, "Block"),
+    With(8, "With"),
+    ShadowRealm(9, "ShadowRealm"),
+    Unknown(10, "Unknown");
 
-    private static final int LENGTH = values().length;
-    private static final JSScopeType[] TYPES = new JSScopeType[LENGTH];
+    private static final int NODE_TYPE_LENGTH = values().length - 2;
+    private static final JSScopeType[] NODE_TYPES = new JSScopeType[NODE_TYPE_LENGTH];
+    private static final int V8_TYPE_LENGTH = values().length + 1;
+    private static final JSScopeType[] V8_TYPES = new JSScopeType[V8_TYPE_LENGTH];
 
     static {
-        Stream.of(values()).forEach(v -> TYPES[v.getId()] = v);
+        NODE_TYPES[0] = Class;
+        NODE_TYPES[1] = Eval;
+        NODE_TYPES[2] = Function;
+        NODE_TYPES[3] = Module;
+        NODE_TYPES[4] = Script;
+        NODE_TYPES[5] = Catch;
+        NODE_TYPES[6] = Block;
+        NODE_TYPES[7] = With;
+        NODE_TYPES[8] = Unknown;
+        Stream.of(values()).forEach(v -> V8_TYPES[v.getId()] = v);
     }
 
     private final int id;
@@ -49,8 +63,11 @@ public enum JSScopeType {
         this.name = name;
     }
 
-    public static JSScopeType parse(int id) {
-        return id >= 0 && id < LENGTH ? TYPES[id] : Unknown;
+    public static JSScopeType parse(int id, JSRuntimeType jsRuntimeType) {
+        if (Objects.requireNonNull(jsRuntimeType).isNode()) {
+            return id >= 0 && id < NODE_TYPE_LENGTH ? NODE_TYPES[id] : Unknown;
+        }
+        return id >= 0 && id < V8_TYPE_LENGTH ? V8_TYPES[id] : Unknown;
     }
 
     public int getId() {
@@ -87,6 +104,10 @@ public enum JSScopeType {
 
     public boolean isScript() {
         return this == Script;
+    }
+
+    public boolean isUnknown() {
+        return this == Unknown;
     }
 
     public boolean isWith() {

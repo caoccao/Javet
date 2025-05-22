@@ -36,8 +36,8 @@ MacOS Environment
 
 * MacOS Catalina+
 * Latest Brew
-* Xcode 11.4.1+
-* Cmake 3.16+
+* Xcode 16.3+
+* Cmake 3.24+
 * JDK 8
 * Gradle 8.5+
 * Python 3.11+

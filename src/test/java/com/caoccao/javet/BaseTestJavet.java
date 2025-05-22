@@ -77,7 +77,7 @@ public abstract class BaseTestJavet {
             }
             assertNotNull(jsRuntimeType);
             v8Host = V8Host.getInstance(jsRuntimeType);
-            if (jsRuntimeType.isNode()) {
+            if (isNode()) {
                 assertTrue(NodeRuntimeOptions.NODE_FLAGS.isSealed());
             } else {
                 assertTrue(V8RuntimeOptions.V8_FLAGS.isSealed());
@@ -127,7 +127,7 @@ public abstract class BaseTestJavet {
 
     public boolean isI18nEnabled() {
         if (v8Host.isI18nEnabled()) {
-            if (v8Host.getJSRuntimeType().isNode()) {
+            if (isNode()) {
                 if (StringUtils.isNotBlank(NodeRuntimeOptions.NODE_FLAGS.getIcuDataDir())) {
                     return true;
                 } else {
@@ -142,6 +142,14 @@ public abstract class BaseTestJavet {
             }
         }
         return false;
+    }
+
+    protected boolean isNode() {
+        return v8Host.getJSRuntimeType().isNode();
+    }
+
+    protected boolean isV8() {
+        return v8Host.getJSRuntimeType().isV8();
     }
 
     public int runAndWait(
