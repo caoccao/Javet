@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
 
     /**
-     * Call a function by {@link Object[]} and return {@link V8Value}.
+     * Call a function by {@link Object}[] and return {@link V8Value}.
      *
      * @param <T>      the type parameter
      * @param receiver the receiver
@@ -58,7 +58,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     }
 
     /**
-     * Call a function by {@link V8Value[]} and return {@link V8Value}.
+     * Call a function by {@link V8Value}[] and return {@link V8Value}.
      *
      * @param <T>      the type parameter
      * @param receiver the receiver
@@ -73,7 +73,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     }
 
     /**
-     * Call a function as a constructor by {@link Object[]}.
+     * Call a function as a constructor by {@link Object}[].
      *
      * @param <T>     the type parameter
      * @param objects the objects
@@ -85,7 +85,7 @@ public interface IV8ValueFunction extends IV8Cacheable, IV8ValueObject {
     <T extends V8Value> T callAsConstructor(Object... objects) throws JavetException;
 
     /**
-     * Call a function as a constructor by {@link V8Value[]}.
+     * Call a function as a constructor by {@link V8Value}[].
      *
      * @param <T>      the type parameter
      * @param v8Values the V8 values
