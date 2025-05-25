@@ -686,6 +686,9 @@ Other Linux Distributions   Not Tested
 
     * Private builds imply considerable additional effort, so there is no commitments. Please contact the maintainer for private builds wisely. 
 
+glibc
+^^^^^
+
 =============== ========================
 glibc Version   Javet Version
 =============== ========================
@@ -695,6 +698,11 @@ glibc Version   Javet Version
 2.25            v0.8.0 - v0.8.5
 2.14            v0.7.0 - v0.7.4
 =============== ========================
+
+libatomic
+^^^^^^^^^
+
+``libatomic`` is required from v4.1.2+.
 
 Mac OS
 ------
