@@ -9,7 +9,7 @@ on:
 
 env:
   JAVET_V8_VERSION: 13.7.152.9
-  JAVET_VERSION: 4.1.4
+  JAVET_VERSION: 4.1.5
   ROOT: /home/runner/work/Javet
 
 jobs:
