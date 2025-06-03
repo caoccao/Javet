@@ -53,7 +53,8 @@ public abstract class BaseJavetScriptingException extends JavetException {
                         JavetError.PARAMETER_START_COLUMN, scriptingError.getStartColumn(),
                         JavetError.PARAMETER_END_COLUMN, scriptingError.getEndColumn(),
                         JavetError.PARAMETER_START_POSITION, scriptingError.getStartPosition(),
-                        JavetError.PARAMETER_END_POSITION, scriptingError.getEndPosition()),
+                        JavetError.PARAMETER_END_POSITION, scriptingError.getEndPosition(),
+                        JavetError.PARAMETER_STACK, scriptingError.getStack()),
                 cause);
         this.scriptingError = scriptingError;
     }

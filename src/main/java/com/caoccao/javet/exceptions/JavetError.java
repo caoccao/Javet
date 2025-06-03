@@ -190,6 +190,12 @@ public class JavetError {
      */
     public static final String PARAMETER_START_POSITION = "startPosition";
     /**
+     * The constant PARAMETER_STACK.
+     *
+     * @since 4.1.5
+     */
+    public static final String PARAMETER_STACK = "stack";
+    /**
      * The constant PARAMETER_SYMBOL.
      *
      * @since 0.8.5

@@ -177,4 +177,90 @@ public class TestJavetExecutionException extends BaseTestJavetRuntime {
             fail("JavetExecutionException should be thrown.");
         }
     }
+
+    @Test
+    public void testStackTraceInParameters() {
+        try {
+            String codeString = "function level3() {\n" +
+                    "  throw new Error('Deep error');\n" +
+                    "}\n" +
+                    "function level2() {\n" +
+                    "  level3();\n" +
+                    "}\n" +
+                    "function level1() {\n" +
+                    "  level2();\n" +
+                    "}\n" +
+                    "level1();";
+            v8Runtime.getExecutor(codeString).executeVoid();
+            fail("Exception should be thrown.");
+        } catch (JavetExecutionException e) {
+            assertEquals(JavetError.ExecutionFailure, e.getError());
+            assertEquals("Error: Deep error", e.getMessage());
+            
+            JavetScriptingError javetScriptingError = e.getScriptingError();
+            assertEquals("Error: Deep error", javetScriptingError.getDetailedMessage());
+            
+            String stackFromScriptingError = javetScriptingError.getStack();
+            String stackFromParameters = (String) e.getParameters().get(JavetError.PARAMETER_STACK);
+            
+            assertNotNull(stackFromScriptingError, "Stack trace should be available from scripting error");
+            assertNotNull(stackFromParameters, "Stack trace should be available from parameters map");
+            assertEquals(stackFromScriptingError, stackFromParameters, 
+                    "Stack trace from scripting error and parameters map should be identical");
+            
+            assertTrue(stackFromParameters.contains("Error: Deep error"), 
+                    "Stack trace should contain the error message");
+            assertTrue(stackFromParameters.contains("level3"), 
+                    "Stack trace should contain level3 function name");
+            assertTrue(stackFromParameters.contains("level2"), 
+                    "Stack trace should contain level2 function name");
+            assertTrue(stackFromParameters.contains("level1"), 
+                    "Stack trace should contain level1 function name");
+            
+            String[] stackLines = stackFromParameters.split("\n");
+            assertTrue(stackLines.length >= 4, 
+                    "Stack trace should have at least 4 lines (error + 3 function calls)");
+            assertEquals("Error: Deep error", stackLines[0].trim(), 
+                    "First line should be the error message");
+        } catch (JavetException e) {
+            fail("JavetExecutionException should be thrown.");
+        }
+    }
+
+    @Test
+    public void testStackTraceWithCustomError() {
+        try {
+            String codeString = "function createError() {\n" +
+                    "  const error = new Error('Custom error');\n" +
+                    "  error.customProperty = 'test';\n" +
+                    "  return error;\n" +
+                    "}\n" +
+                    "function throwError() {\n" +
+                    "  throw createError();\n" +
+                    "}\n" +
+                    "function callThrow() {\n" +
+                    "  throwError();\n" +
+                    "}\n" +
+                    "callThrow();";
+            v8Runtime.getExecutor(codeString).executeVoid();
+            fail("Exception should be thrown.");
+        } catch (JavetExecutionException e) {
+            assertEquals(JavetError.ExecutionFailure, e.getError());
+            assertEquals("Error: Custom error", e.getMessage());
+            
+            String stackFromParameters = (String) e.getParameters().get(JavetError.PARAMETER_STACK);
+            assertNotNull(stackFromParameters, "Stack trace should be available from parameters map");
+            
+            assertTrue(stackFromParameters.contains("Error: Custom error"),
+                    "Stack trace should contain the error message");
+            assertTrue(stackFromParameters.contains("createError"),
+                    "Stack trace should contain createError function name");
+            assertTrue(stackFromParameters.contains("throwError"),
+                    "Stack trace should contain throwError function name");
+            assertTrue(stackFromParameters.contains("callThrow"),
+                    "Stack trace should contain callThrow function name");
+        } catch (JavetException e) {
+            fail("JavetExecutionException should be thrown.");
+        }
+    }
 }
