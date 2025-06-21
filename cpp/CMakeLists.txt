@@ -276,7 +276,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-unknown-pragmas -Wno-unused-function -Wno-unused-variable -funroll-loops -ftree-vectorize -ffast-math -fpermissive -fPIC ")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unknown-pragmas -Wno-unused-function -Wno-unused-variable -funroll-loops -ftree-vectorize -ffast-math -fpermissive -fPIC ")
         if(DEFINED V8_DIR)
-            add_definitions(-DV8_TEMPORAL_SUPPORT)
             foreach(importLibrary ${importLibraries})
                 set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/lib${importLibrary}.a)
             endforeach(importLibrary)
