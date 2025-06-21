@@ -6,6 +6,7 @@ Release Notes 4.0.x - 4.1.x
 -----
 
 * Upgraded Node.js to ``v22.16.0`` `(2025-05-21) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V22.md#22.16.0>`_
+* Upgraded V8 to ``v13.8.258.19`` (2025-06-17)
 
 4.1.4
 -----

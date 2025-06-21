@@ -8,7 +8,7 @@ on:
 
 env:
   JAVET_NODE_VERSION: 22.16.0
-  JAVET_V8_VERSION: 13.7.152.9
+  JAVET_V8_VERSION: 13.8.258.19
   JAVET_VERSION: 4.1.5
   ROOT: /Users/runner/work/Javet
 
