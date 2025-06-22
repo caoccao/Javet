@@ -636,7 +636,7 @@ Gradle Kotlin DSL - Android
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet-node-android:4.1.5") // Android Node (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet-node-android:4.1.5") // Android Node (arm64 and x86_64)
     implementation("com.caoccao.javet:javet-node-android-i18n:4.1.5") // Android Node (arm64 and x86_64)
     implementation("com.caoccao.javet:javet-v8-android:4.1.5") // Android V8 (arm, arm64, x86 and x86_64)
     implementation("com.caoccao.javet:javet-v8-android-i18n:4.1.5") // Android V8 (arm, arm64, x86 and x86_64)
@@ -646,7 +646,7 @@ Gradle Groovy DSL - Android
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet-node-android:4.1.5' // Android Node (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet-node-android:4.1.5' // Android Node (arm64 and x86_64)
     implementation 'com.caoccao.javet:javet-node-android-i18n:4.1.5' // Android Node (arm64 and x86_64)
     implementation 'com.caoccao.javet:javet-v8-android:4.1.5' // Android V8 (arm, arm64, x86 and x86_64)
     implementation 'com.caoccao.javet:javet-v8-android-i18n:4.1.5' // Android V8 (arm, arm64, x86 and x86_64)
