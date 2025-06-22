@@ -1,8 +1,8 @@
 diff --git a/src/objects/simd.cc b/src/objects/simd.cc
-index 3202e51e4f3..7b1de83a58b 100644
+index 0ef570ceb7d..898defef310 100644
 --- a/src/objects/simd.cc
 +++ b/src/objects/simd.cc
-@@ -477,21 +477,6 @@ void Uint8ArrayToHexSlow(const char* bytes, size_t length,
+@@ -477,22 +477,6 @@ void Uint8ArrayToHexSlow(const char* bytes, size_t length,
    }
  }
  
@@ -21,10 +21,11 @@ index 3202e51e4f3..7b1de83a58b 100644
 -    index += 2;
 -  }
 -}
- 
+-
  inline uint16_t ByteToHex(uint8_t byte) {
    const uint16_t correction = (('a' - '0' - 10) << 8) + ('a' - '0' - 10);
-@@ -645,11 +630,7 @@ Tagged<Object> Uint8ArrayToHex(const char* bytes, size_t length, bool is_shared,
+ #if V8_TARGET_BIG_ENDIAN
+@@ -645,11 +629,7 @@ Tagged<Object> Uint8ArrayToHex(const char* bytes, size_t length, bool is_shared,
    }
  #endif
  
@@ -36,8 +37,8 @@ index 3202e51e4f3..7b1de83a58b 100644
    return *string_output;
  }
  
-@@ -1081,12 +1062,7 @@ bool ArrayBufferFromHex(const base::Vector<T>& input_vector, bool is_shared,
-   for (uint32_t i = 0; i < input_length; i += 2) {
+@@ -1082,12 +1062,7 @@ bool ArrayBufferFromHex(const base::Vector<T>& input_vector, bool is_shared,
+   for (uint32_t i = 0; i < output_length * 2; i += 2) {
      result = HandleRemainingHexValues(input_vector, i);
      if (result.has_value()) {
 -      if (is_shared) {

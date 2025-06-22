@@ -134,8 +134,8 @@ if(DEFINED NODE_DIR)
             ${NODE_DIR}/deps/icu-small/source/common)
     endif()
     list(APPEND importLibraries
-        ada brotli cares crdtp histogram llhttp nbytes ncrypto nghttp2 openssl simdjson simdutf sqlite torque_base uvwasi
-        v8_abseil v8_base_without_compiler v8_compiler v8_init v8_initializers v8_initializers_slow
+        abseil ada brotli cares crdtp histogram llhttp nbytes ncrypto nghttp2 openssl simdjson simdutf sqlite torque_base uvwasi
+        v8_base_without_compiler v8_compiler v8_init v8_initializers v8_initializers_slow
         v8_libbase v8_libplatform v8_snapshot v8_turboshaft v8_zlib zlib zstd)
     # node, uv
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -231,6 +231,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
         add_definitions(-D__linux__)
         list(APPEND includeDirs $ENV{JAVA_HOME}/include/linux)
         if(DEFINED V8_DIR)
+            add_definitions(-DV8_TEMPORAL_SUPPORT)
             if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)")
                 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flax-vector-conversions ")
                 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flax-vector-conversions ")
@@ -244,12 +245,12 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
             target_link_libraries(Javet PUBLIC
                 -latomic
                 -Wl,--compress-sections=.text=none
-                -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
+                -Wl,--whole-archive ${importLibraries} -latomic -Wl,--no-whole-archive
                 debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
             target_link_libraries(JavetStatic PUBLIC
                 -latomic
                 -Wl,--compress-sections=.text=none
-                -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
+                -Wl,--whole-archive ${importLibraries} -latomic -Wl,--no-whole-archive
                 debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
         endif()
         if(DEFINED NODE_DIR)

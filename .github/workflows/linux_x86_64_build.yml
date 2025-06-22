@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 22.15.1
-  JAVET_V8_VERSION: 13.7.152.9
-  JAVET_VERSION: 4.1.4
+  JAVET_NODE_VERSION: 22.16.0
+  JAVET_V8_VERSION: 13.8.258.19
+  JAVET_VERSION: 4.1.5
   ROOT: /home/runner/work/Javet
 
 jobs:
@@ -63,8 +63,6 @@ jobs:
         cd v8
         sed -i '/#include "src\/libplatform\//a #include <cstdlib>' src/libplatform/default-thread-isolated-allocator.cc
         sed -i '/bool KernelHasPkruFix()/a const char* env = std::getenv("JAVET_DISABLE_PKU"); if (env && std::strlen(env) > 0) { return false; }' src/libplatform/default-thread-isolated-allocator.cc
-        sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/__attribute__((tls_model("local-dynamic")))/g' src/execution/isolate.h
-        sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/__attribute__((tls_model("local-dynamic")))/g' src/heap/local-heap.h
         ln -s /usr/lib/gcc/x86_64-linux-gnu/13 build/linux/debian_bullseye_amd64-sysroot/usr/lib/gcc/x86_64-linux-gnu/13
         ln -s /lib64 build/linux/debian_bullseye_amd64-sysroot/lib64
         mkdir -p build/linux/debian_bullseye_amd64-sysroot/lib/gcc/x86_64-linux-gnu
