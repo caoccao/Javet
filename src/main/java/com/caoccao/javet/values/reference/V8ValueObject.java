@@ -868,7 +868,6 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                     }
                 }
             }
-            BindingContextStore.getMap().remove(callbackReceiver.getClass());
         }
         return unbindCount;
     }

@@ -66,16 +66,6 @@ public final class ThreadSafeMap<TKey, TValue> {
     }
 
     /**
-     * Remove value for key.
-     *
-     * @param key the key
-     * @return the previous value associated with the key
-     */
-    public TValue remove(TKey key) {
-        return map.remove(key);
-    }
-
-    /**
      * Gets type.
      *
      * @return the type

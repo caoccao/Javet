@@ -26,8 +26,10 @@ import com.caoccao.javet.utils.ThreadSafeMap;
  * @since 3.0.4
  */
 public final class ClassDescriptorStore {
-    private static final ThreadSafeMap<Class<?>, ClassDescriptor> classMap = new ThreadSafeMap<>();
-    private static final ThreadSafeMap<Class<?>, ClassDescriptor> objectMap = new ThreadSafeMap<>();
+    private static final ThreadSafeMap<Class<?>, ClassDescriptor> classMap = new ThreadSafeMap<>(
+            ThreadSafeMap.Type.Weak);
+    private static final ThreadSafeMap<Class<?>, ClassDescriptor> objectMap = new ThreadSafeMap<>(
+            ThreadSafeMap.Type.Weak);
 
     private ClassDescriptorStore() {
     }

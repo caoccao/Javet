@@ -26,7 +26,8 @@ import com.caoccao.javet.utils.ThreadSafeMap;
  * @since 3.0.4
  */
 public final class BindingContextStore {
-    private static final ThreadSafeMap<Class<?>, BindingContext> bindingContextMap = new ThreadSafeMap<>();
+    private static final ThreadSafeMap<Class<?>, BindingContext> bindingContextMap = new ThreadSafeMap<>(
+            ThreadSafeMap.Type.Weak);
 
     private BindingContextStore() {
     }
