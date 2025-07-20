@@ -317,6 +317,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     boolean pooled;
     /**
+     * The Near heap limit callback.
+     *
+     * @since 4.1.6
+     */
+    IJavetNearHeapLimitCallback nearHeapLimitCallback;
+    /**
      * The Promise reject callback.
      *
      * @since 0.8.3
@@ -1552,6 +1558,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public IJavetLogger getLogger() {
         return logger;
+    }
+
+    /**
+     * Gets near heap limit callback.
+     *
+     * @return the near heap limit callback
+     * @since 4.1.6
+     */
+    public IJavetNearHeapLimitCallback getNearHeapLimitCallback() {
+        return nearHeapLimitCallback;
     }
 
     /**
@@ -3156,6 +3172,25 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Receives the near heap limit callback from JNI.
+     *
+     * @param currentHeapLimit the current heap limit in bytes
+     * @param initialHeapLimit the initial heap limit in bytes
+     * @return the new heap limit in bytes
+     * @since 4.1.6
+     */
+    long receiveNearHeapLimitCallback(long currentHeapLimit, long initialHeapLimit) {
+        try {
+            if (nearHeapLimitCallback != null) {
+                return nearHeapLimitCallback.callback(currentHeapLimit, initialHeapLimit);
+            }
+        } catch (Throwable t) {
+            logger.logError(t, "Failed to process near heap limit callback.");
+        }
+        return currentHeapLimit;
+    }
+
+    /**
      * Receives the promise reject callback from JNI.
      *
      * @param event   the event
@@ -3614,6 +3649,17 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public void setLogger(IJavetLogger logger) {
         this.logger = logger;
+    }
+
+    /**
+     * Sets near heap limit callback.
+     *
+     * @param nearHeapLimitCallback the near heap limit callback
+     * @since 4.1.6
+     */
+    public void setNearHeapLimitCallback(IJavetNearHeapLimitCallback nearHeapLimitCallback) {
+        Objects.requireNonNull(nearHeapLimitCallback);
+        this.nearHeapLimitCallback = nearHeapLimitCallback;
     }
 
     /**

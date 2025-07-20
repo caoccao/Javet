@@ -53,6 +53,7 @@ namespace Javet {
 #ifndef ENABLE_NODE
         void OOMErrorCallback(const char* location, const v8::OOMDetails& oomDetails) noexcept;
 #endif
+        size_t JavetNearHeapLimitCallback(void* data, size_t currentHeapLimit, size_t initialHeapLimit) noexcept;
         void JavetPromiseRejectCallback(v8::PromiseRejectMessage message) noexcept;
         V8MaybeLocalValue JavetSyntheticModuleEvaluationStepsCallback(
             V8LocalContext v8Context,
