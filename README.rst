@@ -50,7 +50,7 @@ arm         ✔️        ❌      ❌       ❌
 arm64       ✔️        ✔️       ✔️        ❌
 =========== ======= ======= ======= =======
 
-* Node.js ``v22.16.0`` + V8 ``v13.8.258.19``
+* Node.js ``v22.18.0`` + V8 ``v13.8.258.19``
 * i18n and non-i18n
 * Dynamic switch between Node.js and V8 mode
 * Polyfill V8 mode with `Javenode <https://github.com/caoccao/Javenode>`_

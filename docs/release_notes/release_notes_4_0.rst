@@ -2,17 +2,22 @@
 Release Notes 4.0.x - 4.1.x
 ===========================
 
+4.1.6
+-----
+
+* Upgraded Node.js to ``v22.18.0`` `(2025-07-31) <https://nodejs.org/en/blog/release/v22.18.0>`_
+
 4.1.5
 -----
 
-* Upgraded Node.js to ``v22.16.0`` `(2025-05-21) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V22.md#22.16.0>`_
+* Upgraded Node.js to ``v22.16.0`` `(2025-05-21) <https://nodejs.org/en/blog/release/v22.16.0>`_
 * Upgraded V8 to ``v13.8.258.19`` (2025-06-17)
 * Supported JS Temporal in V8 mode for Linux
 
 4.1.4
 -----
 
-* Upgraded Node.js to ``v22.15.1`` `(2025-05-14) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V22.md#22.15.1>`_
+* Upgraded Node.js to ``v22.15.1`` `(2025-05-14) <https://nodejs.org/en/blog/release/v22.15.1>`_
 * Upgraded V8 to ``v13.7.152.9`` (2025-05-15)
 * Upgraded Android NDK to ``r27c``
 * Enabled 16K page size for Android
@@ -22,7 +27,7 @@ Release Notes 4.0.x - 4.1.x
 4.1.3
 -----
 
-* Upgraded Node.js to ``v22.15.0`` `(2025-04-23) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V22.md#22.15.0>`_
+* Upgraded Node.js to ``v22.15.0`` `(2025-04-23) <https://nodejs.org/en/blog/release/v22.15.0>`_
 * Upgraded V8 to ``v13.6.233.5`` (2025-04-10)
 * Upgraded Visual Studio 2022 to `v17.13.6 <https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.13>`_
 * Fixed Linux arm64 build
@@ -31,7 +36,7 @@ Release Notes 4.0.x - 4.1.x
 4.1.2
 -----
 
-* Upgraded Node.js to ``v22.14.0`` `(2025-02-11) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V22.md#22.14.0>`_
+* Upgraded Node.js to ``v22.14.0`` `(2025-02-11) <https://nodejs.org/en/blog/release/v22.14.0>`_
 * Upgraded V8 to ``v13.5.212.10`` (2025-03-20)
 * Upgraded Visual Studio 2022 to `v17.13.5 <https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.13>`_
 * Upgraded GCC to v14.2.0
@@ -54,7 +59,7 @@ Release Notes 4.0.x - 4.1.x
 4.1.1
 -----
 
-* Upgraded Node.js to ``v22.12.0`` `(2024-12-03) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V22.md#22.12.0>`_
+* Upgraded Node.js to ``v22.12.0`` `(2024-12-03) <https://nodejs.org/en/blog/release/v22.12.0>`_
 * Upgraded V8 to ``v13.2.152.16`` (2024-12-05)
 * Upgraded Visual Studio 2022 to `v17.12.3 <https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.12>`_
 * Added ``getAbsoluteResourceName()`` to ``IV8ModuleResolver``
@@ -66,7 +71,7 @@ Release Notes 4.0.x - 4.1.x
 4.1.0
 -----
 
-* Upgraded Node.js to ``v22.11.0`` `(2024-10-29) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V22.md#22.11.0>`_
+* Upgraded Node.js to ``v22.11.0`` `(2024-10-29) <https://nodejs.org/en/blog/release/v22.11.0>`_
 * Upgraded V8 to ``v13.1.201.8`` (2024-11-11)
 * Upgraded clang to v20 for V8 mode on MacOS
 * Switched to core dependency + individual native dependency
@@ -78,7 +83,7 @@ Release Notes 4.0.x - 4.1.x
 4.0.0
 -----
 
-* Upgraded Node.js to ``v22.9.0`` `(2024-09-17) <https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V22.md#22.9.0>`_
+* Upgraded Node.js to ``v22.9.0`` `(2024-09-17) <https://nodejs.org/en/blog/release/v22.9.0>`_
 * Upgraded V8 to ``v13.0.245.16`` (2024-10-08)
 * Added ``NodeI18n``, ``V8I18n`` to ``JSRuntimeType``
 * Added ``getNodeI18nInstance()``, ``getV8I18nInstance()`` to ``V8Host``
