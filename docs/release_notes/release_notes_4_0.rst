@@ -6,6 +6,7 @@ Release Notes 4.0.x - 4.1.x
 -----
 
 * Upgraded Node.js to ``v22.18.0`` `(2025-07-31) <https://nodejs.org/en/blog/release/v22.18.0>`_
+* Upgraded V8 to ``v13.9.205.19`` (2025-08-04)
 
 4.1.5
 -----
