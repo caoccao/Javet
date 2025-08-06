@@ -243,14 +243,14 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
                 set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/lib${importLibrary}.a)
             endforeach(importLibrary)
             target_link_libraries(Javet PUBLIC
-                -latomic
+                -Wl,-Bstatic -latomic -Wl,-Bdynamic
                 -Wl,--compress-sections=.text=none
-                -Wl,--whole-archive ${importLibraries} -latomic -Wl,--no-whole-archive
+                -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
                 debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
             target_link_libraries(JavetStatic PUBLIC
-                -latomic
+                -Wl,-Bstatic -latomic -Wl,-Bdynamic
                 -Wl,--compress-sections=.text=none
-                -Wl,--whole-archive ${importLibraries} -latomic -Wl,--no-whole-archive
+                -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
                 debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
         endif()
         if(DEFINED NODE_DIR)
