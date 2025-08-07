@@ -61,9 +61,6 @@ jobs:
         cd ..
         gclient sync -D
         cd v8
-        # Patch the MacOS SDK version check
-        sed -E -i '' 's/mac_sdk_official_version = "[0-9]+\.[0-9]+"/mac_sdk_official_version = "15.2"/' build/config/mac/mac_sdk.gni
-        sed -E -i '' 's/mac_sdk_official_build_version = "[A-Za-z0-9]+"/mac_sdk_official_build_version = "24C94"/' build/config/mac/mac_sdk.gni
         git apply ../../Javet/scripts/patches/android/v8/builtins-typed-array.cc.patch
         git apply ../../Javet/scripts/patches/android/v8/simd.cc.patch
         mkdir -p out.gn.${{ matrix.name }}/x64.release
