@@ -25,7 +25,7 @@ jobs:
             v8_flag: v8_enable_i18n_support=false
 
     name: Build Javet V8 ${{ matrix.name }}
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
 
@@ -61,8 +61,6 @@ jobs:
         cd ..
         gclient sync -D
         cd v8
-        git apply ../../Javet/scripts/patches/android/v8/builtins-typed-array.cc.patch
-        git apply ../../Javet/scripts/patches/android/v8/simd.cc.patch
         mkdir -p out.gn.${{ matrix.name }}/arm64.release
         cp ../../Javet/scripts/v8/gn/macos-arm64-${{ matrix.name }}-args.gn out.gn.${{ matrix.name }}/arm64.release/args.gn
         gn gen out.gn.${{ matrix.name }}/arm64.release
@@ -119,7 +117,7 @@ jobs:
             node_flag: --without-intl
 
     name: Build Javet Node ${{ matrix.name }}
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
 
@@ -183,7 +181,7 @@ jobs:
   build_javet_jar:
     needs: [build_javet_v8, build_javet_node]
     name: Build Javet Jar
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
 
