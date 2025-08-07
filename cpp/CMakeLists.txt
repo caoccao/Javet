@@ -54,7 +54,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     endif()
     # The target ABI version is set to 24 because pre-24 is no longer supported by V8 v11+.
     # https://github.com/android/ndk/issues/1179
-    set(CMAKE_SYSTEM_VERSION 24)
+    if(DEFINED V8_DIR)
+        set(CMAKE_SYSTEM_VERSION 29)
+    endif()
+    if(DEFINED NODE_DIR)
+        set(CMAKE_SYSTEM_VERSION 24)
+    endif()
     set(CMAKE_ANDROID_STL_TYPE c++_static)
     set(JAVA_RESOURCES_DIR ${CMAKE_SOURCE_DIR}/../android/javet-android/src/main/jniLibs/${CMAKE_ANDROID_ARCH_ABI})
 else()
