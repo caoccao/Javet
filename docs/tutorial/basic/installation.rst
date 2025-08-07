@@ -702,7 +702,7 @@ glibc Version   Javet Version
 libatomic
 ^^^^^^^^^
 
-``libatomic`` is required from v4.1.2+.
+``libatomic`` is required from v4.1.2 to v4.1.5 for Linux. It is not required for v4.1.6 and later.
 
 Mac OS
 ------
