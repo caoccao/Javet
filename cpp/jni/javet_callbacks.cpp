@@ -259,19 +259,10 @@ namespace Javet {
 #endif
 
         size_t JavetNearHeapLimitCallback(void* data, size_t currentHeapLimit, size_t initialHeapLimit) noexcept {
-            v8::Isolate* v8Isolate = reinterpret_cast<v8::Isolate*>(data);
-            auto v8Context = v8Isolate->GetCurrentContext();
-            if (v8Context.IsEmpty()) {
-                LOG_ERROR("JavetNearHeapLimitCallback: V8 context is empty.");
-                return currentHeapLimit;
-            }
-            auto v8Runtime = V8Runtime::FromV8Context(v8Context);
-            if (v8Runtime == nullptr) {
-                LOG_ERROR("JavetNearHeapLimitCallback: V8 runtime is empty.");
-                return currentHeapLimit;
-            }
-            FETCH_JNI_ENV(GlobalJavaVM);
+            LOG_DEBUG("JavetNearHeapLimitCallback: current heap limit is " << currentHeapLimit << ", initial heap limit is " << initialHeapLimit << ".");
+            auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(data);
             auto externalV8Runtime = v8Runtime->externalV8Runtime;
+            FETCH_JNI_ENV(GlobalJavaVM);
             jlong newHeapLimit = jniEnv->CallLongMethod(
                 externalV8Runtime,
                 jmethodIDV8RuntimeReceiveNearHeapLimitCallback,

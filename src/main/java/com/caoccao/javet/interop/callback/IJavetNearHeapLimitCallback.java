@@ -27,6 +27,13 @@ package com.caoccao.javet.interop.callback;
  */
 public interface IJavetNearHeapLimitCallback {
     /**
+     * The constant INITIAL_HEAP_LIMIT.
+     *
+     * @since 4.1.6
+     */
+    long INITIAL_HEAP_LIMIT = 512L * 1024L * 1024L; // 512 MB, initial heap limit in bytes.
+
+    /**
      * Callback method invoked when V8 heap usage approaches its limit.
      *
      * @param currentHeapLimit the current heap limit in bytes

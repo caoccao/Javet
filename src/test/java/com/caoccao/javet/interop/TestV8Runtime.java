@@ -23,11 +23,12 @@ import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interop.callback.IJavetGCCallback;
+import com.caoccao.javet.interop.callback.IJavetNearHeapLimitCallback;
 import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
+import com.caoccao.javet.mock.MockNearHeapLimitCallback;
 import com.caoccao.javet.utils.SimpleList;
 import com.caoccao.javet.values.reference.V8ValueObject;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -149,6 +150,18 @@ public class TestV8Runtime extends BaseTestJavet {
     public void testLowMemoryNotification() throws JavetException {
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testNearHeapLimitCallback() throws JavetException {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            MockNearHeapLimitCallback callback = new MockNearHeapLimitCallback();
+            v8Runtime.setNearHeapLimitCallback(callback);
+            v8Runtime.getExecutor("[... new Array(50000000).keys()]").executeVoid();
+            v8Runtime.setNearHeapLimitCallback(null);
+            assertTrue(callback.isCallbackCalled());
+            assertTrue(callback.isGetDefaultHeapLimitCalled());
         }
     }
 
