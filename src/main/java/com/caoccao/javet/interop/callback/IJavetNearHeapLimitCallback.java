@@ -35,4 +35,14 @@ public interface IJavetNearHeapLimitCallback {
      * @since 4.1.6
      */
     long callback(long currentHeapLimit, long initialHeapLimit);
+
+    /**
+     * Gets default heap limit.
+     *
+     * @return the default heap limit
+     * @since 4.1.6
+     */
+    default long getDefaultHeapLimit() {
+        return 0L; // Default implementation returns 0, indicating no change to the heap limit.
+    }
 }

@@ -383,7 +383,6 @@ namespace Javet {
             createParams.snapshot_blob = v8StartupData.get();
             v8Isolate = v8::Isolate::New(createParams);
         }
-        v8Isolate->AddNearHeapLimitCallback(Javet::Callback::JavetNearHeapLimitCallback, v8Isolate);
         v8Isolate->SetPromiseRejectCallback(Javet::Callback::JavetPromiseRejectCallback);
 #endif
     }
@@ -399,7 +398,7 @@ namespace Javet {
             return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, this, v8Context, v8TryCatch);
         }
         return externalV8Value;
-        }
+    }
 
     jobject V8Runtime::SafeToExternalV8Value(
         JNIEnv* jniEnv,
@@ -418,5 +417,5 @@ namespace Javet {
         CloseV8Context();
         CloseV8Isolate();
     }
-        }
+}
 

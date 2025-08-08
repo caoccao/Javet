@@ -1201,6 +1201,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerGCPrologu
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    registerNearHeapLimitCallback
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerNearHeapLimitCallback
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    registerV8Runtime
  * Signature: (JLjava/lang/Object;)V
  */
@@ -1494,6 +1502,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterGCEpilo
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterGCPrologueCallback
   (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    unregisterNearHeapLimitCallback
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterNearHeapLimitCallback
+  (JNIEnv *, jobject, jlong, jlong);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

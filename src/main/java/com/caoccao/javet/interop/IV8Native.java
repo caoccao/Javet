@@ -434,7 +434,7 @@ public interface IV8Native {
 
     void unregisterGCPrologueCallback(long v8RuntimeHandle);
 
-    void unregisterNearHeapLimitCallback(long v8RuntimeHandle);
+    void unregisterNearHeapLimitCallback(long v8RuntimeHandle, long heapLimit);
 
     void v8InspectorSend(long v8RuntimeHandle, String message);
 }

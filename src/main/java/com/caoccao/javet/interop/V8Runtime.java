@@ -311,17 +311,17 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     IJavetLogger logger;
     /**
-     * The Pooled.
-     *
-     * @since 0.7.0
-     */
-    boolean pooled;
-    /**
      * The Near heap limit callback.
      *
      * @since 4.1.6
      */
     IJavetNearHeapLimitCallback nearHeapLimitCallback;
+    /**
+     * The Pooled.
+     *
+     * @since 0.7.0
+     */
+    boolean pooled;
     /**
      * The Promise reject callback.
      *
@@ -3180,9 +3180,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 4.1.6
      */
     long receiveNearHeapLimitCallback(long currentHeapLimit, long initialHeapLimit) {
+        IJavetNearHeapLimitCallback callback = nearHeapLimitCallback;
         try {
-            if (nearHeapLimitCallback != null) {
-                return nearHeapLimitCallback.callback(currentHeapLimit, initialHeapLimit);
+            if (callback != null) {
+                return callback.callback(currentHeapLimit, initialHeapLimit);
             }
         } catch (Throwable t) {
             logger.logError(t, "Failed to process near heap limit callback.");
@@ -3658,8 +3659,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 4.1.6
      */
     public void setNearHeapLimitCallback(IJavetNearHeapLimitCallback nearHeapLimitCallback) {
-        Objects.requireNonNull(nearHeapLimitCallback);
-        this.nearHeapLimitCallback = nearHeapLimitCallback;
+        if (this.nearHeapLimitCallback == null) {
+            if (nearHeapLimitCallback != null) {
+                this.nearHeapLimitCallback = nearHeapLimitCallback;
+                v8Native.registerNearHeapLimitCallback(handle);
+            }
+        } else {
+            if (this.nearHeapLimitCallback == nearHeapLimitCallback) {
+                // Do nothing if the same callback is set.
+            } else if (nearHeapLimitCallback != null) {
+                this.nearHeapLimitCallback = nearHeapLimitCallback;
+                v8Native.registerNearHeapLimitCallback(handle);
+            } else {
+                long defaultHeapLimit = this.nearHeapLimitCallback.getDefaultHeapLimit();
+                v8Native.unregisterNearHeapLimitCallback(handle, defaultHeapLimit);
+                this.nearHeapLimitCallback = null;
+            }
+        }
     }
 
     /**

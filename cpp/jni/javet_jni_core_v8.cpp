@@ -437,9 +437,9 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterGCProlo
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterNearHeapLimitCallback
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint heapLimit) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
-    v8Runtime->v8Isolate->RemoveNearHeapLimitCallback(Javet::Callback::JavetNearHeapLimitCallback);
+    v8Runtime->v8Isolate->RemoveNearHeapLimitCallback(Javet::Callback::JavetNearHeapLimitCallback, (size_t)heapLimit);
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
