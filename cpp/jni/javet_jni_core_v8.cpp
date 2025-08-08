@@ -291,6 +291,12 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerGCPrologu
     v8Runtime->v8Isolate->AddGCPrologueCallback(Javet::Callback::JavetGCPrologueCallback);
 }
 
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerNearHeapLimitCallback
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    v8Runtime->v8Isolate->AddNearHeapLimitCallback(Javet::Callback::JavetNearHeapLimitCallback, v8Runtime->v8Isolate);
+}
+
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerV8Runtime
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mV8Runtime) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
@@ -428,6 +434,12 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterGCProlo
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     v8Runtime->v8Isolate->RemoveGCPrologueCallback(Javet::Callback::JavetGCPrologueCallback);
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterNearHeapLimitCallback
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    v8Runtime->v8Isolate->RemoveNearHeapLimitCallback(Javet::Callback::JavetNearHeapLimitCallback);
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend

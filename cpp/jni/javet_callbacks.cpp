@@ -46,6 +46,7 @@ namespace Javet {
         jmethodID jmethodIDV8RuntimeGetV8Module;
         jmethodID jmethodIDV8RuntimeReceiveGCEpilogueCallback;
         jmethodID jmethodIDV8RuntimeReceiveGCPrologueCallback;
+        jmethodID jmethodIDV8RuntimeReceiveNearHeapLimitCallback;
         jmethodID jmethodIDV8RuntimeReceivePromiseRejectCallback;
         jmethodID jmethodIDV8RuntimeRemoveCallbackContext;
 
@@ -80,6 +81,7 @@ namespace Javet {
             jmethodIDV8RuntimeGetV8Module = jniEnv->GetMethodID(jclassV8Runtime, "getV8Module", "(Ljava/lang/String;Lcom/caoccao/javet/values/reference/IV8Module;)Lcom/caoccao/javet/values/reference/IV8Module;");
             jmethodIDV8RuntimeReceiveGCEpilogueCallback = jniEnv->GetMethodID(jclassV8Runtime, "receiveGCEpilogueCallback", "(II)V");
             jmethodIDV8RuntimeReceiveGCPrologueCallback = jniEnv->GetMethodID(jclassV8Runtime, "receiveGCPrologueCallback", "(II)V");
+            jmethodIDV8RuntimeReceiveNearHeapLimitCallback = jniEnv->GetMethodID(jclassV8Runtime, "receiveNearHeapLimitCallback", "(JJ)J");
             jmethodIDV8RuntimeReceivePromiseRejectCallback = jniEnv->GetMethodID(jclassV8Runtime, "receivePromiseRejectCallback", "(ILcom/caoccao/javet/values/reference/V8ValuePromise;Lcom/caoccao/javet/values/V8Value;)V");
             jmethodIDV8RuntimeRemoveCallbackContext = jniEnv->GetMethodID(jclassV8Runtime, "removeCallbackContext", "(J)V");
         }
@@ -255,6 +257,33 @@ namespace Javet {
             }
         }
 #endif
+
+        size_t JavetNearHeapLimitCallback(void* data, size_t currentHeapLimit, size_t initialHeapLimit) noexcept {
+            v8::Isolate* v8Isolate = reinterpret_cast<v8::Isolate*>(data);
+            auto v8Context = v8Isolate->GetCurrentContext();
+            if (v8Context.IsEmpty()) {
+                LOG_ERROR("JavetNearHeapLimitCallback: V8 context is empty.");
+                return currentHeapLimit;
+            }
+            auto v8Runtime = V8Runtime::FromV8Context(v8Context);
+            if (v8Runtime == nullptr) {
+                LOG_ERROR("JavetNearHeapLimitCallback: V8 runtime is empty.");
+                return currentHeapLimit;
+            }
+            FETCH_JNI_ENV(GlobalJavaVM);
+            auto externalV8Runtime = v8Runtime->externalV8Runtime;
+            jlong newHeapLimit = jniEnv->CallLongMethod(
+                externalV8Runtime,
+                jmethodIDV8RuntimeReceiveNearHeapLimitCallback,
+                (jlong)currentHeapLimit,
+                (jlong)initialHeapLimit);
+            if (jniEnv->ExceptionCheck()) {
+                jniEnv->ExceptionClear();
+                LOG_ERROR("JavetNearHeapLimitCallback: Exception occurred in Java callback.");
+                return currentHeapLimit;
+            }
+            return (size_t)newHeapLimit;
+        }
 
         void JavetPromiseRejectCallback(v8::PromiseRejectMessage message) noexcept {
             auto promiseRejectEvent = message.GetEvent();

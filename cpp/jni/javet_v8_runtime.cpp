@@ -383,6 +383,7 @@ namespace Javet {
             createParams.snapshot_blob = v8StartupData.get();
             v8Isolate = v8::Isolate::New(createParams);
         }
+        v8Isolate->AddNearHeapLimitCallback(Javet::Callback::JavetNearHeapLimitCallback, v8Isolate);
         v8Isolate->SetPromiseRejectCallback(Javet::Callback::JavetPromiseRejectCallback);
 #endif
     }
