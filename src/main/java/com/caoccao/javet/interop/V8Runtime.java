@@ -54,6 +54,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
 
 import static com.caoccao.javet.exceptions.JavetError.PARAMETER_FEATURE;
 
@@ -3770,18 +3771,43 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Terminate execution.
-     * <p>
-     * Forcefully terminate the current thread of JavaScript execution
-     * in the given isolate.
-     * <p>
-     * This method can be used by any thread even if that thread has not
-     * acquired the V8 lock with a Locker object.
+     * Terminate execution in the synchronous mode.
      *
      * @since 0.8.0
      */
     public void terminateExecution() {
-        v8Native.terminateExecution(handle);
+        terminateExecution(V8RuntimeTerminationMode.Synchronous);
+    }
+
+    /**
+     * Terminate execution in either the asynchronous mode or the synchronous mode.
+     * <p>
+     * Asynchronous mode: A new thread is created to terminate the execution.
+     * Synchronous mode: Current thread is used to terminate the execution.
+     * <p>
+     * It forcefully terminates the current thread of JavaScript execution
+     * in the given isolate.
+     * <p>
+     * It can be used by any thread even if that thread has not
+     * acquired the V8 lock with a Locker object.
+     *
+     * @param v8RuntimeTerminationMode the V8 runtime termination type
+     * @since 4.1.6
+     */
+    public void terminateExecution(V8RuntimeTerminationMode v8RuntimeTerminationMode) {
+        switch (Objects.requireNonNull(v8RuntimeTerminationMode)) {
+            case Asynchronous:
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    v8Native.terminateExecution(handle);
+                });
+                break;
+            case Synchronous:
+                v8Native.terminateExecution(handle);
+                break;
+            default:
+                logger.logWarn("Unknown termination type: " + v8RuntimeTerminationMode.name());
+                break;
+        }
     }
 
     /**

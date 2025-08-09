@@ -251,3 +251,33 @@ V8 exposes quite a few statistics for applications to analyze the memory usage, 
 
     * The ``getV8HeapSpaceStatistics()`` and ``getV8HeapStatistics()`` calls are asynchronous and not 100% guaranteed to be completed. Only when the V8 runtime is idle, 100% completion can be achieved.
     * More statistics will be exposed in new releases. Please file issues if you need more of them.
+
+Heap Limit
+==========
+
+V8 has a built-in heap limit that can be set via ``V8Flags.setMaxHeapSize(int)``. However, that is not enough for applications to control the heap size. Especially, when V8 reaches the heap limit, it will crash the whole application which is JVM.
+
+Javet provides a way to set a near heap limit callback so that applications can be notified when the heap size is close to the limit. This is done via ``V8Runtime.setNearHeapLimitCallback()``. The callback will be called when the heap size is close to the limit. Applications can then take 2 options to prevent the crash.
+
+Option 1: Increase the Heap Size
+--------------------------------
+
+Usually, a script that is close to the heap limit is not expected to be terminated. In this case, applications can increase the heap limit by returning a larger heap limit in the callback and V8 will not crash.
+
+.. code-block:: java
+
+    v8Runtime.setNearHeapLimitCallback((currentHeapLimit, initialHeapLimit) -> {
+        return currentHeapLimit * 2; // We tell V8 to double the heap limit.
+    });
+
+Option 2: Terminate the V8 Runtime
+----------------------------------
+
+Somehow, a malicious script can use up all the heap memory no matter how large the heap limit is. In this case, applications can terminate the V8 runtime in the callback and V8 will not crash.
+
+.. code-block:: java
+
+    v8Runtime.setNearHeapLimitCallback((currentHeapLimit, initialHeapLimit) -> {
+        v8Runtime.terminateExecution(); // We tell V8 to terminate the execution.
+        return currentHeapLimit * 2; // We still need to tell V8 to double the heap limit because the termination will happen later.
+    });
