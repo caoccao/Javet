@@ -352,6 +352,8 @@ public interface IV8Native {
 
     void registerGCPrologueCallback(long v8RuntimeHandle);
 
+    void registerNearHeapLimitCallback(long v8RuntimeHandle);
+
     void registerV8Runtime(long v8RuntimeHandle, Object v8Runtime);
 
     void removeJNIGlobalRef(long handle);
@@ -431,6 +433,8 @@ public interface IV8Native {
     void unregisterGCEpilogueCallback(long v8RuntimeHandle);
 
     void unregisterGCPrologueCallback(long v8RuntimeHandle);
+
+    void unregisterNearHeapLimitCallback(long v8RuntimeHandle, long heapLimit);
 
     void v8InspectorSend(long v8RuntimeHandle, String message);
 }

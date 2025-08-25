@@ -54,6 +54,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
 
 import static com.caoccao.javet.exceptions.JavetError.PARAMETER_FEATURE;
 
@@ -310,6 +311,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.7.0
      */
     IJavetLogger logger;
+    /**
+     * The Near heap limit callback.
+     *
+     * @since 4.1.6
+     */
+    IJavetNearHeapLimitCallback nearHeapLimitCallback;
     /**
      * The Pooled.
      *
@@ -1552,6 +1559,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public IJavetLogger getLogger() {
         return logger;
+    }
+
+    /**
+     * Gets near heap limit callback.
+     *
+     * @return the near heap limit callback
+     * @since 4.1.6
+     */
+    public IJavetNearHeapLimitCallback getNearHeapLimitCallback() {
+        return nearHeapLimitCallback;
     }
 
     /**
@@ -3156,6 +3173,26 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Receives the near heap limit callback from JNI.
+     *
+     * @param currentHeapLimit the current heap limit in bytes
+     * @param initialHeapLimit the initial heap limit in bytes
+     * @return the new heap limit in bytes
+     * @since 4.1.6
+     */
+    long receiveNearHeapLimitCallback(long currentHeapLimit, long initialHeapLimit) {
+        IJavetNearHeapLimitCallback callback = nearHeapLimitCallback;
+        try {
+            if (callback != null) {
+                return callback.callback(currentHeapLimit, initialHeapLimit);
+            }
+        } catch (Throwable t) {
+            logger.logError(t, "Failed to process near heap limit callback.");
+        }
+        return currentHeapLimit;
+    }
+
+    /**
      * Receives the promise reject callback from JNI.
      *
      * @param event   the event
@@ -3617,6 +3654,32 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Sets near heap limit callback.
+     *
+     * @param nearHeapLimitCallback the near heap limit callback
+     * @since 4.1.6
+     */
+    public void setNearHeapLimitCallback(IJavetNearHeapLimitCallback nearHeapLimitCallback) {
+        if (this.nearHeapLimitCallback == null) {
+            if (nearHeapLimitCallback != null) {
+                this.nearHeapLimitCallback = nearHeapLimitCallback;
+                v8Native.registerNearHeapLimitCallback(handle);
+            }
+        } else {
+            if (this.nearHeapLimitCallback == nearHeapLimitCallback) {
+                // Do nothing if the same callback is set.
+            } else if (nearHeapLimitCallback != null) {
+                this.nearHeapLimitCallback = nearHeapLimitCallback;
+                v8Native.registerNearHeapLimitCallback(handle);
+            } else {
+                long defaultHeapLimit = this.nearHeapLimitCallback.getDefaultHeapLimit();
+                v8Native.unregisterNearHeapLimitCallback(handle, defaultHeapLimit);
+                this.nearHeapLimitCallback = null;
+            }
+        }
+    }
+
+    /**
      * Sets promise reject callback.
      *
      * @param promiseRejectCallback the promise reject callback
@@ -3708,18 +3771,43 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Terminate execution.
-     * <p>
-     * Forcefully terminate the current thread of JavaScript execution
-     * in the given isolate.
-     * <p>
-     * This method can be used by any thread even if that thread has not
-     * acquired the V8 lock with a Locker object.
+     * Terminate execution in the synchronous mode.
      *
      * @since 0.8.0
      */
     public void terminateExecution() {
-        v8Native.terminateExecution(handle);
+        terminateExecution(V8RuntimeTerminationMode.Synchronous);
+    }
+
+    /**
+     * Terminate execution in either the asynchronous mode or the synchronous mode.
+     * <p>
+     * Asynchronous mode: A new thread is created to terminate the execution.
+     * Synchronous mode: Current thread is used to terminate the execution.
+     * <p>
+     * It forcefully terminates the current thread of JavaScript execution
+     * in the given isolate.
+     * <p>
+     * It can be used by any thread even if that thread has not
+     * acquired the V8 lock with a Locker object.
+     *
+     * @param v8RuntimeTerminationMode the V8 runtime termination type
+     * @since 4.1.6
+     */
+    public void terminateExecution(V8RuntimeTerminationMode v8RuntimeTerminationMode) {
+        switch (Objects.requireNonNull(v8RuntimeTerminationMode)) {
+            case Asynchronous:
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    v8Native.terminateExecution(handle);
+                });
+                break;
+            case Synchronous:
+                v8Native.terminateExecution(handle);
+                break;
+            default:
+                logger.logWarn("Unknown termination type: " + v8RuntimeTerminationMode.name());
+                break;
+        }
     }
 
     /**

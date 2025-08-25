@@ -54,7 +54,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     endif()
     # The target ABI version is set to 24 because pre-24 is no longer supported by V8 v11+.
     # https://github.com/android/ndk/issues/1179
-    set(CMAKE_SYSTEM_VERSION 24)
+    if(DEFINED V8_DIR)
+        set(CMAKE_SYSTEM_VERSION 29)
+    endif()
+    if(DEFINED NODE_DIR)
+        set(CMAKE_SYSTEM_VERSION 24)
+    endif()
     set(CMAKE_ANDROID_STL_TYPE c++_static)
     set(JAVA_RESOURCES_DIR ${CMAKE_SOURCE_DIR}/../android/javet-android/src/main/jniLibs/${CMAKE_ANDROID_ARCH_ABI})
 else()
@@ -152,10 +157,10 @@ if(DEFINED NODE_DIR)
     # zlib
     if(CMAKE_SYSTEM_NAME STREQUAL "Android")
         if(CMAKE_ANDROID_ARCH MATCHES "(x86|x86_64)")
-            list(APPEND importLibraries zlib_adler32_simd zlib_inflate_chunk_simd)
+            list(APPEND importLibraries zlib_adler32_simd zlib_data_chunk_simd)
         endif()
     else()
-        list(APPEND importLibraries zlib_adler32_simd zlib_inflate_chunk_simd)
+        list(APPEND importLibraries zlib_adler32_simd zlib_data_chunk_simd)
         if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)")
             list(APPEND importLibraries zlib_arm_crc32)
         endif()
@@ -243,14 +248,14 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
                 set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/lib${importLibrary}.a)
             endforeach(importLibrary)
             target_link_libraries(Javet PUBLIC
-                -latomic
+                -Wl,-Bstatic -latomic -Wl,-Bdynamic
                 -Wl,--compress-sections=.text=none
-                -Wl,--whole-archive ${importLibraries} -latomic -Wl,--no-whole-archive
+                -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
                 debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
             target_link_libraries(JavetStatic PUBLIC
-                -latomic
+                -Wl,-Bstatic -latomic -Wl,-Bdynamic
                 -Wl,--compress-sections=.text=none
-                -Wl,--whole-archive ${importLibraries} -latomic -Wl,--no-whole-archive
+                -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
                 debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
         endif()
         if(DEFINED NODE_DIR)

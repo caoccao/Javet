@@ -191,6 +191,10 @@ public class TestV8Module extends BaseTestJavetRuntime {
             iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./a.js").setModule(false);
             try (V8ValuePromise v8ValuePromise = iV8Executor.execute()) {
                 assertNotNull(v8ValuePromise);
+                if (isNode()) {
+                    assertTrue(v8ValuePromise.isPending());
+                    v8Runtime.await();
+                }
                 assertTrue(v8ValuePromise.isRejected());
             }
         }
