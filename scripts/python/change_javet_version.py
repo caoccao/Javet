@@ -189,7 +189,7 @@ class ChangeJavetVersion(object):
       logging.info('  Updated.')
 
 def main():
-  change_javet_version = ChangeJavetVersion('4.1.6')
+  change_javet_version = ChangeJavetVersion('4.1.7')
   change_javet_version.update()
   return 0
 
