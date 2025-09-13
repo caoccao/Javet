@@ -23,6 +23,7 @@ import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestV8Host extends BaseTestJavet {
     @Test
     public void testAllRuntimes() {
-        Stream.of(JSRuntimeType.values())
+        IntStream.range(0, 2).forEach(i -> Stream.of(JSRuntimeType.values())
                 .filter(type -> {
                     File libFile = BaseTestJavet.getLibFile(type);
                     return libFile != null && libFile.exists();
@@ -39,10 +40,11 @@ public class TestV8Host extends BaseTestJavet {
                     try (V8Runtime v8Runtime = V8Host.getInstance(type).createV8Runtime()) {
                         assertNotNull(v8Runtime);
                         assertEquals(type, v8Runtime.getJSRuntimeType());
+                        assertEquals(2, v8Runtime.getExecutor("1+1").executeInteger());
                     } catch (JavetException e) {
                         fail(e);
                     }
-                });
+                }));
     }
 
     @Test

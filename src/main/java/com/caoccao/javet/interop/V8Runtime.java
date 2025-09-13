@@ -1267,8 +1267,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     JSScopeType functionGetJSScopeType(IV8ValueFunction iV8ValueFunction) {
         return JSScopeType.parse(
                 v8Native.functionGetJSScopeType(
-                        handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()),
-                v8Host.getJSRuntimeType());
+                        handle, iV8ValueFunction.getHandle(), iV8ValueFunction.getType().getId()));
     }
 
     /**

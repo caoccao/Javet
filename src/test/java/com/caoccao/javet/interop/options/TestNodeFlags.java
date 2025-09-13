@@ -42,14 +42,14 @@ public class TestNodeFlags {
             assertFalse(getterAndSetter.getter.apply(nodeFlags));
             assertTrue(getterAndSetter.getter.apply(getterAndSetter.setter.apply(nodeFlags, true)));
         });
-        assertFalse(nodeFlags.isExperimentalPermission());
+        assertFalse(nodeFlags.isPermission());
         assertNull(nodeFlags.getAllowFsRead());
         assertArrayEquals(new String[]{"/a", "/b"}, nodeFlags.setAllowFsRead(new String[]{"/a", "/b"}).getAllowFsRead());
-        assertTrue(nodeFlags.isExperimentalPermission());
-        assertFalse(nodeFlags.setExperimentalPermission(false).isExperimentalPermission());
+        assertTrue(nodeFlags.isPermission());
+        assertFalse(nodeFlags.setPermission(false).isPermission());
         assertNull(nodeFlags.getAllowFsWrite());
         assertArrayEquals(new String[]{"/a", "/b"}, nodeFlags.setAllowFsWrite(new String[]{"/a", "/b"}).getAllowFsWrite());
-        assertTrue(nodeFlags.isExperimentalPermission());
+        assertTrue(nodeFlags.isPermission());
         assertNull(nodeFlags.getCustomFlags());
         assertNull(nodeFlags.getIcuDataDir());
         assertEquals("abc", nodeFlags.setIcuDataDir("abc").getIcuDataDir());
@@ -71,13 +71,13 @@ public class TestNodeFlags {
                 "--experimental-sqlite",
                 nodeFlags.setExperimentalSqlite(true).toString());
         assertEquals(
-                "--allow-fs-read=/a --allow-fs-read=/b --experimental-permission --experimental-sqlite",
+                "--allow-fs-read=/a --allow-fs-read=/b --experimental-sqlite --permission",
                 nodeFlags.setAllowFsRead(new String[]{"/a", "/b"}).toString());
         nodeFlags.setAllowFsRead(null).setExperimentalSqlite(false);
         assertEquals(
-                "--allow-fs-write=/a --allow-fs-write=/b --experimental-permission",
+                "--allow-fs-write=/a --allow-fs-write=/b --permission",
                 nodeFlags.setAllowFsWrite(new String[]{"/a", "/b"}).toString());
-        nodeFlags.setAllowFsWrite(null).setExperimentalPermission(false);
+        nodeFlags.setAllowFsWrite(null).setPermission(false);
         assertEquals("--no-warnings", nodeFlags.setNoWarnings(true).toString());
         nodeFlags.setNoWarnings(false);
         assertEquals(

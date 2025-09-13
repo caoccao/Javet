@@ -44,18 +44,6 @@ public final class NodeFlags {
      */
     public static final String ALLOW_FS_WRITE = "--allow-fs-write";
     /**
-     * The constant EXPERIMENTAL_PERMISSION.
-     *
-     * @since 4.0.0
-     */
-    public static final String EXPERIMENTAL_PERMISSION = "--experimental-permission";
-    /**
-     * The constant NO_EXPERIMENTAL_REQUIRE_MODULE.
-     *
-     * @since 4.1.1
-     */
-    public static final String NO_EXPERIMENTAL_REQUIRE_MODULE = "--no-experimental-require-module";
-    /**
      * The constant EXPERIMENTAL_SQLITE.
      *
      * @since 4.0.0
@@ -74,6 +62,18 @@ public final class NodeFlags {
      */
     public static final String JS_FLOAT_16_ARRAY = "--js-float16array";
     /**
+     * The constant NO_EXPERIMENTAL_REQUIRE_MODULE.
+     *
+     * @since 4.1.1
+     */
+    public static final String NO_EXPERIMENTAL_REQUIRE_MODULE = "--no-experimental-require-module";
+    /**
+     * The constant PERMISSION.
+     *
+     * @since 5.0.0
+     */
+    public static final String PERMISSION = "--permission";
+    /**
      * The constant NO_WARNINGS.
      *
      * @since 4.0.0
@@ -84,12 +84,12 @@ public final class NodeFlags {
     private String[] allowFsRead;
     private String[] allowFsWrite;
     private String[] customFlags;
-    private boolean experimentalPermission;
     private boolean experimentalSqlite;
     private String icuDataDir;
     private boolean jsFloat16Array;
     private boolean noExperimentalRequireModule;
     private boolean noWarnings;
+    private boolean permission;
     private boolean sealed;
 
     /**
@@ -101,11 +101,11 @@ public final class NodeFlags {
         allowFsRead = null;
         allowFsWrite = null;
         customFlags = null;
-        experimentalPermission = false;
-        noExperimentalRequireModule = false;
         experimentalSqlite = false;
         jsFloat16Array = false;
+        noExperimentalRequireModule = false;
         noWarnings = false;
+        permission = false;
         sealed = false;
     }
 
@@ -162,21 +162,6 @@ public final class NodeFlags {
     }
 
     /**
-     * Enable the Permission Model for current process. When enabled, the following permissions are restricted:
-     * <p>
-     * File System - manageable through --allow-fs-read, --allow-fs-write flags
-     * Child Process - manageable through --allow-child-process flag
-     * Worker Threads - manageable through --allow-worker flag
-     * WASI - manageable through --allow-wasi flag
-     *
-     * @return true : yes, false: no
-     * @since 4.0.0
-     */
-    public boolean isExperimentalPermission() {
-        return experimentalPermission;
-    }
-
-    /**
      * Is the experimental node:sqlite module enabled.
      *
      * @return true : yes, false: no
@@ -217,6 +202,21 @@ public final class NodeFlags {
     }
 
     /**
+     * Enable the Permission Model for current process. When enabled, the following permissions are restricted:
+     * <p>
+     * File System - manageable through --allow-fs-read, --allow-fs-write flags
+     * Child Process - manageable through --allow-child-process flag
+     * Worker Threads - manageable through --allow-worker flag
+     * WASI - manageable through --allow-wasi flag
+     *
+     * @return true : yes, false: no
+     * @since 5.0.0
+     */
+    public boolean isPermission() {
+        return permission;
+    }
+
+    /**
      * Is sealed.
      *
      * @return true : yes, false: no
@@ -254,7 +254,7 @@ public final class NodeFlags {
                 this.allowFsRead = Stream.of(allowFsRead)
                         .filter(StringUtils::isNotBlank)
                         .toArray(String[]::new);
-                this.experimentalPermission = true;
+                this.permission = true;
             }
         }
         return this;
@@ -275,7 +275,7 @@ public final class NodeFlags {
                 this.allowFsWrite = Stream.of(allowFsWrite)
                         .filter(StringUtils::isNotBlank)
                         .toArray(String[]::new);
-                this.experimentalPermission = true;
+                this.permission = true;
             }
         }
         return this;
@@ -297,20 +297,6 @@ public final class NodeFlags {
                         .filter(StringUtils::isNotBlank)
                         .toArray(String[]::new);
             }
-        }
-        return this;
-    }
-
-    /**
-     * Sets experimental permission.
-     *
-     * @param experimentalPermission the experimental permission
-     * @return the self
-     * @since 4.0.0
-     */
-    public NodeFlags setExperimentalPermission(boolean experimentalPermission) {
-        if (!sealed) {
-            this.experimentalPermission = experimentalPermission;
         }
         return this;
     }
@@ -386,6 +372,20 @@ public final class NodeFlags {
     }
 
     /**
+     * Sets permission.
+     *
+     * @param permission the permission
+     * @return the self
+     * @since 5.0.0
+     */
+    public NodeFlags setPermission(boolean permission) {
+        if (!sealed) {
+            this.permission = permission;
+        }
+        return this;
+    }
+
+    /**
      * To string array.
      *
      * @return the string array
@@ -404,12 +404,6 @@ public final class NodeFlags {
                     .map(path -> ALLOW_FS_WRITE + EQUAL + path.trim())
                     .forEach(tokens::add);
         }
-        if (experimentalPermission) {
-            tokens.add(EXPERIMENTAL_PERMISSION);
-        }
-        if (noExperimentalRequireModule) {
-            tokens.add(NO_EXPERIMENTAL_REQUIRE_MODULE);
-        }
         if (experimentalSqlite) {
             tokens.add(EXPERIMENTAL_SQLITE);
         }
@@ -419,8 +413,14 @@ public final class NodeFlags {
         if (jsFloat16Array) {
             tokens.add(JS_FLOAT_16_ARRAY);
         }
+        if (noExperimentalRequireModule) {
+            tokens.add(NO_EXPERIMENTAL_REQUIRE_MODULE);
+        }
         if (noWarnings) {
             tokens.add(NO_WARNINGS);
+        }
+        if (permission) {
+            tokens.add(PERMISSION);
         }
         tokens.sort(String::compareTo);
         if (ArrayUtils.isNotEmpty(customFlags)) {

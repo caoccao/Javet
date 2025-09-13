@@ -115,7 +115,6 @@ if(DEFINED V8_DIR)
         ${V8_DIR}/third_party/abseil-cpp
         ${V8_DIR}/third_party/fp16/src/include
         ${V8_RELEASE_DIR}/gen)
-    add_definitions(-DV8_ENABLE_LEAPTIERING)
     if(DEFINED ENABLE_I18N)
         add_definitions(-DENABLE_I18N -DV8_INTL_SUPPORT)
         list(APPEND includeDirs
@@ -131,6 +130,7 @@ if(DEFINED NODE_DIR)
         ${NODE_DIR}/deps/v8
         ${NODE_DIR}/deps/v8/include
         ${NODE_DIR}/deps/v8/third_party/abseil-cpp
+        ${NODE_DIR}/deps/v8/third_party/fp16/src/include
         ${NODE_DIR}/deps/ncrypto
         ${NODE_DIR}/src)
     if(DEFINED ENABLE_I18N)
@@ -139,9 +139,9 @@ if(DEFINED NODE_DIR)
             ${NODE_DIR}/deps/icu-small/source/common)
     endif()
     list(APPEND importLibraries
-        abseil ada brotli cares crdtp histogram llhttp nbytes ncrypto nghttp2 openssl simdjson simdutf sqlite torque_base uvwasi
+        abseil ada brotli cares crdtp highway histogram llhttp nbytes ncrypto nghttp2 openssl simdjson simdutf sqlite torque_base uvwasi
         v8_base_without_compiler v8_compiler v8_init v8_initializers v8_initializers_slow
-        v8_libbase v8_libplatform v8_snapshot v8_turboshaft v8_zlib zlib zstd)
+        v8_libbase v8_libplatform v8_snapshot v8_zlib zlib zstd)
     # node, uv
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         list(APPEND importLibraries libnode libuv)
@@ -172,7 +172,7 @@ if(DEFINED NODE_DIR)
     add_definitions(-DENABLE_NODE)
     set(JAVET_LIB_TYPE "node")
 endif()
-add_definitions(-DV8_ENABLE_WEBASSEMBLY)
+add_definitions(-DV8_ENABLE_WEBASSEMBLY -DV8_ENABLE_LEAPTIERING)
 foreach(importLibrary ${importLibraries})
     add_library(${importLibrary} STATIC IMPORTED)
 endforeach(importLibrary)
@@ -185,13 +185,13 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # Generate PDB file
     # https://learn.microsoft.com/en-us/cpp/build/reference/zc-cplusplus
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi /MP /O2 /Ob2 /GS- /Zc:__cplusplus")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /clang:-Wno-invalid-offsetof /clang:-Wno-nullability-completeness")
     set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
     add_definitions(-D_ITERATOR_DEBUG_LEVEL=0 -D_WIN32)
     list(APPEND includeDirs $ENV{JAVA_HOME}/include/win32)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     if(DEFINED V8_DIR)
         add_definitions(-D_WIN32_WINNT)
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /clang:-Wno-invalid-offsetof /clang:-Wno-nullability-completeness")
         foreach(importLibrary ${importLibraries})
             set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/${importLibrary}.lib)
         endforeach(importLibrary)
@@ -224,6 +224,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
         set(JAVET_LIB_SYSTEM "linux")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated -Wno-deprecated-declarations ")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-deprecated-declarations ")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld")
+        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=lld")
+        set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -fuse-ld=lld")
         if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
             set(JAVET_LIB_ARCH "-x86_64")
             add_definitions(-D__x86_64__)
@@ -241,9 +244,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
                 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flax-vector-conversions ")
                 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flax-vector-conversions ")
             endif()
-            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld")
-            set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=lld")
-            set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -fuse-ld=lld")
             foreach(importLibrary ${importLibraries})
                 set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/lib${importLibrary}.a)
             endforeach(importLibrary)
@@ -268,8 +268,10 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
             endforeach(importLibrary)
             list(REMOVE_ITEM importLibraries v8_init)
             target_link_libraries(Javet PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
+                -Wl,--compress-sections=.text=none
                 v8_init debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
             target_link_libraries(JavetStatic PUBLIC -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
+                -Wl,--compress-sections=.text=none
                 v8_init debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
         endif()
         # https://www.gnu.org/software/gnulib/manual/html_node/LD-Version-Scripts.html

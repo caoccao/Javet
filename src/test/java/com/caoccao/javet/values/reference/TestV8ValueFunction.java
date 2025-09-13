@@ -1226,7 +1226,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
             IV8ValueFunction.ScriptSource originalScriptSource = originalV8ValueFunction.getScriptSource();
             assertEquals("() => a + b + 1", originalScriptSource.getCodeSnippet(), "The code snippet should match.");
             if (isNode()) {
-                assertTrue(originalV8ValueFunction.getJSScopeType().isClass(), "The context is not ready.");
+                assertTrue(originalV8ValueFunction.getJSScopeType().isScript(), "The context is not ready.");
             }
             assertFalse(originalV8ValueFunction.isCompiled());
             assertEquals(5, originalV8ValueFunction.callInteger(null), "Populate the context.");
@@ -1436,8 +1436,8 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     assertTrue(v8ValueFunction.getJSFunctionType().isUserDefined(),
                             "Function type should be user defined.");
                     if (isNode()) {
-                        assertTrue(v8ValueFunction.getJSScopeType().isClass(),
-                                "The cache is not ready and the scope type should be [Class].");
+                        assertTrue(v8ValueFunction.getJSScopeType().isScript(),
+                                "The cache is not ready and the scope type should be [Script].");
                     }
                     assertEquals(functionBodies.get(i), v8ValueFunction.getSourceCode(),
                             "The source code should match.");
