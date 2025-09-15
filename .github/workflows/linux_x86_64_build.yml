@@ -143,6 +143,8 @@ jobs:
         git clone https://github.com/nodejs/node.git
         cd node
         git checkout v${{ env.JAVET_NODE_VERSION }}
+        sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' deps/v8/src/execution/isolate.h
+        sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' deps/v8/src/heap/local-heap.h
         python3 ${{ env.ROOT }}/Javet/scripts/python/patch_node_build.py -p ./
         ./configure --enable-static ${{ matrix.node_flag }}
         python3 ${{ env.ROOT }}/Javet/scripts/python/patch_node_build.py -p ./

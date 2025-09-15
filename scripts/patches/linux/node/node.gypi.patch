@@ -1,0 +1,15 @@
+diff --git a/node.gypi b/node.gypi
+index e9b36657d13..08f177bed55 100644
+--- a/node.gypi
++++ b/node.gypi
+@@ -28,7 +28,9 @@
+   'conditions': [
+     [ 'clang==1', {
+       'cflags': [
+-        '-Werror=undefined-inline',
++        '-fPIC',
++        '-ftls-model=global-dynamic',
++        '-Wno-return-type',
+         '-Werror=extra-semi',
+         '-Werror=ctad-maybe-unsupported',
+       ],

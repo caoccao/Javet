@@ -55,8 +55,8 @@ class PatchNodeBuild(object):
       'CFLAGS_CC_Release :=',
       'LDFLAGS_Release :=',
     ]
-    self._make_property = '    -fPIC \\'
-    self._make_property_inline = ' -fPIC '
+    self._make_property = '    -fPIC -ftls-model=global-dynamic -Wno-return-type \\'
+    self._make_property_inline = ' -fPIC -ftls-model=global-dynamic -Wno-return-type '
 
     self._parse_args()
 
