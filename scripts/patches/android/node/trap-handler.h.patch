@@ -1,19 +1,19 @@
 diff --git a/deps/v8/src/trap-handler/trap-handler.h b/deps/v8/src/trap-handler/trap-handler.h
-index 4bf95b8c22..90bbb3aa36 100644
+index bd6f19593d3..d0142c9b18c 100644
 --- a/deps/v8/src/trap-handler/trap-handler.h
 +++ b/deps/v8/src/trap-handler/trap-handler.h
-@@ -17,44 +17,7 @@ namespace v8 {
- namespace internal {
- namespace trap_handler {
+@@ -15,45 +15,7 @@
+ 
+ namespace v8::internal::trap_handler {
  
 -// X64 on Linux, Windows, MacOS, FreeBSD.
 -#if V8_HOST_ARCH_X64 && V8_TARGET_ARCH_X64 &&                        \
 -    ((V8_OS_LINUX && !V8_OS_ANDROID) || V8_OS_WIN || V8_OS_DARWIN || \
 -     V8_OS_FREEBSD)
 -#define V8_TRAP_HANDLER_SUPPORTED true
--// Arm64 (non-simulator) on Mac and Linux.
+-// Arm64 (non-simulator) on Linux, Windows, MacOS.
 -#elif V8_TARGET_ARCH_ARM64 && V8_HOST_ARCH_ARM64 && \
--    (V8_OS_DARWIN || (V8_OS_LINUX && !V8_OS_ANDROID))
+-    ((V8_OS_LINUX && !V8_OS_ANDROID) || V8_OS_WIN || V8_OS_DARWIN)
 -#define V8_TRAP_HANDLER_SUPPORTED true
 -// Arm64 simulator on x64 on Linux, Mac, or Windows.
 -//
@@ -34,7 +34,8 @@ index 4bf95b8c22..90bbb3aa36 100644
 -#define V8_TRAP_HANDLER_VIA_SIMULATOR
 -#define V8_TRAP_HANDLER_SUPPORTED true
 -// RISCV64 (non-simulator) on Linux.
--#elif V8_TARGET_ARCH_RISCV64 && V8_HOST_ARCH_RISCV64 && V8_OS_LINUX
+-#elif V8_TARGET_ARCH_RISCV64 && V8_HOST_ARCH_RISCV64 && V8_OS_LINUX && \
+-    !V8_OS_ANDROID
 -#define V8_TRAP_HANDLER_SUPPORTED true
 -// RISCV64 simulator on x64 on Linux
 -#elif V8_TARGET_ARCH_RISCV64 && V8_HOST_ARCH_X64 && V8_OS_LINUX
