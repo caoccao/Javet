@@ -14,13 +14,13 @@
 # limitations under the License.
 
 # Usage: docker build \
-#  -t sjtucaocao/javet:arm64-base-v8_14.0.365.4 \
+#  -t sjtucaocao/javet:arm64-base-v8_14.1.146.11 \
 #  --build-arg JAVET_REPO=sjtucaocao/javet \
-#  --build-arg JAVET_V8_VERSION=14.0.365.4 \
+#  --build-arg JAVET_V8_VERSION=14.1.146.11 \
 #  -f docker/linux-arm64/base_v8.Dockerfile .
 
 ARG JAVET_REPO=sjtucaocao/javet
-ARG JAVET_V8_VERSION=14.0.365.4
+ARG JAVET_V8_VERSION=14.1.146.11
 
 FROM ${JAVET_REPO}:arm64-base-jvm
 
