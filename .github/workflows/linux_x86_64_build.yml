@@ -34,7 +34,7 @@ jobs:
 
     - name: Setup Ubuntu
       run: |
-        sudo apt-get install -y execstack
+        sudo apt-get install -y execstack build-essential
 
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -127,7 +127,7 @@ jobs:
 
     - name: Setup Ubuntu
       run: |
-        sudo apt-get install -y execstack
+        sudo apt-get install -y execstack build-essential
 
     - name: Setup Python
       uses: actions/setup-python@v5
