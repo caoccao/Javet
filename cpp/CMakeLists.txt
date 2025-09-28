@@ -114,7 +114,8 @@ if(DEFINED V8_DIR)
         ${V8_DIR}/include
         ${V8_DIR}/third_party/abseil-cpp
         ${V8_DIR}/third_party/fp16/src/include
-        ${V8_RELEASE_DIR}/gen)
+        ${V8_RELEASE_DIR}/gen
+        ${V8_RELEASE_DIR}/gen/include)
     if(DEFINED ENABLE_I18N)
         add_definitions(-DENABLE_I18N -DV8_INTL_SUPPORT)
         list(APPEND includeDirs
@@ -225,6 +226,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated -Wno-deprecated-declarations ")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-deprecated-declarations ")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld")
+        # We use the LLVM.lld linker for Linux.
         set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=lld")
         set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -fuse-ld=lld")
         if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
@@ -239,26 +241,37 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
         add_definitions(-D__linux__)
         list(APPEND includeDirs $ENV{JAVA_HOME}/include/linux)
         if(DEFINED V8_DIR)
-            add_definitions(-DV8_TEMPORAL_SUPPORT)
+            # We use clang for V8 mode on Linux.
             if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)")
                 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flax-vector-conversions ")
                 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flax-vector-conversions ")
             endif()
+            add_definitions(-D_LIBCPP_HARDENING_MODE_DEFAULT=_LIBCPP_HARDENING_MODE_NONE)
+            list(APPEND includeDirs
+                ${V8_DIR}/buildtools/third_party/libc++
+                ${V8_RELEASE_DIR}/gen/third_party/libc++/src/include
+            )
             foreach(importLibrary ${importLibraries})
                 set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/lib${importLibrary}.a)
             endforeach(importLibrary)
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -nostdinc++ -fno-exceptions -fno-modules -fno-implicit-modules -fno-builtin-module-map ")
+            find_library(LIBCXX_STATIC NAMES libc++.a c++ PATHS ${V8_RELEASE_DIR}/obj/buildtools/third_party/libc++/ NO_DEFAULT_PATH REQUIRED)
+            find_library(LIBCXXABI_STATIC NAMES libc++abi.a c++abi PATHS ${V8_RELEASE_DIR}/obj/buildtools/third_party/libc++abi/ NO_DEFAULT_PATH REQUIRED)
             target_link_libraries(Javet PUBLIC
                 -Wl,-Bstatic -latomic -Wl,-Bdynamic
                 -Wl,--compress-sections=.text=none
                 -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
-                debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
+                ${LIBCXX_STATIC} ${LIBCXXABI_STATIC}
+                debug "-lrt" -static-libgcc -stdlib=libc++ optimized "-lrt" "${libgcc}")
             target_link_libraries(JavetStatic PUBLIC
                 -Wl,-Bstatic -latomic -Wl,-Bdynamic
                 -Wl,--compress-sections=.text=none
                 -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
-                debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
+                ${LIBCXX_STATIC} ${LIBCXXABI_STATIC}
+                debug "-lrt" -static-libgcc -stdlib=libc++ optimized "-lrt" "${libgcc}")
         endif()
         if(DEFINED NODE_DIR)
+            # We use gcc for Node.js mode on Linux.
             list(APPEND includeDirs
                 ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/gen/generate-bytecode-output-root
                 ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/gen/inspector-generated-output-root
