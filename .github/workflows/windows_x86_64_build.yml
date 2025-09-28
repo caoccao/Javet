@@ -168,7 +168,7 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}\Javet\cpp
-        .\build-windows.cmd -DNODE_DIR=${{ env.ROOT }}\node ${{ matrix.cmake_flag }}
+        .\build-windows.cmd -DNODE_DIR=${{ env.ROOT }}\node -T ClangCL ${{ matrix.cmake_flag }}
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
