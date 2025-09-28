@@ -17,18 +17,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - android_arch: arm
-            android_abi: armeabi-v7a
-            i18n_name: non-i18n
-            cmake_flag:
-            config_patch:
           - android_arch: arm64
             android_abi: arm64-v8a
-            i18n_name: non-i18n
-            cmake_flag:
-            config_patch:
-          - android_arch: x86
-            android_abi: x86
             i18n_name: non-i18n
             cmake_flag:
             config_patch:
