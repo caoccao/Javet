@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 22.19.0
-  JAVET_V8_VERSION: 14.0.365.4
-  JAVET_VERSION: 4.1.7
+  JAVET_NODE_VERSION: 24.8.0
+  JAVET_V8_VERSION: 14.1.146.11
+  JAVET_VERSION: 5.0.0
   ROOT: /Users/runner/work/Javet
 
 jobs:
@@ -135,9 +135,6 @@ jobs:
         git clone https://github.com/nodejs/node.git
         cd node
         git checkout v${{ env.JAVET_NODE_VERSION }}
-        sed -i '' '/-msse4\.1/d' deps/v8/third_party/abseil-cpp/absl/copts/copts.py
-        sed -i '' '/-msse4\.1/d' deps/v8/third_party/abseil-cpp/absl/copts/GENERATED_AbseilCopts.cmake
-        sed -i '' '/-msse4\.1/d' deps/v8/third_party/abseil-cpp/absl/copts/GENERATED_copts.bzl
         ./configure --enable-static ${{ matrix.node_flag }}
         make -j4
         mv out out.${{ matrix.name }}

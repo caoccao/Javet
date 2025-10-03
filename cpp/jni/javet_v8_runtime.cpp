@@ -209,13 +209,15 @@ namespace Javet {
                 *static_cast<bool*>(data) = true;
                 }, &isIsolateFinished);
             // UnregisterIsolate is thread-safe.
-            v8PlatformPointer->UnregisterIsolate(v8Isolate);
+            v8PlatformPointer->DisposeIsolate(v8Isolate);
 #endif
             if (v8SnapshotCreator) {
                 v8SnapshotCreator.reset();
             }
             else {
+#ifndef ENABLE_NODE
                 v8Isolate->Dispose();
+#endif
             }
             v8StartupData.reset();
 #ifdef ENABLE_NODE

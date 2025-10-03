@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 22.19.0
-  JAVET_V8_VERSION: 14.0.365.4
-  JAVET_VERSION: 4.1.7
+  JAVET_NODE_VERSION: 24.8.0
+  JAVET_V8_VERSION: 14.1.146.11
+  JAVET_VERSION: 5.0.0
   ROOT: /home/runner/work/Javet
 
 jobs:
@@ -34,7 +34,7 @@ jobs:
 
     - name: Setup Ubuntu
       run: |
-        sudo apt-get install -y execstack
+        sudo apt-get install -y execstack binutils
 
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -63,12 +63,6 @@ jobs:
         cd v8
         sed -i '/#include "src\/libplatform\//a #include <cstdlib>' src/libplatform/default-thread-isolated-allocator.cc
         sed -i '/bool KernelHasPkruFix()/a const char* env = std::getenv("JAVET_DISABLE_PKU"); if (env && std::strlen(env) > 0) { return false; }' src/libplatform/default-thread-isolated-allocator.cc
-        ln -s /usr/lib/gcc/x86_64-linux-gnu/13 build/linux/debian_bullseye_amd64-sysroot/usr/lib/gcc/x86_64-linux-gnu/13
-        ln -s /lib64 build/linux/debian_bullseye_amd64-sysroot/lib64
-        mkdir -p build/linux/debian_bullseye_amd64-sysroot/lib/gcc/x86_64-linux-gnu
-        ln -s /lib/gcc/x86_64-linux-gnu/13 build/linux/debian_bullseye_amd64-sysroot/lib/gcc/x86_64-linux-gnu/13
-        mv build/linux/debian_bullseye_amd64-sysroot/lib/x86_64-linux-gnu x86_64-linux-gnu.x
-        ln -s /lib/x86_64-linux-gnu build/linux/debian_bullseye_amd64-sysroot/lib/x86_64-linux-gnu
         mkdir -p out.gn.${{ matrix.name }}/x64.release
         cp ../../Javet/scripts/v8/gn/linux-x86_64-${{ matrix.name }}-args.gn out.gn.${{ matrix.name }}/x64.release/args.gn
         gn gen out.gn.${{ matrix.name }}/x64.release
@@ -92,6 +86,9 @@ jobs:
         cmake-version: '3.23.x'
 
     - name: Build Javet JNI
+      env:
+        CC: ${{ env.ROOT }}/google/v8/third_party/llvm-build/Release+Asserts/bin/clang
+        CXX: ${{ env.ROOT }}/google/v8/third_party/llvm-build/Release+Asserts/bin/clang
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
         sh ./build-linux-x86_64.sh -DV8_DIR=${{ env.ROOT }}/google/v8 ${{ matrix.cmake_flag }}
@@ -130,7 +127,7 @@ jobs:
 
     - name: Setup Ubuntu
       run: |
-        sudo apt-get install -y execstack
+        sudo apt-get install -y execstack binutils
 
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -143,6 +140,8 @@ jobs:
         git clone https://github.com/nodejs/node.git
         cd node
         git checkout v${{ env.JAVET_NODE_VERSION }}
+        sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' deps/v8/src/execution/isolate.h
+        sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' deps/v8/src/heap/local-heap.h
         python3 ${{ env.ROOT }}/Javet/scripts/python/patch_node_build.py -p ./
         ./configure --enable-static ${{ matrix.node_flag }}
         python3 ${{ env.ROOT }}/Javet/scripts/python/patch_node_build.py -p ./

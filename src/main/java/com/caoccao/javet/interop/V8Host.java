@@ -629,14 +629,15 @@ public final class V8Host {
                         }
                     } else {
                         V8Runtime v8Runtime = v8Guard.getV8Runtime();
+                        long sleepMillis = 0L;
                         synchronized (v8Runtime.getCloseLock()) {
                             if (!v8Guard.isClosed() && !v8Runtime.isClosed()) {
                                 v8GuardQueue.add(v8Guard);
-                                long sleepMillis = Math.min(v8Guard.getEndTimeMillis() - now, sleepIntervalMillis);
-                                if (sleepMillis > 0) {
-                                    TimeUnit.MILLISECONDS.sleep(sleepMillis);
-                                }
+                                sleepMillis = Math.min(v8Guard.getEndTimeMillis() - now, sleepIntervalMillis);
                             }
+                        }
+                        if (sleepMillis > 0) {
+                            TimeUnit.MILLISECONDS.sleep(sleepMillis);
                         }
                     }
                 } catch (InterruptedException ignored) {

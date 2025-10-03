@@ -185,17 +185,6 @@ namespace Javet {
 
         namespace JSScopeType {
             enum JSScopeType {
-#ifdef ENABLE_NODE
-                Class = 0,
-                Eval = 1,
-                Function = 2,
-                Module = 3,
-                Script = 4,
-                Catch = 5,
-                Block = 6,
-                With = 7,
-                Unknown = 8,
-#else
                 Script = 0, // The top-level scope for a script or a top-level eval.
                 ReplMode = 1, // The top-level scope for a repl-mode script.
                 Class = 2, // The scope introduced by a class.
@@ -207,7 +196,6 @@ namespace Javet {
                 With = 8, // The scope introduced by with.
                 ShadowRealm = 9, // Synthetic scope for ShadowRealm NativeContexts.
                 Unknown = 10,
-#endif
             };
         };
     }

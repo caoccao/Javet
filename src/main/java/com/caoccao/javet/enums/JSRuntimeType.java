@@ -38,7 +38,7 @@ public enum JSRuntimeType {
     Node(
             "node",
             false,
-            "12.4.254.21-node.29", // node -p process.versions.v8
+            "13.6.233.10-node.27", // node -p process.versions.v8
             NodeRuntimeOptions::new,
             o -> o instanceof NodeRuntimeOptions),
     /**
@@ -49,7 +49,7 @@ public enum JSRuntimeType {
     NodeI18n(
             "node",
             true,
-            "12.4.254.21-node.29", // node -p process.versions.v8
+            "13.6.233.10-node.27", // node -p process.versions.v8
             NodeRuntimeOptions::new,
             o -> o instanceof NodeRuntimeOptions),
     /**
@@ -60,7 +60,7 @@ public enum JSRuntimeType {
     V8(
             "v8",
             false,
-            "14.0.365.4",
+            "14.1.146.11",
             V8RuntimeOptions::new,
             o -> o instanceof V8RuntimeOptions),
     /**
@@ -71,7 +71,7 @@ public enum JSRuntimeType {
     V8I18n(
             "v8",
             true,
-            "14.0.365.4",
+            "14.1.146.11",
             V8RuntimeOptions::new,
             o -> o instanceof V8RuntimeOptions);
 

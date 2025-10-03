@@ -108,11 +108,11 @@ namespace Javet {
         jmethodID jmethodIDV8HostIsLibraryReloadable;
 
         void Dispose(JNIEnv* jniEnv) noexcept {
-#ifdef ENABLE_NODE
-            LOG_INFO("Calling cppgc::ShutdownProcess().");
-            cppgc::ShutdownProcess();
-#endif
             if (!jniEnv->CallStaticBooleanMethod(jclassV8Host, jmethodIDV8HostIsLibraryReloadable)) {
+#ifdef ENABLE_NODE
+                LOG_INFO("Calling cppgc::ShutdownProcess().");
+                cppgc::ShutdownProcess();
+#endif
                 v8::V8::Dispose();
                 v8::V8::DisposePlatform();
 #ifdef ENABLE_NODE
@@ -192,19 +192,20 @@ namespace Javet {
                     });
                 if (result->exit_code() != 0) {
                     LOG_ERROR("Failed to call node::InitializeOncePerProcess().");
-            }
+                }
                 Javet::V8Native::GlobalV8Platform = node::MultiIsolatePlatform::Create(4);
 #else
                 Javet::V8Native::GlobalV8Platform = v8::platform::NewDefaultPlatform();
 #endif
                 v8::V8::InitializePlatform(Javet::V8Native::GlobalV8Platform.get());
+#ifdef ENABLE_NODE
+                auto pageAllocator = Javet::V8Native::GlobalV8Platform->GetPageAllocator();
+                LOG_INFO("Calling cppgc::InitializeProcess().");
+                cppgc::InitializeProcess(pageAllocator);
+#endif
                 v8::V8::Initialize();
             }
-#ifdef ENABLE_NODE
-            auto pageAllocator = Javet::V8Native::GlobalV8Platform->GetPageAllocator();
-            LOG_INFO("Calling cppgc::InitializeProcess().");
-            cppgc::InitializeProcess(pageAllocator);
-#else
+#ifndef ENABLE_NODE
             if (!GlobalV8ArrayBufferAllocator) {
                 GlobalV8ArrayBufferAllocator = std::shared_ptr<V8ArrayBufferAllocator>();
                 GlobalV8ArrayBufferAllocator.reset(V8ArrayBufferAllocator::NewDefaultAllocator());

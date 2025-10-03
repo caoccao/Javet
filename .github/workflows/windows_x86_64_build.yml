@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 22.19.0
-  JAVET_V8_VERSION: 14.0.365.4
-  JAVET_VERSION: 4.1.7
+  JAVET_NODE_VERSION: 24.8.0
+  JAVET_V8_VERSION: 14.1.146.11
+  JAVET_VERSION: 5.0.0
   ROOT: D:\a\Javet
 
 jobs:
@@ -168,7 +168,7 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}\Javet\cpp
-        .\build-windows.cmd -DNODE_DIR=${{ env.ROOT }}\node ${{ matrix.cmake_flag }}
+        .\build-windows.cmd -DNODE_DIR=${{ env.ROOT }}\node -T ClangCL ${{ matrix.cmake_flag }}
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4

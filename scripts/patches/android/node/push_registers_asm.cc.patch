@@ -1,19 +1,15 @@
 diff --git a/deps/v8/src/heap/base/asm/x64/push_registers_asm.cc b/deps/v8/src/heap/base/asm/x64/push_registers_asm.cc
-index 1781a5816a..0a2889d04d 100644
+index 554caddfa77..bca56fce063 100644
 --- a/deps/v8/src/heap/base/asm/x64/push_registers_asm.cc
 +++ b/deps/v8/src/heap/base/asm/x64/push_registers_asm.cc
-@@ -16,6 +16,7 @@
- // GN toolchain (e.g. ChromeOS) and not provide them.
- // _WIN64 Defined as 1 when the compilation target is 64-bit ARM or x64.
- // Otherwise, undefined.
+@@ -20,9 +20,46 @@
+ // at the call.
+ // Source: https://github.com/hjl-tools/x86-psABI/wiki/x86-64-psABI-1.0.pdf
+ 
 +#if defined(V8_TARGET_ARCH_ARM64) || defined(V8_TARGET_ARCH_X64)
  #ifdef _WIN64
- 
- // We maintain 16-byte alignment at calls. There is an 8-byte return address
-@@ -104,3 +105,39 @@ asm(
-     "  ret                                              \n");
- 
- #endif  // !_WIN64
+ #error "The masm based version must be used for Windows"
+ #endif
 +#else
 +asm(
 +#ifdef _WIN32
@@ -50,3 +46,6 @@ index 1781a5816a..0a2889d04d 100644
 +    "  pop %ebp                                         \n"
 +    "  ret                                              \n");
 +#endif
+ 
+ asm(
+ #ifdef __APPLE__

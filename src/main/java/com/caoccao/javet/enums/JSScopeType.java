@@ -16,7 +16,6 @@
 
 package com.caoccao.javet.enums;
 
-import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -37,22 +36,11 @@ public enum JSScopeType {
     ShadowRealm(9, "ShadowRealm"),
     Unknown(10, "Unknown");
 
-    private static final int NODE_TYPE_LENGTH = values().length - 2;
-    private static final JSScopeType[] NODE_TYPES = new JSScopeType[NODE_TYPE_LENGTH];
-    private static final int V8_TYPE_LENGTH = values().length + 1;
-    private static final JSScopeType[] V8_TYPES = new JSScopeType[V8_TYPE_LENGTH];
+    private static final int LENGTH = values().length;
+    private static final JSScopeType[] TYPES = new JSScopeType[LENGTH];
 
     static {
-        NODE_TYPES[0] = Class;
-        NODE_TYPES[1] = Eval;
-        NODE_TYPES[2] = Function;
-        NODE_TYPES[3] = Module;
-        NODE_TYPES[4] = Script;
-        NODE_TYPES[5] = Catch;
-        NODE_TYPES[6] = Block;
-        NODE_TYPES[7] = With;
-        NODE_TYPES[8] = Unknown;
-        Stream.of(values()).forEach(v -> V8_TYPES[v.getId()] = v);
+        Stream.of(values()).forEach(v -> TYPES[v.getId()] = v);
     }
 
     private final int id;
@@ -63,11 +51,8 @@ public enum JSScopeType {
         this.name = name;
     }
 
-    public static JSScopeType parse(int id, JSRuntimeType jsRuntimeType) {
-        if (Objects.requireNonNull(jsRuntimeType).isNode()) {
-            return id >= 0 && id < NODE_TYPE_LENGTH ? NODE_TYPES[id] : Unknown;
-        }
-        return id >= 0 && id < V8_TYPE_LENGTH ? V8_TYPES[id] : Unknown;
+    public static JSScopeType parse(int id) {
+        return id >= 0 && id < LENGTH ? TYPES[id] : Unknown;
     }
 
     public int getId() {

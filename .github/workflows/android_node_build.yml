@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 22.19.0
-  JAVET_VERSION: 4.1.7
+  JAVET_NODE_VERSION: 24.8.0
+  JAVET_VERSION: 5.0.0
   ROOT: /home/runner/work/Javet
 
 jobs:
@@ -17,18 +17,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - android_arch: arm
-            android_abi: armeabi-v7a
-            i18n_name: non-i18n
-            cmake_flag:
-            config_patch:
           - android_arch: arm64
             android_abi: arm64-v8a
-            i18n_name: non-i18n
-            cmake_flag:
-            config_patch:
-          - android_arch: x86
-            android_abi: x86
             i18n_name: non-i18n
             cmake_flag:
             config_patch:
@@ -69,7 +59,7 @@ jobs:
       id: setup-ndk
       uses: nttld/setup-ndk@v1
       with:
-        ndk-version: r27c
+        ndk-version: r27d
         local-cache: false
 
     - name: Setup Path
@@ -155,17 +145,10 @@ jobs:
       with:
         gradle-version: 8.10.2
 
-    - name: Prepare JNI Libs i18n
+    - name: Prepare JNI Libs
       run: |
         mkdir -p android/javet-android/src/main/jniLibs/arm64-v8a
         mkdir -p android/javet-android/src/main/jniLibs/x86_64
-
-    - name: Prepare JNI Libs non-i18n
-      run: |
-        # mkdir -p android/javet-android/src/main/jniLibs/armeabi-v7a
-        # mkdir -p android/javet-android/src/main/jniLibs/arm64-v8a
-        # mkdir -p android/javet-android/src/main/jniLibs/x86
-        # mkdir -p android/javet-android/src/main/jniLibs/x86_64
 
     - name: Download Javet arm64 i18n
       uses: actions/download-artifact@v4
@@ -179,23 +162,11 @@ jobs:
         name: javet-android-node-x86_64-${{ env.JAVET_VERSION }}-i18n
         path: android/javet-android/src/main/jniLibs/x86_64
 
-    - name: Download Javet arm non-i18n
-      uses: actions/download-artifact@v4
-      with:
-        name: javet-android-node-arm-${{ env.JAVET_VERSION }}-non-i18n
-        path: android/javet-android/src/main/jniLibs/armeabi-v7a
-
     - name: Download Javet arm64 non-i18n
       uses: actions/download-artifact@v4
       with:
         name: javet-android-node-arm64-${{ env.JAVET_VERSION }}-non-i18n
         path: android/javet-android/src/main/jniLibs/arm64-v8a
-
-    - name: Download Javet x86 non-i18n
-      uses: actions/download-artifact@v4
-      with:
-        name: javet-android-node-x86-${{ env.JAVET_VERSION }}-non-i18n
-        path: android/javet-android/src/main/jniLibs/x86
 
     - name: Download Javet x86_64 non-i18n
       uses: actions/download-artifact@v4
@@ -226,20 +197,10 @@ jobs:
       with:
         name: javet-android-node-x86_64-${{ env.JAVET_VERSION }}-i18n
 
-    - name: Delete Javet arm non-i18n
-      uses: geekyeggo/delete-artifact@v4
-      with:
-        name: javet-android-node-arm-${{ env.JAVET_VERSION }}-non-i18n
-
     - name: Delete Javet arm64 non-i18n
       uses: geekyeggo/delete-artifact@v4
       with:
         name: javet-android-node-arm64-${{ env.JAVET_VERSION }}-non-i18n
-
-    - name: Delete Javet x86 non-i18n
-      uses: geekyeggo/delete-artifact@v4
-      with:
-        name: javet-android-node-x86-${{ env.JAVET_VERSION }}-non-i18n
 
     - name: Delete Javet x86_64 non-i18n
       uses: geekyeggo/delete-artifact@v4

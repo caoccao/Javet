@@ -5,8 +5,9 @@ Release Notes
 =========== ============= ========= =============================
 Version     Status        Node.js   V8
 =========== ============= ========= =============================
-v4          Mainstream    v22       v13.0+
-v3          Mainstream    v20       v11.8-v12.9
+v5          Mainstream    v24       v14.1+
+v4          Maintenance   v22       v13.0-v14.0
+v3          Maintenance   v20       v11.8-v12.9
 v2          Maintenance   v18       v10.6-v11.7
 v1          Maintenance   v16       v9.4-v10.5
 v0          Maintenance   v14       v8.9-v9.4
@@ -20,8 +21,9 @@ v0          Maintenance   v14       v8.9-v9.4
 .. toctree::
     :maxdepth: 1
 
-    release_notes_4_0
+    release_notes_5_0
 
+* :doc:`release_notes_4_0`
 * :doc:`release_notes_3_1`
 * :doc:`release_notes_3_0`
 * :doc:`release_notes_2_2`
