@@ -245,6 +245,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
             if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)")
                 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flax-vector-conversions ")
                 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flax-vector-conversions ")
+                list(APPEND includeDirs
+                    ${V8_DIR}/third_party/libc++/src/include
+                )
             endif()
             add_definitions(-D_LIBCPP_HARDENING_MODE_DEFAULT=_LIBCPP_HARDENING_MODE_NONE)
             list(APPEND includeDirs
@@ -255,13 +258,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
                 set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/lib${importLibrary}.a)
             endforeach(importLibrary)
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -nostdinc++ -fno-exceptions -fno-modules -fno-implicit-modules -fno-builtin-module-map ")
-            if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)")
-                find_library(LIBCXX_STATIC NAMES libc++.a c++ PATHS /usr/lib/llvm-21/lib/ NO_DEFAULT_PATH REQUIRED)
-                find_library(LIBCXXABI_STATIC NAMES libc++abi.a c++abi PATHS /usr/lib/llvm-21/lib/ NO_DEFAULT_PATH REQUIRED)
-            else()
-                find_library(LIBCXX_STATIC NAMES libc++.a c++ PATHS ${V8_RELEASE_DIR}/obj/buildtools/third_party/libc++/ NO_DEFAULT_PATH REQUIRED)
-                find_library(LIBCXXABI_STATIC NAMES libc++abi.a c++abi PATHS ${V8_RELEASE_DIR}/obj/buildtools/third_party/libc++abi/ NO_DEFAULT_PATH REQUIRED)
-            endif()
+            find_library(LIBCXX_STATIC NAMES libc++.a c++ PATHS ${V8_RELEASE_DIR}/obj/buildtools/third_party/libc++/ NO_DEFAULT_PATH REQUIRED)
+            find_library(LIBCXXABI_STATIC NAMES libc++abi.a c++abi PATHS ${V8_RELEASE_DIR}/obj/buildtools/third_party/libc++abi/ NO_DEFAULT_PATH REQUIRED)
             target_link_libraries(Javet PUBLIC
                 -Wl,-Bstatic -latomic -Wl,-Bdynamic
                 -Wl,--compress-sections=.text=none

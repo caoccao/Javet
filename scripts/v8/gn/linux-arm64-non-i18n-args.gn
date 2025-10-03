@@ -1,4 +1,5 @@
 dcheck_always_on = false
+clang_use_chrome_plugins = false
 is_component_build = false
 is_debug = false
 symbol_level = 0
