@@ -1,3 +1,4 @@
+clang_use_chrome_plugins = false
 dcheck_always_on = false
 is_component_build = false
 is_debug = false
@@ -5,7 +6,7 @@ symbol_level = 0
 target_cpu = "x64"
 use_custom_libcxx = true
 use_custom_libunwind = true
-use_safe_libstdcxx = true
+use_safe_libstdcxx = false
 v8_enable_i18n_support = false
 v8_enable_pointer_compression = false
 v8_enable_sandbox = false
