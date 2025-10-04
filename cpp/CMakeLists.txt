@@ -279,8 +279,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
                 ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/gen/generate-bytecode-output-root
                 ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/gen/inspector-generated-output-root
                 ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/gen)
-            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpermissive ")
-            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive ")
+            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpermissive -w ")
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -w ")
             foreach(importLibrary ${importLibraries})
                 set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/lib${importLibrary}.a)
             endforeach(importLibrary)
@@ -318,6 +318,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
                 ${NODE_DIR}/out.${CMAKE_ANDROID_ARCH}.${OUT_DIR_SUFFIX}/Release/obj/gen/generate-bytecode-output-root
                 ${NODE_DIR}/out.${CMAKE_ANDROID_ARCH}.${OUT_DIR_SUFFIX}/Release/obj/gen/inspector-generated-output-root
                 ${NODE_DIR}/out.${CMAKE_ANDROID_ARCH}.${OUT_DIR_SUFFIX}/Release/obj/gen)
+            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w ")
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w ")
             foreach(importLibrary ${importLibraries})
                 set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out.${CMAKE_ANDROID_ARCH}.${OUT_DIR_SUFFIX}/Release/lib${importLibrary}.a)
             endforeach(importLibrary)
