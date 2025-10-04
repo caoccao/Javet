@@ -80,77 +80,77 @@ Maven
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>5.0.0</version>
+        <version>5.0.1</version>
     </dependency>
 
     <!-- Node.js Linux (x86_64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-node-linux-x86_64</artifactId>
-        <version>5.0.0</version>
+        <version>5.0.1</version>
     </dependency>
 
     <!-- Node.js Linux (arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-node-linux-arm64</artifactId>
-        <version>5.0.0</version>
+        <version>5.0.1</version>
     </dependency>
 
     <!-- Node.js Mac OS (x86_64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-node-macos-x86_64</artifactId>
-        <version>5.0.0</version>
+        <version>5.0.1</version>
     </dependency>
 
     <!-- Node.js Mac OS (arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-node-macos-arm64</artifactId>
-        <version>5.0.0</version>
+        <version>5.0.1</version>
     </dependency>
 
     <!-- Node.js Windows (x86_64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-node-windows-x86_64</artifactId>
-        <version>5.0.0</version>
+        <version>5.0.1</version>
     </dependency>
 
     <!-- V8 Linux (x86_64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-v8-linux-x86_64</artifactId>
-        <version>5.0.0</version>
+        <version>5.0.1</version>
     </dependency>
 
     <!-- V8 Linux (arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-v8-linux-arm64</artifactId>
-        <version>5.0.0</version>
+        <version>5.0.1</version>
     </dependency>
 
     <!-- V8 Mac OS (x86_64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-v8-macos-x86_64</artifactId>
-        <version>5.0.0</version>
+        <version>5.0.1</version>
     </dependency>
 
     <!-- V8 Mac OS (arm64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-v8-macos-arm64</artifactId>
-        <version>5.0.0</version>
+        <version>5.0.1</version>
     </dependency>
 
     <!-- V8 Windows (x86_64) -->
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet-v8-windows-x86_64</artifactId>
-        <version>5.0.0</version>
+        <version>5.0.1</version>
     </dependency>
 
 Gradle Kotlin DSL
@@ -158,34 +158,34 @@ Gradle Kotlin DSL
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet:5.0.0") // Core (Must-have)
-    implementation("com.caoccao.javet:javet-node-linux-arm64:5.0.0")
-    implementation("com.caoccao.javet:javet-node-linux-x86_64:5.0.0")
-    implementation("com.caoccao.javet:javet-node-macos-arm64:5.0.0")
-    implementation("com.caoccao.javet:javet-node-macos-x86_64:5.0.0")
-    implementation("com.caoccao.javet:javet-node-windows-x86_64:5.0.0")
-    implementation("com.caoccao.javet:javet-v8-linux-arm64:5.0.0")
-    implementation("com.caoccao.javet:javet-v8-linux-x86_64:5.0.0")
-    implementation("com.caoccao.javet:javet-v8-macos-arm64:5.0.0")
-    implementation("com.caoccao.javet:javet-v8-macos-x86_64:5.0.0")
-    implementation("com.caoccao.javet:javet-v8-windows-x86_64:5.0.0")
+    implementation("com.caoccao.javet:javet:5.0.1") // Core (Must-have)
+    implementation("com.caoccao.javet:javet-node-linux-arm64:5.0.1")
+    implementation("com.caoccao.javet:javet-node-linux-x86_64:5.0.1")
+    implementation("com.caoccao.javet:javet-node-macos-arm64:5.0.1")
+    implementation("com.caoccao.javet:javet-node-macos-x86_64:5.0.1")
+    implementation("com.caoccao.javet:javet-node-windows-x86_64:5.0.1")
+    implementation("com.caoccao.javet:javet-v8-linux-arm64:5.0.1")
+    implementation("com.caoccao.javet:javet-v8-linux-x86_64:5.0.1")
+    implementation("com.caoccao.javet:javet-v8-macos-arm64:5.0.1")
+    implementation("com.caoccao.javet:javet-v8-macos-x86_64:5.0.1")
+    implementation("com.caoccao.javet:javet-v8-windows-x86_64:5.0.1")
 
 Gradle Groovy DSL
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:5.0.0' // Core (Must-have)
-    implementation 'com.caoccao.javet:javet-node-linux-arm64:5.0.0'
-    implementation 'com.caoccao.javet:javet-node-linux-x86_64:5.0.0'
-    implementation 'com.caoccao.javet:javet-node-macos-arm64:5.0.0'
-    implementation 'com.caoccao.javet:javet-node-macos-x86_64:5.0.0'
-    implementation 'com.caoccao.javet:javet-node-windows-x86_64:5.0.0'
-    implementation 'com.caoccao.javet:javet-v8-linux-arm64:5.0.0'
-    implementation 'com.caoccao.javet:javet-v8-linux-x86_64:5.0.0'
-    implementation 'com.caoccao.javet:javet-v8-macos-arm64:5.0.0'
-    implementation 'com.caoccao.javet:javet-v8-macos-x86_64:5.0.0'
-    implementation 'com.caoccao.javet:javet-v8-windows-x86_64:5.0.0'
+    implementation 'com.caoccao.javet:javet:5.0.1' // Core (Must-have)
+    implementation 'com.caoccao.javet:javet-node-linux-arm64:5.0.1'
+    implementation 'com.caoccao.javet:javet-node-linux-x86_64:5.0.1'
+    implementation 'com.caoccao.javet:javet-node-macos-arm64:5.0.1'
+    implementation 'com.caoccao.javet:javet-node-macos-x86_64:5.0.1'
+    implementation 'com.caoccao.javet:javet-node-windows-x86_64:5.0.1'
+    implementation 'com.caoccao.javet:javet-v8-linux-arm64:5.0.1'
+    implementation 'com.caoccao.javet:javet-v8-linux-x86_64:5.0.1'
+    implementation 'com.caoccao.javet:javet-v8-macos-arm64:5.0.1'
+    implementation 'com.caoccao.javet:javet-v8-macos-x86_64:5.0.1'
+    implementation 'com.caoccao.javet:javet-v8-windows-x86_64:5.0.1'
 
 For more detail, please visit the `installation <https://www.caoccao.com/Javet/tutorial/basic/installation.html>`_ page.
 
