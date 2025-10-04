@@ -25,7 +25,7 @@ jobs:
             v8_flag: v8_enable_i18n_support=false
 
     name: Build Javet V8 ${{ matrix.name }}
-    runs-on: macos-15
+    runs-on: macos-latest
 
     steps:
 
@@ -117,7 +117,7 @@ jobs:
             node_flag: --without-intl
 
     name: Build Javet Node ${{ matrix.name }}
-    runs-on: macos-15
+    runs-on: macos-latest
 
     steps:
 
@@ -178,7 +178,7 @@ jobs:
   build_javet_jar:
     needs: [build_javet_v8, build_javet_node]
     name: Build Javet Jar
-    runs-on: macos-15
+    runs-on: macos-latest
 
     steps:
 
