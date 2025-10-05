@@ -61,11 +61,6 @@ jobs:
         cd ..
         gclient sync -D
         cd v8
-        mkdir chrome
-        echo "" > chrome/VERSION
-        echo "" >> chrome/VERSION
-        echo "" >> chrome/VERSION
-        echo "PATCH=0" >> chrome/VERSION
         git apply ../../Javet/scripts/patches/android/v8/builtins-typed-array.cc.patch
         git apply ../../Javet/scripts/patches/android/v8/simd.cc.patch
         mkdir -p out.gn.${{ matrix.name }}/x64.release
