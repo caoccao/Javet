@@ -6,6 +6,7 @@ Release Notes 5.0.x
 -----
 
 * Upgraded Node.js to ``v24.9.0`` `(2025-09-25) <https://nodejs.org/en/blog/release/v24.9.0>`_
+* Tweaked build scripts for better performance for V8 mode
 
 5.0.0
 -----

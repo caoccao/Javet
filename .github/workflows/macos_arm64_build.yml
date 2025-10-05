@@ -61,6 +61,11 @@ jobs:
         cd ..
         gclient sync -D
         cd v8
+        mkdir chrome
+        echo "" > chrome/VERSION
+        echo "" >> chrome/VERSION
+        echo "" >> chrome/VERSION
+        echo "PATCH=0" >> chrome/VERSION
         mkdir -p out.gn.${{ matrix.name }}/arm64.release
         cp ../../Javet/scripts/v8/gn/macos-arm64-${{ matrix.name }}-args.gn out.gn.${{ matrix.name }}/arm64.release/args.gn
         gn gen out.gn.${{ matrix.name }}/arm64.release
