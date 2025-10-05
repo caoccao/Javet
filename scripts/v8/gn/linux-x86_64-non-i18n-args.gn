@@ -1,10 +1,9 @@
 compiler_timing = true
-chrome_pgo_phase = 0
 clang_use_chrome_plugins = false
 dcheck_always_on = false
 is_component_build = false
 is_debug = false
-is_official_build = true
+is_official_build = false
 symbol_level = 0
 target_cpu = "x64"
 use_blink = false
