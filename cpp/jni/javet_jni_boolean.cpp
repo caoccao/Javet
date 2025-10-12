@@ -20,8 +20,8 @@
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_booleanObjectCreate
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jboolean mBoolean) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    auto v8LocalBooleanObject = v8::BooleanObject::New(v8Context->GetIsolate(), mBoolean);
-    return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalBooleanObject);
+    auto v8LocalBooleanObject = v8::BooleanObject::New(v8Isolate, mBoolean);
+    return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8LocalBooleanObject);
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_booleanObjectValueOf
@@ -29,8 +29,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_booleanObjectV
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_BOOLEAN_OBJECT(v8ValueType)) {
         auto booleanValue = v8LocalValue.As<v8::BooleanObject>()->ValueOf();
-        auto v8LocalBoolean = Javet::Converter::ToV8Boolean(v8Context, booleanValue);
-        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalBoolean);
+        auto v8LocalBoolean = Javet::Converter::ToV8Boolean(v8Isolate, booleanValue);
+        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8LocalBoolean);
     }
     return nullptr;
 }

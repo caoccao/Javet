@@ -21,9 +21,9 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_arrayBufferCre
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint length) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     if (length >= 0) {
-        auto v8LocalArrayBuffer = v8::ArrayBuffer::New(v8Context->GetIsolate(), length);
+        auto v8LocalArrayBuffer = v8::ArrayBuffer::New(v8Isolate, length);
         if (!v8LocalArrayBuffer.IsEmpty()) {
-            return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalArrayBuffer);
+            return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8LocalArrayBuffer);
         }
     }
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
@@ -37,9 +37,9 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_arrayBufferCre
         static_cast<size_t>(jniEnv->GetDirectBufferCapacity(mByteBuffer)),
         [](void*, size_t, void*) {},
         nullptr);
-    auto v8LocalArrayBuffer = v8::ArrayBuffer::New(v8Context->GetIsolate(), std::move(v8BackingStorePointer));
+    auto v8LocalArrayBuffer = v8::ArrayBuffer::New(v8Isolate, std::move(v8BackingStorePointer));
     if (!v8LocalArrayBuffer.IsEmpty()) {
-        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalArrayBuffer);
+        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8LocalArrayBuffer);
     }
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
 }

@@ -111,13 +111,14 @@ using V8PersistentSymbolObject = v8::Persistent<v8::SymbolObject>;
 using V8PersistentValue = v8::Persistent<v8::Value>;
 
 using V8ArrayBufferAllocator = v8::ArrayBuffer::Allocator;
+using V8Isolate = v8::Isolate;
 using V8Platform = v8::Platform;
-using V8StringUtf8Value = v8::String::Utf8Value;
-using V8StringValue = v8::String::Value;
-using V8TryCatch = v8::TryCatch;
 using V8ScriptCompilerCachedData = v8::ScriptCompiler::CachedData;
 using V8ScriptCompilerCachedDataBufferPolicy = v8::ScriptCompiler::CachedData::BufferPolicy;
 using V8ScriptCompilerSource = v8::ScriptCompiler::Source;
+using V8StringUtf8Value = v8::String::Utf8Value;
+using V8StringValue = v8::String::Value;
+using V8TryCatch = v8::TryCatch;
 
 // To Java
 

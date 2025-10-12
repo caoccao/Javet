@@ -20,9 +20,9 @@
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_stringObjectCreate
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jstring mString) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    auto v8LocalString = Javet::Converter::ToV8String(jniEnv, v8Context, mString);
-    auto v8LocalStringObject = v8::StringObject::New(v8Context->GetIsolate(), v8LocalString);
-    return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalStringObject);
+    auto v8LocalString = Javet::Converter::ToV8String(jniEnv, v8Isolate, mString);
+    auto v8LocalStringObject = v8::StringObject::New(v8Isolate, v8LocalString);
+    return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8LocalStringObject);
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_stringObjectValueOf
@@ -30,7 +30,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_stringObjectVa
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_STRING_OBJECT(v8ValueType)) {
         auto v8LocalString = v8LocalValue.As<v8::StringObject>()->ValueOf();
-        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalString);
+        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8LocalString);
     }
     return nullptr;
 }

@@ -51,9 +51,9 @@ namespace Javet {
             V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const char* message) noexcept {
-            auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
+            auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
             if (HAS_EXCEPTION(v8InternalIsolate)) {
-                V8TryCatch v8TryCatch(v8Context->GetIsolate());
+                V8TryCatch v8TryCatch(v8Runtime->v8Isolate);
                 v8InternalIsolate->ReportPendingMessages();
                 if (v8TryCatch.HasCaught()) {
                     ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
@@ -61,7 +61,7 @@ namespace Javet {
                 }
             }
             if (message != nullptr) {
-                ThrowJavetOutOfMemoryException(jniEnv, v8Context, message);
+                ThrowJavetOutOfMemoryException(jniEnv, v8Runtime->v8Isolate, message);
                 return true;
             }
             return false;
@@ -163,11 +163,11 @@ namespace Javet {
 
         jobject ThrowJavetOutOfMemoryException(
             JNIEnv* jniEnv,
-            const V8LocalContext& v8Context,
+            V8Isolate* v8Isolate,
             const char* message) noexcept {
             LOG_ERROR(*message);
             jstring jStringExceptionMessage = Javet::Converter::ToJavaString(jniEnv, message);
-            jobject jObjectHeapStatistics = Javet::Monitor::GetHeapStatistics(jniEnv, v8Context->GetIsolate());
+            jobject jObjectHeapStatistics = Javet::Monitor::GetHeapStatistics(jniEnv, v8Isolate);
             jthrowable javetOutOfMemoryException = (jthrowable)jniEnv->NewObject(
                 jclassJavetOutOfMemoryException,
                 jmethodIDJavetOutOfMemoryExceptionConstructor,
@@ -194,8 +194,8 @@ namespace Javet {
             JNIEnv* jniEnv,
             const V8LocalContext& v8Context,
             const char* defaultMessage) noexcept {
-            auto v8Isolate = v8Context->GetIsolate();
             auto v8Runtime = V8Runtime::FromV8Context(v8Context);
+            auto v8Isolate = v8Runtime->v8Isolate;
             jstring externalErrorMessage = nullptr;
             if (jniEnv->ExceptionCheck()) {
                 jthrowable externalException = jniEnv->ExceptionOccurred();
@@ -208,10 +208,10 @@ namespace Javet {
             }
             V8LocalString v8ErrorMessage;
             if (externalErrorMessage == nullptr) {
-                v8ErrorMessage = Javet::Converter::ToV8String(v8Context, defaultMessage);
+                v8ErrorMessage = Javet::Converter::ToV8String(v8Isolate, defaultMessage);
             }
             else {
-                v8ErrorMessage = Javet::Converter::ToV8String(jniEnv, v8Context, externalErrorMessage);
+                v8ErrorMessage = Javet::Converter::ToV8String(jniEnv, v8Isolate, externalErrorMessage);
                 jniEnv->DeleteLocalRef(externalErrorMessage);
             }
             v8Isolate->ThrowException(v8::Exception::Error(v8ErrorMessage));
