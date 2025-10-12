@@ -9,7 +9,6 @@ target_cpu = "arm64"
 use_blink = false
 use_custom_libcxx = false
 v8_enable_i18n_support = true
-v8_enable_leaptiering = true
 v8_enable_pointer_compression = false
 v8_enable_sandbox = false
 v8_enable_temporal_support = false
