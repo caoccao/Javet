@@ -127,7 +127,7 @@ jobs:
 
     - name: Setup Ubuntu
       run: |
-        sudo apt-get install -y execstack binutils
+        sudo apt-get install -y execstack binutils wget
 
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -165,9 +165,17 @@ jobs:
       with:
         cmake-version: '3.23.x'
 
+    - name: Install LLVM
+      run: |
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh 21
+        rm llvm.sh
+
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
+        export PATH="/usr/lib/llvm-21/bin:$PATH"
         sh ./build-linux-x86_64.sh -DNODE_DIR=${{ env.ROOT }}/node ${{ matrix.cmake_flag }}
 
     - name: Upload the Artifact
