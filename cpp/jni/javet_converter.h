@@ -100,17 +100,17 @@ namespace Javet {
 
         static inline jstring ToJavaString(
             JNIEnv* jniEnv,
-            const V8LocalContext& v8Context,
+            V8Isolate* v8Isolate,
             const V8LocalString& v8LocalString) noexcept {
-            V8StringValue v8StringValue(v8Context->GetIsolate(), v8LocalString);
+            V8StringValue v8StringValue(v8Isolate, v8LocalString);
             return jniEnv->NewString(*v8StringValue, v8StringValue.length());
         }
 
         static inline jstring ToJavaString(
             JNIEnv* jniEnv,
-            const V8LocalContext& v8Context,
+            V8Isolate* v8Isolate,
             const V8LocalValue& v8LocalValue) noexcept {
-            V8StringUtf8Value v8StringUtf8Value(v8Context->GetIsolate(), v8LocalValue);
+            V8StringUtf8Value v8StringUtf8Value(v8Isolate, v8LocalValue);
             return jniEnv->NewStringUTF(*v8StringUtf8Value);
         }
 
@@ -124,28 +124,25 @@ namespace Javet {
         }
 
         static inline std::unique_ptr<std::string> ToStdString(
-            const V8LocalContext& v8Context,
+            V8Isolate* v8Isolate,
             const V8LocalString& v8LocalString) noexcept {
-            V8StringUtf8Value v8StringUtf8Value(v8Context->GetIsolate(), v8LocalString);
+            V8StringUtf8Value v8StringUtf8Value(v8Isolate, v8LocalString);
             return std::make_unique<std::string>(*v8StringUtf8Value, v8StringUtf8Value.length());
         }
 
         jobject ToExternalV8Context(
             JNIEnv* jniEnv,
             const V8Runtime* v8Runtime,
-            const V8LocalContext& v8Context,
             const V8LocalContext& v8ContextValue) noexcept;
 
         jobject ToExternalV8Module(
             JNIEnv* jniEnv,
             const V8Runtime* v8Runtime,
-            const V8LocalContext& v8Context,
             const V8LocalModule& v8Module) noexcept;
 
         jobject ToExternalV8Script(
             JNIEnv* jniEnv,
             const V8Runtime* v8Runtime,
-            const V8LocalContext& v8Context,
             const V8LocalScript& v8Script) noexcept;
 
         jobject ToExternalV8Value(
@@ -196,7 +193,7 @@ namespace Javet {
             const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8LocalValue& v8Value) noexcept {
-            jstring mStringValue = ToJavaString(jniEnv, v8Context, v8Value->ToString(v8Context).ToLocalChecked());
+            jstring mStringValue = ToJavaString(jniEnv, v8Runtime->v8Isolate, v8Value->ToString(v8Context).ToLocalChecked());
             jobject mV8ValuePrimitive = jniEnv->NewObject(
                 jclassV8ValuePrimitive,
                 jmethodIDV8ValuePrimitiveConstructor,
@@ -223,14 +220,14 @@ namespace Javet {
             const jlongArray mLongArray) noexcept;
 
         static inline V8LocalBoolean ToV8Boolean(
-            const V8LocalContext& v8Context,
+            V8Isolate* v8Isolate,
             const bool boolValue) noexcept {
-            return v8::Boolean::New(v8Context->GetIsolate(), boolValue);
+            return v8::Boolean::New(v8Isolate, boolValue);
         }
 
         V8LocalContext ToV8Context(
             JNIEnv* jniEnv,
-            const V8LocalContext& v8Context,
+            V8Isolate* v8Isolate,
             const jobject obj) noexcept;
 
         static inline V8LocalValue ToV8Date(
@@ -240,45 +237,45 @@ namespace Javet {
         }
 
         static inline V8LocalNumber ToV8Double(
-            const V8LocalContext& v8Context,
+            V8Isolate* v8Isolate,
             const double doubleValue) noexcept {
-            return v8::Number::New(v8Context->GetIsolate(), doubleValue);
+            return v8::Number::New(v8Isolate, doubleValue);
         }
 
         static inline V8LocalInteger ToV8Integer(
-            const V8LocalContext& v8Context,
+            V8Isolate* v8Isolate,
             const int intValue) noexcept {
-            return v8::Integer::New(v8Context->GetIsolate(), intValue);
+            return v8::Integer::New(v8Isolate, intValue);
         }
 
         static inline V8LocalBigInt ToV8Long(
-            const V8LocalContext& v8Context,
+            V8Isolate* v8Isolate,
             const jlong longValue) noexcept {
-            return v8::BigInt::New(v8Context->GetIsolate(), longValue);
+            return v8::BigInt::New(v8Isolate, longValue);
         }
 
         static inline V8LocalPrimitive ToV8Null(
-            const V8LocalContext& v8Context) noexcept {
-            return v8::Null(v8Context->GetIsolate());
+            V8Isolate* v8Isolate) noexcept {
+            return v8::Null(v8Isolate);
         }
 
         static inline V8LocalPrimitive ToV8Undefined(
-            const V8LocalContext& v8Context) noexcept {
-            return v8::Undefined(v8Context->GetIsolate());
+            V8Isolate* v8Isolate) noexcept {
+            return v8::Undefined(v8Isolate);
         }
 
         template<class T>
         static inline jlong ToV8PersistentReference(
-            const V8LocalContext& v8Context,
+            V8Isolate* v8Isolate,
             const v8::Local<T>& v8Data) noexcept {
-            v8::Persistent<T>* v8PersistentDataPointer = new v8::Persistent<T>(v8Context->GetIsolate(), v8Data);
+            v8::Persistent<T>* v8PersistentDataPointer = new v8::Persistent<T>(v8Isolate, v8Data);
             INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentReference);
             return TO_JAVA_LONG(v8PersistentDataPointer);
         }
 
         std::unique_ptr<v8::ScriptOrigin> ToV8ScriptOringinPointer(
             JNIEnv* jniEnv,
-            const V8LocalContext& v8Context,
+            V8Isolate* v8Isolate,
             const jstring mResourceName,
             const jint mResourceLineOffset,
             const jint mResourceColumnOffset,
@@ -287,39 +284,42 @@ namespace Javet {
             const jboolean mIsModule) noexcept;
 
         static inline V8LocalString ToV8String(
-            const V8LocalContext& v8Context,
+            V8Isolate* v8Isolate,
             const char* str) noexcept {
-            return v8::String::NewFromUtf8(v8Context->GetIsolate(), str).ToLocalChecked();
+            return v8::String::NewFromUtf8(v8Isolate, str).ToLocalChecked();
         }
 
         V8LocalString ToV8String(
             JNIEnv* jniEnv,
-            const V8LocalContext& v8Context,
+            V8Isolate* v8Isolate,
             const jstring mString) noexcept;
 
         static inline V8LocalStringObject ToV8StringObject(
-            const V8LocalContext& v8Context,
+            V8Isolate* v8Isolate,
             const V8LocalString v8LocalString) noexcept {
-            return v8::StringObject::New(v8Context->GetIsolate(), v8LocalString).As<v8::StringObject>();
+            return v8::StringObject::New(v8Isolate, v8LocalString).As<v8::StringObject>();
         }
 
         V8LocalValue ToV8Value(
             JNIEnv* jniEnv,
+            V8Isolate* v8Isolate,
             const V8LocalContext& v8Context,
             const jobject obj) noexcept;
 
         std::unique_ptr<V8LocalObject[]> ToV8Objects(
             JNIEnv* jniEnv,
+            V8Isolate* v8Isolate,
             const V8LocalContext& v8Context,
             const jobjectArray mObjects) noexcept;
 
         std::unique_ptr<V8LocalString[]> ToV8Strings(
             JNIEnv* jniEnv,
-            const V8LocalContext& v8Context,
+            V8Isolate* v8Isolate,
             const jobjectArray mStrings) noexcept;
 
         std::unique_ptr<V8LocalValue[]> ToV8Values(
             JNIEnv* jniEnv,
+            V8Isolate* v8Isolate,
             const V8LocalContext& v8Context,
             const jobjectArray mValues) noexcept;
 

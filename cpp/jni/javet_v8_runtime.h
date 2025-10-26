@@ -151,11 +151,13 @@ namespace Javet {
 
         jobject SafeToExternalV8Value(
             JNIEnv* jniEnv,
+            V8Isolate* v8Isolate,
             const V8LocalContext& v8Context,
             const v8::internal::Tagged<V8InternalObject>& v8InternalObject) noexcept;
 
         jobject SafeToExternalV8Value(
             JNIEnv* jniEnv,
+            V8Isolate* v8Isolate,
             const V8LocalContext& v8Context,
             const V8LocalValue& v8Value) noexcept;
 

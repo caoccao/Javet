@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 24.8.0
-  JAVET_V8_VERSION: 14.1.146.11
-  JAVET_VERSION: 5.0.0
+  JAVET_NODE_VERSION: 24.10.0
+  JAVET_V8_VERSION: 14.2.231.5
+  JAVET_VERSION: 5.0.1
   ROOT: /Users/runner/work/Javet
 
 jobs:
@@ -25,7 +25,7 @@ jobs:
             v8_flag: v8_enable_i18n_support=false
 
     name: Build Javet V8 ${{ matrix.name }}
-    runs-on: macos-13
+    runs-on: macos-15-intel
 
     steps:
 
@@ -119,7 +119,7 @@ jobs:
             node_flag: --without-intl
 
     name: Build Javet Node ${{ matrix.name }}
-    runs-on: macos-13
+    runs-on: macos-15-intel
 
     steps:
 
@@ -180,7 +180,7 @@ jobs:
   build_javet_jar:
     needs: [build_javet_v8, build_javet_node]
     name: Build Javet Jar
-    runs-on: macos-13
+    runs-on: macos-15-intel
 
     steps:
 

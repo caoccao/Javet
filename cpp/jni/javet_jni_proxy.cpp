@@ -22,15 +22,15 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_proxyCreate
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     V8LocalObject v8LocalObjectTaget;
     if (mTarget != nullptr) {
-        auto v8LocalValue = Javet::Converter::ToV8Value(jniEnv, v8Context, mTarget);
+        auto v8LocalValue = Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, mTarget);
         if (v8LocalValue->IsObject()) {
             v8LocalObjectTaget = v8LocalValue.As<v8::Object>();
         }
     }
     if (v8LocalObjectTaget.IsEmpty()) {
-        v8LocalObjectTaget = v8::Object::New(v8Context->GetIsolate());
+        v8LocalObjectTaget = v8::Object::New(v8Isolate);
     }
-    auto v8LocalObjectHandler = v8::Object::New(v8Context->GetIsolate());
+    auto v8LocalObjectHandler = v8::Object::New(v8Isolate);
     auto v8MaybeLocalProxy = v8::Proxy::New(v8Context, v8LocalObjectTaget, v8LocalObjectHandler);
     if (v8MaybeLocalProxy.IsEmpty()) {
         if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context, "Proxy allocation failed")) {
@@ -40,7 +40,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_proxyCreate
     else {
         auto v8LocalProxy = v8MaybeLocalProxy.ToLocalChecked();
         if (!v8LocalProxy.IsEmpty()) {
-            return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalProxy);
+            return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8LocalProxy);
         }
     }
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
@@ -50,7 +50,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_proxyGetHandle
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_PROXY(v8ValueType)) {
-        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalValue.As<v8::Proxy>()->GetHandler());
+        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8LocalValue.As<v8::Proxy>()->GetHandler());
     }
     return nullptr;
 }
@@ -59,7 +59,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_proxyGetTarget
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_PROXY(v8ValueType)) {
-        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalValue.As<v8::Proxy>()->GetTarget());
+        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8LocalValue.As<v8::Proxy>()->GetTarget());
     }
     return nullptr;
 }

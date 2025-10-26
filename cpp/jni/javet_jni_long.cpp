@@ -20,8 +20,8 @@
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_longObjectCreate
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong mLong) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    auto v8LocalLongObject = v8::BigIntObject::New(v8Context->GetIsolate(), mLong);
-    return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalLongObject);
+    auto v8LocalLongObject = v8::BigIntObject::New(v8Isolate, mLong);
+    return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8LocalLongObject);
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_longObjectValueOf
@@ -29,7 +29,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_longObjectValu
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_BIG_INT_OBJECT(v8ValueType)) {
         auto v8LocalBigInt = v8LocalValue.As<v8::BigIntObject>()->ValueOf();
-        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalBigInt);
+        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8LocalBigInt);
     }
     return nullptr;
 }

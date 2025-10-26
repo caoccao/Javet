@@ -37,16 +37,18 @@
 #define RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle) \
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
     auto v8Locker = v8Runtime->GetSharedV8Locker(); \
+    auto v8Isolate = v8Runtime->v8Isolate; \
     auto v8IsolateScope = v8Runtime->GetV8IsolateScope(); \
-    V8HandleScope v8HandleScope(v8Runtime->v8Isolate); \
+    V8HandleScope v8HandleScope(v8Isolate); \
     auto v8Context = v8Runtime->GetV8LocalContext(); \
     auto v8ContextScope = v8Runtime->GetV8ContextScope(v8Context);
 
 #define RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE_WITH_UNIQUE_LOCKER(v8RuntimeHandle) \
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
     auto v8Locker = v8Runtime->GetUniqueV8Locker(); \
+    auto v8Isolate = v8Runtime->v8Isolate; \
     auto v8IsolateScope = v8Runtime->GetV8IsolateScope(); \
-    V8HandleScope v8HandleScope(v8Runtime->v8Isolate); \
+    V8HandleScope v8HandleScope(v8Isolate); \
     auto v8Context = v8Runtime->GetV8LocalContext(); \
     auto v8ContextScope = v8Runtime->GetV8ContextScope(v8Context);
 
@@ -54,8 +56,9 @@
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
     auto v8PersistentDataPointer = TO_V8_PERSISTENT_DATA_POINTER(v8DataHandle); \
     auto v8Locker = v8Runtime->GetSharedV8Locker(); \
+    auto v8Isolate = v8Runtime->v8Isolate; \
     auto v8IsolateScope = v8Runtime->GetV8IsolateScope(); \
-    V8HandleScope v8HandleScope(v8Runtime->v8Isolate); \
+    V8HandleScope v8HandleScope(v8Isolate); \
     auto v8Context = v8Runtime->GetV8LocalContext(); \
     auto v8ContextScope = v8Runtime->GetV8ContextScope(v8Context); \
 
@@ -63,53 +66,58 @@
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
     auto v8PersistentModulePointer = TO_V8_PERSISTENT_MODULE_POINTER(v8ValueHandle); \
     auto v8Locker = v8Runtime->GetSharedV8Locker(); \
+    auto v8Isolate = v8Runtime->v8Isolate; \
     auto v8IsolateScope = v8Runtime->GetV8IsolateScope(); \
-    V8HandleScope v8HandleScope(v8Runtime->v8Isolate); \
+    V8HandleScope v8HandleScope(v8Isolate); \
     auto v8Context = v8Runtime->GetV8LocalContext(); \
     auto v8ContextScope = v8Runtime->GetV8ContextScope(v8Context); \
-    auto v8LocalModule = v8PersistentModulePointer->Get(v8Context->GetIsolate());
+    auto v8LocalModule = v8PersistentModulePointer->Get(v8Isolate);
 
 #define RUNTIME_AND_SCRIPT_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle) \
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
     auto v8PersistentScriptPointer = TO_V8_PERSISTENT_SCRIPT_POINTER(v8ValueHandle); \
     auto v8Locker = v8Runtime->GetSharedV8Locker(); \
+    auto v8Isolate = v8Runtime->v8Isolate; \
     auto v8IsolateScope = v8Runtime->GetV8IsolateScope(); \
-    V8HandleScope v8HandleScope(v8Runtime->v8Isolate); \
+    V8HandleScope v8HandleScope(v8Isolate); \
     auto v8Context = v8Runtime->GetV8LocalContext(); \
     auto v8ContextScope = v8Runtime->GetV8ContextScope(v8Context); \
-    auto v8LocalScript = v8PersistentScriptPointer->Get(v8Context->GetIsolate());
+    auto v8LocalScript = v8PersistentScriptPointer->Get(v8Isolate);
 
 #define RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle) \
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
     auto v8PersistentValuePointer = TO_V8_PERSISTENT_VALUE_POINTER(v8ValueHandle); \
     auto v8Locker = v8Runtime->GetSharedV8Locker(); \
+    auto v8Isolate = v8Runtime->v8Isolate; \
     auto v8IsolateScope = v8Runtime->GetV8IsolateScope(); \
-    V8HandleScope v8HandleScope(v8Runtime->v8Isolate); \
+    V8HandleScope v8HandleScope(v8Isolate); \
     auto v8Context = v8Runtime->GetV8LocalContext(); \
     auto v8ContextScope = v8Runtime->GetV8ContextScope(v8Context); \
-    auto v8LocalValue = v8PersistentValuePointer->Get(v8Context->GetIsolate());
+    auto v8LocalValue = v8PersistentValuePointer->Get(v8Isolate);
 
 #define RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE_WITH_UNIQUE_LOCKER(v8RuntimeHandle, v8ValueHandle) \
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
     auto v8PersistentValuePointer = TO_V8_PERSISTENT_VALUE_POINTER(v8ValueHandle); \
     auto v8Locker = v8Runtime->GetUniqueV8Locker(); \
+    auto v8Isolate = v8Runtime->v8Isolate; \
     auto v8IsolateScope = v8Runtime->GetV8IsolateScope(); \
-    V8HandleScope v8HandleScope(v8Runtime->v8Isolate); \
+    V8HandleScope v8HandleScope(v8Isolate); \
     auto v8Context = v8Runtime->GetV8LocalContext(); \
     auto v8ContextScope = v8Runtime->GetV8ContextScope(v8Context); \
-    auto v8LocalValue = v8PersistentValuePointer->Get(v8Context->GetIsolate());
+    auto v8LocalValue = v8PersistentValuePointer->Get(v8Isolate);
 
 #define RUNTIME_AND_2_VALUES_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle1, v8ValueHandle2) \
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
     auto v8PersistentValuePointer1 = TO_V8_PERSISTENT_VALUE_POINTER(v8ValueHandle1); \
     auto v8PersistentValuePointer2 = TO_V8_PERSISTENT_VALUE_POINTER(v8ValueHandle2); \
     auto v8Locker = v8Runtime->GetSharedV8Locker(); \
+    auto v8Isolate = v8Runtime->v8Isolate; \
     auto v8IsolateScope = v8Runtime->GetV8IsolateScope(); \
-    V8HandleScope v8HandleScope(v8Runtime->v8Isolate); \
+    V8HandleScope v8HandleScope(v8Isolate); \
     auto v8Context = v8Runtime->GetV8LocalContext(); \
     auto v8ContextScope = v8Runtime->GetV8ContextScope(v8Context); \
-    auto v8LocalValue1 = v8PersistentValuePointer1->Get(v8Context->GetIsolate()); \
-    auto v8LocalValue2 = v8PersistentValuePointer2->Get(v8Context->GetIsolate());
+    auto v8LocalValue1 = v8PersistentValuePointer1->Get(v8Isolate); \
+    auto v8LocalValue2 = v8PersistentValuePointer2->Get(v8Isolate);
 
 extern JavaVM* GlobalJavaVM;
 

@@ -205,13 +205,13 @@ namespace Javet {
                     FETCH_JNI_ENV(GlobalJavaVM);
                     jobject mReferrerV8Module = referrer.IsEmpty()
                         ? nullptr
-                        : Javet::Converter::ToExternalV8Module(jniEnv, v8Runtime, v8Context, referrer);
+                        : Javet::Converter::ToExternalV8Module(jniEnv, v8Runtime, referrer);
                     jobject mIV8Module = jniEnv->CallObjectMethod(
                         v8Runtime->externalV8Runtime,
                         jmethodIDV8RuntimeGetV8Module,
-                        Javet::Converter::ToJavaString(jniEnv, v8Context, specifier),
+                        Javet::Converter::ToJavaString(jniEnv, v8Runtime->v8Isolate, specifier),
                         mReferrerV8Module);
-                    auto moduleNamePointer = Javet::Converter::ToStdString(v8Context, specifier);
+                    auto moduleNamePointer = Javet::Converter::ToStdString(v8Runtime->v8Isolate, specifier);
                     if (jniEnv->ExceptionCheck()) {
                         // JNI exception is not re-thrown in this callback function because it will pop up automatically.
                         LOG_ERROR("JavetModuleResolveCallback: module '" << moduleNamePointer.get() << "' with exception");
@@ -231,7 +231,7 @@ namespace Javet {
                         auto mHandle = jniEnv->CallLongMethod(mIV8Module, jmethodIDIV8ModuleGetHandle);
                         auto v8PersistentModule = TO_V8_PERSISTENT_MODULE_POINTER(mHandle);
                         LOG_DEBUG("JavetModuleResolveCallback: module '" << moduleNamePointer.get() << "' found");
-                        resolvedV8MaybeLocalModule = v8PersistentModule->Get(v8Context->GetIsolate());
+                        resolvedV8MaybeLocalModule = v8PersistentModule->Get(v8Runtime->v8Isolate);
                         DELETE_LOCAL_REF(jniEnv, mIV8Module);
                     }
                     if (mReferrerV8Module != nullptr) {
@@ -281,8 +281,7 @@ namespace Javet {
             auto v8LocalPromise = message.GetPromise();
             LOG_ERROR("Unhandled promise rejection with event " << PROMISE_REJECT_EVENTS[promiseRejectEvent] << ".");
             FETCH_JNI_ENV(GlobalJavaVM);
-            auto v8Isolate = v8LocalPromise->GetIsolate();
-            auto v8Context = v8Isolate->GetCurrentContext();
+            auto v8Context = v8LocalPromise->GetCreationContextChecked();
             if (v8Context.IsEmpty()) {
                 LOG_ERROR("JavetPromiseRejectCallback: V8 context is empty.");
             }
@@ -322,8 +321,8 @@ namespace Javet {
                 LOG_ERROR("JavetSyntheticModuleEvaluationStepsCallback: V8 context is empty.");
             }
             else {
-                auto v8Isolate = v8Context->GetIsolate();
                 auto v8Runtime = Javet::V8Runtime::FromV8Context(v8Context);
+                auto v8Isolate = v8Runtime->v8Isolate;
                 if (v8Runtime == nullptr) {
                     LOG_ERROR("JavetSyntheticModuleEvaluationStepsCallback: V8 runtime is empty.");
                 }
@@ -331,7 +330,7 @@ namespace Javet {
                     V8TryCatch v8TryCatch(v8Isolate);
                     auto v8GlobalObject = v8Runtime->v8GlobalObject.Get(v8Isolate);
                     std::string stringKey("module:{}" + std::to_string(v8LocalModule->GetIdentityHash()));
-                    auto v8LocalStringKey = Javet::Converter::ToV8String(v8Context, stringKey.c_str());
+                    auto v8LocalStringKey = Javet::Converter::ToV8String(v8Isolate, stringKey.c_str());
                     auto v8LocalPrivateKey = v8::Private::ForApi(v8Isolate, v8LocalStringKey);
                     auto v8MaybeLocalValue = v8GlobalObject->GetPrivate(v8Context, v8LocalPrivateKey);
                     if (v8MaybeLocalValue.IsEmpty()) {
@@ -427,7 +426,7 @@ namespace Javet {
                                 args.GetReturnValue().SetUndefined();
                             }
                             else {
-                                args.GetReturnValue().Set(Javet::Converter::ToV8Value(jniEnv, v8Context, mResult));
+                                args.GetReturnValue().Set(Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, mResult));
                             }
                         }
                         if (mResult != nullptr) {
@@ -480,7 +479,7 @@ namespace Javet {
                             args.GetReturnValue().SetUndefined();
                         }
                         else {
-                            args.GetReturnValue().Set(Javet::Converter::ToV8Value(jniEnv, v8Context, mResult));
+                            args.GetReturnValue().Set(Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, mResult));
                         }
                     }
                     if (mResult != nullptr) {
@@ -513,7 +512,7 @@ namespace Javet {
                 }
                 else {
                     V8ContextScope v8ContextScope(v8Context);
-                    auto v8LocalArray = v8::Array::New(v8Context->GetIsolate(), 1);
+                    auto v8LocalArray = v8::Array::New(v8Isolate, 1);
                     auto maybeResult = v8LocalArray->Set(v8Context, 0, propertyValue);
                     if (maybeResult.IsNothing()) {
                         Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context);

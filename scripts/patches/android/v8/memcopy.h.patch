@@ -1,0 +1,13 @@
+diff --git a/src/utils/memcopy.h b/src/utils/memcopy.h
+index 18716f24c51..2786938f663 100644
+--- a/src/utils/memcopy.h
++++ b/src/utils/memcopy.h
+@@ -352,7 +352,7 @@ inline void Relaxed_Memset(T* destination, T value, size_t count)
+   requires std::is_integral_v<T>
+ {
+   for (size_t i = 0; i < count; i++) {
+-    std::atomic_ref<T>(destination[i]).store(value, std::memory_order_relaxed);
++    destination[i] = value;
+   }
+ }
+ 

@@ -1,8 +1,8 @@
 diff --git a/src/builtins/builtins-typed-array.cc b/src/builtins/builtins-typed-array.cc
-index 918cb873481..b2eb2330918 100644
+index 146e3f28541..505c6e5a8b6 100644
 --- a/src/builtins/builtins-typed-array.cc
 +++ b/src/builtins/builtins-typed-array.cc
-@@ -520,17 +520,10 @@ simdutf::result ArrayBufferSetFromBase64(
+@@ -505,17 +505,10 @@ simdutf::result ArrayBufferSetFromBase64(
      DirectHandle<JSTypedArray> typed_array, size_t& output_length) {
    output_length = array_length;
    simdutf::result simd_result;
@@ -20,17 +20,17 @@ index 918cb873481..b2eb2330918 100644
  
    return simd_result;
  }
-@@ -833,15 +826,9 @@ BUILTIN(Uint8ArrayPrototypeToBase64) {
+@@ -835,15 +828,9 @@ BUILTIN(Uint8ArrayPrototypeToBase64) {
      // 11. Return CodePointsToString(outAscii).
  
      size_t simd_result_size;
 -    if (uint8array->buffer()->is_shared()) {
 -      simd_result_size = simdutf::atomic_binary_to_base64(
--          std::bit_cast<const char*>(uint8array->DataPtr()), length,
+-          reinterpret_cast<const char*>(uint8array->DataPtr()), length,
 -          reinterpret_cast<char*>(output->GetChars(no_gc)), alphabet);
 -    } else {
        simd_result_size = simdutf::binary_to_base64(
-           std::bit_cast<const char*>(uint8array->DataPtr()), length,
+           reinterpret_cast<const char*>(uint8array->DataPtr()), length,
            reinterpret_cast<char*>(output->GetChars(no_gc)), alphabet);
 -    }
      DCHECK_EQ(simd_result_size, output_length);

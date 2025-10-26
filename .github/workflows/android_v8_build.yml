@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_V8_VERSION: 14.1.146.11
-  JAVET_VERSION: 5.0.0
+  JAVET_V8_VERSION: 14.2.231.5
+  JAVET_VERSION: 5.0.1
   ROOT: /home/runner/work/Javet
 
 jobs:
@@ -104,6 +104,7 @@ jobs:
         gclient sync -D
         cd v8
         git apply ../../Javet/scripts/patches/android/v8/builtins-typed-array.cc.patch
+        git apply ../../Javet/scripts/patches/android/v8/memcopy.h.patch
         git apply ../../Javet/scripts/patches/android/v8/simd.cc.patch
         mkdir -p out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
         cp ../../Javet/scripts/v8/gn/android-${{ matrix.android_arch }}-${{ matrix.i18n_name }}-args.gn out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release/args.gn

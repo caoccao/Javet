@@ -57,7 +57,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_clearWeak
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_cloneV8Value
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jboolean mReferenceCopy) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    V8TryCatch v8TryCatch(v8Context->GetIsolate());
+    V8TryCatch v8TryCatch(v8Isolate);
     V8LocalValue clonedV8LocalValue;
     if (!mReferenceCopy
         && !v8LocalValue->IsFunction()
@@ -75,12 +75,12 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_cloneV8Value
     }
     else {
         // Reference copy
-        clonedV8LocalValue = V8LocalValue::New(v8Context->GetIsolate(), v8LocalValue);
+        clonedV8LocalValue = V8LocalValue::New(v8Isolate, v8LocalValue);
     }
     if (v8TryCatch.HasCaught()) {
         return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
     }
-    return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, clonedV8LocalValue);
+    return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, clonedV8LocalValue);
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
@@ -276,7 +276,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lowMemoryNotification
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    v8Context->GetIsolate()->LowMemoryNotification();
+    v8Isolate->LowMemoryNotification();
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerGCEpilogueCallback
@@ -341,7 +341,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeReferenceHa
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_requestGarbageCollectionForTesting
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jboolean fullGC) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    v8Context->GetIsolate()->RequestGarbageCollectionForTesting(fullGC
+    v8Isolate->RequestGarbageCollectionForTesting(fullGC
         ? v8::Isolate::GarbageCollectionType::kFullGarbageCollection
         : v8::Isolate::GarbageCollectionType::kMinorGarbageCollection);
 }
@@ -408,11 +408,11 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_toString
             }
         }
         else {
-            return Javet::Converter::ToJavaString(jniEnv, v8Context, v8MaybeLocalString.ToLocalChecked());
+            return Javet::Converter::ToJavaString(jniEnv, v8Isolate, v8MaybeLocalString.ToLocalChecked());
         }
     }
     V8LocalString v8LocalString;
-    return Javet::Converter::ToJavaString(jniEnv, v8Context, v8LocalString);
+    return Javet::Converter::ToJavaString(jniEnv, v8Isolate, v8LocalString);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runtime

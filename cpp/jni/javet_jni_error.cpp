@@ -20,17 +20,17 @@
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_errorCreate
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint mErrorTypeId, jstring mMessage) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    auto errorMessage = Javet::Converter::ToV8String(jniEnv, v8Context, mMessage);
+    auto errorMessage = Javet::Converter::ToV8String(jniEnv, v8Isolate, mMessage);
     using namespace Javet::Enums::V8ValueErrorType;
     switch (mErrorTypeId) {
-    case Error: return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8::Exception::Error(errorMessage));
-    case RangeError: return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8::Exception::RangeError(errorMessage));
-    case ReferenceError: return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8::Exception::ReferenceError(errorMessage));
-    case SyntaxError: return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8::Exception::SyntaxError(errorMessage));
-    case TypeError: return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8::Exception::TypeError(errorMessage));
-    case WasmCompileError: return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8::Exception::WasmCompileError(errorMessage));
-    case WasmLinkError: return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8::Exception::WasmLinkError(errorMessage));
-    case WasmRuntimeError: return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8::Exception::WasmRuntimeError(errorMessage));
+    case Error: return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8::Exception::Error(errorMessage));
+    case RangeError: return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8::Exception::RangeError(errorMessage));
+    case ReferenceError: return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8::Exception::ReferenceError(errorMessage));
+    case SyntaxError: return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8::Exception::SyntaxError(errorMessage));
+    case TypeError: return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8::Exception::TypeError(errorMessage));
+    case WasmCompileError: return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8::Exception::WasmCompileError(errorMessage));
+    case WasmLinkError: return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8::Exception::WasmLinkError(errorMessage));
+    case WasmRuntimeError: return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8::Exception::WasmRuntimeError(errorMessage));
     }
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
 }
@@ -38,14 +38,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_errorCreate
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasException
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Isolate);
     return HAS_EXCEPTION(v8InternalIsolate);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasPendingMessage
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Context->GetIsolate());
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Isolate);
     return v8InternalIsolate->has_pending_message();
 }
 
@@ -58,7 +58,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_reportPending
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_throwError__JILjava_lang_String_2
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint mErrorTypeId, jstring mMessage) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    auto errorMessage = Javet::Converter::ToV8String(jniEnv, v8Context, mMessage);
+    auto errorMessage = Javet::Converter::ToV8String(jniEnv, v8Isolate, mMessage);
     V8LocalValue v8LocalValueError;
     using namespace Javet::Enums::V8ValueErrorType;
     switch (mErrorTypeId) {
@@ -72,7 +72,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_throwError__J
     case WasmRuntimeError: v8LocalValueError = v8::Exception::WasmRuntimeError(errorMessage); break;
     }
     if (!v8LocalValueError.IsEmpty()) {
-        v8Context->GetIsolate()->ThrowException(v8LocalValueError);
+        v8Isolate->ThrowException(v8LocalValueError);
         return true;
     }
     return false;
@@ -81,9 +81,9 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_throwError__J
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_throwError__JLjava_lang_Object_2
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mV8Value) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    auto v8LocalValue = Javet::Converter::ToV8Value(jniEnv, v8Context, mV8Value);
+    auto v8LocalValue = Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, mV8Value);
     if (!v8LocalValue.IsEmpty()) {
-        v8Context->GetIsolate()->ThrowException(v8LocalValue);
+        v8Isolate->ThrowException(v8LocalValue);
         return true;
     }
     return false;

@@ -29,7 +29,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_contextGet
 #else
             auto v8InternalObject = v8InternalContext.GetNoCell(index);
 #endif
-            return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8InternalObject);
+            return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8InternalObject);
         }
     }
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);

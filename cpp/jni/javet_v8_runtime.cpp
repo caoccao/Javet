@@ -259,7 +259,7 @@ namespace Javet {
             }
             // Restore context and global object (Begin)
             v8GlobalContext.Reset(v8Isolate, v8LocalContext);
-            v8GlobalObject.Reset(v8Isolate, v8LocalContext->Global()->GetPrototype()->ToObject(v8LocalContext).ToLocalChecked());
+            v8GlobalObject.Reset(v8Isolate, v8LocalContext->Global()->ToObject(v8LocalContext).ToLocalChecked());
             // Restore context and global object (End)
         }
         return jbytes;
@@ -316,7 +316,7 @@ namespace Javet {
         if (mRuntimeOptions != nullptr) {
             jstring mGlobalName = (jstring)jniEnv->CallObjectMethod(mRuntimeOptions, jmethodV8RuntimeOptionsGetGlobalName);
             if (mGlobalName != nullptr) {
-                auto umGlobalName = Javet::Converter::ToV8String(jniEnv, v8::Context::New(v8Isolate), mGlobalName);
+                auto umGlobalName = Javet::Converter::ToV8String(jniEnv, v8Isolate, mGlobalName);
                 v8ObjectTemplate->SetNativeDataProperty(umGlobalName, GlobalAccessorGetterCallback);
             }
         }
@@ -326,7 +326,7 @@ namespace Javet {
         Register(v8LocalContext);
         v8GlobalContext.Reset(v8Isolate, v8LocalContext);
         v8GlobalObject.Reset(
-            v8Isolate, v8LocalContext->Global()->GetPrototype()->ToObject(v8LocalContext).ToLocalChecked());
+            v8Isolate, v8LocalContext->Global()->ToObject(v8LocalContext).ToLocalChecked());
     }
 
     void V8Runtime::CreateV8Isolate(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept {
@@ -391,9 +391,10 @@ namespace Javet {
 
     jobject V8Runtime::SafeToExternalV8Value(
         JNIEnv* jniEnv,
+        V8Isolate* v8Isolate,
         const V8LocalContext& v8Context,
         const v8::internal::Tagged<V8InternalObject>& v8InternalObject) noexcept {
-        V8TryCatch v8TryCatch(v8Context->GetIsolate());
+        V8TryCatch v8TryCatch(v8Isolate);
         jobject externalV8Value = Javet::Converter::ToExternalV8Value(jniEnv, this, v8Context, v8InternalObject);
         if (v8TryCatch.HasCaught()) {
             DELETE_LOCAL_REF(jniEnv, externalV8Value);
@@ -404,9 +405,10 @@ namespace Javet {
 
     jobject V8Runtime::SafeToExternalV8Value(
         JNIEnv* jniEnv,
+        V8Isolate* v8Isolate,
         const V8LocalContext& v8Context,
         const V8LocalValue& v8Value) noexcept {
-        V8TryCatch v8TryCatch(v8Context->GetIsolate());
+        V8TryCatch v8TryCatch(v8Isolate);
         jobject externalV8Value = Javet::Converter::ToExternalV8Value(jniEnv, this, v8Context, v8Value);
         if (v8TryCatch.HasCaught()) {
             DELETE_LOCAL_REF(jniEnv, externalV8Value);

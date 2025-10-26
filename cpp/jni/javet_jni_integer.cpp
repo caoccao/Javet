@@ -20,8 +20,8 @@
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_integerObjectCreate
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint mInt) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    auto v8LocalDoubleObject = v8::NumberObject::New(v8Context->GetIsolate(), mInt);
-    return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalDoubleObject);
+    auto v8LocalDoubleObject = v8::NumberObject::New(v8Isolate, mInt);
+    return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8LocalDoubleObject);
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_integerObjectValueOf
@@ -29,8 +29,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_integerObjectV
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_INTEGER_OBJECT(v8ValueType)) {
         auto intValue = (int)(v8LocalValue.As<v8::NumberObject>()->ValueOf());
-        auto v8LocalInteger = Javet::Converter::ToV8Integer(v8Context, intValue);
-        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalInteger);
+        auto v8LocalInteger = Javet::Converter::ToV8Integer(v8Isolate, intValue);
+        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8LocalInteger);
     }
     return nullptr;
 }

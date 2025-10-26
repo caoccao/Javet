@@ -79,7 +79,7 @@ namespace Javet {
 
         jobject ThrowJavetOutOfMemoryException(
             JNIEnv* jniEnv,
-            const V8LocalContext& v8Context,
+            V8Isolate* v8Isolate,
             const char* message) noexcept;
 
         jobject ThrowJavetTerminatedException(

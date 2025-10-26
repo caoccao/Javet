@@ -20,9 +20,9 @@
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_arrayCreate
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    auto v8LocalArray = v8::Array::New(v8Context->GetIsolate());
+    auto v8LocalArray = v8::Array::New(v8Isolate);
     if (!v8LocalArray.IsEmpty()) {
-        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Context, v8LocalArray);
+        return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8LocalArray);
     }
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
 }
