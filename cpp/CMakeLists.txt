@@ -249,7 +249,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android
             add_definitions(-D_LIBCPP_HARDENING_MODE_DEFAULT=_LIBCPP_HARDENING_MODE_NONE)
             list(APPEND includeDirs
                 ${V8_DIR}/buildtools/third_party/libc++
-                ${V8_RELEASE_DIR}/gen/third_party/libc++/src/include
                 ${V8_DIR}/third_party/libc++/src/include
             )
             foreach(importLibrary ${importLibraries})
