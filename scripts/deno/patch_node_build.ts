@@ -197,7 +197,7 @@ async function main(): Promise<number> {
   if (!nodeRepoPath) {
     console.error("ERROR: Missing required argument: -p/--path");
     console.error(
-      "Usage: deno run --allow-read --allow-write patch_node_build.ts -p <node_repo_path>",
+      "Usage: deno run --allow-read --allow-write patch_node_build.ts -p <node_repo_path>"
     );
     return 1;
   }

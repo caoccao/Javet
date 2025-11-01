@@ -34,132 +34,132 @@ class ChangeJavetVersion {
       "\n",
       /^        <version>(?<version>\d+\.\d+\.\d+)<\/version>$/,
       /javet[\-\w]*:(?<version>\d+\.\d+\.\d+)["'@]{1}/,
-      /version: '(?<version>\d+\.\d+\.\d+)'/,
+      /version: '(?<version>\d+\.\d+\.\d+)'/
     );
     this.updateFile(
       "build.gradle.kts",
       "\n",
-      /^        const val JAVET = "(?<version>\d+\.\d+\.\d+)"$/,
+      /^        const val JAVET = "(?<version>\d+\.\d+\.\d+)"$/
     );
     this.updateFile(
       ".github/workflows/android_node_build.yml",
       "\n",
-      /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/,
+      /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/
     );
     this.updateFile(
       ".github/workflows/android_v8_build.yml",
       "\n",
-      /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/,
+      /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/
     );
     this.updateFile(
       ".github/workflows/linux_x86_64_build.yml",
       "\n",
-      /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/,
+      /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/
     );
     this.updateFile(
       ".github/workflows/linux_build_artifact.yml",
       "\n",
-      /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/,
+      /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/
     );
     this.updateFile(
       ".github/workflows/linux_build_node_v8_image.yml",
       "\n",
-      /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/,
+      /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/
     );
     this.updateFile(
       ".github/workflows/macos_arm64_build.yml",
       "\n",
-      /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/,
+      /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/
     );
     this.updateFile(
       ".github/workflows/macos_x86_64_build.yml",
       "\n",
-      /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/,
+      /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/
     );
     this.updateFile(
       ".github/workflows/windows_x86_64_build.yml",
       "\n",
-      /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/,
+      /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/
     );
     this.updateFile(
       "docker/android/base.Dockerfile",
       "\n",
-      /javet-android:(?<version>\d+\.\d+\.\d+) /,
+      /javet-android:(?<version>\d+\.\d+\.\d+) /
     );
     this.updateFile(
       "docker/android/build.Dockerfile",
       "\n",
-      /javet-android:(?<version>\d+\.\d+\.\d+)$/,
+      /javet-android:(?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "docker/linux-arm64/base_all_in_one.Dockerfile",
       "\n",
-      /javet-arm64:(?<version>\d+\.\d+\.\d+) /,
+      /javet-arm64:(?<version>\d+\.\d+\.\d+) /
     );
     this.updateFile(
       "docker/linux-arm64/build_all_in_one.Dockerfile",
       "\n",
-      /javet-arm64:(?<version>\d+\.\d+\.\d+)$/,
+      /javet-arm64:(?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "docker/linux-arm64/build_artifact.Dockerfile",
       "\n",
-      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)/,
+      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)/
     );
     this.updateFile(
       "docker/linux-arm64/base_gradle.Dockerfile",
       "\n",
-      /arm64-(?<version>\d+\.\d+\.\d+) /,
+      /arm64-(?<version>\d+\.\d+\.\d+) /
     );
     this.updateFile(
       "docker/linux-x86_64/base_all_in_one.Dockerfile",
       "\n",
-      /javet:(?<version>\d+\.\d+\.\d+) /,
+      /javet:(?<version>\d+\.\d+\.\d+) /
     );
     this.updateFile(
       "docker/linux-x86_64/build_all_in_one.Dockerfile",
       "\n",
-      /javet:(?<version>\d+\.\d+\.\d+)$/,
+      /javet:(?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "docker/linux-x86_64/build_artifact.Dockerfile",
       "\n",
-      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)/,
+      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)/
     );
     this.updateFile(
       "docker/linux-x86_64/base_gradle.Dockerfile",
       "\n",
-      /x86_64-(?<version>\d+\.\d+\.\d+) /,
+      /x86_64-(?<version>\d+\.\d+\.\d+) /
     );
     this.updateFile(
       "docker/linux-x86_64/build.env",
       "\n",
-      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)/,
+      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)/
     );
     this.updateFile(
       "docker/windows-x86_64/base.Dockerfile",
       "\n",
-      /javet-windows:(?<version>\d+\.\d+\.\d+) /,
+      /javet-windows:(?<version>\d+\.\d+\.\d+) /
     );
     this.updateFile(
       "docker/windows-x86_64/build.Dockerfile",
       "\n",
-      /javet-windows:(?<version>\d+\.\d+\.\d+)$/,
+      /javet-windows:(?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "android/javet-android/build.gradle.kts",
       "\n",
-      /const val JAVET = "(?<version>\d+\.\d+\.\d+)"$/,
+      /const val JAVET = "(?<version>\d+\.\d+\.\d+)"$/
     );
     this.updateFile(
       "android/javet-android/src/main/AndroidManifest.xml",
       "\n",
-      /versionName="(?<version>\d+\.\d+\.\d+)"$/,
+      /versionName="(?<version>\d+\.\d+\.\d+)"$/
     );
     this.updateFile(
       "docs/conf.py",
       "\n",
-      /release\s*=\s*'(?<version>\d+\.\d+\.\d+)'$/,
+      /release\s*=\s*'(?<version>\d+\.\d+\.\d+)'$/
     );
     this.updateFile(
       "docs/tutorial/basic/installation.rst",
@@ -167,67 +167,67 @@ class ChangeJavetVersion {
       /<version>(?<version>\d+\.\d+\.\d+)<\/version>/,
       /<javet\.version>(?<version>\d+\.\d+\.\d+)<\/javet\.version>$/,
       /javet[\-\w$]*:(?<version>\d+\.\d+\.\d+)["'@]{1}/,
-      /version: '(?<version>\d+\.\d+\.\d+)'/,
+      /version: '(?<version>\d+\.\d+\.\d+)'/
     );
     this.updateFile(
       "android/pom.xml",
       "\n",
       /^    <version>(?<version>\d+\.\d+\.\d+)<\/version>$/,
-      /^        <tag>(?<version>\d+\.\d+\.\d+)<\/tag>$/,
+      /^        <tag>(?<version>\d+\.\d+\.\d+)<\/tag>$/
     );
     this.updateFile(
       "cpp/build-android.sh",
       "\n",
-      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)$/,
+      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "cpp/build-linux-arm64.sh",
       "\n",
-      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)$/,
+      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "cpp/build-linux-x86_64.sh",
       "\n",
-      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)$/,
+      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "cpp/build-macos.sh",
       "\n",
-      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)$/,
+      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "cpp/build-windows.cmd",
       "\r\n",
-      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)$/,
+      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "src/main/java/com/caoccao/javet/interop/loader/JavetLibLoader.java",
       "\n",
-      /LIB_VERSION = "(?<version>\d+\.\d+\.\d+)";$/,
+      /LIB_VERSION = "(?<version>\d+\.\d+\.\d+)";$/
     );
     this.updateFile(
       "cpp/jni/javet_resource_node.rc",
       "\r\n",
       /"(?<version>\d+\.\d+\.\d+)/,
       /v\.(?<version>\d+\.\d+\.\d+)/,
-      /(?<version>\d+,\d+,\d+)/,
+      /(?<version>\d+,\d+,\d+)/
     );
     this.updateFile(
       "cpp/jni/javet_resource_v8.rc",
       "\r\n",
       /"(?<version>\d+\.\d+\.\d+)/,
       /v\.(?<version>\d+\.\d+\.\d+)/,
-      /(?<version>\d+,\d+,\d+)/,
+      /(?<version>\d+,\d+,\d+)/
     );
     this.updateFile(
       "scripts/node/javet-rebuild/rebuild.cmd",
       "\r\n",
-      /v\.(?<version>\d+\.\d+\.\d+)\.lib/,
+      /v\.(?<version>\d+\.\d+\.\d+)\.lib/
     );
     this.updateFile(
       "scripts/node/javet-rebuild/rebuild.sh",
       "\n",
-      /v\.(?<version>\d+\.\d+\.\d+)\.so/,
+      /v\.(?<version>\d+\.\d+\.\d+)\.so/
     );
   }
 
@@ -257,11 +257,14 @@ class ChangeJavetVersion {
             version = version.replace(/\./g, ",");
           }
           console.log(
-            `INFO:   ${lineNumber}: ${match.groups.version} -> ${version}`,
+            `INFO:   ${lineNumber}: ${match.groups.version} -> ${version}`
           );
-          const startIndex = match.index + match[0].indexOf(match.groups.version);
+          const startIndex =
+            match.index + match[0].indexOf(match.groups.version);
           const endIndex = startIndex + match.groups.version.length;
-          updatedLine = updatedLine.substring(0, startIndex) + version +
+          updatedLine =
+            updatedLine.substring(0, startIndex) +
+            version +
             updatedLine.substring(endIndex);
           break;
         }
