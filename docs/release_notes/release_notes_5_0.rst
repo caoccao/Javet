@@ -2,6 +2,11 @@
 Release Notes 5.0.x
 ===================
 
+5.0.2
+-----
+
+* Upgraded Node.js to ``v24.11.0`` `(2025-10-28) <https://nodejs.org/en/blog/release/v24.11.0>`_
+
 5.0.1
 -----
 
