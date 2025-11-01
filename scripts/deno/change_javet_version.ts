@@ -16,15 +16,15 @@
  */
 
 // deno-lint-ignore-file no-regex-spaces
-import { dirname, fromFileUrl, resolve } from "@std/path";
+import * as path from "@std/path";
 
 class ChangeJavetVersion {
   private rootPath: string;
   private version: string;
 
   constructor(version: string) {
-    const scriptPath = fromFileUrl(import.meta.url);
-    this.rootPath = resolve(dirname(scriptPath), "../../");
+    const scriptPath = path.fromFileUrl(import.meta.url);
+    this.rootPath = path.resolve(path.dirname(scriptPath), "../../");
     this.version = version;
   }
 
@@ -236,7 +236,7 @@ class ChangeJavetVersion {
     lineSeparator: string,
     ...patterns: RegExp[]
   ): void {
-    const filePath = resolve(this.rootPath, relativeFilePath);
+    const filePath = path.resolve(this.rootPath, relativeFilePath);
     console.log(`INFO: Updating ${filePath}.`);
 
     const lines: string[] = [];

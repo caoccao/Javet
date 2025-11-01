@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-import { dirname, fromFileUrl, resolve } from "@std/path";
+import * as path from "@std/path";
 
 abstract class ChangeVersion {
   protected rootPath: string;
   protected version: string;
 
   constructor(version: string) {
-    const scriptPath = fromFileUrl(import.meta.url);
-    this.rootPath = resolve(dirname(scriptPath), "../../");
+    const scriptPath = path.fromFileUrl(import.meta.url);
+    this.rootPath = path.resolve(path.dirname(scriptPath), "../../");
     this.version = version;
   }
 
@@ -34,7 +34,7 @@ abstract class ChangeVersion {
     lineSeparator: string,
     ...patterns: RegExp[]
   ): void {
-    const filePath = resolve(this.rootPath, relativeFilePath);
+    const filePath = path.resolve(this.rootPath, relativeFilePath);
     console.log(`INFO: Updating ${filePath}.`);
 
     const lines: string[] = [];

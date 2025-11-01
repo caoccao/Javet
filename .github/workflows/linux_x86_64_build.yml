@@ -134,6 +134,11 @@ jobs:
       with:
         python-version: '3.11' 
 
+    - name: Setup Deno
+      uses: denoland/setup-deno@v2
+      with:
+        deno-version: v2.x
+
     - name: Build Node.js
       run: |
         cd ${{ env.ROOT }}
@@ -142,9 +147,9 @@ jobs:
         git checkout v${{ env.JAVET_NODE_VERSION }}
         sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' deps/v8/src/execution/isolate.h
         sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' deps/v8/src/heap/local-heap.h
-        python3 ${{ env.ROOT }}/Javet/scripts/python/patch_node_build.py -p ./
+        deno --allow-all ${{ env.ROOT }}/Javet/scripts/deno/patch_node_build.ts -p ./
         ./configure --enable-static ${{ matrix.node_flag }}
-        python3 ${{ env.ROOT }}/Javet/scripts/python/patch_node_build.py -p ./
+        deno --allow-all ${{ env.ROOT }}/Javet/scripts/deno/patch_node_build.ts -p ./
         make -j4
         mv out out.${{ matrix.name }}
 
