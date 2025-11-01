@@ -35,7 +35,7 @@ jobs:
     - name: Setup Ubuntu
       run: |
         sudo apt-get update -y
-        sudo apt-get install -y execstack binutils build-essential libc++-dev libc++abi-dev libstdc++-14-dev
+        sudo apt-get install -y execstack binutils build-essential libc++-dev libc++abi-dev
 
     - name: Setup Python
       uses: actions/setup-python@v5
