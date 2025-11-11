@@ -52,7 +52,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
      *
      * @since 0.9.6
      */
-    protected static final String[] GETTER_PREFIX_ARRAY = new String[]{"get", "is"};
+    protected static final String[] GETTER_PREFIX_ARRAY = new String[] { "get", "is" };
     /**
      * The constant PATTERN_CAPITALIZED_PREFIX.
      *
@@ -64,7 +64,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
      *
      * @since 0.9.6
      */
-    protected static final String[] SETTER_PREFIX_ARRAY = new String[]{"set", "put"};
+    protected static final String[] SETTER_PREFIX_ARRAY = new String[] { "set", "put" };
     /**
      * The Class descriptor.
      *
@@ -274,17 +274,12 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     protected V8Value getByMethod(V8Value target, V8Value property) throws JavetException, E {
         if (property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).toPrimitive();
-            if (!classDescriptor.getClassProxyPlugin().isMethodProxyable(propertyName, classDescriptor.getTargetClass())) {
-                List<Method> methods = classDescriptor.getMethodsMap().get(propertyName);
-                if (ListUtils.isNotEmpty(methods)) {
-                    JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
-                            v8Runtime.getConverter().getConfig().getReflectionObjectFactory(),
-                            targetObject,
-                            propertyName,
-                            methods);
-                    return v8Runtime.createV8ValueFunction(reflectionProxyInterceptor.getCallbackContext());
-                }
-                methods = classDescriptor.getGettersMap().get(propertyName);
+            if (!classDescriptor.getClassProxyPlugin().isMethodProxyable(propertyName,
+                    classDescriptor.getTargetClass())) {
+                // Check gettersMap FIRST to prioritize property access over method access
+                // This ensures that obj.name returns the value from getName() rather than
+                // a function reference from name() when both exist.
+                List<Method> methods = classDescriptor.getGettersMap().get(propertyName);
                 if (ListUtils.isNotEmpty(methods)) {
                     JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
                             v8Runtime.getConverter().getConfig().getReflectionObjectFactory(),
@@ -293,9 +288,19 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
                             methods);
                     return reflectionProxyInterceptor.invokeV8Value(target);
                 }
+                // Then check methodsMap for explicit method access
+                methods = classDescriptor.getMethodsMap().get(propertyName);
+                if (ListUtils.isNotEmpty(methods)) {
+                    JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
+                            v8Runtime.getConverter().getConfig().getReflectionObjectFactory(),
+                            targetObject,
+                            propertyName,
+                            methods);
+                    return v8Runtime.createV8ValueFunction(reflectionProxyInterceptor.getCallbackContext());
+                }
                 if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
-                    IClassProxyPluginFunction<E> classProxyPluginFunction =
-                            classDescriptor.getClassProxyPlugin().getProxySymbolToPrimitive();
+                    IClassProxyPluginFunction<E> classProxyPluginFunction = classDescriptor.getClassProxyPlugin()
+                            .getProxySymbolToPrimitive();
                     return classProxyPluginFunction.invoke(v8Runtime, targetObject);
                 }
             }
@@ -326,8 +331,8 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
         V8Value v8Value = null;
         try {
             if (property instanceof V8ValueString) {
-                IJavetEntityPropertyDescriptor<V8Value> javetEntityPropertyDescriptor =
-                        classDescriptor.getClassProxyPlugin().getProxyOwnPropertyDescriptor(
+                IJavetEntityPropertyDescriptor<V8Value> javetEntityPropertyDescriptor = classDescriptor
+                        .getClassProxyPlugin().getProxyOwnPropertyDescriptor(
                                 targetObject, ((V8ValueString) property).getValue());
                 if (javetEntityPropertyDescriptor != null) {
                     v8Value = internalGet(target, property);
@@ -548,7 +553,8 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
                                                 + aliasMethodName.substring(capitalizedPrefixLength));
                             } else {
                                 classDescriptor.getUniqueKeySet().add(
-                                        aliasMethodName.substring(0, capitalizedPrefixLength - 1).toLowerCase(Locale.ROOT)
+                                        aliasMethodName.substring(0, capitalizedPrefixLength - 1)
+                                                .toLowerCase(Locale.ROOT)
                                                 + aliasMethodName.substring(capitalizedPrefixLength - 1));
                             }
                         }
@@ -700,7 +706,8 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
                 throw new JavetException(JavetError.CallbackUnknownFailure,
                         SimpleMap.of(JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
             }
-            if (!classDescriptor.getGenericSetters().isEmpty() && keyObject != null && !(keyObject instanceof V8Value)) {
+            if (!classDescriptor.getGenericSetters().isEmpty() && keyObject != null
+                    && !(keyObject instanceof V8Value)) {
                 try {
                     for (Method method : classDescriptor.getGenericSetters()) {
                         Class<?>[] parameterTypes = method.getParameterTypes();
