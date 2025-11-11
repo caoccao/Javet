@@ -275,16 +275,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
         if (property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).toPrimitive();
             if (!classDescriptor.getClassProxyPlugin().isMethodProxyable(propertyName, classDescriptor.getTargetClass())) {
-                List<Method> methods = classDescriptor.getMethodsMap().get(propertyName);
-                if (ListUtils.isNotEmpty(methods)) {
-                    JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
-                            v8Runtime.getConverter().getConfig().getReflectionObjectFactory(),
-                            targetObject,
-                            propertyName,
-                            methods);
-                    return v8Runtime.createV8ValueFunction(reflectionProxyInterceptor.getCallbackContext());
-                }
-                methods = classDescriptor.getGettersMap().get(propertyName);
+                List<Method> methods = classDescriptor.getGettersMap().get(propertyName);
                 if (ListUtils.isNotEmpty(methods)) {
                     JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
                             v8Runtime.getConverter().getConfig().getReflectionObjectFactory(),
@@ -292,6 +283,15 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
                             propertyName,
                             methods);
                     return reflectionProxyInterceptor.invokeV8Value(target);
+                }
+                methods = classDescriptor.getMethodsMap().get(propertyName);
+                if (ListUtils.isNotEmpty(methods)) {
+                    JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
+                            v8Runtime.getConverter().getConfig().getReflectionObjectFactory(),
+                            targetObject,
+                            propertyName,
+                            methods);
+                    return v8Runtime.createV8ValueFunction(reflectionProxyInterceptor.getCallbackContext());
                 }
                 if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
                     IClassProxyPluginFunction<E> classProxyPluginFunction =

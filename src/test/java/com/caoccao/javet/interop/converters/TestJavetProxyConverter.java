@@ -1000,6 +1000,49 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testGetterPriorityOverMethod() throws JavetException {
+        // Test class with both getName() getter and name() method conflict
+        // Property access should prioritize getter over method
+        TestClassWithGetterMethodConflict testObj = new TestClassWithGetterMethodConflict();
+        testObj.setName("TestValue");
+        v8Runtime.getGlobalObject().set("obj", testObj);
+
+        // Property access should return value from getName(), not the name() function
+        String propertyValue = v8Runtime.getExecutor("obj.name").executeString();
+        assertEquals("TestValue", propertyValue,
+                "Property access obj.name should return value from getName(), not name() function");
+
+        // Verify it's actually a string value, not a function
+        assertFalse(v8Runtime.getExecutor("typeof obj.name === 'function'").executeBoolean(),
+                "obj.name should not be a function");
+
+        // Note: obj.name() won't work because obj.name is now a value, not a function
+        // This is the expected behavior - property access prioritizes getters over
+        // methods
+        // If you need to call the conflicting method, it should have a different name
+
+        // Explicit getter method should still work
+        String getterResult = v8Runtime.getExecutor("obj.getName()").executeString();
+        assertEquals("TestValue", getterResult,
+                "Explicit method call obj.getName() should work");
+
+        // Test with displayName as well (common case)
+        TestClassWithDisplayNameConflict displayObj = new TestClassWithDisplayNameConflict();
+        displayObj.setDisplayName("DisplayValue");
+        v8Runtime.getGlobalObject().set("displayObj", displayObj);
+
+        String displayPropertyValue = v8Runtime.getExecutor("displayObj.displayName").executeString();
+        assertEquals("DisplayValue", displayPropertyValue,
+                "Property access displayObj.displayName should return value from getDisplayName()");
+
+        assertFalse(v8Runtime.getExecutor("typeof displayObj.displayName === 'function'").executeBoolean(),
+                "displayObj.displayName should not be a function");
+
+        v8Runtime.getGlobalObject().delete("obj");
+        v8Runtime.getGlobalObject().delete("displayObj");
+    }
+
+    @Test
     public void testInstanceof() throws JavetException {
         assertTrue(v8Runtime.getExecutor("const prototypeObject = {};\n" +
                 "const constructor = function () {};\n" +
@@ -2070,6 +2113,61 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         @V8Setter
         public boolean xSetter(String key, String value) {
             return map.put(key, value) != null;
+        }
+    }
+
+    /**
+     * Test class that has both getName() getter and name() method to test getter
+     * priority.
+     * This simulates the Bukkit Player case where name() might exist from a parent
+     * class.
+     */
+    public static class TestClassWithGetterMethodConflict {
+        private String name;
+
+        /**
+         * Getter method - should be accessible as property "name"
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Conflicting method - same name as property but without "get" prefix
+         * This simulates a method like Enum.name() that might conflict
+         */
+        public String name() {
+            return "conflict";
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
+    /**
+     * Test class that has both getDisplayName() getter and displayName() method.
+     * Tests the same issue with a different property name.
+     */
+    public static class TestClassWithDisplayNameConflict {
+        private String displayName;
+
+        /**
+         * Getter method - should be accessible as property "displayName"
+         */
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        /**
+         * Conflicting method - same name as property but without "get" prefix
+         */
+        public String displayName() {
+            return "conflict";
+        }
+
+        public void setDisplayName(String displayName) {
+            this.displayName = displayName;
         }
     }
 }
