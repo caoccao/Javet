@@ -24,6 +24,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetEntityPropertyDescriptor;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
+import com.caoccao.javet.interop.binding.IClassProxyPlugin;
 import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
 import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
@@ -183,6 +184,29 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     }
 
     /**
+     * Gets by built-in method.
+     *
+     * @param property the property
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
+     * @since 5.0.2
+     */
+    protected V8Value getByBuiltInMethod(V8Value property) throws JavetException, E {
+        if (property instanceof V8ValueString) {
+            String propertyName = ((V8ValueString) property).toPrimitive();
+            if (!classDescriptor.getClassProxyPlugin().isMethodProxyable(propertyName, classDescriptor.getTargetClass())) {
+                if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
+                    IClassProxyPluginFunction<E> classProxyPluginFunction =
+                            classDescriptor.getClassProxyPlugin().getProxySymbolToPrimitive();
+                    return classProxyPluginFunction.invoke(v8Runtime, targetObject);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Gets by field.
      *
      * @param property the property
@@ -213,14 +237,14 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     }
 
     /**
-     * Gets by getter.
+     * Gets by generic getter.
      *
      * @param property the property
      * @return the V8 value
      * @throws JavetException the javet exception
      * @since 1.1.7
      */
-    protected V8Value getByGetter(V8Value property) throws JavetException {
+    protected V8Value getByGenericGetter(V8Value property) throws JavetException {
         if (!classDescriptor.getGenericGetters().isEmpty()) {
             try {
                 Object propertyObject = v8Runtime.toObject(property);
@@ -262,16 +286,43 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     }
 
     /**
-     * Gets by method.
+     * Gets by get method.
      *
      * @param target   the target
      * @param property the property
      * @return the V8 value
      * @throws JavetException the javet exception
      * @throws E              the custom exception
+     * @since 5.0.2
+     */
+    protected V8Value getByGetMethod(V8Value target, V8Value property) throws JavetException, E {
+        if (property instanceof V8ValueString) {
+            String propertyName = ((V8ValueString) property).toPrimitive();
+            if (!classDescriptor.getClassProxyPlugin().isMethodProxyable(propertyName, classDescriptor.getTargetClass())) {
+                List<Method> getterMethods = classDescriptor.getGettersMap().get(propertyName);
+                if (ListUtils.isNotEmpty(getterMethods)) {
+                    JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
+                            v8Runtime.getConverter().getConfig().getReflectionObjectFactory(),
+                            targetObject,
+                            propertyName,
+                            getterMethods);
+                    return reflectionProxyInterceptor.invokeV8Value(target);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets by method.
+     *
+     * @param property the property
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @throws E              the custom exception
      * @since 1.1.7
      */
-    protected V8Value getByMethod(V8Value target, V8Value property) throws JavetException, E {
+    protected V8Value getByMethod(V8Value property) throws JavetException, E {
         if (property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).toPrimitive();
             if (!classDescriptor.getClassProxyPlugin().isMethodProxyable(propertyName, classDescriptor.getTargetClass())) {
@@ -283,20 +334,6 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
                             propertyName,
                             methods);
                     return v8Runtime.createV8ValueFunction(reflectionProxyInterceptor.getCallbackContext());
-                }
-                methods = classDescriptor.getGettersMap().get(propertyName);
-                if (ListUtils.isNotEmpty(methods)) {
-                    JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
-                            v8Runtime.getConverter().getConfig().getReflectionObjectFactory(),
-                            targetObject,
-                            propertyName,
-                            methods);
-                    return reflectionProxyInterceptor.invokeV8Value(target);
-                }
-                if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
-                    IClassProxyPluginFunction<E> classProxyPluginFunction =
-                            classDescriptor.getClassProxyPlugin().getProxySymbolToPrimitive();
-                    return classProxyPluginFunction.invoke(v8Runtime, targetObject);
                 }
             }
         }
@@ -647,7 +684,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     }
 
     /**
-     * Sets to field.
+     * Sets by field.
      *
      * @param propertyKey   the property key
      * @param propertyValue the property value
@@ -655,7 +692,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
      * @throws JavetException the javet exception
      * @since 1.1.7
      */
-    protected boolean setToField(V8Value propertyKey, V8Value propertyValue) throws JavetException {
+    protected boolean setByField(V8Value propertyKey, V8Value propertyValue) throws JavetException {
         if (!classDescriptor.getFieldMap().isEmpty() && propertyKey instanceof V8ValueString) {
             String propertyName = ((V8ValueString) propertyKey).toPrimitive();
             Field field = classDescriptor.getFieldMap().get(propertyName);
@@ -679,17 +716,16 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     }
 
     /**
-     * Sets to setter.
+     * Sets by generic setter.
      *
-     * @param target        the target
      * @param propertyKey   the property key
      * @param propertyValue the property value
      * @return true : set, false: not set
      * @throws JavetException the javet exception
      * @since 1.1.7
      */
-    protected boolean setToSetter(V8Value target, V8Value propertyKey, V8Value propertyValue) throws JavetException {
-        if (!classDescriptor.getGenericSetters().isEmpty() || !classDescriptor.getSettersMap().isEmpty()) {
+    protected boolean setByGenericSetter(V8Value propertyKey, V8Value propertyValue) throws JavetException {
+        if (!classDescriptor.getGenericSetters().isEmpty()) {
             Object keyObject, valueObject;
             try {
                 keyObject = v8Runtime.toObject(propertyKey);
@@ -700,7 +736,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
                 throw new JavetException(JavetError.CallbackUnknownFailure,
                         SimpleMap.of(JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
             }
-            if (!classDescriptor.getGenericSetters().isEmpty() && keyObject != null && !(keyObject instanceof V8Value)) {
+            if (keyObject != null && !(keyObject instanceof V8Value)) {
                 try {
                     for (Method method : classDescriptor.getGenericSetters()) {
                         Class<?>[] parameterTypes = method.getParameterTypes();
@@ -744,6 +780,55 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
                     throw new JavetException(JavetError.CallbackUnknownFailure,
                             SimpleMap.of(JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
                 }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Sets by index.
+     *
+     * @param propertyKey   the property key
+     * @param propertyValue the property value
+     * @return true : set, false: not set
+     * @throws JavetException the javet exception
+     * @since 1.1.7
+     */
+    protected boolean setByIndex(V8Value propertyKey, V8Value propertyValue) throws JavetException {
+        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
+        if (classProxyPlugin.isIndexSupported(classDescriptor.getTargetClass())
+                && propertyKey instanceof V8ValueString) {
+            String propertyKeyString = ((V8ValueString) propertyKey).getValue();
+            if (StringUtils.isDigital(propertyKeyString)) {
+                final int index = Integer.parseInt(propertyKeyString);
+                if (index >= 0) {
+                    return classProxyPlugin.setByIndex(targetObject, index, v8Runtime.toObject(propertyValue));
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Sets by set method.
+     *
+     * @param target        the target
+     * @param propertyKey   the property key
+     * @param propertyValue the property value
+     * @return true : set, false: not set
+     * @throws JavetException the javet exception
+     * @since 5.0.2
+     */
+    protected boolean setBySetMethod(V8Value target, V8Value propertyKey, V8Value propertyValue) throws JavetException {
+        if (!classDescriptor.getSettersMap().isEmpty()) {
+            Object keyObject;
+            try {
+                keyObject = v8Runtime.toObject(propertyKey);
+            } catch (JavetException e) {
+                throw e;
+            } catch (Throwable t) {
+                throw new JavetException(JavetError.CallbackUnknownFailure,
+                        SimpleMap.of(JavetError.PARAMETER_MESSAGE, t.getMessage()), t);
             }
             if (keyObject instanceof String) {
                 String propertyName = (String) keyObject;

@@ -171,9 +171,29 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
 
     @Override
     protected V8Value internalGet(V8Value target, V8Value property) throws JavetException, E {
-        V8Value v8Value = getByField(property);
-        v8Value = v8Value == null ? getByMethod(target, property) : v8Value;
-        v8Value = v8Value == null ? getByGetter(property) : v8Value;
+        V8Value v8Value = null;
+        for (ClassDescriptor.GetPriority getPriority : classDescriptor.getGetPriorities()) {
+            switch (getPriority) {
+                case BuiltInMethod:
+                    v8Value = getByBuiltInMethod(property);
+                    break;
+                case Field:
+                    v8Value = getByField(property);
+                    break;
+                case GenericGetter:
+                    v8Value = getByGenericGetter(property);
+                    break;
+                case GetMethod:
+                    v8Value = getByGetMethod(target, property);
+                    break;
+                case Method:
+                    v8Value = getByMethod(property);
+                    break;
+            }
+            if (v8Value != null) {
+                break;
+            }
+        }
         return v8Value;
     }
 
@@ -188,8 +208,23 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
             V8Value propertyKey,
             V8Value propertyValue,
             V8Value receiver) throws JavetException {
-        boolean isSet = setToField(propertyKey, propertyValue);
-        isSet = isSet || setToSetter(target, propertyKey, propertyValue);
+        boolean isSet = false;
+        for (ClassDescriptor.SetPriority setPriority : classDescriptor.getSetPriorities()) {
+            switch (setPriority) {
+                case Field:
+                    isSet = setByField(propertyKey, propertyValue);
+                    break;
+                case GenericSetter:
+                    isSet = setByGenericSetter(propertyKey, propertyValue);
+                    break;
+                case SetMethod:
+                    isSet = setBySetMethod(target, propertyKey, propertyValue);
+                    break;
+            }
+            if (isSet) {
+                break;
+            }
+        }
         return v8Runtime.createV8ValueBoolean(isSet);
     }
 }

@@ -19,6 +19,7 @@ package com.caoccao.javet.interop.binding;
 import com.caoccao.javet.annotations.V8Convert;
 import com.caoccao.javet.enums.V8ConversionMode;
 import com.caoccao.javet.enums.V8ProxyMode;
+import com.caoccao.javet.utils.SimpleList;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -68,6 +69,12 @@ public class ClassDescriptor {
      */
     protected final List<Method> genericSetters;
     /**
+     * The Get priorities.
+     *
+     * @since 5.0.2
+     */
+    protected final List<GetPriority> getPriorities;
+    /**
      * The Getters map.
      *
      * @since 0.9.6
@@ -79,6 +86,12 @@ public class ClassDescriptor {
      * @since 0.9.6
      */
     protected final Map<String, List<Method>> methodsMap;
+    /**
+     * The Set priorities.
+     *
+     * @since 5.0.2
+     */
+    protected final List<SetPriority> setPriorities;
     /**
      * The Setters map.
      *
@@ -118,10 +131,23 @@ public class ClassDescriptor {
         fieldMap = new LinkedHashMap<>();
         genericGetters = new ArrayList<>();
         genericSetters = new ArrayList<>();
+        getPriorities = SimpleList.of(
+                GetPriority.Index,
+                GetPriority.Field,
+                GetPriority.Method,
+                GetPriority.GetMethod,
+                GetPriority.BuiltInMethod,
+                GetPriority.GenericGetter,
+                GetPriority.Polyfill);
         gettersMap = new LinkedHashMap<>();
         this.classProxyPlugin = Objects.requireNonNull(classProxyPlugin);
         methodsMap = new LinkedHashMap<>();
         this.proxyMode = proxyMode;
+        setPriorities = SimpleList.of(
+                SetPriority.Index,
+                SetPriority.Field,
+                SetPriority.GenericSetter,
+                SetPriority.SetMethod);
         settersMap = new LinkedHashMap<>();
         this.targetClass = targetClass;
         uniqueKeySet = new LinkedHashSet<>();
@@ -200,6 +226,16 @@ public class ClassDescriptor {
     }
 
     /**
+     * Gets get priorities.
+     *
+     * @return the get priorities
+     * @since 5.0.2
+     */
+    public List<GetPriority> getGetPriorities() {
+        return getPriorities;
+    }
+
+    /**
      * Gets getters map.
      *
      * @return the getters map
@@ -230,6 +266,16 @@ public class ClassDescriptor {
     }
 
     /**
+     * Gets set priorities.
+     *
+     * @return the set priorities
+     * @since 5.0.2
+     */
+    public List<SetPriority> getSetPriorities() {
+        return setPriorities;
+    }
+
+    /**
      * Gets setters map.
      *
      * @return the setters map
@@ -257,5 +303,33 @@ public class ClassDescriptor {
      */
     public Set<String> getUniqueKeySet() {
         return uniqueKeySet;
+    }
+
+    /**
+     * The enum Get priority.
+     *
+     * @since 5.0.2
+     */
+    public enum GetPriority {
+        BuiltInMethod,
+        Field,
+        GetMethod,
+        GenericGetter,
+        Index,
+        Method,
+        Polyfill,
+        SetMethod,
+    }
+
+    /**
+     * The enum Set priority.
+     *
+     * @since 5.0.2
+     */
+    public enum SetPriority {
+        Field,
+        GenericSetter,
+        Index,
+        SetMethod,
     }
 }

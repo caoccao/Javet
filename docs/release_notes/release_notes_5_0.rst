@@ -8,6 +8,7 @@ Release Notes 5.0.x
 * Upgraded Node.js to ``v24.11.0`` `(2025-10-28) <https://nodejs.org/en/blog/release/v24.11.0>`_
 * Added ``batchPush()`` to ``IV8ValueArray``
 * Fixed bug in ``JavetObjectConverter`` when converting a large Java object array
+* Added ``getGetPriorities()``, ``getSetPriorities()`` to ``ClassDescriptor``
 
 5.0.1
 -----

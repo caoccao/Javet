@@ -476,3 +476,120 @@ How to Customize JavetProxyConverter?
 =====================================
 
 It is recommended to subclass ``JavetProxyConverter`` and override few internal API to achieve complete customization.
+
+How to Adjust the Get and Set Priorities?
+==========================================
+
+When accessing or setting properties on proxied Java objects from JavaScript, Javet follows a priority order to resolve which Java mechanism (field, method, getter, setter, etc.) should handle the operation. These priorities can be customized to alter the default resolution behavior.
+
+Get Priorities
+--------------
+
+Get priorities determine the order in which Javet attempts to resolve property access from JavaScript. The default get priority order is:
+
+1. **Index** - Array-like indexed access (e.g., ``obj[0]``)
+2. **Field** - Public fields matching the property name
+3. **Method** - Methods matching the property name
+4. **GetMethod** - Getter methods (e.g., ``getValue()`` for property ``value``)
+5. **BuiltInMethod** - Built-in methods like ``toV8Value()``
+6. **GenericGetter** - Methods annotated with ``@V8Getter``
+7. **Polyfill** - JavaScript polyfill methods
+
+When accessing a property from JavaScript, Javet iterates through these priorities in order and returns the first match.
+
+Set Priorities
+--------------
+
+Set priorities determine the order in which Javet attempts to resolve property assignment from JavaScript. The default set priority order is:
+
+1. **Index** - Array-like indexed assignment (e.g., ``obj[0] = value``)
+2. **Field** - Public fields matching the property name
+3. **GenericSetter** - Methods annotated with ``@V8Setter``
+4. **SetMethod** - Setter methods (e.g., ``setValue()`` for property ``value``)
+
+When setting a property from JavaScript, Javet iterates through these priorities in order and uses the first match.
+
+Example: Default Priority Behavior
+-----------------------------------
+
+Consider this Java class:
+
+.. code-block:: java
+
+    public class PriorityExample {
+        public String data;
+
+        public String getData() {
+            return "from-method";
+        }
+
+        public void setData(String value) {
+            this.data = "method:" + value;
+        }
+
+        @V8Getter
+        public String xGetter(String key) {
+            if ("info".equals(key)) {
+                return "from-generic-getter";
+            }
+            return null;
+        }
+
+        @V8Setter
+        public boolean xSetter(String key, String value) {
+            if ("info".equals(key)) {
+                this.data = "setter:" + value;
+                return true;
+            }
+            return false;
+        }
+    }
+
+With default priorities:
+
+.. code-block:: java
+
+    PriorityExample obj = new PriorityExample();
+    v8Runtime.getGlobalObject().set("obj", obj);
+
+    // Accessing 'data' - Field priority comes before Method
+    // Returns the field value, not "from-method"
+    String value = v8Runtime.getExecutor("obj.data").executeString();
+
+    // Accessing 'info' - Only GenericGetter handles this
+    assertEquals("from-generic-getter",
+        v8Runtime.getExecutor("obj.info").executeString());
+
+    // Setting 'data' - Field priority comes before SetMethod
+    // Sets the field directly, setData() is not called
+    v8Runtime.getExecutor("obj.data = 'test'").executeVoid();
+    assertEquals("test", obj.data);  // Direct field assignment
+
+How to Customize Priorities?
+----------------------------
+
+You can customize the get and set priorities by modifying the ``ClassDescriptor`` for your class. Because ``ClassDescriptor`` is cached in ``ClassDescriptorStore`` globally, changes will affect all instances of that class in the current JVM. And for the first time, you need to inject an instance of the class to let ``JavetProxyConverter`` create the ``ClassDescriptor``.
+
+.. code-block:: java
+
+    TestPriorityClass testObject = new TestPriorityClass();
+    v8Runtime.getGlobalObject().set("a", testObject);
+    ClassDescriptor classDescriptor = ClassDescriptorStore.getObjectMap().get(TestPriorityClass.class);
+    assertNotNull(classDescriptor);
+    // Change the get priority
+    classDescriptor.getGetPriorities().clear();
+    classDescriptor.getGetPriorities().addAll(List.of(
+            ClassDescriptor.GetPriority.Index,
+            ClassDescriptor.GetPriority.GetMethod,
+            ClassDescriptor.GetPriority.Method,
+            ClassDescriptor.GetPriority.BuiltInMethod,
+            ClassDescriptor.GetPriority.GenericGetter,
+            ClassDescriptor.GetPriority.Field,
+            ClassDescriptor.GetPriority.Polyfill));
+    // Change the set priority
+    classDescriptor.getSetPriorities().clear();
+    classDescriptor.getSetPriorities().addAll(List.of(
+            ClassDescriptor.SetPriority.SetMethod,
+            ClassDescriptor.SetPriority.GenericSetter,
+            ClassDescriptor.SetPriority.Field,
+            ClassDescriptor.SetPriority.Index));
