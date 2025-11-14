@@ -106,6 +106,7 @@ public class MockFS implements AutoCloseable, Runnable {
             try {
                 TimeUnit.MILLISECONDS.sleep(1);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 e.printStackTrace(System.err);
                 break;
             }

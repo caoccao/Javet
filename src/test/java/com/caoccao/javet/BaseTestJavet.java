@@ -171,6 +171,7 @@ public abstract class BaseTestJavet {
                 TimeUnit.MILLISECONDS.sleep(intervalInMilliseconds);
                 ++count;
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 throw new TimeoutException("Failed to sleep");
             }
         }

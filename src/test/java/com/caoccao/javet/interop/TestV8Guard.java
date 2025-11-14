@@ -124,6 +124,7 @@ public class TestV8Guard extends BaseTestJavet {
                         try {
                             TimeUnit.MILLISECONDS.sleep(1);
                         } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
                             e.printStackTrace(System.err);
                         }
                     }

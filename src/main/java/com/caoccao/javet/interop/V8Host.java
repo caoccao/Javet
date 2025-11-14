@@ -641,6 +641,7 @@ public final class V8Host {
                         }
                     }
                 } catch (InterruptedException ignored) {
+                    Thread.currentThread().interrupt();
                     break;
                 }
             }
@@ -708,6 +709,7 @@ public final class V8Host {
                         }
                     }
                 } catch (InterruptedException ignored) {
+                    Thread.currentThread().interrupt();
                     break;
                 }
             }

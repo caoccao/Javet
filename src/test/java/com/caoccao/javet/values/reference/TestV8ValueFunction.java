@@ -1123,6 +1123,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                                 Thread.sleep(10 + random.nextInt(20));
                                 v8Runtime.terminateExecution();
                             } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
                                 e.printStackTrace(System.err);
                             }
                         }
@@ -1177,6 +1178,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     //noinspection BusyWait
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     e.printStackTrace(System.err);
                 }
             }

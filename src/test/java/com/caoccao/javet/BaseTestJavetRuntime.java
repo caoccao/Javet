@@ -89,6 +89,7 @@ public abstract class BaseTestJavetRuntime extends BaseTestJavet {
         try {
             thread.join();
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             fail(e.getMessage());
         }
     }
