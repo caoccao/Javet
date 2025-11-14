@@ -112,21 +112,21 @@ afterEvaluate {
 }
 
 task<Exec>("buildJNIHeaders") {
-    mkdir("$buildDir/generated/tmp/jni")
-    project.exec {
-        workingDir("$projectDir")
-        commandLine(
-            "javac",
-            "-h",
-            "cpp/jni",
-            "-d",
-            "$buildDir/generated/tmp/jni",
-            "src/main/java/com/caoccao/javet/interop/INodeNative.java",
-            "src/main/java/com/caoccao/javet/interop/IV8Native.java",
-            "src/main/java/com/caoccao/javet/interop/NodeNative.java",
-            "src/main/java/com/caoccao/javet/interop/V8Native.java"
-        )
+    doFirst {
+        mkdir("$buildDir/generated/tmp/jni")
     }
+    workingDir("$projectDir")
+    commandLine(
+        "javac",
+        "-h",
+        "cpp/jni",
+        "-d",
+        "$buildDir/generated/tmp/jni",
+        "src/main/java/com/caoccao/javet/interop/INodeNative.java",
+        "src/main/java/com/caoccao/javet/interop/IV8Native.java",
+        "src/main/java/com/caoccao/javet/interop/NodeNative.java",
+        "src/main/java/com/caoccao/javet/interop/V8Native.java"
+    )
 }
 
 tasks.jar {
