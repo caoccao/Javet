@@ -61,6 +61,117 @@ public class TestV8ValueArray extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testBatchPush() throws JavetException {
+        // Test empty array
+        try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+            int count = v8ValueArray.batchPush(10);
+            assertEquals(0, count, "Empty array should return 0");
+            assertEquals(0, v8ValueArray.getLength());
+        }
+
+        // Test with null array
+        try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+            int count = v8ValueArray.batchPush(10, (Object[]) null);
+            assertEquals(0, count, "Null array should return 0");
+            assertEquals(0, v8ValueArray.getLength());
+        }
+
+        // Test small batch (less than batch size)
+        try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+            Object[] objects = {1, 2, 3};
+            int count = v8ValueArray.batchPush(10, objects);
+            assertEquals(3, count, "Should push all 3 items");
+            assertEquals(3, v8ValueArray.getLength());
+            assertEquals(1, v8ValueArray.getInteger(0));
+            assertEquals(2, v8ValueArray.getInteger(1));
+            assertEquals(3, v8ValueArray.getInteger(2));
+        }
+
+        // Test exact batch size
+        try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+            Object[] objects = {1, 2, 3, 4, 5};
+            int count = v8ValueArray.batchPush(5, objects);
+            assertEquals(5, count, "Should push all 5 items");
+            assertEquals(5, v8ValueArray.getLength());
+            for (int i = 0; i < 5; i++) {
+                assertEquals(i + 1, v8ValueArray.getInteger(i));
+            }
+        }
+
+        // Test multiple batches
+        try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+            Object[] objects = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+            int count = v8ValueArray.batchPush(5, objects);
+            assertEquals(11, count, "Should push all 11 items in 3 batches");
+            assertEquals(11, v8ValueArray.getLength());
+            for (int i = 0; i < 11; i++) {
+                assertEquals(i + 1, v8ValueArray.getInteger(i));
+            }
+        }
+
+        // Test with batch size less than MIN_BATCH_SIZE (should use DEFAULT_BATCH_SIZE)
+        try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+            Object[] objects = new Object[150];
+            Arrays.fill(objects, "test");
+            int count = v8ValueArray.batchPush(0, objects);
+            assertEquals(150, count, "Should push all 150 items");
+            assertEquals(150, v8ValueArray.getLength());
+        }
+
+        // Test large array with default batch size
+        try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+            final int largeSize = 250;
+            Object[] objects = new Object[largeSize];
+            for (int i = 0; i < largeSize; i++) {
+                objects[i] = i;
+            }
+            int count = v8ValueArray.batchPush(100, objects);
+            assertEquals(largeSize, count, "Should push all 250 items");
+            assertEquals(largeSize, v8ValueArray.getLength());
+            // Verify some items
+            assertEquals(0, v8ValueArray.getInteger(0));
+            assertEquals(99, v8ValueArray.getInteger(99));
+            assertEquals(100, v8ValueArray.getInteger(100));
+            assertEquals(199, v8ValueArray.getInteger(199));
+            assertEquals(249, v8ValueArray.getInteger(249));
+        }
+
+        // Test with mixed types
+        try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+            Object[] objects = {
+                    1, "string", 3.14, true, null,
+                    v8Runtime.createV8ValueUndefined(),
+                    100L, false, "another"
+            };
+            int count = v8ValueArray.batchPush(3, objects);
+            assertEquals(9, count, "Should push all 9 items");
+            assertEquals(9, v8ValueArray.getLength());
+            assertEquals(1, v8ValueArray.getInteger(0));
+            assertEquals("string", v8ValueArray.getString(1));
+            assertEquals(3.14, v8ValueArray.getDouble(2), 0.001);
+            assertTrue(v8ValueArray.getBoolean(3));
+            assertTrue(v8ValueArray.get(4).isNull());
+            assertTrue(v8ValueArray.get(5).isUndefined());
+            assertEquals(100L, v8ValueArray.getLong(6));
+            assertFalse(v8ValueArray.getBoolean(7));
+            assertEquals("another", v8ValueArray.getString(8));
+        }
+
+        // Test appending to existing array
+        try (V8ValueArray v8ValueArray = v8Runtime.createV8ValueArray()) {
+            v8ValueArray.push(1, 2, 3);
+            assertEquals(3, v8ValueArray.getLength());
+            Object[] objects = {4, 5, 6, 7};
+            int count = v8ValueArray.batchPush(2, objects);
+            assertEquals(4, count, "Should push 4 more items");
+            assertEquals(7, v8ValueArray.getLength());
+            for (int i = 0; i < 7; i++) {
+                assertEquals(i + 1, v8ValueArray.getInteger(i));
+            }
+        }
+    }
+
+    @Test
     public void testForEach() throws JavetException {
         try (V8ValueArray v8ValueArray = v8Runtime.getExecutor("const a = new Array(0,1,2); a;").execute()) {
             AtomicInteger count = new AtomicInteger(0);
