@@ -359,6 +359,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * Sets batch operation size.
      *
      * @param batchSize the batch operation size
+     * @return the self
      * @since 5.0.2
      */
     public JavetConverterConfig<T> setBatchSize(int batchSize) {

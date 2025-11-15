@@ -46,8 +46,8 @@ public final class SimpleFreeMarkerFormat {
      * - Unclosed ${var - output as-is
      * <p>
      * Null handling:
-     * - Missing keys are replaced with "<null>"
-     * - Null values are replaced with "<null>"
+     * - Missing keys are replaced with "&lt;null&gt;"
+     * - Null values are replaced with "&lt;null&gt;"
      *
      * @param format     the format string with ${variable} placeholders
      * @param parameters the variable values map
