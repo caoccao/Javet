@@ -8,7 +8,7 @@ on:
 
 env:
   JAVET_NODE_VERSION: 24.11.0
-  JAVET_V8_VERSION: 14.2.231.5
+  JAVET_V8_VERSION: 14.3.127.14
   JAVET_VERSION: 5.0.2
   ROOT: D:\a\Javet
 
@@ -36,6 +36,11 @@ jobs:
 
     - name: Checkout the code
       uses: actions/checkout@v4
+
+    - name: Setup Deno
+      uses: denoland/setup-deno@v2
+      with:
+        deno-version: v2.x
 
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -67,8 +72,7 @@ jobs:
         mkdir -p out.gn/x64.release
         cp ../../Javet/scripts/v8/gn/windows-x86_64-${{ matrix.name }}-args.gn out.gn/x64.release/args.gn
         ../depot_tools/gn.bat gen out.gn/x64.release
-        python3 ../../Javet/scripts/python/patch_v8_build.py -p ./
-        ../depot_tools/ninja.bat -C out.gn/x64.release v8_monolith || python3 ../../Javet/scripts/python/patch_v8_build.py -p ./
+        ../depot_tools/ninja.bat -C out.gn/x64.release v8_monolith || deno --allow-all ../../Javet/scripts/deno/patch_v8_build.ts -p ./
         ../depot_tools/ninja.bat -C out.gn/x64.release v8_monolith
         mv out.gn out.gn.${{ matrix.name }}
 
