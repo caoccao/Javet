@@ -43,7 +43,7 @@ public class TestSimpleFreeMarkerFormat {
         assertEquals("abc<null>def",
                 SimpleFreeMarkerFormat.format("abc${e}def", SimpleMap.of("d", "x")),
                 "Unknown variable should pass.");
-        assertEquals("abc<null>def",
+        assertEquals("abc${}def",
                 SimpleFreeMarkerFormat.format("abc${}def", SimpleMap.of("d", "x")),
                 "Empty variable should pass.");
         assertEquals("ab{def.$ghi}c",

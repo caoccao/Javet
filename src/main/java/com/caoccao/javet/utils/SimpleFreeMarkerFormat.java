@@ -38,19 +38,28 @@ public final class SimpleFreeMarkerFormat {
     }
 
     /**
-     * Format string.
+     * Format a string using FreeMarker-style variable substitution.
+     * <p>
+     * Syntax:
+     * - ${variableName} - replaced with parameter value
+     * - $$ - escape sequence for literal $
+     * - Unclosed ${var - output as-is
+     * <p>
+     * Null handling:
+     * - Missing keys are replaced with "<null>"
+     * - Null values are replaced with "<null>"
      *
-     * @param format     the format
-     * @param parameters the parameters
-     * @return the string
+     * @param format     the format string with ${variable} placeholders
+     * @param parameters the variable values map
+     * @return formatted string
      * @since 0.8.5
      */
     public static String format(final String format, final Map<String, Object> parameters) {
-        if (StringUtils.isEmpty(format) || parameters == null || parameters.isEmpty()) {
+        if (StringUtils.isEmpty(format) || parameters == null || parameters.isEmpty() || format.indexOf(CHAR_DOLLAR) == -1) {
             return format;
         }
         final int length = format.length();
-        StringBuilder stringBuilderMessage = new StringBuilder();
+        StringBuilder stringBuilderMessage = new StringBuilder(length);
         StringBuilder stringBuilderVariable = new StringBuilder();
         State state = State.Text;
         for (int i = 0; i < length; ++i) {
@@ -87,11 +96,22 @@ public final class SimpleFreeMarkerFormat {
                 case CHAR_VARIABLE_CLOSE:
                     if (state == State.Variable) {
                         String variableName = stringBuilderVariable.toString();
-                        Object parameter = parameters.get(variableName);
-                        if (parameter == null) {
-                            parameter = STRING_NULL;
+                        String parameterString;
+                        if (variableName.isEmpty()) {
+                            parameterString = "${}";
+                        } else {
+                            Object parameter = parameters.get(variableName);
+                            if (parameter == null) {
+                                parameterString = STRING_NULL;
+                            } else {
+                                try {
+                                    parameterString = parameter.toString();
+                                } catch (Throwable t) {
+                                    parameterString = t.getMessage();
+                                }
+                            }
                         }
-                        stringBuilderMessage.append(parameter);
+                        stringBuilderMessage.append(parameterString);
                         stringBuilderVariable.setLength(0);
                         state = State.Text;
                     } else {
