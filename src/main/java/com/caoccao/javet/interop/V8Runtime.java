@@ -400,11 +400,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 1.0.3
      */
     public void addGCEpilogueCallback(IJavetGCCallback iJavetGCCallback) {
-        synchronized (gcEpilogueCallbacks) {
-            boolean registered = !gcEpilogueCallbacks.isEmpty();
-            gcEpilogueCallbacks.add(Objects.requireNonNull(iJavetGCCallback));
-            if (!registered) {
-                v8Native.registerGCEpilogueCallback(handle);
+        if (!isClosed()) {
+            synchronized (gcEpilogueCallbacks) {
+                boolean registered = !gcEpilogueCallbacks.isEmpty();
+                gcEpilogueCallbacks.add(Objects.requireNonNull(iJavetGCCallback));
+                if (!registered) {
+                    v8Native.registerGCEpilogueCallback(handle);
+                }
             }
         }
     }
@@ -416,11 +418,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 1.0.3
      */
     public void addGCPrologueCallback(IJavetGCCallback iJavetGCCallback) {
-        synchronized (gcPrologueCallbacks) {
-            boolean registered = !gcPrologueCallbacks.isEmpty();
-            gcPrologueCallbacks.add(Objects.requireNonNull(iJavetGCCallback));
-            if (!registered) {
-                v8Native.registerGCPrologueCallback(handle);
+        if (!isClosed()) {
+            synchronized (gcPrologueCallbacks) {
+                boolean registered = !gcPrologueCallbacks.isEmpty();
+                gcPrologueCallbacks.add(Objects.requireNonNull(iJavetGCCallback));
+                if (!registered) {
+                    v8Native.registerGCPrologueCallback(handle);
+                }
             }
         }
     }
@@ -463,7 +467,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.8.0
      */
     public void allowEval(boolean allow) {
-        v8Native.allowCodeGenerationFromStrings(handle, allow);
+        if (!isClosed()) {
+            v8Native.allowCodeGenerationFromStrings(handle, allow);
+        }
     }
 
     /**
@@ -513,7 +519,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 2.0.4
      */
     public boolean await(V8AwaitMode v8AwaitMode) {
-        return v8Native.await(handle, Objects.requireNonNull(v8AwaitMode).getId());
+        if (!isClosed()) {
+            return v8Native.await(handle, Objects.requireNonNull(v8AwaitMode).getId());
+        }
+        return false;
     }
 
     /**
@@ -568,6 +577,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle,
                 Objects.requireNonNull(v8ValueBooleanObject).getHandle(),
                 v8ValueBooleanObject.getType().getId());
+    }
+
+    /**
+     * Resume execution capability in the given isolate, whose execution
+     * was previously forcefully terminated using terminateExecution().
+     *
+     * @since 5.0.2
+     */
+    public void cancelTerminateExecution() {
+        if (!isClosed()) {
+            v8Native.cancelTerminateExecution(handle);
+        }
     }
 
     /**
@@ -640,20 +661,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public V8Module compileV8Module(
             String scriptString, byte[] cachedData, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
             throws JavetException {
-        v8ScriptOrigin.setModule(true);
-        if (StringUtils.isEmpty(v8ScriptOrigin.getResourceName())) {
-            throw new JavetException(JavetError.ModuleNameEmpty);
+        if (!isClosed()) {
+            v8ScriptOrigin.setModule(true);
+            if (StringUtils.isEmpty(v8ScriptOrigin.getResourceName())) {
+                throw new JavetException(JavetError.ModuleNameEmpty);
+            }
+            Object result = v8Native.moduleCompile(
+                    handle, scriptString, cachedData, resultRequired, v8ScriptOrigin.getResourceName(),
+                    v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
+                    v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule());
+            V8Module v8Module = null;
+            if (resultRequired && result instanceof V8Module) {
+                v8Module = (V8Module) result;
+                addV8Module(v8Module);
+            }
+            return v8Module;
         }
-        Object result = v8Native.moduleCompile(
-                handle, scriptString, cachedData, resultRequired, v8ScriptOrigin.getResourceName(),
-                v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
-                v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule());
-        V8Module v8Module = null;
-        if (resultRequired && result instanceof V8Module) {
-            v8Module = (V8Module) result;
-            addV8Module(v8Module);
-        }
-        return v8Module;
+        return null;
     }
 
     /**
@@ -672,11 +696,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public V8Script compileV8Script(
             String scriptString, byte[] cachedData, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
             throws JavetException {
-        v8ScriptOrigin.setModule(false);
-        return (V8Script) v8Native.scriptCompile(
-                handle, scriptString, cachedData, resultRequired, v8ScriptOrigin.getResourceName(),
-                v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
-                v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule());
+        if (!isClosed()) {
+            v8ScriptOrigin.setModule(false);
+            return (V8Script) v8Native.scriptCompile(
+                    handle, scriptString, cachedData, resultRequired, v8ScriptOrigin.getResourceName(),
+                    v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
+                    v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(), v8ScriptOrigin.isModule());
+        }
+        return null;
     }
 
     /**
@@ -697,11 +724,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             String scriptString, byte[] cachedData, V8ScriptOrigin v8ScriptOrigin,
             String[] arguments, V8ValueObject[] contextExtensions)
             throws JavetException {
-        return (V8ValueFunction) v8Native.functionCompile(
-                handle, scriptString, cachedData, v8ScriptOrigin.getResourceName(),
-                v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
-                v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(),
-                arguments, contextExtensions);
+        if (!isClosed()) {
+            return (V8ValueFunction) v8Native.functionCompile(
+                    handle, scriptString, cachedData, v8ScriptOrigin.getResourceName(),
+                    v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
+                    v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm(),
+                    arguments, contextExtensions);
+        }
+        return null;
     }
 
     /**
@@ -782,58 +812,73 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 3.0.3
      */
     public byte[] createSnapshot() throws JavetException {
-        if (!runtimeOptions.isCreateSnapshotEnabled()) {
-            throw new JavetException(JavetError.RuntimeCreateSnapshotDisabled);
+        if (!isClosed()) {
+            if (!runtimeOptions.isCreateSnapshotEnabled()) {
+                throw new JavetException(JavetError.RuntimeCreateSnapshotDisabled);
+            }
+            final int callbackContextCount = getCallbackContextCount();
+            final int referenceCount = getReferenceCount();
+            final int v8ModuleCount = getV8ModuleCount();
+            if (callbackContextCount > 0 || referenceCount > 0 || v8ModuleCount > 0) {
+                throw new JavetException(JavetError.RuntimeCreateSnapshotBlocked, SimpleMap.of(
+                        JavetError.PARAMETER_CALLBACK_CONTEXT_COUNT, callbackContextCount,
+                        JavetError.PARAMETER_REFERENCE_COUNT, referenceCount,
+                        JavetError.PARAMETER_V8_MODULE_COUNT, v8ModuleCount));
+            }
+            return v8Native.snapshotCreate(handle);
         }
-        final int callbackContextCount = getCallbackContextCount();
-        final int referenceCount = getReferenceCount();
-        final int v8ModuleCount = getV8ModuleCount();
-        if (callbackContextCount > 0 || referenceCount > 0 || v8ModuleCount > 0) {
-            throw new JavetException(JavetError.RuntimeCreateSnapshotBlocked, SimpleMap.of(
-                    JavetError.PARAMETER_CALLBACK_CONTEXT_COUNT, callbackContextCount,
-                    JavetError.PARAMETER_REFERENCE_COUNT, referenceCount,
-                    JavetError.PARAMETER_V8_MODULE_COUNT, v8ModuleCount));
-        }
-        return v8Native.snapshotCreate(handle);
+        return null;
     }
 
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
     @Override
     public V8Module createV8Module(String moduleName, IV8ValueObject iV8ValueObject) throws JavetException {
-        if (StringUtils.isEmpty(moduleName)) {
-            throw new JavetException(JavetError.ModuleNameEmpty);
+        if (!isClosed()) {
+            if (StringUtils.isEmpty(moduleName)) {
+                throw new JavetException(JavetError.ModuleNameEmpty);
+            }
+            Objects.requireNonNull(iV8ValueObject);
+            V8Module v8Module = (V8Module) v8Native.moduleCreate(
+                    handle, moduleName, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId());
+            if (v8Module != null) {
+                addV8Module(v8Module);
+            }
+            return v8Module;
         }
-        Objects.requireNonNull(iV8ValueObject);
-        V8Module v8Module = (V8Module) v8Native.moduleCreate(
-                handle, moduleName, iV8ValueObject.getHandle(), iV8ValueObject.getType().getId());
-        if (v8Module != null) {
-            addV8Module(v8Module);
-        }
-        return v8Module;
+        return null;
     }
 
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
     @Override
     public V8ValueArray createV8ValueArray() throws JavetException {
-        return (V8ValueArray) v8Native.arrayCreate(handle);
+        if (!isClosed()) {
+            return (V8ValueArray) v8Native.arrayCreate(handle);
+        }
+        return null;
     }
 
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
     @Override
     public V8ValueArrayBuffer createV8ValueArrayBuffer(int length) throws JavetException {
-        return (V8ValueArrayBuffer) v8Native.arrayBufferCreate(handle, length);
+        if (!isClosed()) {
+            return (V8ValueArrayBuffer) v8Native.arrayBufferCreate(handle, length);
+        }
+        return null;
     }
 
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
     @Override
     public V8ValueArrayBuffer createV8ValueArrayBuffer(ByteBuffer byteBuffer) throws JavetException {
-        Objects.requireNonNull(byteBuffer);
-        assert byteBuffer.isDirect() : ERROR_BYTE_BUFFER_MUST_BE_DIRECT;
-        return (V8ValueArrayBuffer) v8Native.arrayBufferCreate(handle, byteBuffer);
+        if (!isClosed()) {
+            Objects.requireNonNull(byteBuffer);
+            assert byteBuffer.isDirect() : ERROR_BYTE_BUFFER_MUST_BE_DIRECT;
+            return (V8ValueArrayBuffer) v8Native.arrayBufferCreate(handle, byteBuffer);
+        }
+        return null;
     }
 
     @Override
@@ -849,12 +894,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @Override
     @SuppressWarnings("RedundantThrows")
     public V8ValueBoolean createV8ValueBoolean(boolean booleanValue) throws JavetException {
-        return cachedV8ValueBooleans[booleanValue ? V8_VALUE_BOOLEAN_TRUE_INDEX : V8_VALUE_BOOLEAN_FALSE_INDEX];
+        if (!isClosed()) {
+            return cachedV8ValueBooleans[booleanValue ? V8_VALUE_BOOLEAN_TRUE_INDEX : V8_VALUE_BOOLEAN_FALSE_INDEX];
+        }
+        return null;
     }
 
     @Override
     public V8ValueBooleanObject createV8ValueBooleanObject(boolean booleanValue) throws JavetException {
-        return (V8ValueBooleanObject) v8Native.booleanObjectCreate(handle, booleanValue);
+        if (!isClosed()) {
+            return (V8ValueBooleanObject) v8Native.booleanObjectCreate(handle, booleanValue);
+        }
+        return null;
     }
 
     @CheckReturnValue
@@ -872,30 +923,42 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     @Override
     public V8ValueDouble createV8ValueDouble(double doubleValue) throws JavetException {
-        return new V8ValueDouble(this, doubleValue);
+        if (!isClosed()) {
+            return new V8ValueDouble(this, doubleValue);
+        }
+        return null;
     }
 
     @Override
     public V8ValueDoubleObject createV8ValueDoubleObject(double doubleValue) throws JavetException {
-        return (V8ValueDoubleObject) v8Native.doubleObjectCreate(handle, doubleValue);
+        if (!isClosed()) {
+            return (V8ValueDoubleObject) v8Native.doubleObjectCreate(handle, doubleValue);
+        }
+        return null;
     }
 
     @CheckReturnValue
     @Override
     public V8ValueError createV8ValueError(V8ValueErrorType v8ValueErrorType, String message) throws JavetException {
-        return (V8ValueError) v8Native.errorCreate(
-                handle, Objects.requireNonNull(v8ValueErrorType).getId(), Objects.requireNonNull(message));
+        if (!isClosed()) {
+            return (V8ValueError) v8Native.errorCreate(
+                    handle, Objects.requireNonNull(v8ValueErrorType).getId(), Objects.requireNonNull(message));
+        }
+        return null;
     }
 
     @CheckReturnValue
     @Override
     public V8ValueFunction createV8ValueFunction(JavetCallbackContext javetCallbackContext) throws JavetException {
-        V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Native.functionCreate(
-                handle, Objects.requireNonNull(javetCallbackContext));
-        synchronized (callbackContextLock) {
-            callbackContextMap.put(javetCallbackContext.getHandle(), javetCallbackContext);
+        if (!isClosed()) {
+            V8ValueFunction v8ValueFunction = (V8ValueFunction) v8Native.functionCreate(
+                    handle, Objects.requireNonNull(javetCallbackContext));
+            synchronized (callbackContextLock) {
+                callbackContextMap.put(javetCallbackContext.getHandle(), javetCallbackContext);
+            }
+            return v8ValueFunction;
         }
-        return v8ValueFunction;
+        return null;
     }
 
     @CheckReturnValue
@@ -906,73 +969,103 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     @Override
     public V8ValueInteger createV8ValueInteger(int integerValue) throws JavetException {
-        if (integerValue >= V8_VALUE_NUMBER_LOWER_BOUND && integerValue < V8_VALUE_NUMBER_UPPER_BOUND) {
-            return cachedV8ValueIntegers[integerValue - V8_VALUE_NUMBER_LOWER_BOUND];
+        if (!isClosed()) {
+            if (integerValue >= V8_VALUE_NUMBER_LOWER_BOUND && integerValue < V8_VALUE_NUMBER_UPPER_BOUND) {
+                return cachedV8ValueIntegers[integerValue - V8_VALUE_NUMBER_LOWER_BOUND];
+            }
+            return new V8ValueInteger(this, integerValue);
         }
-        return new V8ValueInteger(this, integerValue);
+        return null;
     }
 
     @Override
     public V8ValueIntegerObject createV8ValueIntegerObject(int intValue) throws JavetException {
-        // V8 NumberObject is always mapped to double. An internal conversion is required.
-        return ((V8ValueDoubleObject) v8Native.integerObjectCreate(handle, intValue)).toIntegerObject();
+        if (!isClosed()) {
+            // V8 NumberObject is always mapped to double. An internal conversion is required.
+            return ((V8ValueDoubleObject) v8Native.integerObjectCreate(handle, intValue)).toIntegerObject();
+        }
+        return null;
     }
 
     @Override
     public V8ValueLong createV8ValueLong(long longValue) throws JavetException {
-        if (longValue >= V8_VALUE_NUMBER_LOWER_BOUND && longValue < V8_VALUE_NUMBER_UPPER_BOUND) {
-            return cachedV8ValueLongs[(int) longValue - V8_VALUE_NUMBER_LOWER_BOUND];
+        if (!isClosed()) {
+            if (longValue >= V8_VALUE_NUMBER_LOWER_BOUND && longValue < V8_VALUE_NUMBER_UPPER_BOUND) {
+                return cachedV8ValueLongs[(int) longValue - V8_VALUE_NUMBER_LOWER_BOUND];
+            }
+            return new V8ValueLong(this, longValue);
         }
-        return new V8ValueLong(this, longValue);
+        return null;
     }
 
     @Override
     public V8ValueLongObject createV8ValueLongObject(long longValue) throws JavetException {
-        return (V8ValueLongObject) v8Native.longObjectCreate(handle, longValue);
+        if (!isClosed()) {
+            return (V8ValueLongObject) v8Native.longObjectCreate(handle, longValue);
+        }
+        return null;
     }
 
     @CheckReturnValue
     @SuppressWarnings("RedundantThrows")
     @Override
     public V8ValueMap createV8ValueMap() throws JavetException {
-        return (V8ValueMap) v8Native.mapCreate(handle);
+        if (!isClosed()) {
+            return (V8ValueMap) v8Native.mapCreate(handle);
+        }
+        return null;
     }
 
     @Override
     public V8ValueNull createV8ValueNull() {
-        return cachedV8ValueNull;
+        if (!isClosed()) {
+            return cachedV8ValueNull;
+        }
+        return null;
     }
 
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
     @Override
     public V8ValueObject createV8ValueObject() throws JavetException {
-        return (V8ValueObject) v8Native.objectCreate(handle);
+        if (!isClosed()) {
+            return (V8ValueObject) v8Native.objectCreate(handle);
+        }
+        return null;
     }
 
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
     @Override
     public V8ValuePromise createV8ValuePromise() throws JavetException {
-        return (V8ValuePromise) v8Native.promiseCreate(handle);
+        if (!isClosed()) {
+            return (V8ValuePromise) v8Native.promiseCreate(handle);
+        }
+        return null;
     }
 
     @CheckReturnValue
     @Override
     public V8ValueProxy createV8ValueProxy(V8Value v8Value) throws JavetException {
-        if (v8Value instanceof IV8ValueNonProxyable) {
-            throw new JavetException(
-                    JavetError.NotSupported,
-                    SimpleMap.of(PARAMETER_FEATURE, v8Value.toString()));
+        if (!isClosed()) {
+            if (v8Value instanceof IV8ValueNonProxyable) {
+                throw new JavetException(
+                        JavetError.NotSupported,
+                        SimpleMap.of(PARAMETER_FEATURE, v8Value.toString()));
+            }
+            return (V8ValueProxy) v8Native.proxyCreate(handle, v8Value);
         }
-        return (V8ValueProxy) v8Native.proxyCreate(handle, v8Value);
+        return null;
     }
 
     @SuppressWarnings("RedundantThrows")
     @CheckReturnValue
     @Override
     public V8ValueSet createV8ValueSet() throws JavetException {
-        return (V8ValueSet) v8Native.setCreate(handle);
+        if (!isClosed()) {
+            return (V8ValueSet) v8Native.setCreate(handle);
+        }
+        return null;
     }
 
     @Override
@@ -984,20 +1077,26 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @CheckReturnValue
     @Override
     public V8ValueStringObject createV8ValueStringObject(String str) throws JavetException {
-        return (V8ValueStringObject) v8Native.stringObjectCreate(handle, str);
+        if (!isClosed()) {
+            return (V8ValueStringObject) v8Native.stringObjectCreate(handle, str);
+        }
+        return null;
     }
 
     @Override
     @CheckReturnValue
     public V8ValueSymbol createV8ValueSymbol(String description, boolean global) throws JavetException {
-        assert !StringUtils.isEmpty(description) : ERROR_SYMBOL_DESCRIPTION_CANNOT_BE_EMPTY;
-        if (global) {
-            try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = getGlobalObject().getBuiltInSymbol()) {
-                return v8ValueBuiltInSymbol._for(description);
+        if (!isClosed()) {
+            assert !StringUtils.isEmpty(description) : ERROR_SYMBOL_DESCRIPTION_CANNOT_BE_EMPTY;
+            if (global) {
+                try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = getGlobalObject().getBuiltInSymbol()) {
+                    return v8ValueBuiltInSymbol._for(description);
+                }
+            } else {
+                return (V8ValueSymbol) v8Native.symbolCreate(handle, description);
             }
-        } else {
-            return (V8ValueSymbol) v8Native.symbolCreate(handle, description);
         }
+        return null;
     }
 
     @Override
@@ -1031,7 +1130,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     @Override
     public V8ValueUndefined createV8ValueUndefined() {
-        return cachedV8ValueUndefined;
+        if (!isClosed()) {
+            return cachedV8ValueUndefined;
+        }
+        return null;
     }
 
     @Override
@@ -1087,17 +1189,20 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public <T extends V8Value> T execute(
             String scriptString, byte[] cachedData, V8ScriptOrigin v8ScriptOrigin, boolean resultRequired)
             throws JavetException {
-        if (v8ScriptOrigin.isModule()) {
-            return (T) v8Native.moduleExecute(
-                    handle, scriptString, cachedData, resultRequired, v8ScriptOrigin.getResourceName(),
-                    v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
-                    v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm());
-        } else {
-            return (T) v8Native.scriptExecute(
-                    handle, scriptString, cachedData, resultRequired, v8ScriptOrigin.getResourceName(),
-                    v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
-                    v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm());
+        if (!isClosed()) {
+            if (v8ScriptOrigin.isModule()) {
+                return (T) v8Native.moduleExecute(
+                        handle, scriptString, cachedData, resultRequired, v8ScriptOrigin.getResourceName(),
+                        v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
+                        v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm());
+            } else {
+                return (T) v8Native.scriptExecute(
+                        handle, scriptString, cachedData, resultRequired, v8ScriptOrigin.getResourceName(),
+                        v8ScriptOrigin.getResourceLineOffset(), v8ScriptOrigin.getResourceColumnOffset(),
+                        v8ScriptOrigin.getScriptId(), v8ScriptOrigin.isWasm());
+            }
         }
+        return null;
     }
 
     /**
@@ -1491,7 +1596,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.7.0
      */
     public V8ValueGlobalObject getGlobalObject() throws JavetException {
-        return (V8ValueGlobalObject) v8Native.getGlobalObject(handle);
+        if (!isClosed()) {
+            return (V8ValueGlobalObject) v8Native.getGlobalObject(handle);
+        }
+        return null;
     }
 
     /**
@@ -1609,12 +1717,15 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 1.0.4
      */
     public CompletableFuture<V8HeapSpaceStatistics> getV8HeapSpaceStatistics(V8AllocationSpace v8AllocationSpace) {
-        V8StatisticsFuture<V8HeapSpaceStatistics> v8StatisticsFuture = (V8StatisticsFuture<V8HeapSpaceStatistics>)
-                v8Native.getV8HeapSpaceStatistics(handle, Objects.requireNonNull(v8AllocationSpace));
-        if (!v8StatisticsFuture.isDone()) {
-            v8Host.offerV8StatisticsFuture(v8StatisticsFuture);
+        if (!isClosed()) {
+            V8StatisticsFuture<V8HeapSpaceStatistics> v8StatisticsFuture = (V8StatisticsFuture<V8HeapSpaceStatistics>)
+                    v8Native.getV8HeapSpaceStatistics(handle, Objects.requireNonNull(v8AllocationSpace));
+            if (!v8StatisticsFuture.isDone()) {
+                v8Host.offerV8StatisticsFuture(v8StatisticsFuture);
+            }
+            return v8StatisticsFuture;
         }
-        return v8StatisticsFuture;
+        return CompletableFuture.completedFuture(null);
     }
 
     /**
@@ -1625,12 +1736,15 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 1.0.0
      */
     public CompletableFuture<V8HeapStatistics> getV8HeapStatistics() {
-        V8StatisticsFuture<V8HeapStatistics> v8StatisticsFuture = (V8StatisticsFuture<V8HeapStatistics>)
-                v8Native.getV8HeapStatistics(handle);
-        if (!v8StatisticsFuture.isDone()) {
-            v8Host.offerV8StatisticsFuture(v8StatisticsFuture);
+        if (!isClosed()) {
+            V8StatisticsFuture<V8HeapStatistics> v8StatisticsFuture = (V8StatisticsFuture<V8HeapStatistics>)
+                    v8Native.getV8HeapStatistics(handle);
+            if (!v8StatisticsFuture.isDone()) {
+                v8Host.offerV8StatisticsFuture(v8StatisticsFuture);
+            }
+            return v8StatisticsFuture;
         }
-        return v8StatisticsFuture;
+        return CompletableFuture.completedFuture(null);
     }
 
     /**
@@ -1661,10 +1775,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.7.3
      */
     public V8Inspector getV8Inspector(String name) {
-        if (v8Inspector == null) {
-            v8Inspector = new V8Inspector(this, name, v8Native);
+        if (!isClosed()) {
+            if (v8Inspector == null) {
+                v8Inspector = new V8Inspector(this, name, v8Native);
+            }
+            return v8Inspector;
         }
-        return v8Inspector;
+        return null;
     }
 
     /**
@@ -1689,7 +1806,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     @CheckReturnValue
     public V8Locker getV8Locker() throws JavetException {
-        return new V8Locker(this, v8Native);
+        if (!isClosed()) {
+            return new V8Locker(this, v8Native);
+        }
+        return null;
     }
 
     /**
@@ -1780,7 +1900,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     @SuppressWarnings("RedundantThrows")
     public boolean hasException() throws JavetException {
-        return v8Native.hasException(handle);
+        if (!isClosed()) {
+            return v8Native.hasException(handle);
+        }
+        return false;
     }
 
     /**
@@ -1805,7 +1928,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     @SuppressWarnings("RedundantThrows")
     public boolean hasPendingMessage() throws JavetException {
-        return v8Native.hasPendingMessage(handle);
+        if (!isClosed()) {
+            return v8Native.hasPendingMessage(handle);
+        }
+        return false;
     }
 
     /**
@@ -1860,7 +1986,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.7.2
      */
     public boolean isDead() {
-        return v8Native.isDead(handle);
+        if (!isClosed()) {
+            return v8Native.isDead(handle);
+        }
+        return true;
+    }
+
+    /**
+     * Check if V8 is terminating JavaScript execution.
+     *
+     * @return true if JavaScript execution is currently terminating
+     * @since 5.0.2
+     */
+    public boolean isExecutionTerminating() {
+        if (!isClosed()) {
+            return v8Native.isExecutionTerminating(handle);
+        }
+        return false;
     }
 
     /**
@@ -1880,7 +2022,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.7.2
      */
     public boolean isInUse() {
-        return v8Native.isInUse(handle);
+        if (!isClosed()) {
+            return v8Native.isInUse(handle);
+        }
+        return false;
     }
 
     /**
@@ -2702,7 +2847,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 3.1.3
      */
     public boolean objectIsFrozen(IV8ValueObject iV8ValueObject) {
-        return v8Native.objectIsFrozen(handle, Objects.requireNonNull(iV8ValueObject).getHandle());
+        if (!isClosed()) {
+            return v8Native.objectIsFrozen(handle, Objects.requireNonNull(iV8ValueObject).getHandle());
+        }
+        return false;
     }
 
     /**
@@ -2713,7 +2861,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 3.1.3
      */
     public boolean objectIsSealed(IV8ValueObject iV8ValueObject) {
-        return v8Native.objectIsSealed(handle, Objects.requireNonNull(iV8ValueObject).getHandle());
+        if (!isClosed()) {
+            return v8Native.objectIsSealed(handle, Objects.requireNonNull(iV8ValueObject).getHandle());
+        }
+        return false;
     }
 
     /**
@@ -3256,10 +3407,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 1.0.3
      */
     public void removeGCEpilogueCallback(IJavetGCCallback iJavetGCCallback) {
-        synchronized (gcEpilogueCallbacks) {
-            gcEpilogueCallbacks.remove(Objects.requireNonNull(iJavetGCCallback));
-            if (gcEpilogueCallbacks.isEmpty()) {
-                v8Native.unregisterGCEpilogueCallback(handle);
+        if (!isClosed()) {
+            synchronized (gcEpilogueCallbacks) {
+                gcEpilogueCallbacks.remove(Objects.requireNonNull(iJavetGCCallback));
+                if (gcEpilogueCallbacks.isEmpty()) {
+                    v8Native.unregisterGCEpilogueCallback(handle);
+                }
             }
         }
     }
@@ -3271,10 +3424,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 1.0.3
      */
     public void removeGCPrologueCallback(IJavetGCCallback iJavetGCCallback) {
-        synchronized (gcPrologueCallbacks) {
-            gcPrologueCallbacks.remove(Objects.requireNonNull(iJavetGCCallback));
-            if (gcPrologueCallbacks.isEmpty()) {
-                v8Native.unregisterGCPrologueCallback(handle);
+        if (!isClosed()) {
+            synchronized (gcPrologueCallbacks) {
+                gcPrologueCallbacks.remove(Objects.requireNonNull(iJavetGCCallback));
+                if (gcPrologueCallbacks.isEmpty()) {
+                    v8Native.unregisterGCPrologueCallback(handle);
+                }
             }
         }
     }
@@ -3446,7 +3601,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     @SuppressWarnings("RedundantThrows")
     public boolean reportPendingMessages() throws JavetException {
-        return v8Native.reportPendingMessages(handle);
+        if (!isClosed()) {
+            return v8Native.reportPendingMessages(handle);
+        }
+        return false;
     }
 
     /**
@@ -3457,7 +3615,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.8.0
      */
     public void requestGarbageCollectionForTesting(boolean fullGC) {
-        v8Native.requestGarbageCollectionForTesting(handle, fullGC);
+        if (!isClosed()) {
+            v8Native.requestGarbageCollectionForTesting(handle, fullGC);
+        }
     }
 
     /**
@@ -3469,8 +3629,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.7.0
      */
     public void resetContext() throws JavetException {
-        removeAllReferences();
-        v8Native.resetV8Context(handle, runtimeOptions);
+        if (!isClosed()) {
+            removeAllReferences();
+            v8Native.resetV8Context(handle, runtimeOptions);
+        }
     }
 
     /**
@@ -3483,8 +3645,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     @SuppressWarnings("UnusedReturnValue")
     public void resetIsolate() throws JavetException {
-        removeAllReferences();
-        v8Native.resetV8Isolate(handle, runtimeOptions);
+        if (!isClosed()) {
+            removeAllReferences();
+            v8Native.resetV8Isolate(handle, runtimeOptions);
+        }
     }
 
     /**
@@ -3587,8 +3751,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.9.1
      */
     public void setConverter(IJavetConverter converter) {
-        Objects.requireNonNull(converter);
-        this.converter = converter;
+        this.converter = Objects.requireNonNull(converter);
     }
 
     /**
@@ -3649,7 +3812,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.9.1
      */
     public void setLogger(IJavetLogger logger) {
-        this.logger = logger;
+        this.logger = Objects.requireNonNull(logger);
     }
 
     /**
@@ -3659,21 +3822,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 4.1.6
      */
     public void setNearHeapLimitCallback(IJavetNearHeapLimitCallback nearHeapLimitCallback) {
-        if (this.nearHeapLimitCallback == null) {
-            if (nearHeapLimitCallback != null) {
-                this.nearHeapLimitCallback = nearHeapLimitCallback;
-                v8Native.registerNearHeapLimitCallback(handle);
-            }
-        } else {
-            if (this.nearHeapLimitCallback == nearHeapLimitCallback) {
-                // Do nothing if the same callback is set.
-            } else if (nearHeapLimitCallback != null) {
-                this.nearHeapLimitCallback = nearHeapLimitCallback;
-                v8Native.registerNearHeapLimitCallback(handle);
+        if (!isClosed()) {
+            if (this.nearHeapLimitCallback == null) {
+                if (nearHeapLimitCallback != null) {
+                    this.nearHeapLimitCallback = nearHeapLimitCallback;
+                    v8Native.registerNearHeapLimitCallback(handle);
+                }
             } else {
-                long defaultHeapLimit = this.nearHeapLimitCallback.getDefaultHeapLimit();
-                v8Native.unregisterNearHeapLimitCallback(handle, defaultHeapLimit);
-                this.nearHeapLimitCallback = null;
+                if (this.nearHeapLimitCallback == nearHeapLimitCallback) {
+                    // Do nothing if the same callback is set.
+                } else if (nearHeapLimitCallback != null) {
+                    this.nearHeapLimitCallback = nearHeapLimitCallback;
+                    v8Native.registerNearHeapLimitCallback(handle);
+                } else {
+                    long defaultHeapLimit = this.nearHeapLimitCallback.getDefaultHeapLimit();
+                    v8Native.unregisterNearHeapLimitCallback(handle, defaultHeapLimit);
+                    this.nearHeapLimitCallback = null;
+                }
             }
         }
     }
@@ -3685,8 +3850,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.9.1
      */
     public void setPromiseRejectCallback(IJavetPromiseRejectCallback promiseRejectCallback) {
-        Objects.requireNonNull(promiseRejectCallback);
-        this.promiseRejectCallback = promiseRejectCallback;
+        this.promiseRejectCallback = Objects.requireNonNull(promiseRejectCallback);
     }
 
     /**
@@ -3794,18 +3958,20 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 4.1.6
      */
     public void terminateExecution(V8RuntimeTerminationMode v8RuntimeTerminationMode) {
-        switch (Objects.requireNonNull(v8RuntimeTerminationMode)) {
-            case Asynchronous:
-                Executors.newSingleThreadExecutor().execute(() -> {
+        if (!isClosed()) {
+            switch (Objects.requireNonNull(v8RuntimeTerminationMode)) {
+                case Asynchronous:
+                    Executors.newSingleThreadExecutor().execute(() -> {
+                        v8Native.terminateExecution(handle);
+                    });
+                    break;
+                case Synchronous:
                     v8Native.terminateExecution(handle);
-                });
-                break;
-            case Synchronous:
-                v8Native.terminateExecution(handle);
-                break;
-            default:
-                logger.logWarn("Unknown termination type: " + v8RuntimeTerminationMode.name());
-                break;
+                    break;
+                default:
+                    logger.logWarn("Unknown termination type: " + v8RuntimeTerminationMode.name());
+                    break;
+            }
         }
     }
 
@@ -3818,8 +3984,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 3.0.4
      */
     public boolean throwError(V8ValueErrorType v8ValueErrorType, String message) {
-        return v8Native.throwError(
-                handle, Objects.requireNonNull(v8ValueErrorType).getId(), Objects.requireNonNull(message));
+        if (!isClosed()) {
+            return v8Native.throwError(
+                    handle, Objects.requireNonNull(v8ValueErrorType).getId(), Objects.requireNonNull(message));
+        }
+        return false;
     }
 
     /**
@@ -3845,10 +4014,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 3.0.4
      */
     public boolean throwError(V8Value errorV8Value) {
-        assert !(errorV8Value instanceof V8Context) : ERROR_VALUE_CANNOT_BE_A_V_8_CONTEXT;
-        assert !(errorV8Value instanceof V8Module) : ERROR_VALUE_CANNOT_BE_A_V_8_MODULE;
-        assert !(errorV8Value instanceof V8Script) : ERROR_VALUE_CANNOT_BE_A_V_8_SCRIPT;
-        return v8Native.throwError(handle, Objects.requireNonNull(errorV8Value));
+        if (!isClosed()) {
+            assert !(errorV8Value instanceof V8Context) : ERROR_VALUE_CANNOT_BE_A_V_8_CONTEXT;
+            assert !(errorV8Value instanceof V8Module) : ERROR_VALUE_CANNOT_BE_A_V_8_MODULE;
+            assert !(errorV8Value instanceof V8Script) : ERROR_VALUE_CANNOT_BE_A_V_8_SCRIPT;
+            return v8Native.throwError(handle, Objects.requireNonNull(errorV8Value));
+        }
+        return false;
     }
 
     @Override

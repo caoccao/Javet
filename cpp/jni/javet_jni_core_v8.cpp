@@ -36,6 +36,12 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_await
     return (jboolean)v8Runtime->Await(umAwaitMode);
 }
 
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_cancelTerminateExecution
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    v8Runtime->v8Isolate->CancelTerminateExecution();
+}
+
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_clearInternalStatistic
 (JNIEnv* jniEnv, jobject caller) {
 #ifdef ENABLE_MONITOR
@@ -246,6 +252,12 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isDead
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     return v8Runtime->v8Isolate->IsDead();
+}
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isExecutionTerminating
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    return v8Runtime->v8Isolate->IsExecutionTerminating();
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isInUse

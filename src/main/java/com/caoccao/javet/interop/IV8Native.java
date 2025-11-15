@@ -49,6 +49,8 @@ public interface IV8Native {
 
     Object booleanObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    void cancelTerminateExecution(long v8RuntimeHandle);
+
     void clearInternalStatistic();
 
     void clearWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -155,6 +157,8 @@ public interface IV8Native {
     Object integerObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     boolean isDead(long v8RuntimeHandle);
+
+    boolean isExecutionTerminating(long v8RuntimeHandle);
 
     boolean isI18nEnabled();
 

@@ -69,6 +69,9 @@ class V8Native implements IV8Native {
     public native Object booleanObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native void cancelTerminateExecution(long v8RuntimeHandle);
+
+    @Override
     public native void clearInternalStatistic();
 
     @Override
@@ -223,6 +226,9 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean isDead(long v8RuntimeHandle);
+
+    @Override
+    public native boolean isExecutionTerminating(long v8RuntimeHandle);
 
     @Override
     public native boolean isI18nEnabled();
