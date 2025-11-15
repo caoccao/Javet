@@ -13,8 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# CMP0091 must be set before first project().
-# @see: https://cmake.org/cmake/help/latest/prop_tgt/MSVC_RUNTIME_LIBRARY.html
-if (POLICY CMP0091)
-    cmake_policy(SET CMP0091 NEW)
+if(!$ENV{JAVA_HOME})
+    message(FATAL_ERROR "JAVA_HOME is not found. Please make sure you have JDK 8 or 11 installed properly.")
+endif()
+
+if(DEFINED V8_DIR AND DEFINED NODE_DIR)
+    message(FATAL_ERROR "V8_DIR and NODE_DIR cannot be both defined.")
+endif()
+
+if((NOT DEFINED V8_DIR) AND (NOT DEFINED NODE_DIR))
+    message(FATAL_ERROR "Either V8_DIR or NODE_DIR needs to be defined.")
 endif()

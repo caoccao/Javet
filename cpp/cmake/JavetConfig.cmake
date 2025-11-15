@@ -13,17 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Validation
-if(!$ENV{JAVA_HOME})
-    message(FATAL_ERROR "JAVA_HOME is not found. Please make sure you have JDK 8 or 11 installed properly.")
-endif()
+# Initialization
+aux_source_directory("jni" sourceFiles)
+set(includeDirs $ENV{JAVA_HOME}/include)
+set(importLibraries)
+set(JAVET_LIB_ARCH "")
+set(JAVET_LIB_I18N "")
+set(JAVET_LIB_PREFIX "")
+set(JAVET_LIB_SYSTEM "")
+set(JAVET_LIB_TYPE "")
+set(OUT_DIR_SUFFIX "")
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limited configs" FORCE)
 
-if(DEFINED V8_DIR AND DEFINED NODE_DIR)
-    message(FATAL_ERROR "V8_DIR and NODE_DIR cannot be both defined.")
-endif()
-
-if((NOT DEFINED V8_DIR) AND (NOT DEFINED NODE_DIR))
-    message(FATAL_ERROR "Either V8_DIR or NODE_DIR needs to be defined.")
+if(DEFINED ENABLE_LOGGING)
+    add_definitions(-DJAVET_INFO -DJAVET_DEBUG -DJAVET_ERROR -DJAVET_TRACE)
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Android")
@@ -56,22 +60,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     set(JAVA_RESOURCES_DIR ${CMAKE_SOURCE_DIR}/../android/javet-android/src/main/jniLibs/${CMAKE_ANDROID_ARCH_ABI})
 else()
     set(JAVA_RESOURCES_DIR ${CMAKE_SOURCE_DIR}/../src/main/resources)
-endif()
-
-# Initialization
-aux_source_directory("jni" sourceFiles)
-set(includeDirs $ENV{JAVA_HOME}/include)
-set(importLibraries)
-set(JAVET_LIB_ARCH "")
-set(JAVET_LIB_I18N "")
-set(JAVET_LIB_PREFIX "")
-set(JAVET_LIB_SYSTEM "")
-set(JAVET_LIB_TYPE "")
-set(OUT_DIR_SUFFIX "")
-set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
-set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limited configs" FORCE)
-if(DEFINED ENABLE_LOGGING)
-    add_definitions(-DJAVET_INFO -DJAVET_DEBUG -DJAVET_ERROR -DJAVET_TRACE)
 endif()
 
 # I18N Configuration

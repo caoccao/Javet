@@ -15,10 +15,13 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-# Include CMake policies (must be before project())
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/JavetPolicies.cmake)
+# CMP0091 must be set before first project().
+# @see: https://cmake.org/cmake/help/latest/prop_tgt/MSVC_RUNTIME_LIBRARY.html
+if (POLICY CMP0091)
+    cmake_policy(SET CMP0091 NEW)
+endif()
 
-# Include configuration and validation
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/JavetValidation.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/JavetConfig.cmake)
 
 # Project definition
