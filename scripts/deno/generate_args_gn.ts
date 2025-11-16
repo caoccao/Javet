@@ -83,7 +83,7 @@ class GnArgsGenerator {
     android: {
       architectures: ["arm", "arm64", "x86", "x86_64"],
       targetOS: "android",
-      clangModules: "hidden",
+      clangModules: false,
       customLibCxx: false,
       customLibUnwind: "hidden",
       safeLibStdcxx: "hidden",

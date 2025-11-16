@@ -8,6 +8,7 @@ symbol_level = 0
 target_cpu = "arm"
 target_os = "android"
 use_blink = false
+use_clang_modules = false
 use_custom_libcxx = false
 v8_enable_i18n_support = false
 v8_enable_pointer_compression = false
