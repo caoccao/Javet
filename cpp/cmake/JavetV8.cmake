@@ -14,10 +14,10 @@
 # limitations under the License.
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Android")
-    if(CMAKE_ANDROID_ARCH STREQUAL "arm64")
-        set(V8_RELEASE_DIR ${V8_DIR}/out.gn.${OUT_DIR_SUFFIX}/arm64.release)
-    elseif(CMAKE_ANDROID_ARCH STREQUAL "arm")
+    if(CMAKE_ANDROID_ARCH STREQUAL "arm")
         set(V8_RELEASE_DIR ${V8_DIR}/out.gn.${OUT_DIR_SUFFIX}/arm.release)
+    elseif(CMAKE_ANDROID_ARCH STREQUAL "arm64")
+        set(V8_RELEASE_DIR ${V8_DIR}/out.gn.${OUT_DIR_SUFFIX}/arm64.release)
     elseif(CMAKE_ANDROID_ARCH STREQUAL "x86")
         set(V8_RELEASE_DIR ${V8_DIR}/out.gn.${OUT_DIR_SUFFIX}/ia32.release)
     elseif(CMAKE_ANDROID_ARCH STREQUAL "x86_64")

@@ -79,7 +79,7 @@ jobs:
       id: setup-ndk
       uses: nttld/setup-ndk@v1
       with:
-        ndk-version: r27d
+        ndk-version: r29
         local-cache: false
 
     - name: Setup Path
@@ -103,9 +103,9 @@ jobs:
         echo 'target_os = ["android"]' >> .gclient
         gclient sync -D
         cd v8
-        git apply ../../Javet/scripts/patches/android/v8/builtins-typed-array.cc.patch
-        git apply ../../Javet/scripts/patches/android/v8/memcopy.h.patch
-        git apply ../../Javet/scripts/patches/android/v8/simd.cc.patch
+        # Replace the NDK because the NDK from V8 is broken.
+        mv third_party/android_toolchain/ndk third_party/android_toolchain/ndk.bak
+        ln -s ${{ steps.setup-ndk.outputs.ndk-path }} third_party/android_toolchain/ndk
         mkdir -p out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
         cp ../../Javet/scripts/v8/gn/android-${{ matrix.android_arch }}-${{ matrix.i18n_name }}-args.gn out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release/args.gn
         gn gen out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release

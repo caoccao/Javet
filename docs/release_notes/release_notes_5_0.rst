@@ -7,6 +7,7 @@ Release Notes 5.0.x
 
 * Upgraded Node.js to ``v24.11.0`` `(2025-10-28) <https://nodejs.org/en/blog/release/v24.11.0>`_
 * Upgraded V8 to ``v14.3.127.14`` (2025-11-14)
+* Upgraded Android NDK to ``r29``
 * Added ``batchPush()`` to ``IV8ValueArray``
 * Fixed bug in ``JavetObjectConverter`` when converting a large Java array or list
 * Added ``getGetPriorities()``, ``getSetPriorities()`` to ``ClassDescriptor``
