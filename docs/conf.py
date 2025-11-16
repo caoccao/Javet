@@ -31,7 +31,7 @@ release = '5.0.2'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx_inline_tabs',
+    'sphinx_tabs.tabs',
     'sphinx.ext.extlinks',
 ]
 
