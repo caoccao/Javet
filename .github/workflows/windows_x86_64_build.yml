@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 24.11.0
+  JAVET_NODE_VERSION: 24.11.1
   JAVET_V8_VERSION: 14.3.127.14
   JAVET_VERSION: 5.0.2
   ROOT: D:\a\Javet
