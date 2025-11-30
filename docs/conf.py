@@ -22,7 +22,7 @@ copyright = '2021-2025. caoccao.com Sam Cao'
 author = 'Sam Cao'
 
 # The full version, including alpha/beta/rc tags
-release = '5.0.1'
+release = '5.0.2'
 
 
 # -- General configuration ---------------------------------------------------
@@ -31,7 +31,7 @@ release = '5.0.1'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx_inline_tabs',
+    'sphinx_tabs.tabs',
     'sphinx.ext.extlinks',
 ]
 

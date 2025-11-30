@@ -129,6 +129,7 @@ public class TestV8FunctionCallback extends BaseTestJavetRuntime {
             try {
                 thread.join();
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 logger.logError(e, "{0}: {1}", id, e.getMessage());
             } finally {
                 thread = null;

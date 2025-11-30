@@ -119,6 +119,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
                         long sleepTimeInMillis = random.nextInt(2) + 2;
                         TimeUnit.MILLISECONDS.sleep(sleepTimeInMillis);
                     } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                         javetLogger.logError("[{0}] is interrupted.", Thread.currentThread().getId());
                         return;
                     }
@@ -141,6 +142,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
                 try {
                     TimeUnit.MILLISECONDS.sleep(sleepTimeInMillis);
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     javetLogger.logError("[{0}] is interrupted.", Thread.currentThread().getId());
                 }
                 semaphore.release();
@@ -199,6 +201,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
             try {
                 thread.join();
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 logger.logError("Failed to join the worker thread. Error: {0}.", e.getMessage());
             }
         }
@@ -247,6 +250,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
             try {
                 thread.join();
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 logger.logError("Failed to join the worker thread. Error: {0}.", e.getMessage());
             }
         }

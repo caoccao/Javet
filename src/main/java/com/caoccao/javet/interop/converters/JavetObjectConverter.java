@@ -405,7 +405,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                     }
                     V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
                     if (childV8Values != null) {
-                        v8ValueArray.push((Object[]) childV8Values);
+                        v8ValueArray.batchPush(config.getBatchSize(), (Object[]) childV8Values);
                     }
                     v8Value = v8ValueArray;
                     v8Scope.setEscapable();
@@ -425,7 +425,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                     }
                     V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
                     if (!childV8Values.isEmpty()) {
-                        v8ValueArray.push(childV8Values.toArray());
+                        v8ValueArray.batchPush(config.getBatchSize(), childV8Values.toArray());
                     }
                     v8Value = v8ValueArray;
                     v8Scope.setEscapable();
@@ -499,7 +499,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                         }
                         V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
                         if (childV8Values != null) {
-                            v8ValueArray.push((Object[]) childV8Values);
+                            v8ValueArray.batchPush(config.getBatchSize(), (Object[]) childV8Values);
                         }
                         v8Value = v8ValueArray;
                     } finally {
@@ -525,7 +525,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                         }
                         V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
                         if (childV8Values != null) {
-                            v8ValueArray.push((Object[]) childV8Values);
+                            v8ValueArray.batchPush(config.getBatchSize(), (Object[]) childV8Values);
                         }
                         v8Value = v8ValueArray;
                     } finally {
@@ -575,7 +575,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                         }
                         V8ValueArray v8ValueArray = v8Scope.createV8ValueArray();
                         if (childV8Values != null) {
-                            v8ValueArray.push((Object[]) childV8Values);
+                            v8ValueArray.batchPush(config.getBatchSize(), (Object[]) childV8Values);
                         }
                         v8Value = v8ValueArray;
                     } finally {

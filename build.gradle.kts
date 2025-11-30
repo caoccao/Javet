@@ -66,7 +66,7 @@ object Config {
         const val BYTE_BUDDY = "1.15.5"
         const val JACKSON_DATABIND = "2.16.0"
         const val JAVA_VERSION = "1.8"
-        const val JAVET = "5.0.1"
+        const val JAVET = "5.0.2"
         const val JAVET_BUDDY = "0.4.0"
         const val JETTY_WEBSOCKET = "9.4.53.v20231009"
         const val JUNIT = "5.11.3"
@@ -112,21 +112,21 @@ afterEvaluate {
 }
 
 task<Exec>("buildJNIHeaders") {
-    mkdir("$buildDir/generated/tmp/jni")
-    project.exec {
-        workingDir("$projectDir")
-        commandLine(
-            "javac",
-            "-h",
-            "cpp/jni",
-            "-d",
-            "$buildDir/generated/tmp/jni",
-            "src/main/java/com/caoccao/javet/interop/INodeNative.java",
-            "src/main/java/com/caoccao/javet/interop/IV8Native.java",
-            "src/main/java/com/caoccao/javet/interop/NodeNative.java",
-            "src/main/java/com/caoccao/javet/interop/V8Native.java"
-        )
+    doFirst {
+        mkdir("$buildDir/generated/tmp/jni")
     }
+    workingDir("$projectDir")
+    commandLine(
+        "javac",
+        "-h",
+        "cpp/jni",
+        "-d",
+        "$buildDir/generated/tmp/jni",
+        "src/main/java/com/caoccao/javet/interop/INodeNative.java",
+        "src/main/java/com/caoccao/javet/interop/IV8Native.java",
+        "src/main/java/com/caoccao/javet/interop/NodeNative.java",
+        "src/main/java/com/caoccao/javet/interop/V8Native.java"
+    )
 }
 
 tasks.jar {

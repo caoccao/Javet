@@ -20,6 +20,7 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetUniConsumer;
 import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
+import com.caoccao.javet.utils.ArrayUtils;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueNull;
@@ -102,6 +103,32 @@ public interface IV8ValueArray extends IV8ValueObject {
             }
         }
         return (T[]) v8Values;
+    }
+
+    /**
+     * Batch push items.
+     *
+     * @param batchSize the batch size
+     * @param objects   the objects
+     * @return the item size
+     * @throws JavetException the javet exception
+     */
+    default int batchPush(int batchSize, Object... objects) throws JavetException {
+        if (batchSize < MIN_BATCH_SIZE) {
+            batchSize = DEFAULT_BATCH_SIZE;
+        }
+        if (ArrayUtils.isEmpty(objects)) {
+            return 0;
+        }
+        int totalCount = 0;
+        final int length = objects.length;
+        for (int startIndex = 0; startIndex < length; startIndex += batchSize) {
+            int endIndex = Math.min(startIndex + batchSize, length);
+            Object[] subObjects = Arrays.copyOfRange(objects, startIndex, endIndex);
+            push(subObjects);
+            totalCount += subObjects.length;
+        }
+        return totalCount;
     }
 
     /**

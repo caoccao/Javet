@@ -250,11 +250,35 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
 
     @Override
     protected V8Value internalGet(V8Value target, V8Value property) throws JavetException, E {
-        V8Value v8Value = getByIndex(property);
-        v8Value = v8Value == null ? getByField(property) : v8Value;
-        v8Value = v8Value == null ? getByMethod(target, property) : v8Value;
-        v8Value = v8Value == null ? getByGetter(property) : v8Value;
-        v8Value = v8Value == null ? getByPolyfill(property) : v8Value;
+        V8Value v8Value = null;
+        for (ClassDescriptor.GetPriority getPriority : classDescriptor.getGetPriorities()) {
+            switch (getPriority) {
+                case BuiltInMethod:
+                    v8Value = getByBuiltInMethod(property);
+                    break;
+                case Field:
+                    v8Value = getByField(property);
+                    break;
+                case GenericGetter:
+                    v8Value = getByGenericGetter(property);
+                    break;
+                case GetMethod:
+                    v8Value = getByGetMethod(target, property);
+                    break;
+                case Index:
+                    v8Value = getByIndex(property);
+                    break;
+                case Method:
+                    v8Value = getByMethod(property);
+                    break;
+                case Polyfill:
+                    v8Value = getByPolyfill(property);
+                    break;
+            }
+            if (v8Value != null) {
+                break;
+            }
+        }
         return v8Value;
     }
 
@@ -287,33 +311,26 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
             V8Value propertyKey,
             V8Value propertyValue,
             V8Value receiver) throws JavetException {
-        boolean isSet = setByIndex(propertyKey, propertyValue);
-        isSet = isSet || setToField(propertyKey, propertyValue);
-        isSet = isSet || setToSetter(target, propertyKey, propertyValue);
-        return v8Runtime.createV8ValueBoolean(isSet);
-    }
-
-    /**
-     * Sets by index.
-     *
-     * @param propertyKey   the property key
-     * @param propertyValue the property value
-     * @return true : set, false: not set
-     * @throws JavetException the javet exception
-     * @since 1.1.7
-     */
-    protected boolean setByIndex(V8Value propertyKey, V8Value propertyValue) throws JavetException {
-        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
-        if (classProxyPlugin.isIndexSupported(classDescriptor.getTargetClass())
-                && propertyKey instanceof V8ValueString) {
-            String propertyKeyString = ((V8ValueString) propertyKey).getValue();
-            if (StringUtils.isDigital(propertyKeyString)) {
-                final int index = Integer.parseInt(propertyKeyString);
-                if (index >= 0) {
-                    return classProxyPlugin.setByIndex(targetObject, index, v8Runtime.toObject(propertyValue));
-                }
+        boolean isSet = false;
+        for (ClassDescriptor.SetPriority setPriority : classDescriptor.getSetPriorities()) {
+            switch (setPriority) {
+                case Field:
+                    isSet = setByField(propertyKey, propertyValue);
+                    break;
+                case GenericSetter:
+                    isSet = setByGenericSetter(propertyKey, propertyValue);
+                    break;
+                case Index:
+                    isSet = setByIndex(propertyKey, propertyValue);
+                    break;
+                case SetMethod:
+                    isSet = setBySetMethod(target, propertyKey, propertyValue);
+                    break;
+            }
+            if (isSet) {
+                break;
             }
         }
-        return false;
+        return v8Runtime.createV8ValueBoolean(isSet);
     }
 }

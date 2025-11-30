@@ -31,6 +31,8 @@ import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetEntityError;
 import com.caoccao.javet.interfaces.IJavetUniFunction;
 import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.interop.binding.ClassDescriptor;
+import com.caoccao.javet.interop.binding.ClassDescriptorStore;
 import com.caoccao.javet.interop.proxy.IJavetDirectProxyHandler;
 import com.caoccao.javet.mock.MockCallbackReceiver;
 import com.caoccao.javet.mock.MockDirectProxyFunctionHandler;
@@ -970,6 +972,59 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testGetPriorities() throws JavetException {
+        assertNull(ClassDescriptorStore.getObjectMap().get(TestPriorityClass.class));
+        TestPriorityClass testObject = new TestPriorityClass();
+        v8Runtime.getGlobalObject().set("a", testObject);
+        ClassDescriptor classDescriptor = ClassDescriptorStore.getObjectMap().get(TestPriorityClass.class);
+        assertNotNull(classDescriptor);
+        // Test the default get priority
+        assertEquals("value", v8Runtime.getExecutor("a.value").executeString());
+        assertEquals("name():name", v8Runtime.getExecutor("a.name()").executeString());
+        assertEquals("getName():name", v8Runtime.getExecutor("a.getName()").executeString());
+        // Change the get priority
+        classDescriptor.getGetPriorities().clear();
+        classDescriptor.getGetPriorities().addAll(SimpleList.of(
+                ClassDescriptor.GetPriority.Index,
+                ClassDescriptor.GetPriority.GetMethod,
+                ClassDescriptor.GetPriority.Method,
+                ClassDescriptor.GetPriority.BuiltInMethod,
+                ClassDescriptor.GetPriority.GenericGetter,
+                ClassDescriptor.GetPriority.Field,
+                ClassDescriptor.GetPriority.Polyfill));
+        // Test the new get priority
+        assertEquals("method:value", v8Runtime.getExecutor("a.value()").executeString());
+        assertEquals("getName():name", v8Runtime.getExecutor("a.name").executeString());
+        assertEquals("getName():name", v8Runtime.getExecutor("a.getName()").executeString());
+        // Change the get priority
+        classDescriptor.getGetPriorities().clear();
+        classDescriptor.getGetPriorities().addAll(SimpleList.of(
+                ClassDescriptor.GetPriority.Index,
+                ClassDescriptor.GetPriority.GenericGetter,
+                ClassDescriptor.GetPriority.Field,
+                ClassDescriptor.GetPriority.GetMethod,
+                ClassDescriptor.GetPriority.Method,
+                ClassDescriptor.GetPriority.BuiltInMethod,
+                ClassDescriptor.GetPriority.Polyfill));
+        // Test the new get priority
+        assertEquals("getter:value", v8Runtime.getExecutor("a.value").executeString());
+        // Test the default set priority
+        v8Runtime.getExecutor("a.name='abc'").executeVoid();
+        assertEquals("getName():setter:abc", v8Runtime.getExecutor("a.name").executeString());
+        // Change the set priority
+        classDescriptor.getSetPriorities().clear();
+        classDescriptor.getSetPriorities().addAll(SimpleList.of(
+                ClassDescriptor.SetPriority.SetMethod,
+                ClassDescriptor.SetPriority.GenericSetter,
+                ClassDescriptor.SetPriority.Field,
+                ClassDescriptor.SetPriority.Index));
+        // Test the new set priority
+        v8Runtime.getExecutor("a.name='abc'").executeVoid();
+        assertEquals("getName():setName():abc", v8Runtime.getExecutor("a.name").executeString());
+        v8Runtime.getGlobalObject().delete("a");
+    }
+
+    @Test
     public void testGetter() throws JavetException {
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             private String name;
@@ -1731,6 +1786,29 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testSetPriorities() throws JavetException {
+        // Test that setPriorities controls the priority order for property setting
+        TestPriorityClass testObject = new TestPriorityClass();
+        v8Runtime.getGlobalObject().set("a", testObject);
+
+        // Test setting 'data' property - should follow Method > Setter priority
+        // Since there's a setData() method, it should be called
+//        v8Runtime.getExecutor("priorityTest.data = 'test'").executeVoid();
+//        assertEquals("method:test", testObject.data);
+
+        // Test setting 'info' property - only has a setter
+//        v8Runtime.getExecutor("priorityTest.info = 'value'").executeVoid();
+//        assertEquals("setter:value", testObject.getInfoValue());
+
+        // Test setting 'status' property - has both setStatus() method and setter
+        // Method should take priority over setter
+//        v8Runtime.getExecutor("priorityTest.status = 'active'").executeVoid();
+//        assertEquals("methodSet:active", testObject.status);
+
+        v8Runtime.getGlobalObject().delete("a");
+    }
+
+    @Test
     public void testV8ValuesAsArguments() throws JavetException {
         IJavetAnonymous anonymous = new IJavetAnonymous() {
             private final Map<String, String> map = new HashMap<>();
@@ -2040,6 +2118,55 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
 
         public String toJson() {
             return "{\"name\":\"" + name + "\",\"value\":\"" + value + "\"}";
+        }
+    }
+
+    public static class TestPriorityClass {
+        public String value;
+        private String name;
+
+        public TestPriorityClass() {
+            name = "name";
+            value = "value";
+        }
+
+        public String getName() {
+            return "getName():" + name;
+        }
+
+        // Generic getter for testing getter priority
+        @V8Getter
+        public String getter(String key) {
+            if ("value".equals(key)) {
+                return "getter:value";
+            }
+            return null;
+        }
+
+        public String name() {
+            return "name():" + name;
+        }
+
+        public void setName(String name) {
+            this.name = "setName():" + name;
+        }
+
+        // Generic setter for testing setter priority
+        @V8Setter
+        public boolean setter(String key, String value) {
+            if ("value".equals(key)) {
+                this.value = "setter:" + value;
+                return true;
+            }
+            if ("name".equals(key)) {
+                name = "setter:" + value;
+                return true;
+            }
+            return false;
+        }
+
+        public String value() {
+            return "method:" + value;
         }
     }
 

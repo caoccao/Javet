@@ -62,8 +62,10 @@ public final class V8Locker implements IJavetClosable {
                     JavetError.PARAMETER_LOCKED_THREAD_ID, Long.toString(threadId),
                     JavetError.PARAMETER_CURRENT_THREAD_ID, Long.toString(currentThreadId)));
         }
-        if (!v8Native.unlockV8Runtime(v8Runtime.getHandle())) {
-            throw new JavetException(JavetError.LockReleaseFailure);
+        if (!v8Runtime.isClosed()) {
+            if (!v8Native.unlockV8Runtime(v8Runtime.getHandle())) {
+                throw new JavetException(JavetError.LockReleaseFailure);
+            }
         }
         locked = false;
     }

@@ -165,7 +165,10 @@ public class NodeRuntime extends V8Runtime {
      * @since 3.1.4
      */
     public boolean isStopping() {
-        return ((INodeNative) v8Native).isStopping(handle);
+        if (!isClosed()) {
+            return ((INodeNative) v8Native).isStopping(handle);
+        }
+        return true;
     }
 
     @Override
@@ -208,6 +211,8 @@ public class NodeRuntime extends V8Runtime {
      * @since 3.1.4
      */
     public void setStopping(boolean stopping) {
-        ((INodeNative) v8Native).setStopping(handle, stopping);
+        if (!isClosed()) {
+            ((INodeNative) v8Native).setStopping(handle, stopping);
+        }
     }
 }

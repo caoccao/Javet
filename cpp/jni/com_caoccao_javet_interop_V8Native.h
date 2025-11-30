@@ -89,6 +89,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_booleanObjectV
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    cancelTerminateExecution
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_cancelTerminateExecution
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    clearInternalStatistic
  * Signature: ()V
  */
@@ -461,6 +469,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_integerObjectV
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isDead
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    isExecutionTerminating
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isExecutionTerminating
   (JNIEnv *, jobject, jlong);
 
 /*

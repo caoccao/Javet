@@ -40,11 +40,29 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     public static final int DEFAULT_MAX_DEPTH = 20;
     /**
+     * The constant DEFAULT_BATCH_SIZE.
+     *
+     * @since 5.0.2
+     */
+    public static final int DEFAULT_BATCH_SIZE = 100;
+    /**
+     * The constant MIN_BATCH_SIZE.
+     *
+     * @since 5.0.2
+     */
+    public static final int MIN_BATCH_SIZE = 10;
+    /**
      * The Proxy plugins.
      *
      * @since 3.0.4
      */
     protected final List<IClassProxyPlugin> proxyPlugins;
+    /**
+     * The size for batch operation.
+     *
+     * @since 5.0.2
+     */
+    protected int batchSize;
     /**
      * The Default boolean.
      *
@@ -130,6 +148,7 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      * @since 0.9.4
      */
     public JavetConverterConfig() {
+        batchSize = DEFAULT_BATCH_SIZE;
         defaultBoolean = false;
         defaultByte = (byte) 0;
         defaultChar = '\0';
@@ -144,6 +163,16 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
         reflectionObjectFactory = null;
         sealedEnabled = false;
         skipFunctionInObject = true;
+    }
+
+    /**
+     * Gets batch operation size.
+     *
+     * @return the batch operationsize
+     * @since 5.0.2
+     */
+    public int getBatchSize() {
+        return batchSize;
     }
 
     /**
@@ -324,6 +353,18 @@ public class JavetConverterConfig<T extends JavetConverterConfig<T>> {
      */
     public boolean isSkipFunctionInObject() {
         return skipFunctionInObject;
+    }
+
+    /**
+     * Sets batch operation size.
+     *
+     * @param batchSize the batch operation size
+     * @return the self
+     * @since 5.0.2
+     */
+    public JavetConverterConfig<T> setBatchSize(int batchSize) {
+        this.batchSize = Math.max(MIN_BATCH_SIZE, batchSize);
+        return this;
     }
 
     /**

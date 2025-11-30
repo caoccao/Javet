@@ -1,4 +1,4 @@
-Pygments==2.18.0
-furo==2024.7.18
-sphinx==7.4.7
-sphinx_inline_tabs==2023.4.21
+Pygments==2.19.2
+furo==2025.9.25
+sphinx==8.2.3
+sphinx-tabs==3.4.7

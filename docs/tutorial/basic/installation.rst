@@ -22,611 +22,617 @@ The following dependency must be added.
     <dependency>
         <groupId>com.caoccao.javet</groupId>
         <artifactId>javet</artifactId>
-        <version>5.0.1</version>
+        <version>5.0.2</version>
     </dependency>
 
 The following dependencies contain the non-i18n binaries for various OS / JS Runtime Type.
 
-.. tab:: Node (Express)
+.. tabs::
 
-    .. code-block:: xml
+   .. tab:: Node (Express)
 
-        <!-- Linux (x86_64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-node-linux-x86_64</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+       .. code-block:: xml
 
-        <!-- Linux (arm64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-node-linux-arm64</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+           <!-- Linux (x86_64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-node-linux-x86_64</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-        <!-- Mac OS (x86_64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-node-macos-x86_64</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+           <!-- Linux (arm64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-node-linux-arm64</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-        <!-- Mac OS (arm64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-node-macos-arm64</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+           <!-- Mac OS (x86_64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-node-macos-x86_64</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-        <!-- Windows (x86_64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-node-windows-x86_64</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+           <!-- Mac OS (arm64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-node-macos-arm64</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-.. tab:: V8 (Express)
+           <!-- Windows (x86_64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-node-windows-x86_64</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-    .. code-block:: xml
+   .. tab:: V8 (Express)
 
-        <!-- Linux (x86_64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-v8-linux-x86_64</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+       .. code-block:: xml
 
-        <!-- Linux (arm64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-v8-linux-arm64</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+           <!-- Linux (x86_64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-v8-linux-x86_64</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-        <!-- Mac OS (x86_64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-v8-macos-x86_64</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+           <!-- Linux (arm64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-v8-linux-arm64</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-        <!-- Mac OS (arm64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-v8-macos-arm64</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+           <!-- Mac OS (x86_64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-v8-macos-x86_64</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-        <!-- Windows (x86_64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-v8-windows-x86_64</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+           <!-- Mac OS (arm64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-v8-macos-arm64</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-.. tab:: Node (Complete)
+           <!-- Windows (x86_64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-v8-windows-x86_64</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-    .. code-block:: xml
+   .. tab:: Node (Complete)
 
-        <properties>
-          <javet.version>5.0.1</javet.version>
-        </properties>
+       .. code-block:: xml
 
-        <profiles>
-          <profile>
-            <id>windows</id>
-            <activation>
-              <os>
-                <family>windows</family>
-                <arch>x86</arch>
-              </os>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-node-windows-x86_64</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-          <profile>
-            <id>linux</id>
-            <activation>
-              <os>
-                <family>unix</family>
-                <arch>x86</arch>
-              </os>
-              <activeByDefault>true</activeByDefault>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-node-linux-x86_64</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-          <profile>
-            <id>linux-arm64</id>
-            <activation>
-              <os>
-                <family>unix</family>
-                <arch>arm64</arch>
-              </os>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-node-linux-arm64</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-          <profile>
-            <id>macos</id>
-            <activation>
-              <os>
-                <family>mac</family>
-                <arch>x86</arch>
-              </os>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-node-macos-x86_64</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-          <profile>
-            <id>macos-arm64</id>
-            <activation>
-              <os>
-                <family>mac</family>
-                <arch>arm64</arch>
-              </os>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-node-macos-arm64</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-        </profiles>
+           <properties>
+             <javet.version>5.0.2</javet.version>
+           </properties>
 
-.. tab:: V8 (Complete)
+           <profiles>
+             <profile>
+               <id>windows</id>
+               <activation>
+                 <os>
+                   <family>windows</family>
+                   <arch>x86</arch>
+                 </os>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-node-windows-x86_64</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+             <profile>
+               <id>linux</id>
+               <activation>
+                 <os>
+                   <family>unix</family>
+                   <arch>x86</arch>
+                 </os>
+                 <activeByDefault>true</activeByDefault>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-node-linux-x86_64</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+             <profile>
+               <id>linux-arm64</id>
+               <activation>
+                 <os>
+                   <family>unix</family>
+                   <arch>arm64</arch>
+                 </os>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-node-linux-arm64</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+             <profile>
+               <id>macos</id>
+               <activation>
+                 <os>
+                   <family>mac</family>
+                   <arch>x86</arch>
+                 </os>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-node-macos-x86_64</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+             <profile>
+               <id>macos-arm64</id>
+               <activation>
+                 <os>
+                   <family>mac</family>
+                   <arch>arm64</arch>
+                 </os>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-node-macos-arm64</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+           </profiles>
 
-    .. code-block:: xml
+   .. tab:: V8 (Complete)
 
-        <properties>
-          <javet.version>5.0.1</javet.version>
-        </properties>
+       .. code-block:: xml
 
-        <profiles>
-          <profile>
-            <id>windows</id>
-            <activation>
-              <os>
-                <family>windows</family>
-                <arch>x86</arch>
-              </os>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-v8-windows-x86_64</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-          <profile>
-            <id>linux</id>
-            <activation>
-              <os>
-                <family>unix</family>
-                <arch>x86</arch>
-              </os>
-              <activeByDefault>true</activeByDefault>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-v8-linux-x86_64</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-          <profile>
-            <id>linux-arm64</id>
-            <activation>
-              <os>
-                <family>unix</family>
-                <arch>arm64</arch>
-              </os>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-v8-linux-arm64</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-          <profile>
-            <id>macos</id>
-            <activation>
-              <os>
-                <family>mac</family>
-                <arch>x86</arch>
-              </os>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-v8-macos-x86_64</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-          <profile>
-            <id>macos-arm64</id>
-            <activation>
-              <os>
-                <family>mac</family>
-                <arch>arm64</arch>
-              </os>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-v8-macos-arm64</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-        </profiles>
+           <properties>
+             <javet.version>5.0.2</javet.version>
+           </properties>
+
+           <profiles>
+             <profile>
+               <id>windows</id>
+               <activation>
+                 <os>
+                   <family>windows</family>
+                   <arch>x86</arch>
+                 </os>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-v8-windows-x86_64</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+             <profile>
+               <id>linux</id>
+               <activation>
+                 <os>
+                   <family>unix</family>
+                   <arch>x86</arch>
+                 </os>
+                 <activeByDefault>true</activeByDefault>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-v8-linux-x86_64</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+             <profile>
+               <id>linux-arm64</id>
+               <activation>
+                 <os>
+                   <family>unix</family>
+                   <arch>arm64</arch>
+                 </os>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-v8-linux-arm64</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+             <profile>
+               <id>macos</id>
+               <activation>
+                 <os>
+                   <family>mac</family>
+                   <arch>x86</arch>
+                 </os>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-v8-macos-x86_64</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+             <profile>
+               <id>macos-arm64</id>
+               <activation>
+                 <os>
+                   <family>mac</family>
+                   <arch>arm64</arch>
+                 </os>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-v8-macos-arm64</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+           </profiles>
 
 The following dependencies contain the i18n binaries for various OS / JS Runtime Type.
 
-.. tab:: Node i18n (Express)
+.. tabs::
 
-    .. code-block:: xml
+   .. tab:: Node i18n (Express)
 
-        <!-- Linux (x86_64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-node-linux-x86_64-i18n</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+       .. code-block:: xml
 
-        <!-- Linux (arm64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-node-linux-arm64-i18n</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+           <!-- Linux (x86_64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-node-linux-x86_64-i18n</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-        <!-- Mac OS (x86_64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-node-macos-x86_64-i18n</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+           <!-- Linux (arm64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-node-linux-arm64-i18n</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-        <!-- Mac OS (arm64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-node-macos-arm64-i18n</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+           <!-- Mac OS (x86_64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-node-macos-x86_64-i18n</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-        <!-- Windows (x86_64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-node-windows-x86_64-i18n</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+           <!-- Mac OS (arm64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-node-macos-arm64-i18n</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-.. tab:: V8 i18n (Express)
+           <!-- Windows (x86_64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-node-windows-x86_64-i18n</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-    .. code-block:: xml
+   .. tab:: V8 i18n (Express)
 
-        <!-- Linux (x86_64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-v8-linux-x86_64-i18n</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+       .. code-block:: xml
 
-        <!-- Linux (arm64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-v8-linux-arm64-i18n</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+           <!-- Linux (x86_64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-v8-linux-x86_64-i18n</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-        <!-- Mac OS (x86_64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-v8-macos-x86_64-i18n</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+           <!-- Linux (arm64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-v8-linux-arm64-i18n</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-        <!-- Mac OS (arm64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-v8-macos-arm64-i18n</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+           <!-- Mac OS (x86_64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-v8-macos-x86_64-i18n</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-        <!-- Windows (x86_64) -->
-        <dependency>
-            <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-v8-windows-x86_64-i18n</artifactId>
-            <version>5.0.1</version>
-        </dependency>
+           <!-- Mac OS (arm64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-v8-macos-arm64-i18n</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-.. tab:: Node i18n (Complete)
+           <!-- Windows (x86_64) -->
+           <dependency>
+               <groupId>com.caoccao.javet</groupId>
+               <artifactId>javet-v8-windows-x86_64-i18n</artifactId>
+               <version>5.0.2</version>
+           </dependency>
 
-    .. code-block:: xml
+   .. tab:: Node i18n (Complete)
 
-        <properties>
-          <javet.version>5.0.1</javet.version>
-        </properties>
+       .. code-block:: xml
 
-        <profiles>
-          <profile>
-            <id>windows</id>
-            <activation>
-              <os>
-                <family>windows</family>
-                <arch>x86</arch>
-              </os>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-node-windows-x86_64-i18n</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-          <profile>
-            <id>linux</id>
-            <activation>
-              <os>
-                <family>unix</family>
-                <arch>x86</arch>
-              </os>
-              <activeByDefault>true</activeByDefault>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-node-linux-x86_64-i18n</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-          <profile>
-            <id>linux-arm64</id>
-            <activation>
-              <os>
-                <family>unix</family>
-                <arch>arm64</arch>
-              </os>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-node-linux-arm64-i18n</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-          <profile>
-            <id>macos</id>
-            <activation>
-              <os>
-                <family>mac</family>
-                <arch>x86</arch>
-              </os>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-node-macos-x86_64-i18n</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-          <profile>
-            <id>macos-arm64</id>
-            <activation>
-              <os>
-                <family>mac</family>
-                <arch>arm64</arch>
-              </os>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-node-macos-arm64-i18n</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-        </profiles>
+           <properties>
+             <javet.version>5.0.2</javet.version>
+           </properties>
 
-.. tab:: V8 i18n (Complete)
+           <profiles>
+             <profile>
+               <id>windows</id>
+               <activation>
+                 <os>
+                   <family>windows</family>
+                   <arch>x86</arch>
+                 </os>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-node-windows-x86_64-i18n</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+             <profile>
+               <id>linux</id>
+               <activation>
+                 <os>
+                   <family>unix</family>
+                   <arch>x86</arch>
+                 </os>
+                 <activeByDefault>true</activeByDefault>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-node-linux-x86_64-i18n</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+             <profile>
+               <id>linux-arm64</id>
+               <activation>
+                 <os>
+                   <family>unix</family>
+                   <arch>arm64</arch>
+                 </os>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-node-linux-arm64-i18n</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+             <profile>
+               <id>macos</id>
+               <activation>
+                 <os>
+                   <family>mac</family>
+                   <arch>x86</arch>
+                 </os>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-node-macos-x86_64-i18n</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+             <profile>
+               <id>macos-arm64</id>
+               <activation>
+                 <os>
+                   <family>mac</family>
+                   <arch>arm64</arch>
+                 </os>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-node-macos-arm64-i18n</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+           </profiles>
 
-    .. code-block:: xml
+   .. tab:: V8 i18n (Complete)
 
-        <properties>
-          <javet.version>5.0.1</javet.version>
-        </properties>
+       .. code-block:: xml
 
-        <profiles>
-          <profile>
-            <id>windows</id>
-            <activation>
-              <os>
-                <family>windows</family>
-                <arch>x86</arch>
-              </os>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-v8-windows-x86_64-i18n</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-          <profile>
-            <id>linux</id>
-            <activation>
-              <os>
-                <family>unix</family>
-                <arch>x86</arch>
-              </os>
-              <activeByDefault>true</activeByDefault>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-v8-linux-x86_64-i18n</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-          <profile>
-            <id>linux-arm64</id>
-            <activation>
-              <os>
-                <family>unix</family>
-                <arch>arm64</arch>
-              </os>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-v8-linux-arm64-i18n</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-          <profile>
-            <id>macos</id>
-            <activation>
-              <os>
-                <family>mac</family>
-                <arch>x86</arch>
-              </os>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-v8-macos-x86_64-i18n</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-          <profile>
-            <id>macos-arm64</id>
-            <activation>
-              <os>
-                <family>mac</family>
-                <arch>arm64</arch>
-              </os>
-            </activation>
-            <dependencies>
-              <dependency>
-                <groupId>com.caoccao.javet</groupId>
-                <artifactId>javet-v8-macos-arm64-i18n</artifactId>
-                <version>${javet.version}</version>
-              </dependency>
-            </dependencies>
-          </profile>
-        </profiles>
+           <properties>
+             <javet.version>5.0.2</javet.version>
+           </properties>
+
+           <profiles>
+             <profile>
+               <id>windows</id>
+               <activation>
+                 <os>
+                   <family>windows</family>
+                   <arch>x86</arch>
+                 </os>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-v8-windows-x86_64-i18n</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+             <profile>
+               <id>linux</id>
+               <activation>
+                 <os>
+                   <family>unix</family>
+                   <arch>x86</arch>
+                 </os>
+                 <activeByDefault>true</activeByDefault>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-v8-linux-x86_64-i18n</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+             <profile>
+               <id>linux-arm64</id>
+               <activation>
+                 <os>
+                   <family>unix</family>
+                   <arch>arm64</arch>
+                 </os>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-v8-linux-arm64-i18n</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+             <profile>
+               <id>macos</id>
+               <activation>
+                 <os>
+                   <family>mac</family>
+                   <arch>x86</arch>
+                 </os>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-v8-macos-x86_64-i18n</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+             <profile>
+               <id>macos-arm64</id>
+               <activation>
+                 <os>
+                   <family>mac</family>
+                   <arch>arm64</arch>
+                 </os>
+               </activation>
+               <dependencies>
+                 <dependency>
+                   <groupId>com.caoccao.javet</groupId>
+                   <artifactId>javet-v8-macos-arm64-i18n</artifactId>
+                   <version>${javet.version}</version>
+                 </dependency>
+               </dependencies>
+             </profile>
+           </profiles>
 
 Gradle Kotlin DSL - Desktop
 ---------------------------
 
-.. tab:: Express
+.. tabs::
 
-    .. code-block:: kotlin
+   .. tab:: Express
 
-        implementation("com.caoccao.javet:javet:5.0.1") // Must-have
-        implementation("com.caoccao.javet:javet-node-linux-arm64:5.0.1")
-        implementation("com.caoccao.javet:javet-node-linux-arm64-i18n:5.0.1")
-        implementation("com.caoccao.javet:javet-node-linux-x86_64:5.0.1")
-        implementation("com.caoccao.javet:javet-node-linux-x86_64-i18n:5.0.1")
-        implementation("com.caoccao.javet:javet-node-macos-arm64:5.0.1")
-        implementation("com.caoccao.javet:javet-node-macos-arm64-i18n:5.0.1")
-        implementation("com.caoccao.javet:javet-node-macos-x86_64:5.0.1")
-        implementation("com.caoccao.javet:javet-node-macos-x86_64-i18n:5.0.1")
-        implementation("com.caoccao.javet:javet-node-windows-x86_64:5.0.1")
-        implementation("com.caoccao.javet:javet-node-windows-x86_64-i18n:5.0.1")
-        implementation("com.caoccao.javet:javet-v8-linux-arm64:5.0.1")
-        implementation("com.caoccao.javet:javet-v8-linux-arm64-i18n:5.0.1")
-        implementation("com.caoccao.javet:javet-v8-linux-x86_64:5.0.1")
-        implementation("com.caoccao.javet:javet-v8-linux-x86_64-i18n:5.0.1")
-        implementation("com.caoccao.javet:javet-v8-macos-arm64:5.0.1")
-        implementation("com.caoccao.javet:javet-v8-macos-arm64-i18n:5.0.1")
-        implementation("com.caoccao.javet:javet-v8-macos-x86_64:5.0.1")
-        implementation("com.caoccao.javet:javet-v8-macos-x86_64-i18n:5.0.1")
-        implementation("com.caoccao.javet:javet-v8-windows-x86_64:5.0.1")
-        implementation("com.caoccao.javet:javet-v8-windows-x86_64-i18n:5.0.1")
+       .. code-block:: kotlin
 
-.. tab:: Complete
+           implementation("com.caoccao.javet:javet:5.0.2") // Must-have
+           implementation("com.caoccao.javet:javet-node-linux-arm64:5.0.2")
+           implementation("com.caoccao.javet:javet-node-linux-arm64-i18n:5.0.2")
+           implementation("com.caoccao.javet:javet-node-linux-x86_64:5.0.2")
+           implementation("com.caoccao.javet:javet-node-linux-x86_64-i18n:5.0.2")
+           implementation("com.caoccao.javet:javet-node-macos-arm64:5.0.2")
+           implementation("com.caoccao.javet:javet-node-macos-arm64-i18n:5.0.2")
+           implementation("com.caoccao.javet:javet-node-macos-x86_64:5.0.2")
+           implementation("com.caoccao.javet:javet-node-macos-x86_64-i18n:5.0.2")
+           implementation("com.caoccao.javet:javet-node-windows-x86_64:5.0.2")
+           implementation("com.caoccao.javet:javet-node-windows-x86_64-i18n:5.0.2")
+           implementation("com.caoccao.javet:javet-v8-linux-arm64:5.0.2")
+           implementation("com.caoccao.javet:javet-v8-linux-arm64-i18n:5.0.2")
+           implementation("com.caoccao.javet:javet-v8-linux-x86_64:5.0.2")
+           implementation("com.caoccao.javet:javet-v8-linux-x86_64-i18n:5.0.2")
+           implementation("com.caoccao.javet:javet-v8-macos-arm64:5.0.2")
+           implementation("com.caoccao.javet:javet-v8-macos-arm64-i18n:5.0.2")
+           implementation("com.caoccao.javet:javet-v8-macos-x86_64:5.0.2")
+           implementation("com.caoccao.javet:javet-v8-macos-x86_64-i18n:5.0.2")
+           implementation("com.caoccao.javet:javet-v8-windows-x86_64:5.0.2")
+           implementation("com.caoccao.javet:javet-v8-windows-x86_64-i18n:5.0.2")
 
-    .. code-block:: kotlin
+   .. tab:: Complete
 
-        import org.gradle.internal.os.OperatingSystem
+       .. code-block:: kotlin
 
-        val os = OperatingSystem.current()
-        val arch = System.getProperty("os.arch")
-        val isI18n = false
-        val isNode = false
-        val i18nType = if (isI18n) "-i18n" else ""
-        val jsRuntimeTimeType = if (isNode) "node" else "v8"
-        val osType = if (os.isWindows) "windows" else
-            if (os.isMacOsX) "macos" else
-            if (os.isLinux) "linux" else ""
-        val archType = if (arch == "aarch64" || arch == "arm64") "arm64" else "x86_64"
-        implementation("com.caoccao.javet:javet:5.0.1")
-        implementation("com.caoccao.javet:javet-$jsRuntimeTimeType-$osType-$archType$i18nType:5.0.1")
+           import org.gradle.internal.os.OperatingSystem
+
+           val os = OperatingSystem.current()
+           val arch = System.getProperty("os.arch")
+           val isI18n = false
+           val isNode = false
+           val i18nType = if (isI18n) "-i18n" else ""
+           val jsRuntimeTimeType = if (isNode) "node" else "v8"
+           val osType = if (os.isWindows) "windows" else
+               if (os.isMacOsX) "macos" else
+               if (os.isLinux) "linux" else ""
+           val archType = if (arch == "aarch64" || arch == "arm64") "arm64" else "x86_64"
+           implementation("com.caoccao.javet:javet:5.0.2")
+           implementation("com.caoccao.javet:javet-$jsRuntimeTimeType-$osType-$archType$i18nType:5.0.2")
 
 Gradle Groovy DSL - Desktop
 ---------------------------
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet:5.0.1' // Must-have
-    implementation 'com.caoccao.javet:javet-node-linux-arm64:5.0.1'
-    implementation 'com.caoccao.javet:javet-node-linux-arm64-i18n:5.0.1'
-    implementation 'com.caoccao.javet:javet-node-linux-x86_64:5.0.1'
-    implementation 'com.caoccao.javet:javet-node-linux-x86_64-i18n:5.0.1'
-    implementation 'com.caoccao.javet:javet-node-macos-arm64:5.0.1'
-    implementation 'com.caoccao.javet:javet-node-macos-arm64-i18n:5.0.1'
-    implementation 'com.caoccao.javet:javet-node-macos-x86_64:5.0.1'
-    implementation 'com.caoccao.javet:javet-node-macos-x86_64-i18n:5.0.1'
-    implementation 'com.caoccao.javet:javet-node-windows-x86_64:5.0.1'
-    implementation 'com.caoccao.javet:javet-node-windows-x86_64-i18n:5.0.1'
-    implementation 'com.caoccao.javet:javet-v8-linux-arm64:5.0.1'
-    implementation 'com.caoccao.javet:javet-v8-linux-arm64-i18n:5.0.1'
-    implementation 'com.caoccao.javet:javet-v8-linux-x86_64:5.0.1'
-    implementation 'com.caoccao.javet:javet-v8-linux-x86_64-i18n:5.0.1'
-    implementation 'com.caoccao.javet:javet-v8-macos-arm64:5.0.1'
-    implementation 'com.caoccao.javet:javet-v8-macos-arm64-i18n:5.0.1'
-    implementation 'com.caoccao.javet:javet-v8-macos-x86_64:5.0.1'
-    implementation 'com.caoccao.javet:javet-v8-macos-x86_64-i18n:5.0.1'
-    implementation 'com.caoccao.javet:javet-v8-windows-x86_64:5.0.1'
-    implementation 'com.caoccao.javet:javet-v8-windows-x86_64-i18n:5.0.1'
+    implementation 'com.caoccao.javet:javet:5.0.2' // Must-have
+    implementation 'com.caoccao.javet:javet-node-linux-arm64:5.0.2'
+    implementation 'com.caoccao.javet:javet-node-linux-arm64-i18n:5.0.2'
+    implementation 'com.caoccao.javet:javet-node-linux-x86_64:5.0.2'
+    implementation 'com.caoccao.javet:javet-node-linux-x86_64-i18n:5.0.2'
+    implementation 'com.caoccao.javet:javet-node-macos-arm64:5.0.2'
+    implementation 'com.caoccao.javet:javet-node-macos-arm64-i18n:5.0.2'
+    implementation 'com.caoccao.javet:javet-node-macos-x86_64:5.0.2'
+    implementation 'com.caoccao.javet:javet-node-macos-x86_64-i18n:5.0.2'
+    implementation 'com.caoccao.javet:javet-node-windows-x86_64:5.0.2'
+    implementation 'com.caoccao.javet:javet-node-windows-x86_64-i18n:5.0.2'
+    implementation 'com.caoccao.javet:javet-v8-linux-arm64:5.0.2'
+    implementation 'com.caoccao.javet:javet-v8-linux-arm64-i18n:5.0.2'
+    implementation 'com.caoccao.javet:javet-v8-linux-x86_64:5.0.2'
+    implementation 'com.caoccao.javet:javet-v8-linux-x86_64-i18n:5.0.2'
+    implementation 'com.caoccao.javet:javet-v8-macos-arm64:5.0.2'
+    implementation 'com.caoccao.javet:javet-v8-macos-arm64-i18n:5.0.2'
+    implementation 'com.caoccao.javet:javet-v8-macos-x86_64:5.0.2'
+    implementation 'com.caoccao.javet:javet-v8-macos-x86_64-i18n:5.0.2'
+    implementation 'com.caoccao.javet:javet-v8-windows-x86_64:5.0.2'
+    implementation 'com.caoccao.javet:javet-v8-windows-x86_64-i18n:5.0.2'
 
 Dependencies - Android
 ======================
@@ -636,20 +642,20 @@ Gradle Kotlin DSL - Android
 
 .. code-block:: kotlin
 
-    implementation("com.caoccao.javet:javet-node-android:5.0.1") // Android Node (arm64 and x86_64)
-    implementation("com.caoccao.javet:javet-node-android-i18n:5.0.1") // Android Node (arm64 and x86_64)
-    implementation("com.caoccao.javet:javet-v8-android:5.0.1") // Android V8 (arm, arm64, x86 and x86_64)
-    implementation("com.caoccao.javet:javet-v8-android-i18n:5.0.1") // Android V8 (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet-node-android:5.0.2") // Android Node (arm64 and x86_64)
+    implementation("com.caoccao.javet:javet-node-android-i18n:5.0.2") // Android Node (arm64 and x86_64)
+    implementation("com.caoccao.javet:javet-v8-android:5.0.2") // Android V8 (arm, arm64, x86 and x86_64)
+    implementation("com.caoccao.javet:javet-v8-android-i18n:5.0.2") // Android V8 (arm, arm64, x86 and x86_64)
 
 Gradle Groovy DSL - Android
 ---------------------------
 
 .. code-block:: groovy
 
-    implementation 'com.caoccao.javet:javet-node-android:5.0.1' // Android Node (arm64 and x86_64)
-    implementation 'com.caoccao.javet:javet-node-android-i18n:5.0.1' // Android Node (arm64 and x86_64)
-    implementation 'com.caoccao.javet:javet-v8-android:5.0.1' // Android V8 (arm, arm64, x86 and x86_64)
-    implementation 'com.caoccao.javet:javet-v8-android-i18n:5.0.1' // Android V8 (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet-node-android:5.0.2' // Android Node (arm64 and x86_64)
+    implementation 'com.caoccao.javet:javet-node-android-i18n:5.0.2' // Android Node (arm64 and x86_64)
+    implementation 'com.caoccao.javet:javet-v8-android:5.0.2' // Android V8 (arm, arm64, x86 and x86_64)
+    implementation 'com.caoccao.javet:javet-v8-android-i18n:5.0.2' // Android V8 (arm, arm64, x86 and x86_64)
 
 OS Compatibility
 ================

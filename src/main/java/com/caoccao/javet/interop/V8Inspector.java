@@ -103,15 +103,17 @@ public final class V8Inspector {
 
     @SuppressWarnings("RedundantThrows")
     public void sendRequest(String message) throws JavetException {
-        logger.logDebug("Sending request: {0}", message);
-        for (IV8InspectorListener listener : listeners) {
-            try {
-                listener.sendRequest(message);
-            } catch (Throwable t) {
-                logger.logError(t, t.getMessage());
+        if (!v8Runtime.isClosed()) {
+            logger.logDebug("Sending request: {0}", message);
+            for (IV8InspectorListener listener : listeners) {
+                try {
+                    listener.sendRequest(message);
+                } catch (Throwable t) {
+                    logger.logError(t, t.getMessage());
+                }
             }
+            v8Native.v8InspectorSend(v8Runtime.getHandle(), message);
         }
-        v8Native.v8InspectorSend(v8Runtime.getHandle(), message);
     }
 
     public void setLogger(IJavetLogger logger) {

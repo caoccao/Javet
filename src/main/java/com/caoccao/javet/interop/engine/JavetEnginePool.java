@@ -378,6 +378,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                 try {
                     externalLock.wait(config.getPoolDaemonCheckIntervalMillis());
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     logger.logError(e,
                             "Failed to sleep a while to wait for next round in Javet engine pool daemon.");
                 }

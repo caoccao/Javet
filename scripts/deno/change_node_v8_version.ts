@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-import { dirname, fromFileUrl, resolve } from "@std/path";
+import * as path from "@std/path";
 
 abstract class ChangeVersion {
   protected rootPath: string;
   protected version: string;
 
   constructor(version: string) {
-    const scriptPath = fromFileUrl(import.meta.url);
-    this.rootPath = resolve(dirname(scriptPath), "../../");
+    const scriptPath = path.fromFileUrl(import.meta.url);
+    this.rootPath = path.resolve(path.dirname(scriptPath), "../../");
     this.version = version;
   }
 
@@ -34,7 +34,7 @@ abstract class ChangeVersion {
     lineSeparator: string,
     ...patterns: RegExp[]
   ): void {
-    const filePath = resolve(this.rootPath, relativeFilePath);
+    const filePath = path.resolve(this.rootPath, relativeFilePath);
     console.log(`INFO: Updating ${filePath}.`);
 
     const lines: string[] = [];
@@ -55,11 +55,14 @@ abstract class ChangeVersion {
             version = version.replace(/\./g, ",");
           }
           console.log(
-            `INFO:   ${lineNumber}: ${match.groups.version} -> ${version}`,
+            `INFO:   ${lineNumber}: ${match.groups.version} -> ${version}`
           );
-          const startIndex = match.index + match[0].indexOf(match.groups.version);
+          const startIndex =
+            match.index + match[0].indexOf(match.groups.version);
           const endIndex = startIndex + match.groups.version.length;
-          updatedLine = updatedLine.substring(0, startIndex) + version +
+          updatedLine =
+            updatedLine.substring(0, startIndex) +
+            version +
             updatedLine.substring(endIndex);
           break;
         }
@@ -98,68 +101,68 @@ class ChangeNodeVersion extends ChangeVersion {
     this.updateFile(
       "README.rst",
       "\n",
-      /Node\.js ``v(?<version>\d+\.\d+\.\d+)``/,
+      /Node\.js ``v(?<version>\d+\.\d+\.\d+)``/
     );
     this.updateFile(
       ".github/workflows/android_node_build.yml",
       "\n",
-      /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/,
+      /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       ".github/workflows/linux_x86_64_build.yml",
       "\n",
-      /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/,
+      /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       ".github/workflows/linux_build_artifact.yml",
       "\n",
-      /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/,
+      /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       ".github/workflows/linux_build_node_v8_image.yml",
       "\n",
-      /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/,
+      /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       ".github/workflows/macos_arm64_build.yml",
       "\n",
-      /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/,
+      /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       ".github/workflows/macos_x86_64_build.yml",
       "\n",
-      /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/,
+      /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       ".github/workflows/windows_x86_64_build.yml",
       "\n",
-      /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/,
+      /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "docker/linux-x86_64/base_all_in_one.Dockerfile",
       "\n",
-      /JAVET_NODE_VERSION=(?<version>\d+\.\d+\.\d+)$/,
+      /JAVET_NODE_VERSION=(?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "docker/linux-x86_64/base_node.Dockerfile",
       "\n",
       /node_(?<version>\d+\.\d+\.\d+)/,
-      /JAVET_NODE_VERSION=(?<version>\d+\.\d+\.\d+)/,
+      /JAVET_NODE_VERSION=(?<version>\d+\.\d+\.\d+)/
     );
     this.updateFile(
       "docker/linux-x86_64/build.env",
       "\n",
-      /JAVET_NODE_VERSION=(?<version>\d+\.\d+\.\d+)$/,
+      /JAVET_NODE_VERSION=(?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "docker/windows-x86_64/base.Dockerfile",
       "\n",
-      /JAVET_NODE_VERSION=(?<version>\d+\.\d+\.\d+)$/,
+      /JAVET_NODE_VERSION=(?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "src/test/java/com/caoccao/javet/interop/TestNodeRuntime.java",
       "\n",
-      /"v(?<version>\d+\.\d+\.\d+)",/,
+      /"v(?<version>\d+\.\d+\.\d+)",/
     );
   }
 }
@@ -173,92 +176,92 @@ class ChangeV8Version extends ChangeVersion {
     this.updateFile(
       "README.rst",
       "\n",
-      /V8 ``v(?<version>\d+\.\d+\.\d+\.\d+)``/,
+      /V8 ``v(?<version>\d+\.\d+\.\d+\.\d+)``/
     );
     this.updateFile(
       ".github/workflows/android_v8_build.yml",
       "\n",
-      /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/,
+      /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       ".github/workflows/linux_x86_64_build.yml",
       "\n",
-      /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/,
+      /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       ".github/workflows/linux_build_artifact.yml",
       "\n",
-      /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/,
+      /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       ".github/workflows/linux_build_node_v8_image.yml",
       "\n",
-      /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/,
+      /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       ".github/workflows/macos_arm64_build.yml",
       "\n",
-      /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/,
+      /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       ".github/workflows/macos_x86_64_build.yml",
       "\n",
-      /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/,
+      /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       ".github/workflows/windows_x86_64_build.yml",
       "\n",
-      /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/,
+      /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "docker/android/base.Dockerfile",
       "\n",
-      /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)$/,
+      /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "docker/linux-arm64/base_all_in_one.Dockerfile",
       "\n",
-      /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)$/,
+      /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "docker/linux-arm64/base_v8.Dockerfile",
       "\n",
       /v8_(?<version>\d+\.\d+\.\d+\.\d+)/,
-      /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)/,
+      /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)/
     );
     this.updateFile(
       "docker/linux-x86_64/base_all_in_one.Dockerfile",
       "\n",
-      /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)$/,
+      /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "docker/linux-x86_64/base_v8.Dockerfile",
       "\n",
       /v8_(?<version>\d+\.\d+\.\d+\.\d+)/,
-      /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)/,
+      /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)/
     );
     this.updateFile(
       "docker/linux-x86_64/build.env",
       "\n",
-      /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)$/,
+      /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "docker/windows-x86_64/base.Dockerfile",
       "\n",
-      /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)$/,
+      /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)$/
     );
     this.updateFile(
       "src/main/java/com/caoccao/javet/enums/JSRuntimeType.java",
       "\n",
-      /"(?<version>\d+\.\d+\.\d+\.\d+)",/,
+      /"(?<version>\d+\.\d+\.\d+\.\d+)",/
     );
   }
 }
 
 function main(): number {
-  const changeNodeVersion = new ChangeNodeVersion("24.10.0");
+  const changeNodeVersion = new ChangeNodeVersion("24.11.1");
   changeNodeVersion.update();
-  const changeV8Version = new ChangeV8Version("14.2.231.5");
+  const changeV8Version = new ChangeV8Version("14.3.127.14");
   changeV8Version.update();
   return 0;
 }
