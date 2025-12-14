@@ -187,17 +187,12 @@ RUN mkdir -p ${ROOT}/Javet/icu-node && \
     cp ${ROOT}/node/deps/icu-tmp/*.dat ${ROOT}/Javet/icu-node/
 
 # Build Javet JNI for Node non-i18n
-RUN cd ${ROOT}/node && \
-    mv out.non-i18n out && \
-    cd ${ROOT}/Javet/cpp && \
+RUN cd ${ROOT}/Javet/cpp && \
     sh ./build-linux-x86_64.sh -DNODE_DIR=${ROOT}/node && \
     cp ${ROOT}/Javet/src/main/resources/*.so ${ROOT}/Javet/artifacts-node-non-i18n/ || mkdir -p ${ROOT}/Javet/artifacts-node-non-i18n && cp ${ROOT}/Javet/src/main/resources/*.so ${ROOT}/Javet/artifacts-node-non-i18n/
 
 # Build Javet JNI for Node i18n
-RUN cd ${ROOT}/node && \
-    rm -rf out && \
-    mv out.i18n out && \
-    cd ${ROOT}/Javet/cpp && \
+RUN cd ${ROOT}/Javet/cpp && \
     sh ./build-linux-x86_64.sh -DNODE_DIR=${ROOT}/node -DENABLE_I18N=1 && \
     cp ${ROOT}/Javet/src/main/resources/*.so ${ROOT}/Javet/artifacts-node-i18n/ || mkdir -p ${ROOT}/Javet/artifacts-node-i18n && cp ${ROOT}/Javet/src/main/resources/*.so ${ROOT}/Javet/artifacts-node-i18n/
 
