@@ -109,17 +109,14 @@ class ChangeJavetVersion {
     this.updateFile(
       "docker/linux-x86_64/build.Dockerfile",
       "\n",
+      /javet-linux-x86_64:(?<version>\d+\.\d+\.\d+)/,
       /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)/
-    );
-    this.updateFile(
-      "docker/windows-x86_64/base.Dockerfile",
-      "\n",
-      /javet-windows:(?<version>\d+\.\d+\.\d+) /
     );
     this.updateFile(
       "docker/windows-x86_64/build.Dockerfile",
       "\n",
-      /javet-windows:(?<version>\d+\.\d+\.\d+)$/
+      /javet-windows-x86_64:(?<version>\d+\.\d+\.\d+)/,
+      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)/
     );
     this.updateFile(
       "android/javet-android/build.gradle.kts",

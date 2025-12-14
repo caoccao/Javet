@@ -139,7 +139,7 @@ class ChangeNodeVersion extends ChangeVersion {
       /JAVET_NODE_VERSION=(?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
-      "docker/windows-x86_64/base.Dockerfile",
+      "docker/windows-x86_64/build.Dockerfile",
       "\n",
       /JAVET_NODE_VERSION=(?<version>\d+\.\d+\.\d+)$/
     );
@@ -214,7 +214,7 @@ class ChangeV8Version extends ChangeVersion {
       /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)$/
     );
     this.updateFile(
-      "docker/windows-x86_64/base.Dockerfile",
+      "docker/windows-x86_64/build.Dockerfile",
       "\n",
       /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)$/
     );
