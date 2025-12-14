@@ -1,0 +1,61 @@
+name: Linux x86_64 Docker Build
+
+concurrency:
+  group: linux_x86_64_docker_${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+
+env:
+  JAVET_VERSION: 5.0.2
+  JAVET_NODE_VERSION: 24.11.1
+  JAVET_V8_VERSION: 14.3.127.14
+
+jobs:
+  build_docker_image:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./docker/linux-x86_64/build.Dockerfile
+        tags: javet-build:${{ env.JAVET_VERSION }}
+        load: true
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        build-args: |
+          JAVET_VERSION=${{ env.JAVET_VERSION }}
+          JAVET_NODE_VERSION=${{ env.JAVET_NODE_VERSION }}
+          JAVET_V8_VERSION=${{ env.JAVET_V8_VERSION }}
+
+    - name: Extract artifacts from Docker image
+      run: |
+        # Create temporary container from the built image
+        CONTAINER_ID=$(docker create javet-build:${{ env.JAVET_VERSION }})
+
+        # Create output directory
+        mkdir -p build-artifacts
+
+        # Extract JAR files and POM
+        docker cp $CONTAINER_ID:/home/runner/work/Javet/Javet/build/libs/. build-artifacts/
+
+        # Clean up container
+        docker rm $CONTAINER_ID
+
+    - name: Upload the Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: javet-linux-x86_64-docker-${{ env.JAVET_VERSION }}
+        path: |
+          build-artifacts/*.jar
+          build-artifacts/*.pom

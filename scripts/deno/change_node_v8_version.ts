@@ -114,12 +114,7 @@ class ChangeNodeVersion extends ChangeVersion {
       /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
-      ".github/workflows/linux_build_artifact.yml",
-      "\n",
-      /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/
-    );
-    this.updateFile(
-      ".github/workflows/linux_build_node_v8_image.yml",
+      ".github/workflows/linux_x86_64_docker.yml",
       "\n",
       /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/
     );
@@ -139,18 +134,7 @@ class ChangeNodeVersion extends ChangeVersion {
       /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
-      "docker/linux-x86_64/base_all_in_one.Dockerfile",
-      "\n",
-      /JAVET_NODE_VERSION=(?<version>\d+\.\d+\.\d+)$/
-    );
-    this.updateFile(
-      "docker/linux-x86_64/base_node.Dockerfile",
-      "\n",
-      /node_(?<version>\d+\.\d+\.\d+)/,
-      /JAVET_NODE_VERSION=(?<version>\d+\.\d+\.\d+)/
-    );
-    this.updateFile(
-      "docker/linux-x86_64/build.env",
+      "docker/linux-x86_64/build.Dockerfile",
       "\n",
       /JAVET_NODE_VERSION=(?<version>\d+\.\d+\.\d+)$/
     );
@@ -189,12 +173,7 @@ class ChangeV8Version extends ChangeVersion {
       /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/
     );
     this.updateFile(
-      ".github/workflows/linux_build_artifact.yml",
-      "\n",
-      /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/
-    );
-    this.updateFile(
-      ".github/workflows/linux_build_node_v8_image.yml",
+      ".github/workflows/linux_x86_64_docker.yml",
       "\n",
       /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/
     );
@@ -230,18 +209,7 @@ class ChangeV8Version extends ChangeVersion {
       /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)/
     );
     this.updateFile(
-      "docker/linux-x86_64/base_all_in_one.Dockerfile",
-      "\n",
-      /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)$/
-    );
-    this.updateFile(
-      "docker/linux-x86_64/base_v8.Dockerfile",
-      "\n",
-      /v8_(?<version>\d+\.\d+\.\d+\.\d+)/,
-      /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)/
-    );
-    this.updateFile(
-      "docker/linux-x86_64/build.env",
+      "docker/linux-x86_64/build.Dockerfile",
       "\n",
       /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)$/
     );

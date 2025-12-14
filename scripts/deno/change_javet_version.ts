@@ -57,12 +57,7 @@ class ChangeJavetVersion {
       /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/
     );
     this.updateFile(
-      ".github/workflows/linux_build_artifact.yml",
-      "\n",
-      /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/
-    );
-    this.updateFile(
-      ".github/workflows/linux_build_node_v8_image.yml",
+      ".github/workflows/linux_x86_64_docker.yml",
       "\n",
       /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/
     );
@@ -112,27 +107,7 @@ class ChangeJavetVersion {
       /arm64-(?<version>\d+\.\d+\.\d+) /
     );
     this.updateFile(
-      "docker/linux-x86_64/base_all_in_one.Dockerfile",
-      "\n",
-      /javet:(?<version>\d+\.\d+\.\d+) /
-    );
-    this.updateFile(
-      "docker/linux-x86_64/build_all_in_one.Dockerfile",
-      "\n",
-      /javet:(?<version>\d+\.\d+\.\d+)$/
-    );
-    this.updateFile(
-      "docker/linux-x86_64/build_artifact.Dockerfile",
-      "\n",
-      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)/
-    );
-    this.updateFile(
-      "docker/linux-x86_64/base_gradle.Dockerfile",
-      "\n",
-      /x86_64-(?<version>\d+\.\d+\.\d+) /
-    );
-    this.updateFile(
-      "docker/linux-x86_64/build.env",
+      "docker/linux-x86_64/build.Dockerfile",
       "\n",
       /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)/
     );

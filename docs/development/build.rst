@@ -30,6 +30,7 @@ Linux Environment
 * Gradle 8.5+
 * GCC 11+
 * Python 3.11+
+* Deno 2.0+
 
 MacOS Environment
 -----------------
@@ -41,6 +42,7 @@ MacOS Environment
 * JDK 8
 * Gradle 8.5+
 * Python 3.11+
+* Deno 2.0+
 
 Windows Environment
 -------------------
@@ -52,6 +54,7 @@ Windows Environment
 * JDK 8
 * Gradle 8.5+
 * Python 3.11+
+* Deno 2.0+
 
 Android Environment
 -------------------
@@ -64,6 +67,7 @@ Android Environment
 * Latest Android Studio (Optional)
 * Android NDK r27
 * Android SDK 30
+* Deno 2.0+
 
 Environment Variables
 ---------------------
@@ -81,7 +85,7 @@ V8 Feature Flags
 ======================= ======= ==================================================================================================================================
 Feature                 Flag    Description
 ======================= ======= ==================================================================================================================================
-Custom libcxx           Off     The official release doesn't support custom libcxx.
+Custom libcxx           On/Off  The official release supports custom libcxx in some cases.
 Debug                   Off     The official release is a **release** build.
 External Startup Data   Off     The official release doesn't support external startup data.
 i18n                    On/Off  The official release supports both non-i18n and i18n.

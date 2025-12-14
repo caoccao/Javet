@@ -120,7 +120,7 @@ Build V8 for Windows
 
 .. caution::
 
-    The patch script requires Python 3.
+    The patch script requires Deno.
 
 .. code-block:: shell
 
@@ -133,7 +133,7 @@ Build V8 for Windows
     copy %JAVET_HOME%\scripts\v8\gn\windows-x86_64-non-i18n-args.gn out.gn\x86_64.release\args.gn
     gn gen out.gn/x64.release
     ninja -C out.gn/x64.release v8_monolith
-    python %JAVET_HOME%\scripts\python\patch_v8_build.py -p .\
+    deno --allow-all %JAVET_HOME%\scripts\deno\patch_v8_build.ts -p .\
     ninja -C out.gn/x64.release v8_monolith
     move out.gn\x64.release out.gn.non-i18n
     gn gen --ide=vs out.gn.non-i18n\x64.solution
@@ -143,7 +143,7 @@ Build V8 for Windows
     copy %JAVET_HOME%\scripts\v8\gn\windows-x86_64-i18n-args.gn out.gn\x86_64.release\args.gn
     gn gen out.gn/x64.release
     ninja -C out.gn/x64.release v8_monolith
-    python %JAVET_HOME%\scripts\python\patch_v8_build.py -p .\
+    deno --allow-all %JAVET_HOME%\scripts\deno\patch_v8_build.ts -p .\
     ninja -C out.gn/x64.release v8_monolith
     move out.gn\x64.release out.gn.i18n
     gn gen --ide=vs out.gn.i18n\x64.solution
@@ -225,14 +225,14 @@ Build Node.js on Linux
 
 .. caution::
 
-    The patch script requires Python 3.
+    The patch script requires Deno.
 
 .. code-block:: shell
 
     cd ${NODE_HOME}
-    python3 ${JAVET_HOME}/scripts/python/patch_node_build.py -p ${NODE_HOME}
+    deno --allow-all ${JAVET_HOME}/scripts/deno/patch_node_build.ts -p ${NODE_HOME}
     ./configure --enable-static --without-intl
-    python3 ${JAVET_HOME}/scripts/python/patch_node_build.py -p ${NODE_HOME}
+    deno --allow-all ${JAVET_HOME}/scripts/deno/patch_node_build.ts -p ${NODE_HOME}
     make -j4
 
 Why Patching Node.js?
