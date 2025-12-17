@@ -19,7 +19,7 @@
 # Based on .github/workflows/linux_x86_64_build.yml
 
 # Build arguments
-ARG JAVET_NODE_VERSION=24.11.1
+ARG JAVET_NODE_VERSION=24.12.0
 ARG JAVET_V8_VERSION=14.4.258.13
 ARG JAVET_VERSION=5.0.3
 
