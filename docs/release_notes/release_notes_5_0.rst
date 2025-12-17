@@ -8,6 +8,7 @@ Release Notes 5.0.x
 * Upgraded Node.js to ``v24.12.0`` `(2025-12-10) <https://nodejs.org/en/blog/release/v24.12.0>`_
 * Upgraded V8 to ``v14.4.258.13`` (2025-12-16)
 * Supported Temporal in V8 mode on MacOS
+* Added ``isHarmonyTemporal()``, ``setHarmonyTemporal()`` to ``NodeFlags``
 
 5.0.2
 -----

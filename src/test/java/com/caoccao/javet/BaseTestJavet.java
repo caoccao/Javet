@@ -75,6 +75,7 @@ public abstract class BaseTestJavet {
                     v8Flags.setUseStrict(true);
                 }
             }
+            NodeRuntimeOptions.NODE_FLAGS.setHarmonyTemporal(true);
             assertNotNull(jsRuntimeType);
             v8Host = V8Host.getInstance(jsRuntimeType);
             if (isNode()) {

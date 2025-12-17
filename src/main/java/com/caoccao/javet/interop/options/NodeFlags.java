@@ -50,6 +50,12 @@ public final class NodeFlags {
      */
     public static final String EXPERIMENTAL_SQLITE = "--experimental-sqlite";
     /**
+     * The constant HARMONY_TEMPORAL.
+     *
+     * @since 5.0.3
+     */
+    public static final String HARMONY_TEMPORAL = "--harmony-temporal";
+    /**
      * The constant ICU_DATA_DIR.
      *
      * @since 4.0.0
@@ -68,23 +74,24 @@ public final class NodeFlags {
      */
     public static final String NO_EXPERIMENTAL_REQUIRE_MODULE = "--no-experimental-require-module";
     /**
-     * The constant PERMISSION.
-     *
-     * @since 5.0.0
-     */
-    public static final String PERMISSION = "--permission";
-    /**
      * The constant NO_WARNINGS.
      *
      * @since 4.0.0
      */
     public static final String NO_WARNINGS = "--no-warnings";
+    /**
+     * The constant PERMISSION.
+     *
+     * @since 5.0.0
+     */
+    public static final String PERMISSION = "--permission";
     private static final String EQUAL = "=";
     private static final String SPACE = " ";
     private String[] allowFsRead;
     private String[] allowFsWrite;
     private String[] customFlags;
     private boolean experimentalSqlite;
+    private boolean harmonyTemporal;
     private String icuDataDir;
     private boolean jsFloat16Array;
     private boolean noExperimentalRequireModule;
@@ -169,6 +176,16 @@ public final class NodeFlags {
      */
     public boolean isExperimentalSqlite() {
         return experimentalSqlite;
+    }
+
+    /**
+     * Is temporal supported.
+     *
+     * @return true : yes, false: no
+     * @since 5.0.3
+     */
+    public boolean isHarmonyTemporal() {
+        return harmonyTemporal;
     }
 
     /**
@@ -316,6 +333,18 @@ public final class NodeFlags {
     }
 
     /**
+     * Sets if temporal is supported.
+     *
+     * @param harmonyTemporal the temporal supported
+     * @return the temporal supported
+     * @since 5.0.3
+     */
+    public NodeFlags setHarmonyTemporal(boolean harmonyTemporal) {
+        this.harmonyTemporal = harmonyTemporal;
+        return this;
+    }
+
+    /**
      * Sets icu data dir.
      *
      * @param icuDataDir the icu data dir
@@ -406,6 +435,9 @@ public final class NodeFlags {
         }
         if (experimentalSqlite) {
             tokens.add(EXPERIMENTAL_SQLITE);
+        }
+        if (harmonyTemporal) {
+            tokens.add(HARMONY_TEMPORAL);
         }
         if (StringUtils.isNotBlank(icuDataDir)) {
             tokens.add(ICU_DATA_DIR + EQUAL + icuDataDir.trim());
