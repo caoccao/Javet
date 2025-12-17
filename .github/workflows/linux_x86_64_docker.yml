@@ -10,7 +10,7 @@ on:
 env:
   JAVET_VERSION: 5.0.3
   JAVET_NODE_VERSION: 24.11.1
-  JAVET_V8_VERSION: 14.3.127.14
+  JAVET_V8_VERSION: 14.4.258.13
 
 jobs:
   build_docker_image:

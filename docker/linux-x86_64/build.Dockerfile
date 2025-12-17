@@ -20,7 +20,7 @@
 
 # Build arguments
 ARG JAVET_NODE_VERSION=24.11.1
-ARG JAVET_V8_VERSION=14.3.127.14
+ARG JAVET_V8_VERSION=14.4.258.13
 ARG JAVET_VERSION=5.0.3
 
 ###########################################
