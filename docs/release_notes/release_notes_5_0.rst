@@ -6,6 +6,7 @@ Release Notes 5.0.x
 -----
 
 * Upgraded V8 to ``v14.4.258.13`` (2025-12-16)
+* Supported Temporal in V8 mode on MacOS
 
 5.0.2
 -----

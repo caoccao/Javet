@@ -19,9 +19,9 @@ package com.caoccao.javet.values.primitive;
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
+import com.caoccao.javet.utils.JavetOSUtils;
 import org.junit.jupiter.api.Test;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,6 +53,25 @@ public class TestV8ValueZonedDateTime extends BaseTestJavetRuntime {
                 .executeZonedDateTime().withZoneSameInstant(JavetDateTimeUtils.ZONE_ID_UTC));
         assertEquals(minZonedDateTime, v8Runtime.getExecutor("new Date(-2208988800000)")
                 .executeZonedDateTime().withZoneSameInstant(JavetDateTimeUtils.ZONE_ID_UTC));
+    }
+
+    @Test
+    public void testTemporal() throws JavetException {
+        if (isV8() && JavetOSUtils.IS_MACOS) {
+            ZonedDateTime expectedDateTime = ZonedDateTime.of(
+                    2024, 6, 15, 10, 30, 45, 0, JavetDateTimeUtils.ZONE_ID_UTC);
+            ZonedDateTime actualDateTime = v8Runtime.getExecutor(
+                    "const temporal = Temporal.PlainDateTime.from('2024-06-15T10:30:45'); " +
+                            "new Date(temporal.toZonedDateTime('UTC').epochMilliseconds)"
+            ).executeZonedDateTime();
+            actualDateTime = actualDateTime.withZoneSameInstant(JavetDateTimeUtils.ZONE_ID_UTC);
+            assertEquals(expectedDateTime.getYear(), actualDateTime.getYear());
+            assertEquals(expectedDateTime.getMonthValue(), actualDateTime.getMonthValue());
+            assertEquals(expectedDateTime.getDayOfMonth(), actualDateTime.getDayOfMonth());
+            assertEquals(expectedDateTime.getHour(), actualDateTime.getHour());
+            assertEquals(expectedDateTime.getMinute(), actualDateTime.getMinute());
+            assertEquals(expectedDateTime.getSecond(), actualDateTime.getSecond());
+        }
     }
 
     @Test
