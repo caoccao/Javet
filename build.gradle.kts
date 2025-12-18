@@ -111,7 +111,7 @@ afterEvaluate {
     }
 }
 
-task<Exec>("buildJNIHeaders") {
+tasks.register<Exec>("buildJNIHeaders") {
     doFirst {
         mkdir("$buildDir/generated/tmp/jni")
     }

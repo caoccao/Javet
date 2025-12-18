@@ -12,18 +12,24 @@ Platform Support
 
 The following table shows the current support status for Temporal across different platforms and modes:
 
-========  =======  =======  =========
-Mode      Linux    macOS    Windows
-========  =======  =======  =========
-Node.js   ✓        ✓        ✓
-V8        ✗        ✓        ✗
-========  =======  =======  =========
+========  =========  =======  =======  =========
+Mode      Android    Linux    MacOS    Windows
+========  =========  =======  =======  =========
+Node.js   ✓          ✓        ✓        ✓
+V8        ✗          ✗        ✓        ✓
+========  =========  =======  =======  =========
 
 Key Points
 ==========
 
-* **Node.js Mode**: Temporal is fully supported on all operating systems (Linux, macOS, and Windows).
-* **V8 Mode**: Temporal is currently only supported on macOS. Support for Linux and Windows is not yet available.
+* **Node.js Mode**: Temporal is fully supported on all operating systems (Linux, MacOS, and Windows).
+* **V8 Mode**: Temporal is currently supported on MacOS, Windows. Support for Linux is not yet available.
+
+How to Enable Temporal
+======================
+
+* **Node.js Mode**: Temporal is disabled by default. To enable it, you need to set ``NodeFlags.setHarmonyTemporal(true)`` before creating the V8 runtime first time.
+* **V8 Mode**: Temporal is enabled by default on MacOS and Windows.
 
 Usage
 =====

@@ -10,6 +10,7 @@ env:
   JAVET_NODE_VERSION: 24.12.0
   JAVET_V8_VERSION: 14.4.258.13
   JAVET_VERSION: 5.0.3
+  TEMPORAL_VERSION: 0.1.2
   ROOT: D:\a\Javet
 
 jobs:
@@ -37,15 +38,20 @@ jobs:
     - name: Checkout the code
       uses: actions/checkout@v4
 
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11' 
+
     - name: Setup Deno
       uses: denoland/setup-deno@v2
       with:
         deno-version: v2.x
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
+    - name: Setup Rust
+      uses: actions-rust-lang/setup-rust-toolchain@v1
       with:
-        python-version: '3.11' 
+        toolchain: stable
 
     - name: Setup Path
       run: |
@@ -69,6 +75,8 @@ jobs:
         cd ..
         depot_tools/gclient.bat sync -D
         cd v8
+        # The fix is to change gc_retry to use a template parameter instead of std::function, so it can accept any callable type and pass it directly to RetryCustomAllocate without the intermediate std::function conversion.
+        sed -i 's|  auto gc_retry = \[&\](const std::function<bool()>& fn)|  auto gc_retry = [\&](auto\&\& fn)|' src/objects/backing-store.cc
         mkdir -p out.gn/x64.release
         cp ../../Javet/scripts/v8/gn/windows-x86_64-${{ matrix.name }}-args.gn out.gn/x64.release/args.gn
         ../depot_tools/gn.bat gen out.gn/x64.release
@@ -81,6 +89,17 @@ jobs:
       run: |
         mkdir icu-v8
         copy ..\google\v8\third_party\icu\common\*.dat icu-v8
+
+    - name: Build Temporal CAPI
+      shell: bash
+      run: |
+        cd ${{ env.ROOT }}
+        git clone https://github.com/boa-dev/temporal.git
+        cd temporal
+        git checkout v${{ env.TEMPORAL_VERSION }}
+        deno run --allow-all ../Javet/scripts/deno/patch_v8_temporal.ts -p ./
+        cargo build --release --package temporal_capi --features compiled_data,zoneinfo64
+        cp target/release/temporal_capi.lib ../google/v8/out.gn.${{ matrix.name }}/x64.release/obj
 
     - name: Setup JDK 8
       uses: actions/setup-java@v4

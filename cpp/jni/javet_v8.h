@@ -28,6 +28,7 @@
 #ifdef _WIN32
 #pragma comment(lib, "DbgHelp.lib")
 #pragma comment(lib, "Iphlpapi.lib")
+#pragma comment(lib, "ntdll.lib")
 #pragma comment(lib, "Psapi.lib")
 #pragma comment(lib, "Userenv.lib")
 #pragma comment(lib, "Winmm.lib")

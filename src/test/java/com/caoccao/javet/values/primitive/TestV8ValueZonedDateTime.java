@@ -57,7 +57,7 @@ public class TestV8ValueZonedDateTime extends BaseTestJavetRuntime {
 
     @Test
     public void testTemporal() throws JavetException {
-        if (isNode() || JavetOSUtils.IS_MACOS) {
+        if (isNode() || JavetOSUtils.IS_MACOS || JavetOSUtils.IS_WINDOWS) {
             ZonedDateTime expectedDateTime = ZonedDateTime.of(
                     2024, 6, 15, 10, 30, 45, 0, JavetDateTimeUtils.ZONE_ID_UTC);
             ZonedDateTime actualDateTime = v8Runtime.getExecutor(

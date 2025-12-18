@@ -7,7 +7,8 @@ Release Notes 5.0.x
 
 * Upgraded Node.js to ``v24.12.0`` `(2025-12-10) <https://nodejs.org/en/blog/release/v24.12.0>`_
 * Upgraded V8 to ``v14.4.258.13`` (2025-12-16)
-* Supported Temporal in V8 mode on MacOS
+* Upgraded Visual Studio 2022 to `v17.14.23 <https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.14>`_
+* Supported Temporal in V8 mode on MacOS, Windows
 * Added ``isHarmonyTemporal()``, ``setHarmonyTemporal()`` to ``NodeFlags``
 
 5.0.2
