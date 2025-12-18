@@ -93,7 +93,7 @@ jobs:
     - name: Build Temporal CAPI
       shell: bash
       run: |
-        cd ${{ env.ROOT }}
+        cd ..
         git clone https://github.com/boa-dev/temporal.git
         cd temporal
         git checkout v${{ env.TEMPORAL_VERSION }}

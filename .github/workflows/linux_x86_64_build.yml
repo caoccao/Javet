@@ -10,6 +10,7 @@ env:
   JAVET_NODE_VERSION: 24.12.0
   JAVET_V8_VERSION: 14.4.258.13
   JAVET_VERSION: 5.0.3
+  TEMPORAL_VERSION: 0.1.2
   ROOT: /home/runner/work/Javet
 
 jobs:
@@ -42,6 +43,16 @@ jobs:
       with:
         python-version: '3.11' 
 
+    - name: Setup Deno
+      uses: denoland/setup-deno@v2
+      with:
+        deno-version: v2.x
+
+    - name: Setup Rust
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: stable
+
     - name: Setup Path
       run: |
         echo "${{ env.ROOT }}/google/depot_tools" >> $GITHUB_PATH
@@ -64,6 +75,7 @@ jobs:
         cd v8
         sed -i '/#include "src\/libplatform\//a #include <cstdlib>' src/libplatform/default-thread-isolated-allocator.cc
         sed -i '/bool KernelHasPkruFix()/a const char* env = std::getenv("JAVET_DISABLE_PKU"); if (env && std::strlen(env) > 0) { return false; }' src/libplatform/default-thread-isolated-allocator.cc
+        sed -i '/return other_kind == "islamic-umalqura"/a\    case HijriSimulatedMecca:\n      return other_kind == "islamic-rgsa" || other_kind == "islamic";' src/objects/js-date-time-format.cc
         mkdir -p out.gn.${{ matrix.name }}/x64.release
         cp ../../Javet/scripts/v8/gn/linux-x86_64-${{ matrix.name }}-args.gn out.gn.${{ matrix.name }}/x64.release/args.gn
         gn gen out.gn.${{ matrix.name }}/x64.release
@@ -74,6 +86,16 @@ jobs:
       run: |
         mkdir icu-v8
         cp ../google/v8/third_party/icu/common/*.dat icu-v8
+
+    - name: Build Temporal CAPI
+      run: |
+        cd ${{ env.ROOT }}
+        git clone https://github.com/boa-dev/temporal.git
+        cd temporal
+        git checkout v${{ env.TEMPORAL_VERSION }}
+        deno run --allow-all ../Javet/scripts/deno/patch_v8_temporal.ts -p ./
+        cargo build --release --package temporal_capi --features compiled_data,zoneinfo64
+        cp target/release/libtemporal_capi.a ../google/v8/out.gn.${{ matrix.name }}/x64.release/obj
 
     - name: Setup JDK 8
       uses: actions/setup-java@v4

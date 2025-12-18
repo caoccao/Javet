@@ -12,12 +12,12 @@ Platform Support
 
 The following table shows the current support status for Temporal across different platforms and modes:
 
-========  =========  =======  =======  =========
-Mode      Android    Linux    MacOS    Windows
-========  =========  =======  =======  =========
-Node.js   ✓          ✓        ✓        ✓
-V8        ✗          ✗        ✓        ✓
-========  =========  =======  =======  =========
+========  =========  ================  ================  =======  =========
+Mode      Android    Linux x86_64      Linux arm64       MacOS    Windows
+========  =========  ================  ================  =======  =========
+Node.js   ✓          ✓                 ✓                 ✓        ✓
+V8        ✗          ✓                 ✗                 ✓        ✓
+========  =========  ================  ================  =======  =========
 
 Key Points
 ==========
