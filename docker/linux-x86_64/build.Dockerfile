@@ -22,6 +22,7 @@
 ARG JAVET_NODE_VERSION=24.12.0
 ARG JAVET_V8_VERSION=14.4.258.13
 ARG JAVET_VERSION=5.0.3
+ARG TEMPORAL_VERSION=0.1.2
 
 ###########################################
 # Stage 1: Base with common dependencies
@@ -31,10 +32,12 @@ FROM ubuntu:latest AS base
 ARG JAVET_NODE_VERSION
 ARG JAVET_V8_VERSION
 ARG JAVET_VERSION
+ARG TEMPORAL_VERSION
 
 ENV JAVET_NODE_VERSION=${JAVET_NODE_VERSION}
 ENV JAVET_V8_VERSION=${JAVET_V8_VERSION}
 ENV JAVET_VERSION=${JAVET_VERSION}
+ENV TEMPORAL_VERSION=${TEMPORAL_VERSION}
 ENV ROOT=/home/runner/work/Javet
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -63,6 +66,10 @@ RUN apt-get update -y && \
 # Setup Deno
 RUN curl -fsSL https://deno.land/install.sh | sh
 ENV PATH="/root/.deno/bin:${PATH}"
+
+# Setup Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Setup JDK 8
 RUN apt-get update -y && \
@@ -110,7 +117,17 @@ RUN cd ${ROOT}/google && gclient sync -D
 # Apply V8 patches
 RUN cd ${ROOT}/google/v8 && \
     sed -i '/#include "src\/libplatform\//a #include <cstdlib>' src/libplatform/default-thread-isolated-allocator.cc && \
-    sed -i '/bool KernelHasPkruFix()/a const char* env = std::getenv("JAVET_DISABLE_PKU"); if (env && std::strlen(env) > 0) { return false; }' src/libplatform/default-thread-isolated-allocator.cc
+    sed -i '/bool KernelHasPkruFix()/a const char* env = std::getenv("JAVET_DISABLE_PKU"); if (env && std::strlen(env) > 0) { return false; }' src/libplatform/default-thread-isolated-allocator.cc && \
+    sed -i '/return other_kind == "islamic-umalqura"/a\    case HijriSimulatedMecca:\n      return other_kind == "islamic-rgsa" || other_kind == "islamic";' src/objects/js-date-time-format.cc
+
+# Build Temporal CAPI for non-i18n
+RUN cd ${ROOT} && \
+    git clone https://github.com/boa-dev/temporal.git && \
+    cd temporal && \
+    git checkout v${TEMPORAL_VERSION} && \
+    deno run --allow-all ${ROOT}/Javet/scripts/deno/patch_v8_temporal.ts -p ./ && \
+    cargo build --release --package temporal_capi --features compiled_data,zoneinfo64 && \
+    cp target/release/libtemporal_capi.a ${ROOT}/google/v8/out.gn.non-i18n/x64.release/obj/
 
 # Build V8 non-i18n
 RUN cd ${ROOT}/google/v8 && \
@@ -118,6 +135,12 @@ RUN cd ${ROOT}/google/v8 && \
     cp ${ROOT}/Javet/scripts/v8/gn/linux-x86_64-non-i18n-args.gn out.gn.non-i18n/x64.release/args.gn && \
     gn gen out.gn.non-i18n/x64.release && \
     ninja -C out.gn.non-i18n/x64.release v8_monolith
+
+# Build Temporal CAPI for i18n
+RUN cd ${ROOT}/temporal && \
+    cargo clean && \
+    cargo build --release --package temporal_capi --features compiled_data,zoneinfo64 && \
+    cp target/release/libtemporal_capi.a ${ROOT}/google/v8/out.gn.i18n/x64.release/obj/
 
 # Build V8 i18n
 RUN cd ${ROOT}/google/v8 && \
