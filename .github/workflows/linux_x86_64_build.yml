@@ -75,7 +75,7 @@ jobs:
         cd v8
         sed -i '/#include "src\/libplatform\//a #include <cstdlib>' src/libplatform/default-thread-isolated-allocator.cc
         sed -i '/bool KernelHasPkruFix()/a const char* env = std::getenv("JAVET_DISABLE_PKU"); if (env && std::strlen(env) > 0) { return false; }' src/libplatform/default-thread-isolated-allocator.cc
-        sed -i '/return other_kind == "islamic-umalqura"/a\    case HijriSimulatedMecca:\n      return other_kind == "islamic-rgsa" || other_kind == "islamic";' src/objects/js-date-time-format.cc
+        # sed -i '/return other_kind == "islamic-umalqura"/a\    case HijriSimulatedMecca:\n      return other_kind == "islamic-rgsa" || other_kind == "islamic";' src/objects/js-date-time-format.cc
         mkdir -p out.gn.${{ matrix.name }}/x64.release
         cp ../../Javet/scripts/v8/gn/linux-x86_64-${{ matrix.name }}-args.gn out.gn.${{ matrix.name }}/x64.release/args.gn
         gn gen out.gn.${{ matrix.name }}/x64.release
