@@ -120,6 +120,20 @@ RUN cd ${ROOT}/google/v8 && \
     sed -i '/bool KernelHasPkruFix()/a const char* env = std::getenv("JAVET_DISABLE_PKU"); if (env && std::strlen(env) > 0) { return false; }' src/libplatform/default-thread-isolated-allocator.cc && \
     sed -i '/return other_kind == "islamic-umalqura"/a\    case HijriSimulatedMecca:\n      return other_kind == "islamic-rgsa" || other_kind == "islamic";' src/objects/js-date-time-format.cc
 
+# Build V8 non-i18n
+RUN cd ${ROOT}/google/v8 && \
+    mkdir -p out.gn.linux.non-i18n/x64.release && \
+    cp ${ROOT}/Javet/scripts/v8/gn/linux-x86_64-non-i18n-args.gn out.gn.linux.non-i18n/x64.release/args.gn && \
+    gn gen out.gn.linux.non-i18n/x64.release && \
+    ninja -C out.gn.linux.non-i18n/x64.release v8_monolith
+
+# Build V8 i18n
+RUN cd ${ROOT}/google/v8 && \
+    mkdir -p out.gn.linux.i18n/x64.release && \
+    cp ${ROOT}/Javet/scripts/v8/gn/linux-x86_64-i18n-args.gn out.gn.linux.i18n/x64.release/args.gn && \
+    gn gen out.gn.linux.i18n/x64.release && \
+    ninja -C out.gn.linux.i18n/x64.release v8_monolith
+
 # Build Temporal CAPI for non-i18n
 RUN cd ${ROOT} && \
     git clone https://github.com/boa-dev/temporal.git && \
@@ -127,27 +141,8 @@ RUN cd ${ROOT} && \
     git checkout v${TEMPORAL_VERSION} && \
     deno run --allow-all ${ROOT}/Javet/scripts/deno/patch_v8_temporal.ts -p ./ && \
     cargo build --release --package temporal_capi --features compiled_data,zoneinfo64 && \
-    cp target/release/libtemporal_capi.a ${ROOT}/google/v8/out.gn.non-i18n/x64.release/obj/
-
-# Build V8 non-i18n
-RUN cd ${ROOT}/google/v8 && \
-    mkdir -p out.gn.non-i18n/x64.release && \
-    cp ${ROOT}/Javet/scripts/v8/gn/linux-x86_64-non-i18n-args.gn out.gn.non-i18n/x64.release/args.gn && \
-    gn gen out.gn.non-i18n/x64.release && \
-    ninja -C out.gn.non-i18n/x64.release v8_monolith
-
-# Build Temporal CAPI for i18n
-RUN cd ${ROOT}/temporal && \
-    cargo clean && \
-    cargo build --release --package temporal_capi --features compiled_data,zoneinfo64 && \
-    cp target/release/libtemporal_capi.a ${ROOT}/google/v8/out.gn.i18n/x64.release/obj/
-
-# Build V8 i18n
-RUN cd ${ROOT}/google/v8 && \
-    mkdir -p out.gn.i18n/x64.release && \
-    cp ${ROOT}/Javet/scripts/v8/gn/linux-x86_64-i18n-args.gn out.gn.i18n/x64.release/args.gn && \
-    gn gen out.gn.i18n/x64.release && \
-    ninja -C out.gn.i18n/x64.release v8_monolith
+    cp target/release/libtemporal_capi.a ${ROOT}/google/v8/out.gn.linux.non-i18n/x64.release/obj/ && \
+    cp target/release/libtemporal_capi.a ${ROOT}/google/v8/out.gn.linux.i18n/x64.release/obj/
 
 # Copy i18n data
 RUN mkdir -p ${ROOT}/Javet/icu-v8 && \

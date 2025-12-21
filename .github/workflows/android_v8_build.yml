@@ -10,6 +10,7 @@ on:
 env:
   JAVET_V8_VERSION: 14.4.258.13
   JAVET_VERSION: 5.0.3
+  TEMPORAL_VERSION: 0.1.2
   ROOT: /home/runner/work/Javet
 
 jobs:
@@ -22,41 +23,49 @@ jobs:
             android_abi: armeabi-v7a
             i18n_name: i18n
             cmake_flag: -DENABLE_I18N=1
+            rust_target: armv7-linux-androideabi
           - v8_release: arm64
             android_arch: arm64
             android_abi: arm64-v8a
             i18n_name: i18n
             cmake_flag: -DENABLE_I18N=1
+            rust_target: aarch64-linux-android
           - v8_release: ia32
             android_arch: x86
             android_abi: x86
             i18n_name: i18n
             cmake_flag: -DENABLE_I18N=1
+            rust_target: i686-linux-android
           - v8_release: x64
             android_arch: x86_64
             android_abi: x86_64
             i18n_name: i18n
             cmake_flag: -DENABLE_I18N=1
+            rust_target: x86_64-linux-android
           - v8_release: arm
             android_arch: arm
             android_abi: armeabi-v7a
             i18n_name: non-i18n
             cmake_flag:
+            rust_target: armv7-linux-androideabi
           - v8_release: arm64
             android_arch: arm64
             android_abi: arm64-v8a
             i18n_name: non-i18n
             cmake_flag:
+            rust_target: aarch64-linux-android
           - v8_release: ia32
             android_arch: x86
             android_abi: x86
             i18n_name: non-i18n
             cmake_flag:
+            rust_target: i686-linux-android
           - v8_release: x64
             android_arch: x86_64
             android_abi: x86_64
             i18n_name: non-i18n
             cmake_flag:
+            rust_target: x86_64-linux-android
 
     name: Build Javet ${{ matrix.android_arch }} ${{ matrix.i18n_name }}
     runs-on: ubuntu-latest
@@ -74,6 +83,19 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.11' 
+
+    - name: Setup Deno
+      uses: denoland/setup-deno@v2
+      with:
+        deno-version: v2.x
+
+    - name: Setup Rust
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: stable
+
+    - name: Install Rust target
+      run: rustup target add ${{ matrix.rust_target }}
 
     - name: Setup Android NDK
       id: setup-ndk
@@ -106,10 +128,20 @@ jobs:
         # Replace the NDK because the NDK from V8 is broken.
         mv third_party/android_toolchain/ndk third_party/android_toolchain/ndk.bak
         ln -s ${{ steps.setup-ndk.outputs.ndk-path }} third_party/android_toolchain/ndk
-        mkdir -p out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
-        cp ../../Javet/scripts/v8/gn/android-${{ matrix.android_arch }}-${{ matrix.i18n_name }}-args.gn out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release/args.gn
-        gn gen out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
-        ninja -C out.gn.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release v8_monolith
+        mkdir -p out.gn.android.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
+        cp ../../Javet/scripts/v8/gn/android-${{ matrix.android_arch }}-${{ matrix.i18n_name }}-args.gn out.gn.android.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release/args.gn
+        gn gen out.gn.android.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
+        ninja -C out.gn.android.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release v8_monolith
+
+    - name: Build Temporal CAPI
+      run: |
+        cd ${{ env.ROOT }}
+        git clone https://github.com/boa-dev/temporal.git
+        cd temporal
+        git checkout v${{ env.TEMPORAL_VERSION }}
+        deno run --allow-all ../Javet/scripts/deno/patch_v8_temporal.ts -p ./
+        cargo build --release --target ${{ matrix.rust_target }} --package temporal_capi --features compiled_data,zoneinfo64
+        cp target/${{ matrix.rust_target }}/release/libtemporal_capi.a ../google/v8/out.gn.android.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release/obj
 
     - name: Copy the i18n
       if: matrix.i18n_name == 'i18n' && matrix.android_arch == 'arm64'

@@ -138,15 +138,6 @@ RUN cd google && depot_tools\gclient.bat sync -D
 RUN cd google\v8 && \
     powershell -Command "(Get-Content src\objects\backing-store.cc) -replace '  auto gc_retry = \[&\]\(const std::function<bool\(\)>& fn\)', '  auto gc_retry = [&](auto&& fn)' | Set-Content src\objects\backing-store.cc"
 
-# Build Temporal CAPI for non-i18n
-RUN cd C:\ && \
-    git clone https://github.com/boa-dev/temporal.git && \
-    cd temporal && \
-    git checkout v%TEMPORAL_VERSION% && \
-    deno run --allow-all C:\Javet\scripts\deno\patch_v8_temporal.ts -p .\ && \
-    cargo build --release --package temporal_capi --features compiled_data,zoneinfo64 && \
-    copy target\release\temporal_capi.lib C:\google\v8\out.gn.non-i18n\x64.release\obj
-
 # Build V8 non-i18n
 RUN cd google\v8 && \
     mkdir out.gn\x64.release && \
@@ -154,13 +145,7 @@ RUN cd google\v8 && \
     ..\depot_tools\gn.bat gen out.gn\x64.release && \
     ..\depot_tools\ninja.bat -C out.gn\x64.release v8_monolith || deno --allow-all C:\Javet\src\scripts\deno\patch_v8_build.ts -p .\ && \
     ..\depot_tools\ninja.bat -C out.gn\x64.release v8_monolith && \
-    move out.gn out.gn.non-i18n
-
-# Build Temporal CAPI for i18n
-RUN cd C:\temporal && \
-    cargo clean && \
-    cargo build --release --package temporal_capi --features compiled_data,zoneinfo64 && \
-    copy target\release\temporal_capi.lib C:\google\v8\out.gn.i18n\x64.release\obj
+    move out.gn out.gn.windows.non-i18n
 
 # Build V8 i18n
 RUN cd google\v8 && \
@@ -169,7 +154,17 @@ RUN cd google\v8 && \
     ..\depot_tools\gn.bat gen out.gn\x64.release && \
     ..\depot_tools\ninja.bat -C out.gn\x64.release v8_monolith || deno --allow-all C:\Javet\src\scripts\deno\patch_v8_build.ts -p .\ && \
     ..\depot_tools\ninja.bat -C out.gn\x64.release v8_monolith && \
-    move out.gn out.gn.i18n
+    move out.gn out.gn.windows.i18n
+
+# Build Temporal CAPI
+RUN cd C:\ && \
+    git clone https://github.com/boa-dev/temporal.git && \
+    cd temporal && \
+    git checkout v%TEMPORAL_VERSION% && \
+    deno run --allow-all C:\Javet\scripts\deno\patch_v8_temporal.ts -p .\ && \
+    cargo build --release --package temporal_capi --features compiled_data,zoneinfo64 && \
+    copy target\release\temporal_capi.lib C:\google\v8\out.gn.windows.non-i18n\x64.release\obj && \
+    copy target\release\temporal_capi.lib C:\google\v8\out.gn.windows.i18n\x64.release\obj
 
 # Copy i18n data
 RUN mkdir C:\icu-v8 && \
