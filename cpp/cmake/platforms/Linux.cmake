@@ -40,7 +40,6 @@ if(DEFINED V8_DIR)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flax-vector-conversions ")
     endif()
     add_definitions(-D_LIBCPP_HARDENING_MODE_DEFAULT=_LIBCPP_HARDENING_MODE_NONE)
-    add_definitions(-DV8_TEMPORAL_SUPPORT)
     list(APPEND includeDirs
         ${V8_DIR}/buildtools/third_party/libc++
         ${V8_DIR}/third_party/libc++/src/include

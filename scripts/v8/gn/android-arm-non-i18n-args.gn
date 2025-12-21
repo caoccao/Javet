@@ -1,5 +1,5 @@
 clang_use_chrome_plugins = false
-compiler_timing = true
+compiler_timing = false
 dcheck_always_on = false
 is_component_build = false
 is_debug = false
@@ -13,7 +13,7 @@ use_custom_libcxx = false
 v8_enable_i18n_support = false
 v8_enable_pointer_compression = false
 v8_enable_sandbox = false
-v8_enable_temporal_support = false
+v8_enable_temporal_support = true
 v8_enable_webassembly = true
 v8_monolithic = true
 v8_monolithic_for_shared_library = true
