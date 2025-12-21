@@ -156,13 +156,19 @@ public interface IV8Native {
 
     Object integerObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    boolean isBatterySaverModeEnabled(long v8RuntimeHandle);
+
     boolean isDead(long v8RuntimeHandle);
+
+    boolean isEfficiencyModeEnabled(long v8RuntimeHandle);
 
     boolean isExecutionTerminating(long v8RuntimeHandle);
 
     boolean isI18nEnabled();
 
     boolean isInUse(long v8RuntimeHandle);
+
+    boolean isMemorySaverModeEnabled(long v8RuntimeHandle);
 
     boolean isWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 

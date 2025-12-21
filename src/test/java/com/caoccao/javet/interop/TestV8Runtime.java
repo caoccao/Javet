@@ -150,6 +150,27 @@ public class TestV8Runtime extends BaseTestJavet {
     }
 
     @Test
+    public void testIsBatterySaverModeEnabled() throws JavetException {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            assertFalse(v8Runtime.isBatterySaverModeEnabled());
+        }
+    }
+
+    @Test
+    public void testIsEfficiencyModeEnabled() throws JavetException {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            assertTrue(v8Runtime.isEfficiencyModeEnabled());
+        }
+    }
+
+    @Test
+    public void testIsMemorySaverModeEnabled() throws JavetException {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            assertTrue(v8Runtime.isMemorySaverModeEnabled());
+        }
+    }
+
+    @Test
     public void testLowMemoryNotification() throws JavetException {
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             v8Runtime.lowMemoryNotification();

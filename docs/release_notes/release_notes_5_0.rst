@@ -10,6 +10,7 @@ Release Notes 5.0.x
 * Upgraded Visual Studio 2022 to `v17.14.23 <https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.14>`_
 * Supported Temporal in V8 mode
 * Added ``isHarmonyTemporal()``, ``setHarmonyTemporal()`` to ``NodeFlags``
+* Added ``isEfficiencyModeEnabled()``, ``isBatterySaverModeEnabled()``, ``isMemorySaverModeEnabled()`` to ``V8Runtime``
 
 5.0.2
 -----
