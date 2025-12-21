@@ -36,6 +36,18 @@ public final class V8Flags {
      */
     public static final String FLAG_ALLOW_NATIVES_SYNTAX = "--allow-natives-syntax";
     /**
+     * The constant FLAG_BATTERY_SAVER_MODE.
+     *
+     * @since 5.0.3
+     */
+    public static final String FLAG_BATTERY_SAVER_MODE = "--battery-saver-mode";
+    /**
+     * The constant FLAG_EFFICIENCY_MODE.
+     *
+     * @since 5.0.3
+     */
+    public static final String FLAG_EFFICIENCY_MODE = "--efficiency-mode";
+    /**
      * The constant FLAG_EXPOSE_GC.
      *
      * @since 0.9.13
@@ -72,6 +84,12 @@ public final class V8Flags {
      */
     public static final String FLAG_MAX_HEAP_SIZE = "--max-heap-size";
     /**
+     * The constant FLAG_MEMORY_SAVER_MODE.
+     *
+     * @since 5.0.3
+     */
+    public static final String FLAG_MEMORY_SAVER_MODE = "--memory-saver-mode";
+    /**
      * The constant FLAG_USE_STRICT.
      *
      * @since 0.9.13
@@ -79,7 +97,9 @@ public final class V8Flags {
     public static final String FLAG_USE_STRICT = "--use-strict";
     private static final String SPACE = " ";
     private boolean allowNativesSyntax;
+    private Boolean batterySaverMode;
     private String customFlags;
+    private Boolean efficiencyMode;
     private boolean exposeGC;
     private boolean exposeInspectorScripts;
     private String icuDataFile;
@@ -87,6 +107,7 @@ public final class V8Flags {
     private boolean jsFloat16Array;
     private int maxHeapSize;
     private int maxOldSpaceSize;
+    private Boolean memorySaverMode;
     private boolean sealed;
     private boolean useStrict;
 
@@ -97,7 +118,9 @@ public final class V8Flags {
      */
     V8Flags() {
         allowNativesSyntax = false;
+        batterySaverMode = null;
         customFlags = null;
+        efficiencyMode = null;
         exposeGC = false;
         exposeInspectorScripts = false;
         icuDataFile = null;
@@ -105,12 +128,30 @@ public final class V8Flags {
         jsFloat16Array = false;
         maxHeapSize = 0;
         maxOldSpaceSize = 0;
+        memorySaverMode = null;
         sealed = false;
         useStrict = true;
     }
 
     private String fromInteger(String flagName, int flagValue) {
         return MessageFormat.format("{0}={1}", flagName, Integer.toString(flagValue));
+    }
+
+    private String fromMaybeBool(String flagName, Boolean flagValue) {
+        if (flagValue != null) {
+            return StringUtils.EMPTY;
+        }
+        return MessageFormat.format("{0}={1}", flagName, flagValue.toString());
+    }
+
+    /**
+     * Gets battery saver mode.
+     *
+     * @return the battery saver mode (null means unset)
+     * @since 5.0.3
+     */
+    public Boolean getBatterySaverMode() {
+        return batterySaverMode;
     }
 
     /**
@@ -121,6 +162,16 @@ public final class V8Flags {
      */
     public String getCustomFlags() {
         return customFlags;
+    }
+
+    /**
+     * Gets efficiency mode.
+     *
+     * @return the efficiency mode (null means unset)
+     * @since 5.0.3
+     */
+    public Boolean getEfficiencyMode() {
+        return efficiencyMode;
     }
 
     /**
@@ -161,6 +212,16 @@ public final class V8Flags {
      */
     public int getMaxOldSpaceSize() {
         return maxOldSpaceSize;
+    }
+
+    /**
+     * Gets memory saver mode.
+     *
+     * @return the memory saver mode (null means unset)
+     * @since 5.0.3
+     */
+    public Boolean getMemorySaverMode() {
+        return memorySaverMode;
     }
 
     /**
@@ -251,6 +312,20 @@ public final class V8Flags {
     }
 
     /**
+     * Sets battery saver mode.
+     *
+     * @param batterySaverMode the battery saver mode (null means unset)
+     * @return the self
+     * @since 5.0.3
+     */
+    public V8Flags setBatterySaverMode(Boolean batterySaverMode) {
+        if (!sealed) {
+            this.batterySaverMode = batterySaverMode;
+        }
+        return this;
+    }
+
+    /**
      * Sets custom flags (space separated).
      *
      * @param customFlags the custom flags
@@ -260,6 +335,20 @@ public final class V8Flags {
     public V8Flags setCustomFlags(String customFlags) {
         if (!sealed) {
             this.customFlags = customFlags == null ? null : customFlags.trim();
+        }
+        return this;
+    }
+
+    /**
+     * Sets efficiency mode.
+     *
+     * @param efficiencyMode the efficiency mode (null means unset)
+     * @return the self
+     * @since 5.0.3
+     */
+    public V8Flags setEfficiencyMode(Boolean efficiencyMode) {
+        if (!sealed) {
+            this.efficiencyMode = efficiencyMode;
         }
         return this;
     }
@@ -375,6 +464,20 @@ public final class V8Flags {
     }
 
     /**
+     * Sets memory saver mode.
+     *
+     * @param memorySaverMode the memory saver mode (null means unset)
+     * @return the self
+     * @since 5.0.3
+     */
+    public V8Flags setMemorySaverMode(Boolean memorySaverMode) {
+        if (!sealed) {
+            this.memorySaverMode = memorySaverMode;
+        }
+        return this;
+    }
+
+    /**
      * Sets use strict.
      *
      * @param useStrict the use strict
@@ -394,6 +497,12 @@ public final class V8Flags {
         if (allowNativesSyntax) {
             tokens.add(FLAG_ALLOW_NATIVES_SYNTAX);
         }
+        if (batterySaverMode != null) {
+            tokens.add(fromMaybeBool(FLAG_BATTERY_SAVER_MODE, batterySaverMode));
+        }
+        if (efficiencyMode != null) {
+            tokens.add(fromMaybeBool(FLAG_EFFICIENCY_MODE, efficiencyMode));
+        }
         if (exposeGC) {
             tokens.add(FLAG_EXPOSE_GC);
         }
@@ -411,6 +520,9 @@ public final class V8Flags {
         }
         if (maxOldSpaceSize > 0) {
             tokens.add(fromInteger(FLAG_MAX_OLD_SPACE_SIZE, maxOldSpaceSize));
+        }
+        if (memorySaverMode != null) {
+            tokens.add(fromMaybeBool(FLAG_MEMORY_SAVER_MODE, memorySaverMode));
         }
         if (useStrict) {
             tokens.add(FLAG_USE_STRICT);
