@@ -198,6 +198,9 @@ class V8Native implements IV8Native {
     public native long[] getInternalStatistic();
 
     @Override
+    public native int getPriority(long v8RuntimeHandle);
+
+    @Override
     public native Object getV8HeapSpaceStatistics(long v8RuntimeHandle, Object v8AllocationSpace);
 
     @Override
@@ -623,6 +626,9 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean setHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+
+    @Override
+    public native void setPriority(long v8RuntimeHandle, int priority);
 
     @Override
     public native void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);

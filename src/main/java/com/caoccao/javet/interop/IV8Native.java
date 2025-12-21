@@ -138,6 +138,8 @@ public interface IV8Native {
 
     long[] getInternalStatistic();
 
+    int getPriority(long v8RuntimeHandle);
+
     Object getV8HeapSpaceStatistics(long v8RuntimeHandle, Object v8AllocationSpace);
 
     Object getV8HeapStatistics(long v8RuntimeHandle);
@@ -411,6 +413,8 @@ public interface IV8Native {
     int setGetSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     boolean setHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+
+    void setPriority(long v8RuntimeHandle, int priority);
 
     void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);
 

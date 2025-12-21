@@ -11,6 +11,7 @@ Release Notes 5.0.x
 * Supported Temporal in V8 mode
 * Added ``isHarmonyTemporal()``, ``setHarmonyTemporal()`` to ``NodeFlags``
 * Added ``isEfficiencyModeEnabled()``, ``isBatterySaverModeEnabled()``, ``isMemorySaverModeEnabled()`` to ``V8Runtime``
+* Added ``getPriority()``, ``setPriority()`` to ``V8Runtime``
 
 5.0.2
 -----

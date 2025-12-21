@@ -1689,6 +1689,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Gets the priority of the V8 isolate.
+     * <p>
+     * The priority indicates the importance of the isolate's content to the user.
+     *
+     * @return the V8 priority
+     * @since 5.0.3
+     */
+    public V8Priority getPriority() {
+        if (!isClosed()) {
+            return V8Priority.parse(v8Native.getPriority(handle));
+        }
+        return V8Priority.UserBlocking;
+    }
+
+    /**
      * Gets the internal reference count.
      *
      * @return the reference count
@@ -3900,6 +3915,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public void setPromiseRejectCallback(IJavetPromiseRejectCallback promiseRejectCallback) {
         this.promiseRejectCallback = Objects.requireNonNull(promiseRejectCallback);
+    }
+
+    /**
+     * Sets the priority of the V8 isolate.
+     * <p>
+     * The priority indicates the importance of the isolate's content to the user
+     * and affects performance optimizations such as efficiency mode.
+     *
+     * @param priority the V8 priority
+     * @since 5.0.3
+     */
+    public void setPriority(V8Priority priority) {
+        if (!isClosed()) {
+            v8Native.setPriority(handle, Objects.requireNonNull(priority).getId());
+        }
     }
 
     /**

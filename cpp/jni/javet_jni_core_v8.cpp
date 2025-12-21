@@ -151,6 +151,13 @@ JNIEXPORT jlongArray JNICALL Java_com_caoccao_javet_interop_V8Native_getInternal
 #endif
 }
 
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getPriority
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
+    return static_cast<jint>(v8InternalIsolate->priority());
+}
+
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getV8HeapSpaceStatistics
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject allocationSpace) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
@@ -400,6 +407,13 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_sameValue
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle1, jlong v8ValueHandle2) {
     RUNTIME_AND_2_VALUES_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle1, v8ValueHandle2);
     return v8LocalValue1->SameValue(v8LocalValue2);
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setPriority
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint mPriority) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
+    v8InternalIsolate->SetPriority(static_cast<v8::Isolate::Priority>(mPriority));
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak
