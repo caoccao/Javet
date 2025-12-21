@@ -613,6 +613,9 @@ class V8Native implements IV8Native {
     public native Object setAsArray(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native void setBatterySaverModeEnabled(long v8RuntimeHandle, boolean enabled);
+
+    @Override
     public native void setClear(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
@@ -626,6 +629,9 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean setHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+
+    @Override
+    public native void setMemorySaverModeEnabled(long v8RuntimeHandle, boolean enabled);
 
     @Override
     public native void setPriority(long v8RuntimeHandle, int priority);

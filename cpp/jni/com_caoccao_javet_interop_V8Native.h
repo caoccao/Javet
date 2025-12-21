@@ -1385,6 +1385,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_setAsArray
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    setBatterySaverModeEnabled
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setBatterySaverModeEnabled
+  (JNIEnv *, jobject, jlong, jboolean);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    setClear
  * Signature: (JJI)V
  */
@@ -1422,6 +1430,14 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_setGetSize
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setHas
   (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    setMemorySaverModeEnabled
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setMemorySaverModeEnabled
+  (JNIEnv *, jobject, jlong, jboolean);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

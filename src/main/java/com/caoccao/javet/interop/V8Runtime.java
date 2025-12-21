@@ -1679,16 +1679,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Gets promise reject callback.
-     *
-     * @return the promise reject callback
-     * @since 0.8.3
-     */
-    public IJavetPromiseRejectCallback getPromiseRejectCallback() {
-        return promiseRejectCallback;
-    }
-
-    /**
      * Gets the priority of the V8 isolate.
      * <p>
      * The priority indicates the importance of the isolate's content to the user.
@@ -1701,6 +1691,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             return V8Priority.parse(v8Native.getPriority(handle));
         }
         return V8Priority.UserBlocking;
+    }
+
+    /**
+     * Gets promise reject callback.
+     *
+     * @return the promise reject callback
+     * @since 0.8.3
+     */
+    public IJavetPromiseRejectCallback getPromiseRejectCallback() {
+        return promiseRejectCallback;
     }
 
     /**
@@ -1989,11 +1989,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, Objects.requireNonNull(v8ValueIntegerObject).getHandle(), v8ValueIntegerObject.getType().getId());
     }
 
-    @Override
-    public boolean isClosed() {
-        return handle == INVALID_HANDLE;
-    }
-
     /**
      * Returns whether battery saver mode is enabled.
      * <p>
@@ -2008,6 +2003,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             return v8Native.isBatterySaverModeEnabled(handle);
         }
         return false;
+    }
+
+    @Override
+    public boolean isClosed() {
+        return handle == INVALID_HANDLE;
     }
 
     /**
@@ -3799,6 +3799,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Sets battery saver mode enabled or disabled.
+     * <p>
+     * Battery saver mode optimizes V8 to reduce total CPU cycles spent.
+     * This can be toggled at runtime by the embedder.
+     *
+     * @param enabled true to enable battery saver mode, false to disable
+     * @since 5.0.3
+     */
+    public void setBatterySaverModeEnabled(boolean enabled) {
+        if (!isClosed()) {
+            v8Native.setBatterySaverModeEnabled(handle, enabled);
+        }
+    }
+
+    /**
      * Clear the set.
      *
      * @param iV8ValueSet the V8 value set
@@ -3880,6 +3895,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Sets memory saver mode enabled or disabled.
+     * <p>
+     * Memory saver mode optimizes V8 to reduce memory consumption.
+     * This can be enabled through embedder configuration or V8 flags.
+     *
+     * @param enabled true to enable memory saver mode, false to disable
+     * @since 5.0.3
+     */
+    public void setMemorySaverModeEnabled(boolean enabled) {
+        if (!isClosed()) {
+            v8Native.setMemorySaverModeEnabled(handle, enabled);
+        }
+    }
+
+    /**
      * Sets near heap limit callback.
      *
      * @param nearHeapLimitCallback the near heap limit callback
@@ -3908,16 +3938,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Sets promise reject callback.
-     *
-     * @param promiseRejectCallback the promise reject callback
-     * @since 0.9.1
-     */
-    public void setPromiseRejectCallback(IJavetPromiseRejectCallback promiseRejectCallback) {
-        this.promiseRejectCallback = Objects.requireNonNull(promiseRejectCallback);
-    }
-
-    /**
      * Sets the priority of the V8 isolate.
      * <p>
      * The priority indicates the importance of the isolate's content to the user
@@ -3930,6 +3950,16 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         if (!isClosed()) {
             v8Native.setPriority(handle, Objects.requireNonNull(priority).getId());
         }
+    }
+
+    /**
+     * Sets promise reject callback.
+     *
+     * @param promiseRejectCallback the promise reject callback
+     * @since 0.9.1
+     */
+    public void setPromiseRejectCallback(IJavetPromiseRejectCallback promiseRejectCallback) {
+        this.promiseRejectCallback = Objects.requireNonNull(promiseRejectCallback);
     }
 
     /**

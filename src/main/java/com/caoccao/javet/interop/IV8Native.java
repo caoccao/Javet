@@ -404,6 +404,8 @@ public interface IV8Native {
 
     Object setAsArray(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    void setBatterySaverModeEnabled(long v8RuntimeHandle, boolean enabled);
+
     void setClear(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object setCreate(long v8RuntimeHandle);
@@ -413,6 +415,8 @@ public interface IV8Native {
     int setGetSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     boolean setHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+
+    void setMemorySaverModeEnabled(long v8RuntimeHandle, boolean enabled);
 
     void setPriority(long v8RuntimeHandle, int priority);
 

@@ -409,6 +409,20 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_sameValue
     return v8LocalValue1->SameValue(v8LocalValue2);
 }
 
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setBatterySaverModeEnabled
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jboolean enabled) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
+    v8InternalIsolate->set_battery_saver_mode_enabled(enabled);
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setMemorySaverModeEnabled
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jboolean enabled) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
+    v8InternalIsolate->set_memory_saver_mode_enabled(enabled);
+}
+
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setPriority
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint mPriority) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
