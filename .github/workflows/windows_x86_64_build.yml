@@ -77,12 +77,11 @@ jobs:
         cd v8
         # The fix is to change gc_retry to use a template parameter instead of std::function, so it can accept any callable type and pass it directly to RetryCustomAllocate without the intermediate std::function conversion.
         sed -i 's|  auto gc_retry = \[&\](const std::function<bool()>& fn)|  auto gc_retry = [\&](auto\&\& fn)|' src/objects/backing-store.cc
-        mkdir -p out.gn/x64.release
-        cp ../../Javet/scripts/v8/gn/windows-x86_64-${{ matrix.name }}-args.gn out.gn/x64.release/args.gn
-        ../depot_tools/gn.bat gen out.gn/x64.release
-        ../depot_tools/ninja.bat -C out.gn/x64.release v8_monolith || deno --allow-all ../../Javet/scripts/deno/patch_v8_build.ts -p ./
-        ../depot_tools/ninja.bat -C out.gn/x64.release v8_monolith
-        mv out.gn out.gn.windows.${{ matrix.name }}
+        mkdir -p out.gn.windows.${{ matrix.name }}/x64.release
+        cp ../../Javet/scripts/v8/gn/windows-x86_64-${{ matrix.name }}-args.gn out.gn.windows.${{ matrix.name }}/x64.release/args.gn
+        ../depot_tools/gn.bat gen out.gn.windows.${{ matrix.name }}/x64.release
+        ../depot_tools/ninja.bat -C out.gn.windows.${{ matrix.name }}/x64.release v8_monolith || deno --allow-all ../../Javet/scripts/deno/patch_v8_build.ts -p ./
+        ../depot_tools/ninja.bat -C out.gn.windows.${{ matrix.name }}/x64.release v8_monolith
 
     - name: Build Temporal CAPI
       shell: bash
