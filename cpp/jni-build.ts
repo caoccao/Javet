@@ -45,6 +45,7 @@
  */
 
 import * as cli from "@std/cli";
+import { green, red, yellow } from "@std/fmt/colors";
 import * as path from "@std/path";
 
 const JAVET_VERSION = "5.0.3";
@@ -102,37 +103,37 @@ function parseArgs(): BuildConfig {
   const archStr = parsed.arch;
 
   if (!osStr || !archStr) {
-    console.error("Error: Both --os and --arch arguments are required");
-    console.error("\nUsage: jni-build.ts --os <os> --arch <arch> [options]");
-    console.error("\nRequired arguments:");
-    console.error("  --os <os>           Target OS: linux, macos, windows, android");
-    console.error("  --arch <arch>       Target architecture: x86_64, arm64, arm, x86");
-    console.error("\nOptional arguments:");
-    console.error("  --i18n              Enable V8 internationalization support (default: false)");
-    console.error("  --v8-dir <path>     Path to V8 library directory");
-    console.error("  --node-dir <path>   Path to Node.js library directory");
-    console.error("  --android-ndk <path> Path to Android NDK (required for Android builds)");
-    console.error("  --cpu-count <n>     Number of CPU cores to use for parallel builds (default: auto-detect)");
-    console.error("  --log-debug         Enable debug logging (default: false)");
-    console.error("  --log-error         Enable error logging (default: false)");
-    console.error("  --log-info          Enable info logging (default: false)");
-    console.error("  --log-trace         Enable trace logging (default: false)");
+    console.info("Error: Both --os and --arch arguments are required");
+    console.info("\nUsage: jni-build.ts --os <os> --arch <arch> [options]");
+    console.info("\nRequired arguments:");
+    console.info("  --os <os>           Target OS: linux, macos, windows, android");
+    console.info("  --arch <arch>       Target architecture: x86_64, arm64, arm, x86");
+    console.info("\nOptional arguments:");
+    console.info("  --i18n              Enable V8 internationalization support (default: false)");
+    console.info("  --v8-dir <path>     Path to V8 library directory");
+    console.info("  --node-dir <path>   Path to Node.js library directory");
+    console.info("  --android-ndk <path> Path to Android NDK (required for Android builds)");
+    console.info("  --cpu-count <n>     Number of CPU cores to use for parallel builds (default: auto-detect)");
+    console.info("  --log-debug         Enable debug logging (default: false)");
+    console.info("  --log-error         Enable error logging (default: false)");
+    console.info("  --log-info          Enable info logging (default: false)");
+    console.info("  --log-trace         Enable trace logging (default: false)");
     Deno.exit(1);
   }
 
   // Validate and convert OS
   const os = Object.values(OS).find((o) => o === osStr);
   if (!os) {
-    console.error(`Error: Invalid OS '${osStr}'`);
-    console.error(`Supported OS: ${Object.values(OS).join(", ")}`);
+    console.error(red(`Error: Invalid OS '${osStr}'`));
+    console.error(red(`Supported OS: ${Object.values(OS).join(", ")}`));
     Deno.exit(1);
   }
 
   // Validate and convert Arch
   const arch = Object.values(Arch).find((a) => a === archStr);
   if (!arch) {
-    console.error(`Error: Invalid architecture '${archStr}'`);
-    console.error(`Supported architectures: ${Object.values(Arch).join(", ")}`);
+    console.error(red(`Error: Invalid architecture '${archStr}'`));
+    console.error(red(`Supported architectures: ${Object.values(Arch).join(", ")}`));
     Deno.exit(1);
   }
 
@@ -141,12 +142,12 @@ function parseArgs(): BuildConfig {
 
   // Validate v8-dir and node-dir are mutually exclusive
   if (!v8Dir && !nodeDir) {
-    console.error("Error: Either --v8-dir or --node-dir must be specified");
+    console.error(red("Error: Either --v8-dir or --node-dir must be specified"));
     Deno.exit(1);
   }
 
   if (v8Dir && nodeDir) {
-    console.error("Error: --v8-dir and --node-dir cannot be specified together");
+    console.error(red("Error: --v8-dir and --node-dir cannot be specified together"));
     Deno.exit(1);
   }
 
@@ -156,7 +157,7 @@ function parseArgs(): BuildConfig {
   if (cpuCountStr) {
     cpuCount = parseInt(cpuCountStr, 10);
     if (isNaN(cpuCount) || cpuCount < 1) {
-      console.error(`Error: Invalid cpu-count '${cpuCountStr}'. Must be a positive integer.`);
+      console.error(red(`Error: Invalid cpu-count '${cpuCountStr}'. Must be a positive integer.`));
       Deno.exit(1);
     }
   }
@@ -164,7 +165,7 @@ function parseArgs(): BuildConfig {
   // Validate Android NDK is provided for Android builds
   const androidNdk = parsed["android-ndk"];
   if (os === OS.Android && !androidNdk) {
-    console.error("Error: --android-ndk is required for Android builds");
+    console.error(red("Error: --android-ndk is required for Android builds"));
     Deno.exit(1);
   }
 
@@ -350,7 +351,7 @@ async function buildLinux(config: BuildConfig): Promise<boolean> {
       ];
       console.log(`Running: ${execstackCmd.join(" ")}`);
       if (!await runCommand(execstackCmd)) {
-        console.warn("Warning: execstack command failed, continuing anyway...");
+        console.warn(yellow("Warning: execstack command failed, continuing anyway..."));
       }
     }
 
@@ -364,7 +365,7 @@ async function buildLinux(config: BuildConfig): Promise<boolean> {
     ];
     console.log(`Running: ${stripCmd.join(" ")}`);
     if (!await runCommand(stripCmd)) {
-      console.warn("Warning: strip command failed, continuing anyway...");
+      console.warn(yellow("Warning: strip command failed, continuing anyway..."));
     }
 
     // Copy .a files
@@ -375,7 +376,7 @@ async function buildLinux(config: BuildConfig): Promise<boolean> {
       }
     }
 
-    console.log(`\n✓ Generated library: ${getLibraryFileName(config)}`);
+    console.log(green(`\n✓ Generated library: ${getLibraryFileName(config)}`));
     return true;
   } finally {
     Deno.chdir(originalDir);
@@ -427,7 +428,7 @@ async function buildMacOS(config: BuildConfig): Promise<boolean> {
       }
     }
 
-    console.log(`\n✓ Generated library: ${getLibraryFileName(config)}`);
+    console.log(green(`\n✓ Generated library: ${getLibraryFileName(config)}`));
     return true;
   } finally {
     Deno.chdir(originalDir);
@@ -553,7 +554,7 @@ async function buildAndroid(config: BuildConfig): Promise<boolean> {
       }
     }
 
-    console.log(`\n✓ Generated library: ${getLibraryFileName(config)}`);
+    console.log(green(`\n✓ Generated library: ${getLibraryFileName(config)}`));
     return true;
   } finally {
     Deno.chdir(originalDir);
@@ -604,16 +605,16 @@ async function main() {
       success = await buildAndroid(config);
       break;
     default:
-      console.error(`Error: Unsupported OS '${config.os}'`);
-      console.error(`Supported OS: ${Object.values(OS).join(", ")}`);
+      console.error(red(`Error: Unsupported OS '${config.os}'`));
+      console.error(red(`Supported OS: ${Object.values(OS).join(", ")}`));
       Deno.exit(1);
   }
 
   if (success) {
-    console.log("\n✓ Build Completed");
+    console.log(green("\n✓ Build Completed"));
     Deno.exit(0);
   } else {
-    console.error("\n✗ Build Failed");
+    console.error(red("\n✗ Build Failed"));
     Deno.exit(1);
   }
 }
