@@ -45,8 +45,13 @@
  */
 
 import * as cli from "@std/cli";
+import * as path from "@std/path";
 
 const JAVET_VERSION = "5.0.3";
+
+// Calculate script directory and project root
+const SCRIPT_DIR = path.dirname(path.fromFileUrl(import.meta.url));
+const PROJECT_ROOT = path.join(SCRIPT_DIR, "..");
 
 enum OS {
   Linux = "linux",
@@ -156,13 +161,20 @@ function parseArgs(): BuildConfig {
     }
   }
 
+  // Validate Android NDK is provided for Android builds
+  const androidNdk = parsed["android-ndk"];
+  if (os === OS.Android && !androidNdk) {
+    console.error("Error: --android-ndk is required for Android builds");
+    Deno.exit(1);
+  }
+
   return {
     os: os as OS,
     arch: arch as Arch,
     i18n: parsed["i18n"],
     v8Dir,
     nodeDir,
-    androidNdk: parsed["android-ndk"],
+    androidNdk,
     cpuCount,
     logDebug: parsed["log-debug"],
     logError: parsed["log-error"],
@@ -262,14 +274,42 @@ async function ensureDir(path: string) {
   }
 }
 
+function getLibraryFileName(config: BuildConfig): string {
+  // Determine engine type
+  const engine = config.v8Dir ? "v8" : "node";
+
+  // Determine file extension
+  let extension: string;
+  switch (config.os) {
+    case OS.Linux:
+    case OS.Android:
+      extension = "so";
+      break;
+    case OS.MacOS:
+      extension = "dylib";
+      break;
+    case OS.Windows:
+      extension = "dll";
+      break;
+  }
+
+  // Build i18n suffix
+  const i18nSuffix = config.i18n ? "-i18n" : "";
+
+  // Build complete filename
+  return `libjavet-${engine}-${config.os}-${config.arch}${i18nSuffix}.v.${JAVET_VERSION}.${extension}`;
+}
+
 async function buildLinux(config: BuildConfig): Promise<boolean> {
-  const buildDir = `build_${config.os}_${config.arch}`;
+  const buildDir = path.join(SCRIPT_DIR, `build_${config.os}_${config.arch}`);
+  const buildLibsDir = path.join(PROJECT_ROOT, "build", "libs");
+  const resourcesDir = path.join(PROJECT_ROOT, "src", "main", "resources");
 
   console.log(`Building for Linux ${config.arch}...`);
 
   await removeDir(buildDir);
   await ensureDir(buildDir);
-  await ensureDir("../../build/libs");
+  await ensureDir(buildLibsDir);
 
   // Change to build directory
   const originalDir = Deno.cwd();
@@ -282,7 +322,7 @@ async function buildLinux(config: BuildConfig): Promise<boolean> {
     // Run cmake
     const cmakeCmd = [
       "cmake",
-      "../",
+      SCRIPT_DIR,
       `-DJAVET_VERSION=${JAVET_VERSION}`,
       ...cmakeArgs,
     ];
@@ -299,12 +339,14 @@ async function buildLinux(config: BuildConfig): Promise<boolean> {
       return false;
     }
 
+    const libraryPath = path.join(resourcesDir, getLibraryFileName(config));
+
     // Run execstack for x86_64
     if (config.arch === Arch.X86_64) {
       const execstackCmd = [
         "execstack",
         "-c",
-        `../../src/main/resources/libjavet-*-linux-x86_64.v.${JAVET_VERSION}.so`,
+        libraryPath,
       ];
       console.log(`Running: ${execstackCmd.join(" ")}`);
       if (!await runCommand(execstackCmd)) {
@@ -318,7 +360,7 @@ async function buildLinux(config: BuildConfig): Promise<boolean> {
       "--strip-unneeded",
       "-R", ".note",
       "-R", ".comment",
-      `../../src/main/resources/libjavet-*-linux-*.v.${JAVET_VERSION}.so`,
+      libraryPath,
     ];
     console.log(`Running: ${stripCmd.join(" ")}`);
     if (!await runCommand(stripCmd)) {
@@ -326,13 +368,14 @@ async function buildLinux(config: BuildConfig): Promise<boolean> {
     }
 
     // Copy .a files
-    console.log("Copying static libraries to ../../build/libs");
+    console.log(`Copying static libraries to ${buildLibsDir}`);
     for await (const entry of Deno.readDir(".")) {
       if (entry.isFile && entry.name.endsWith(".a")) {
-        await Deno.copyFile(entry.name, `../../build/libs/${entry.name}`);
+        await Deno.copyFile(entry.name, path.join(buildLibsDir, entry.name));
       }
     }
 
+    console.log(`\n✓ Generated library: ${getLibraryFileName(config)}`);
     return true;
   } finally {
     Deno.chdir(originalDir);
@@ -340,13 +383,14 @@ async function buildLinux(config: BuildConfig): Promise<boolean> {
 }
 
 async function buildMacOS(config: BuildConfig): Promise<boolean> {
-  const buildDir = `build_${config.os}_${config.arch}`;
+  const buildDir = path.join(SCRIPT_DIR, `build_${config.os}_${config.arch}`);
+  const buildLibsDir = path.join(PROJECT_ROOT, "build", "libs");
 
   console.log("Building for macOS...");
 
   await removeDir(buildDir);
   await ensureDir(buildDir);
-  await ensureDir("../../build/libs");
+  await ensureDir(buildLibsDir);
 
   const originalDir = Deno.cwd();
   Deno.chdir(buildDir);
@@ -358,7 +402,7 @@ async function buildMacOS(config: BuildConfig): Promise<boolean> {
     // Run cmake
     const cmakeCmd = [
       "cmake",
-      "../",
+      SCRIPT_DIR,
       `-DJAVET_VERSION=${JAVET_VERSION}`,
       ...cmakeArgs,
     ];
@@ -376,13 +420,14 @@ async function buildMacOS(config: BuildConfig): Promise<boolean> {
     }
 
     // Copy .a files
-    console.log("Copying static libraries to ../../build/libs");
+    console.log(`Copying static libraries to ${buildLibsDir}`);
     for await (const entry of Deno.readDir(".")) {
       if (entry.isFile && entry.name.endsWith(".a")) {
-        await Deno.copyFile(entry.name, `../../build/libs/${entry.name}`);
+        await Deno.copyFile(entry.name, path.join(buildLibsDir, entry.name));
       }
     }
 
+    console.log(`\n✓ Generated library: ${getLibraryFileName(config)}`);
     return true;
   } finally {
     Deno.chdir(originalDir);
@@ -390,13 +435,14 @@ async function buildMacOS(config: BuildConfig): Promise<boolean> {
 }
 
 async function buildWindows(config: BuildConfig): Promise<boolean> {
-  const buildDir = `build_${config.os}_${config.arch}`;
+  const buildDir = path.join(SCRIPT_DIR, `build_${config.os}_${config.arch}`);
+  const buildLibsDir = path.join(PROJECT_ROOT, "build", "libs");
 
   console.log("Building for Windows...");
 
   await removeDir(buildDir);
   await ensureDir(buildDir);
-  await ensureDir("../../build/libs");
+  await ensureDir(buildLibsDir);
 
   const originalDir = Deno.cwd();
   Deno.chdir(buildDir);
@@ -407,7 +453,7 @@ async function buildWindows(config: BuildConfig): Promise<boolean> {
     // Run cmake with Visual Studio generator
     const cmakeCmd = [
       "cmake",
-      "../",
+      SCRIPT_DIR,
       "-G", "Visual Studio 17 2022",
       "-A", "x64",
       `-DJAVET_VERSION=${JAVET_VERSION}`,
@@ -436,13 +482,14 @@ async function buildWindows(config: BuildConfig): Promise<boolean> {
     }
 
     // Copy .lib files
-    console.log("Copying static libraries to ../../build/libs");
+    console.log(`Copying static libraries to ${buildLibsDir}`);
     for await (const entry of Deno.readDir("Release")) {
       if (entry.isFile && entry.name.endsWith(".lib")) {
-        await Deno.copyFile(`Release/${entry.name}`, `../../build/libs/${entry.name}`);
+        await Deno.copyFile(`Release/${entry.name}`, path.join(buildLibsDir, entry.name));
       }
     }
 
+    console.log(`\n✓ Generated library: ${getLibraryFileName(config)}`);
     return true;
   } finally {
     Deno.chdir(originalDir);
@@ -450,13 +497,14 @@ async function buildWindows(config: BuildConfig): Promise<boolean> {
 }
 
 async function buildAndroid(config: BuildConfig): Promise<boolean> {
-  const buildDir = `build_${config.os}_${config.arch}`;
+  const buildDir = path.join(SCRIPT_DIR, `build_${config.os}_${config.arch}`);
+  const buildLibsDir = path.join(PROJECT_ROOT, "build", "libs");
 
   console.log(`Building for Android ${config.arch}...`);
 
   await removeDir(buildDir);
   await ensureDir(buildDir);
-  await ensureDir("../../build/libs");
+  await ensureDir(buildLibsDir);
 
   const originalDir = Deno.cwd();
   Deno.chdir(buildDir);
@@ -479,7 +527,7 @@ async function buildAndroid(config: BuildConfig): Promise<boolean> {
     // Run cmake with Android settings
     const cmakeCmd = [
       "cmake",
-      "../",
+      SCRIPT_DIR,
       ...androidArgs,
       `-DJAVET_VERSION=${JAVET_VERSION}`,
       ...cmakeArgs,
@@ -498,13 +546,14 @@ async function buildAndroid(config: BuildConfig): Promise<boolean> {
     }
 
     // Copy .a files
-    console.log("Copying static libraries to ../../build/libs");
+    console.log(`Copying static libraries to ${buildLibsDir}`);
     for await (const entry of Deno.readDir(".")) {
       if (entry.isFile && entry.name.endsWith(".a")) {
-        await Deno.copyFile(entry.name, `../../build/libs/${entry.name}`);
+        await Deno.copyFile(entry.name, path.join(buildLibsDir, entry.name));
       }
     }
 
+    console.log(`\n✓ Generated library: ${getLibraryFileName(config)}`);
     return true;
   } finally {
     Deno.chdir(originalDir);

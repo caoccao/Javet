@@ -152,13 +152,13 @@ RUN mkdir -p ${ROOT}/Javet/icu-v8 && \
 RUN cd ${ROOT}/Javet/cpp && \
     CC=${ROOT}/google/v8/third_party/llvm-build/Release+Asserts/bin/clang \
     CXX=${ROOT}/google/v8/third_party/llvm-build/Release+Asserts/bin/clang \
-    sh ./build-linux-x86_64.sh -DV8_DIR=${ROOT}/google/v8
+    deno run build --os linux --arch x86_64 --v8-dir ${ROOT}/google/v8
 
 # Build Javet JNI for V8 i18n
 RUN cd ${ROOT}/Javet/cpp && \
     CC=${ROOT}/google/v8/third_party/llvm-build/Release+Asserts/bin/clang \
     CXX=${ROOT}/google/v8/third_party/llvm-build/Release+Asserts/bin/clang \
-    sh ./build-linux-x86_64.sh -DV8_DIR=${ROOT}/google/v8 -DENABLE_I18N=1
+    deno run build --os linux --arch x86_64 --v8-dir ${ROOT}/google/v8 --i18n
 
 ###########################################
 # Stage 3: Build Node.js (both i18n and non-i18n)
@@ -206,12 +206,12 @@ RUN mkdir -p ${ROOT}/Javet/icu-node && \
 
 # Build Javet JNI for Node non-i18n
 RUN cd ${ROOT}/Javet/cpp && \
-    sh ./build-linux-x86_64.sh -DNODE_DIR=${ROOT}/node && \
+    deno run build --os linux --arch x86_64 --node-dir ${ROOT}/node && \
     cp ${ROOT}/Javet/src/main/resources/*.so ${ROOT}/Javet/artifacts-node-non-i18n/ || mkdir -p ${ROOT}/Javet/artifacts-node-non-i18n && cp ${ROOT}/Javet/src/main/resources/*.so ${ROOT}/Javet/artifacts-node-non-i18n/
 
 # Build Javet JNI for Node i18n
 RUN cd ${ROOT}/Javet/cpp && \
-    sh ./build-linux-x86_64.sh -DNODE_DIR=${ROOT}/node -DENABLE_I18N=1 && \
+    deno run build --os linux --arch x86_64 --node-dir ${ROOT}/node --i18n && \
     cp ${ROOT}/Javet/src/main/resources/*.so ${ROOT}/Javet/artifacts-node-i18n/ || mkdir -p ${ROOT}/Javet/artifacts-node-i18n && cp ${ROOT}/Javet/src/main/resources/*.so ${ROOT}/Javet/artifacts-node-i18n/
 
 ###########################################

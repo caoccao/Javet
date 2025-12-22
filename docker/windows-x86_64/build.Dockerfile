@@ -171,14 +171,14 @@ RUN mkdir C:\icu-v8 && \
     copy google\v8\third_party\icu\common\*.dat C:\icu-v8
 
 # Build Javet JNI for V8 non-i18n
-RUN cd C:\Javet\src\cpp && \
-    build-windows.cmd -DV8_DIR=C:\google\v8 -T ClangCL
+RUN cd C:\Javet\cpp && \
+    deno run build --os windows --arch x86_64 --v8-dir C:\google\v8
 RUN mkdir C:\artifacts-v8-non-i18n && \
     copy C:\Javet\src\main\resources\*.dll C:\artifacts-v8-non-i18n
 
 # Build Javet JNI for V8 i18n
-RUN cd C:\Javet\src\cpp && \
-    build-windows.cmd -DV8_DIR=C:\google\v8 -T ClangCL -DENABLE_I18N=1
+RUN cd C:\Javet\cpp && \
+    deno run build --os windows --arch x86_64 --v8-dir C:\google\v8 --i18n
 RUN mkdir C:\artifacts-v8-i18n && \
     copy C:\Javet\src\main\resources\*.dll C:\artifacts-v8-i18n
 
@@ -213,14 +213,14 @@ RUN mkdir C:\icu-node && \
     copy node\deps\icu-tmp\*.dat C:\icu-node
 
 # Build Javet JNI for Node non-i18n
-RUN cd C:\Javet\src\cpp && \
-    build-windows.cmd -DNODE_DIR=C:\node -T ClangCL
+RUN cd C:\Javet\cpp && \
+    deno run build --os windows --arch x86_64 --node-dir C:\node
 RUN mkdir C:\artifacts-node-non-i18n && \
     copy C:\Javet\src\main\resources\*.dll C:\artifacts-node-non-i18n
 
 # Build Javet JNI for Node i18n
-RUN cd C:\Javet\src\cpp && \
-    build-windows.cmd -DNODE_DIR=C:\node -T ClangCL -DENABLE_I18N=1
+RUN cd C:\Javet\cpp && \
+    deno run build --os windows --arch x86_64 --node-dir C:\node --i18n
 RUN mkdir C:\artifacts-node-i18n && \
     copy C:\Javet\src\main\resources\*.dll C:\artifacts-node-i18n
 

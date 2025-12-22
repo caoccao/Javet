@@ -22,49 +22,49 @@ jobs:
             android_arch: arm
             android_abi: armeabi-v7a
             i18n_name: i18n
-            cmake_flag: -DENABLE_I18N=1
+            i18n_flag: --i18n
             rust_target: armv7-linux-androideabi
           - v8_release: arm64
             android_arch: arm64
             android_abi: arm64-v8a
             i18n_name: i18n
-            cmake_flag: -DENABLE_I18N=1
+            i18n_flag: --i18n
             rust_target: aarch64-linux-android
           - v8_release: ia32
             android_arch: x86
             android_abi: x86
             i18n_name: i18n
-            cmake_flag: -DENABLE_I18N=1
+            i18n_flag: --i18n
             rust_target: i686-linux-android
           - v8_release: x64
             android_arch: x86_64
             android_abi: x86_64
             i18n_name: i18n
-            cmake_flag: -DENABLE_I18N=1
+            i18n_flag: --i18n
             rust_target: x86_64-linux-android
           - v8_release: arm
             android_arch: arm
             android_abi: armeabi-v7a
             i18n_name: non-i18n
-            cmake_flag:
+            i18n_flag:
             rust_target: armv7-linux-androideabi
           - v8_release: arm64
             android_arch: arm64
             android_abi: arm64-v8a
             i18n_name: non-i18n
-            cmake_flag:
+            i18n_flag:
             rust_target: aarch64-linux-android
           - v8_release: ia32
             android_arch: x86
             android_abi: x86
             i18n_name: non-i18n
-            cmake_flag:
+            i18n_flag:
             rust_target: i686-linux-android
           - v8_release: x64
             android_arch: x86_64
             android_abi: x86_64
             i18n_name: non-i18n
-            cmake_flag:
+            i18n_flag:
             rust_target: x86_64-linux-android
 
     name: Build Javet ${{ matrix.android_arch }} ${{ matrix.i18n_name }}
@@ -163,7 +163,7 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
-        sh ./build-android.sh -DV8_DIR=${{ env.ROOT }}/google/v8 -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=${{ matrix.android_arch }} ${{ matrix.cmake_flag }}
+        deno run build --os android --arch ${{ matrix.android_arch }} --v8-dir ${{ env.ROOT }}/google/v8 --android-ndk ${{ steps.setup-ndk.outputs.ndk-path }} ${{ matrix.i18n_flag }}
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4

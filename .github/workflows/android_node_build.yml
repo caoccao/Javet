@@ -20,22 +20,22 @@ jobs:
           - android_arch: arm64
             android_abi: arm64-v8a
             i18n_name: non-i18n
-            cmake_flag:
+            i18n_flag:
             config_patch:
           - android_arch: x86_64
             android_abi: x86_64
             i18n_name: non-i18n
-            cmake_flag:
+            i18n_flag:
             config_patch:
           - android_arch: arm64
             android_abi: arm64-v8a
             i18n_name: i18n
-            cmake_flag: -DENABLE_I18N=1
+            i18n_flag: --i18n
             config_patch: sed -i 's/--with-intl=none/--with-intl=full-icu/g' android_configure.py
           - android_arch: x86_64
             android_abi: x86_64
             i18n_name: i18n
-            cmake_flag: -DENABLE_I18N=1
+            i18n_flag: --i18n
             config_patch: sed -i 's/--with-intl=none/--with-intl=full-icu/g' android_configure.py
 
     name: Build Javet ${{ matrix.android_arch }} ${{ matrix.i18n_name }}
@@ -101,10 +101,15 @@ jobs:
       with:
         cmake-version: '3.23.x'
 
+    - name: Setup Deno
+      uses: denoland/setup-deno@v2
+      with:
+        deno-version: v2.x
+
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
-        sh ./build-android.sh -DNODE_DIR=${{ env.ROOT }}/node -DCMAKE_ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} -DCMAKE_ANDROID_ARCH=${{ matrix.android_arch }} ${{ matrix.cmake_flag }}
+        deno run build --os android --arch ${{ matrix.android_arch }} --node-dir ${{ env.ROOT }}/node --android-ndk ${{ steps.setup-ndk.outputs.ndk-path }} ${{ matrix.i18n_flag }}
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4

@@ -19,10 +19,10 @@ jobs:
       matrix:
         include:
           - name: i18n
-            cmake_flag: -DENABLE_I18N=1
+            i18n_flag: --i18n
             v8_flag: v8_enable_i18n_support=true
           - name: non-i18n
-            cmake_flag:
+            i18n_flag:
             v8_flag: v8_enable_i18n_support=false
 
     name: Build Javet V8 ${{ matrix.name }}
@@ -114,7 +114,7 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}\Javet\cpp
-        .\build-windows.cmd -DV8_DIR=${{ env.ROOT }}\google\v8 -T ClangCL ${{ matrix.cmake_flag }}
+        deno run build --os windows --arch x86_64 --v8-dir ${{ env.ROOT }}\google\v8 ${{ matrix.i18n_flag }}
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
@@ -134,10 +134,10 @@ jobs:
       matrix:
         include:
           - name: i18n
-            cmake_flag: -DENABLE_I18N=1
+            i18n_flag: --i18n
             node_flag: full-icu
           - name: non-i18n
-            cmake_flag:
+            i18n_flag:
             node_flag: without-intl
 
     name: Build Javet Node ${{ matrix.name }}
@@ -159,7 +159,12 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11' 
+        python-version: '3.11'
+
+    - name: Setup Deno
+      uses: denoland/setup-deno@v2
+      with:
+        deno-version: v2.x
 
     - name: Build Node.js
       run: |
@@ -190,7 +195,7 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}\Javet\cpp
-        .\build-windows.cmd -DNODE_DIR=${{ env.ROOT }}\node -T ClangCL ${{ matrix.cmake_flag }}
+        deno run build --os windows --arch x86_64 --node-dir ${{ env.ROOT }}\node ${{ matrix.i18n_flag }}
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
