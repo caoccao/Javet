@@ -173,6 +173,11 @@ class ChangeJavetVersion {
       /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
+      "cpp/jni-build.ts",
+      "\n",
+      /JAVET_VERSION = "(?<version>\d+\.\d+\.\d+)";$/
+    );
+    this.updateFile(
       "src/main/java/com/caoccao/javet/interop/loader/JavetLibLoader.java",
       "\n",
       /LIB_VERSION = "(?<version>\d+\.\d+\.\d+)";$/

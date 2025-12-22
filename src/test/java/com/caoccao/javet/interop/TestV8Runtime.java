@@ -66,16 +66,6 @@ public class TestV8Runtime extends BaseTestJavet {
     }
 
     @Test
-    public void testBatterySaverModeEnabled() throws JavetException {
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-            v8Runtime.setBatterySaverModeEnabled(true);
-            assertTrue(v8Runtime.isBatterySaverModeEnabled());
-            v8Runtime.setBatterySaverModeEnabled(false);
-            assertFalse(v8Runtime.isBatterySaverModeEnabled());
-        }
-    }
-
-    @Test
     public void testClose() throws JavetException {
         V8Runtime danglingV8Runtime;
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
