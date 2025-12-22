@@ -203,7 +203,7 @@ function buildCMakeArgs(config: BuildConfig): string[] {
 
   // Add i18n flag
   if (config.i18n) {
-    args.push("-DV8_ENABLE_I18N=1");
+    args.push("-DENABLE_I18N=1");
   }
 
   // Add logging flags
