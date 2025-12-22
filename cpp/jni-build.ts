@@ -53,6 +53,8 @@ const JAVET_VERSION = "5.0.3";
 // Calculate script directory and project root
 const SCRIPT_DIR = path.dirname(path.fromFileUrl(import.meta.url));
 const PROJECT_ROOT = path.join(SCRIPT_DIR, "..");
+const BUILD_LIBS_DIR = path.join(PROJECT_ROOT, "build", "libs");
+const RESOURCES_DIR = path.join(PROJECT_ROOT, "src", "main", "resources");
 
 enum OS {
   Linux = "linux",
@@ -76,6 +78,7 @@ interface BuildConfig {
   nodeDir: string;
   androidNdk: string;
   cpuCount?: number;
+  clean: boolean;
   logDebug: boolean;
   logError: boolean;
   logInfo: boolean;
@@ -85,9 +88,10 @@ interface BuildConfig {
 function parseArgs(): BuildConfig {
   const parsed = cli.parseArgs(Deno.args, {
     string: ["os", "arch", "v8-dir", "node-dir", "android-ndk", "cpu-count"],
-    boolean: ["i18n", "log-debug", "log-error", "log-info", "log-trace"],
+    boolean: ["i18n", "clean", "log-debug", "log-error", "log-info", "log-trace"],
     default: {
       "i18n": false,
+      "clean": false,
       "v8-dir": "",
       "node-dir": "",
       "android-ndk": "",
@@ -110,6 +114,7 @@ function parseArgs(): BuildConfig {
     console.info("  --arch <arch>       Target architecture: x86_64, arm64, arm, x86");
     console.info("\nOptional arguments:");
     console.info("  --i18n              Enable V8 internationalization support (default: false)");
+    console.info("  --clean             Clean build directory before building (default: false)");
     console.info("  --v8-dir <path>     Path to V8 library directory");
     console.info("  --node-dir <path>   Path to Node.js library directory");
     console.info("  --android-ndk <path> Path to Android NDK (required for Android builds)");
@@ -177,6 +182,7 @@ function parseArgs(): BuildConfig {
     nodeDir,
     androidNdk,
     cpuCount,
+    clean: parsed["clean"],
     logDebug: parsed["log-debug"],
     logError: parsed["log-error"],
     logInfo: parsed["log-info"],
@@ -275,6 +281,12 @@ async function ensureDir(path: string) {
   }
 }
 
+function getBuildDir(config: BuildConfig): string {
+  const i18n = config.i18n ? "i18n": "non-i18n";
+  const type = config.v8Dir ? "v8": "node";
+  return path.join(SCRIPT_DIR, `build-${type}-${config.os}-${config.arch}-${i18n}`);
+}
+
 function getLibraryFileName(config: BuildConfig): string {
   // Determine engine type
   const engine = config.v8Dir ? "v8" : "node";
@@ -301,20 +313,21 @@ function getLibraryFileName(config: BuildConfig): string {
   return `libjavet-${engine}-${config.os}-${config.arch}${i18nSuffix}.v.${JAVET_VERSION}.${extension}`;
 }
 
-async function buildLinux(config: BuildConfig): Promise<boolean> {
-  const buildDir = path.join(SCRIPT_DIR, `build_${config.os}_${config.arch}`);
-  const buildLibsDir = path.join(PROJECT_ROOT, "build", "libs");
-  const resourcesDir = path.join(PROJECT_ROOT, "src", "main", "resources");
-
-  console.log(`Building for Linux ${config.arch}...`);
-
-  await removeDir(buildDir);
+async function prepareBuild(config: BuildConfig): Promise<void> {
+  const buildDir = getBuildDir(config);
+  if (config.clean) {
+    await removeDir(buildDir);
+  }
   await ensureDir(buildDir);
-  await ensureDir(buildLibsDir);
+  await ensureDir(BUILD_LIBS_DIR);
+}
+
+async function buildLinux(config: BuildConfig): Promise<boolean> {
+  console.log(`Building for Linux ${config.arch}...`);
 
   // Change to build directory
   const originalDir = Deno.cwd();
-  Deno.chdir(buildDir);
+  Deno.chdir(getBuildDir(config));
 
   try {
     const cpuCount = await getCpuCount(config);
@@ -340,7 +353,7 @@ async function buildLinux(config: BuildConfig): Promise<boolean> {
       return false;
     }
 
-    const libraryPath = path.join(resourcesDir, getLibraryFileName(config));
+    const libraryPath = path.join(RESOURCES_DIR, getLibraryFileName(config));
 
     // Run execstack for x86_64
     if (config.arch === Arch.X86_64) {
@@ -369,10 +382,10 @@ async function buildLinux(config: BuildConfig): Promise<boolean> {
     }
 
     // Copy .a files
-    console.log(`Copying static libraries to ${buildLibsDir}`);
+    console.log(`Copying static libraries to ${BUILD_LIBS_DIR}`);
     for await (const entry of Deno.readDir(".")) {
       if (entry.isFile && entry.name.endsWith(".a")) {
-        await Deno.copyFile(entry.name, path.join(buildLibsDir, entry.name));
+        await Deno.copyFile(entry.name, path.join(BUILD_LIBS_DIR, entry.name));
       }
     }
 
@@ -384,17 +397,10 @@ async function buildLinux(config: BuildConfig): Promise<boolean> {
 }
 
 async function buildMacOS(config: BuildConfig): Promise<boolean> {
-  const buildDir = path.join(SCRIPT_DIR, `build_${config.os}_${config.arch}`);
-  const buildLibsDir = path.join(PROJECT_ROOT, "build", "libs");
-
   console.log("Building for macOS...");
 
-  await removeDir(buildDir);
-  await ensureDir(buildDir);
-  await ensureDir(buildLibsDir);
-
   const originalDir = Deno.cwd();
-  Deno.chdir(buildDir);
+  Deno.chdir(getBuildDir(config));
 
   try {
     const cpuCount = await getCpuCount(config);
@@ -421,10 +427,10 @@ async function buildMacOS(config: BuildConfig): Promise<boolean> {
     }
 
     // Copy .a files
-    console.log(`Copying static libraries to ${buildLibsDir}`);
+    console.log(`Copying static libraries to ${BUILD_LIBS_DIR}`);
     for await (const entry of Deno.readDir(".")) {
       if (entry.isFile && entry.name.endsWith(".a")) {
-        await Deno.copyFile(entry.name, path.join(buildLibsDir, entry.name));
+        await Deno.copyFile(entry.name, path.join(BUILD_LIBS_DIR, entry.name));
       }
     }
 
@@ -436,17 +442,10 @@ async function buildMacOS(config: BuildConfig): Promise<boolean> {
 }
 
 async function buildWindows(config: BuildConfig): Promise<boolean> {
-  const buildDir = path.join(SCRIPT_DIR, `build_${config.os}_${config.arch}`);
-  const buildLibsDir = path.join(PROJECT_ROOT, "build", "libs");
-
   console.log("Building for Windows...");
 
-  await removeDir(buildDir);
-  await ensureDir(buildDir);
-  await ensureDir(buildLibsDir);
-
   const originalDir = Deno.cwd();
-  Deno.chdir(buildDir);
+  Deno.chdir(getBuildDir(config));
 
   try {
     const cmakeArgs = buildCMakeArgs(config);
@@ -458,6 +457,7 @@ async function buildWindows(config: BuildConfig): Promise<boolean> {
       "-G", "Visual Studio 17 2022",
       "-A", "x64",
       `-DJAVET_VERSION=${JAVET_VERSION}`,
+      "-T", "ClangCL",
       ...cmakeArgs,
     ];
 
@@ -483,14 +483,14 @@ async function buildWindows(config: BuildConfig): Promise<boolean> {
     }
 
     // Copy .lib files
-    console.log(`Copying static libraries to ${buildLibsDir}`);
+    console.log(`Copying static libraries to ${BUILD_LIBS_DIR}`);
     for await (const entry of Deno.readDir("Release")) {
       if (entry.isFile && entry.name.endsWith(".lib")) {
-        await Deno.copyFile(`Release/${entry.name}`, path.join(buildLibsDir, entry.name));
+        await Deno.copyFile(`Release/${entry.name}`, path.join(BUILD_LIBS_DIR, entry.name));
       }
     }
 
-    console.log(`\n✓ Generated library: ${getLibraryFileName(config)}`);
+    console.log(green(`\n✓ Generated library: ${getLibraryFileName(config)}`));
     return true;
   } finally {
     Deno.chdir(originalDir);
@@ -498,17 +498,10 @@ async function buildWindows(config: BuildConfig): Promise<boolean> {
 }
 
 async function buildAndroid(config: BuildConfig): Promise<boolean> {
-  const buildDir = path.join(SCRIPT_DIR, `build_${config.os}_${config.arch}`);
-  const buildLibsDir = path.join(PROJECT_ROOT, "build", "libs");
-
   console.log(`Building for Android ${config.arch}...`);
 
-  await removeDir(buildDir);
-  await ensureDir(buildDir);
-  await ensureDir(buildLibsDir);
-
   const originalDir = Deno.cwd();
-  Deno.chdir(buildDir);
+  Deno.chdir(getBuildDir(config));
 
   try {
     const cpuCount = await getCpuCount(config);
@@ -547,10 +540,10 @@ async function buildAndroid(config: BuildConfig): Promise<boolean> {
     }
 
     // Copy .a files
-    console.log(`Copying static libraries to ${buildLibsDir}`);
+    console.log(`Copying static libraries to ${BUILD_LIBS_DIR}`);
     for await (const entry of Deno.readDir(".")) {
       if (entry.isFile && entry.name.endsWith(".a")) {
-        await Deno.copyFile(entry.name, path.join(buildLibsDir, entry.name));
+        await Deno.copyFile(entry.name, path.join(BUILD_LIBS_DIR, entry.name));
       }
     }
 
@@ -582,12 +575,15 @@ async function main() {
   } else {
     console.log(`  CPU count: auto-detect`);
   }
+  console.log(`  Clean build: ${config.clean}`);
   console.log(`  I18N: ${config.i18n}`);
   console.log(`  Log debug: ${config.logDebug}`);
   console.log(`  Log error: ${config.logError}`);
   console.log(`  Log info: ${config.logInfo}`);
   console.log(`  Log trace: ${config.logTrace}`);
   console.log();
+
+  await prepareBuild(config);
 
   let success = false;
 
