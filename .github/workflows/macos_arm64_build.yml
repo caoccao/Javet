@@ -176,6 +176,11 @@ jobs:
       with:
         cmake-version: '3.23.x'
 
+    - name: Setup Deno
+      uses: denoland/setup-deno@v2
+      with:
+        deno-version: v2.x
+
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
