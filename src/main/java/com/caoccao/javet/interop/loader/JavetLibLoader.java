@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025. caoccao.com Sam Cao
+ * Copyright (c) 2021-2026. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public final class JavetLibLoader {
      *
      * @since 0.8.0
      */
-    public static final String LIB_VERSION = "5.0.2";
+    public static final String LIB_VERSION = "5.0.3";
     private static final String ANDROID_ABI_ARM = "armeabi-v7a";
     private static final String ANDROID_ABI_ARM64 = "arm64-v8a";
     private static final String ANDROID_ABI_X86 = "x86";

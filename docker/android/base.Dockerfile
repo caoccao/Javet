@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2025. caoccao.com Sam Cao
+# Copyright (c) 2021-2026. caoccao.com Sam Cao
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet-android:5.0.2 -f docker/android/base.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-android:5.0.3 -f docker/android/base.Dockerfile .
 
-ARG JAVET_V8_VERSION=14.3.127.14
+ARG JAVET_V8_VERSION=14.4.258.16
 
 FROM ubuntu:20.04
 WORKDIR /

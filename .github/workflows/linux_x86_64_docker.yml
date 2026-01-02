@@ -8,9 +8,10 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_VERSION: 5.0.2
-  JAVET_NODE_VERSION: 24.11.1
-  JAVET_V8_VERSION: 14.3.127.14
+  JAVET_VERSION: 5.0.3
+  JAVET_NODE_VERSION: 24.12.0
+  JAVET_V8_VERSION: 14.4.258.16
+  TEMPORAL_VERSION: 0.1.2
 
 jobs:
   build_docker_image:
@@ -37,6 +38,7 @@ jobs:
           JAVET_VERSION=${{ env.JAVET_VERSION }}
           JAVET_NODE_VERSION=${{ env.JAVET_NODE_VERSION }}
           JAVET_V8_VERSION=${{ env.JAVET_V8_VERSION }}
+          TEMPORAL_VERSION=${{ env.TEMPORAL_VERSION }}
 
     - name: Extract artifacts from Docker image
       run: |

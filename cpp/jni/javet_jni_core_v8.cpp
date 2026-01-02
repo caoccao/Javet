@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2021-2025. caoccao.com Sam Cao
+ *   Copyright (c) 2021-2026. caoccao.com Sam Cao
  *   All rights reserved.
 
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
  */
 
 #include "javet_jni.h"
+#include "javet_v8_internal.h"
 
  /*
   * Development Guide:
@@ -150,6 +151,13 @@ JNIEXPORT jlongArray JNICALL Java_com_caoccao_javet_interop_V8Native_getInternal
 #endif
 }
 
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getPriority
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
+    return static_cast<jint>(v8InternalIsolate->priority());
+}
+
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getV8HeapSpaceStatistics
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject allocationSpace) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
@@ -248,10 +256,24 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isI18nEnabled
 #endif
 }
 
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isBatterySaverModeEnabled
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
+    return v8InternalIsolate->BatterySaverModeEnabled();
+}
+
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isDead
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     return v8Runtime->v8Isolate->IsDead();
+}
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isEfficiencyModeEnabled
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
+    return v8InternalIsolate->EfficiencyModeEnabled();
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isExecutionTerminating
@@ -264,6 +286,13 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isInUse
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     return v8Runtime->v8Isolate->IsInUse();
+}
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isMemorySaverModeEnabled
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
+    return v8InternalIsolate->MemorySaverModeEnabled();
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isWeak
@@ -378,6 +407,27 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_sameValue
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle1, jlong v8ValueHandle2) {
     RUNTIME_AND_2_VALUES_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle1, v8ValueHandle2);
     return v8LocalValue1->SameValue(v8LocalValue2);
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setBatterySaverModeEnabled
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jboolean enabled) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
+    v8InternalIsolate->set_battery_saver_mode_enabled(enabled);
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setMemorySaverModeEnabled
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jboolean enabled) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
+    v8InternalIsolate->set_memory_saver_mode_enabled(enabled);
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setPriority
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint mPriority) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
+    v8InternalIsolate->SetPriority(static_cast<v8::Isolate::Priority>(mPriority));
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setWeak

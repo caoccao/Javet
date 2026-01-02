@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025. caoccao.com Sam Cao
+ * Copyright (c) 2021-2026. caoccao.com Sam Cao
  * All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -227,9 +227,9 @@ class ChangeV8Version extends ChangeVersion {
 }
 
 function main(): number {
-  const changeNodeVersion = new ChangeNodeVersion("24.11.1");
+  const changeNodeVersion = new ChangeNodeVersion("24.12.0");
   changeNodeVersion.update();
-  const changeV8Version = new ChangeV8Version("14.3.127.14");
+  const changeV8Version = new ChangeV8Version("14.4.258.16");
   changeV8Version.update();
   return 0;
 }

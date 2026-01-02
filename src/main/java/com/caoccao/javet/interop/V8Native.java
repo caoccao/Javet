@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025. caoccao.com Sam Cao
+ * Copyright (c) 2021-2026. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -198,6 +198,9 @@ class V8Native implements IV8Native {
     public native long[] getInternalStatistic();
 
     @Override
+    public native int getPriority(long v8RuntimeHandle);
+
+    @Override
     public native Object getV8HeapSpaceStatistics(long v8RuntimeHandle, Object v8AllocationSpace);
 
     @Override
@@ -225,7 +228,13 @@ class V8Native implements IV8Native {
     public native Object integerObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native boolean isBatterySaverModeEnabled(long v8RuntimeHandle);
+
+    @Override
     public native boolean isDead(long v8RuntimeHandle);
+
+    @Override
+    public native boolean isEfficiencyModeEnabled(long v8RuntimeHandle);
 
     @Override
     public native boolean isExecutionTerminating(long v8RuntimeHandle);
@@ -235,6 +244,9 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean isInUse(long v8RuntimeHandle);
+
+    @Override
+    public native boolean isMemorySaverModeEnabled(long v8RuntimeHandle);
 
     @Override
     public native boolean isWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -601,6 +613,9 @@ class V8Native implements IV8Native {
     public native Object setAsArray(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
+    public native void setBatterySaverModeEnabled(long v8RuntimeHandle, boolean enabled);
+
+    @Override
     public native void setClear(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
@@ -614,6 +629,12 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean setHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+
+    @Override
+    public native void setMemorySaverModeEnabled(long v8RuntimeHandle, boolean enabled);
+
+    @Override
+    public native void setPriority(long v8RuntimeHandle, int priority);
 
     @Override
     public native void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);

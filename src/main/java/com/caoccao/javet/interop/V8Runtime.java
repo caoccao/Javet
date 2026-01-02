@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025. caoccao.com Sam Cao
+ * Copyright (c) 2021-2026. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1679,6 +1679,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Gets the priority of the V8 isolate.
+     * <p>
+     * The priority indicates the importance of the isolate's content to the user.
+     *
+     * @return the V8 priority
+     * @since 5.0.3
+     */
+    public V8Priority getPriority() {
+        if (!isClosed()) {
+            return V8Priority.parse(v8Native.getPriority(handle));
+        }
+        return V8Priority.UserBlocking;
+    }
+
+    /**
      * Gets promise reject callback.
      *
      * @return the promise reject callback
@@ -1974,6 +1989,22 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 handle, Objects.requireNonNull(v8ValueIntegerObject).getHandle(), v8ValueIntegerObject.getType().getId());
     }
 
+    /**
+     * Returns whether battery saver mode is enabled.
+     * <p>
+     * In battery saver mode the runtime optimizes to reduce total CPU cycles spent.
+     * Battery saver mode is opt-in by the embedder and can be toggled at runtime.
+     *
+     * @return true if battery saver mode is enabled, false otherwise
+     * @since 5.0.3
+     */
+    public boolean isBatterySaverModeEnabled() {
+        if (!isClosed()) {
+            return v8Native.isBatterySaverModeEnabled(handle);
+        }
+        return false;
+    }
+
     @Override
     public boolean isClosed() {
         return handle == INVALID_HANDLE;
@@ -1990,6 +2021,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             return v8Native.isDead(handle);
         }
         return true;
+    }
+
+    /**
+     * Returns whether efficiency mode is enabled.
+     * <p>
+     * Efficiency mode is used when the runtime should optimize for efficiency
+     * rather than latency. This is typically enabled when the isolate is in
+     * background mode rather than user-blocking foreground operations.
+     *
+     * @return true if efficiency mode is enabled, false otherwise
+     * @since 5.0.3
+     */
+    public boolean isEfficiencyModeEnabled() {
+        if (!isClosed()) {
+            return v8Native.isEfficiencyModeEnabled(handle);
+        }
+        return false;
     }
 
     /**
@@ -2024,6 +2072,22 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public boolean isInUse() {
         if (!isClosed()) {
             return v8Native.isInUse(handle);
+        }
+        return false;
+    }
+
+    /**
+     * Returns whether memory saver mode is enabled.
+     * <p>
+     * Memory saver mode optimizes the runtime to reduce memory consumption.
+     * This can be enabled through embedder configuration or V8 flags.
+     *
+     * @return true if memory saver mode is enabled, false otherwise
+     * @since 5.0.3
+     */
+    public boolean isMemorySaverModeEnabled() {
+        if (!isClosed()) {
+            return v8Native.isMemorySaverModeEnabled(handle);
         }
         return false;
     }
@@ -3735,6 +3799,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Sets battery saver mode enabled or disabled.
+     * <p>
+     * Battery saver mode optimizes V8 to reduce total CPU cycles spent.
+     * This can be toggled at runtime by the embedder.
+     *
+     * @param enabled true to enable battery saver mode, false to disable
+     * @since 5.0.3
+     */
+    public void setBatterySaverModeEnabled(boolean enabled) {
+        if (!isClosed()) {
+            v8Native.setBatterySaverModeEnabled(handle, enabled);
+        }
+    }
+
+    /**
      * Clear the set.
      *
      * @param iV8ValueSet the V8 value set
@@ -3816,6 +3895,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Sets memory saver mode enabled or disabled.
+     * <p>
+     * Memory saver mode optimizes V8 to reduce memory consumption.
+     * This can be enabled through embedder configuration or V8 flags.
+     *
+     * @param enabled true to enable memory saver mode, false to disable
+     * @since 5.0.3
+     */
+    public void setMemorySaverModeEnabled(boolean enabled) {
+        if (!isClosed()) {
+            v8Native.setMemorySaverModeEnabled(handle, enabled);
+        }
+    }
+
+    /**
      * Sets near heap limit callback.
      *
      * @param nearHeapLimitCallback the near heap limit callback
@@ -3840,6 +3934,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                     this.nearHeapLimitCallback = null;
                 }
             }
+        }
+    }
+
+    /**
+     * Sets the priority of the V8 isolate.
+     * <p>
+     * The priority indicates the importance of the isolate's content to the user
+     * and affects performance optimizations such as efficiency mode.
+     *
+     * @param priority the V8 priority
+     * @since 5.0.3
+     */
+    public void setPriority(V8Priority priority) {
+        if (!isClosed()) {
+            v8Native.setPriority(handle, Objects.requireNonNull(priority).getId());
         }
     }
 

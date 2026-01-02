@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025. caoccao.com Sam Cao
+ * Copyright (c) 2021-2026. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ public enum JSRuntimeType {
     Node(
             "node",
             false,
-            "13.6.233.10-node.28", // node -p process.versions.v8
+            "13.6.233.17-node.37", // node -p process.versions.v8
             NodeRuntimeOptions::new,
             o -> o instanceof NodeRuntimeOptions),
     /**
@@ -49,7 +49,7 @@ public enum JSRuntimeType {
     NodeI18n(
             "node",
             true,
-            "13.6.233.10-node.28", // node -p process.versions.v8
+            "13.6.233.17-node.37", // node -p process.versions.v8
             NodeRuntimeOptions::new,
             o -> o instanceof NodeRuntimeOptions),
     /**
@@ -60,7 +60,7 @@ public enum JSRuntimeType {
     V8(
             "v8",
             false,
-            "14.3.127.14",
+            "14.4.258.16",
             V8RuntimeOptions::new,
             o -> o instanceof V8RuntimeOptions),
     /**
@@ -71,7 +71,7 @@ public enum JSRuntimeType {
     V8I18n(
             "v8",
             true,
-            "14.3.127.14",
+            "14.4.258.16",
             V8RuntimeOptions::new,
             o -> o instanceof V8RuntimeOptions);
 

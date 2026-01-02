@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025. caoccao.com Sam Cao
+ * Copyright (c) 2021-2026. caoccao.com Sam Cao
  * All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -173,6 +173,11 @@ class ChangeJavetVersion {
       /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
+      "cpp/jni-build.ts",
+      "\n",
+      /JAVET_VERSION = "(?<version>\d+\.\d+\.\d+)";$/
+    );
+    this.updateFile(
       "src/main/java/com/caoccao/javet/interop/loader/JavetLibLoader.java",
       "\n",
       /LIB_VERSION = "(?<version>\d+\.\d+\.\d+)";$/
@@ -267,7 +272,7 @@ class ChangeJavetVersion {
 }
 
 function main(): number {
-  const changeJavetVersion = new ChangeJavetVersion("5.0.2");
+  const changeJavetVersion = new ChangeJavetVersion("5.0.3");
   changeJavetVersion.update();
   return 0;
 }

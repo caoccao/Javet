@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025. caoccao.com Sam Cao
+ * Copyright (c) 2021-2026. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -212,7 +212,7 @@ public class TestNodeRuntime extends BaseTestJavet {
         Path path4 = nodeModuleProcess.getWorkingDirectory().toPath();
         assertNotEquals(path1.toAbsolutePath().toString(), path3.toAbsolutePath().toString());
         assertEquals(path1.toAbsolutePath().toString(), path4.toAbsolutePath().toString());
-        assertEquals("v24.11.1", nodeModuleProcess.getVersion());
+        assertEquals("v24.12.0", nodeModuleProcess.getVersion());
     }
 
     @Test

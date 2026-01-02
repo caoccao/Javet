@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025. caoccao.com Sam Cao
+ * Copyright (c) 2021-2026. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,6 +75,7 @@ public abstract class BaseTestJavet {
                     v8Flags.setUseStrict(true);
                 }
             }
+            NodeRuntimeOptions.NODE_FLAGS.setHarmonyTemporal(true);
             assertNotNull(jsRuntimeType);
             v8Host = V8Host.getInstance(jsRuntimeType);
             if (isNode()) {

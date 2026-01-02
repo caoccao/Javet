@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2021-2025. caoccao.com Sam Cao
+ *   Copyright (c) 2021-2026. caoccao.com Sam Cao
  *   All rights reserved.
 
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,7 @@
 #ifdef _WIN32
 #pragma comment(lib, "DbgHelp.lib")
 #pragma comment(lib, "Iphlpapi.lib")
+#pragma comment(lib, "ntdll.lib")
 #pragma comment(lib, "Psapi.lib")
 #pragma comment(lib, "Userenv.lib")
 #pragma comment(lib, "Winmm.lib")

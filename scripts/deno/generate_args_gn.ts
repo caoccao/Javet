@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025. caoccao.com Sam Cao
+ * Copyright (c) 2021-2026. caoccao.com Sam Cao
  * All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -135,7 +135,7 @@ class GnArgsGenerator {
 
     const config: GnConfig = {
       clang_use_chrome_plugins: false,
-      compiler_timing: true,
+      compiler_timing: false,
       dcheck_always_on: false,
       is_component_build: false,
       is_debug: false,
@@ -147,7 +147,7 @@ class GnArgsGenerator {
       v8_enable_i18n_support: i18n,
       v8_enable_pointer_compression: false,
       v8_enable_sandbox: false,
-      v8_enable_temporal_support: false,
+      v8_enable_temporal_support: true,
       v8_enable_webassembly: true,
       v8_monolithic: true,
       v8_monolithic_for_shared_library: true,

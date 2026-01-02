@@ -1,5 +1,5 @@
 /*
- *    Copyright 2021-2023-2025. caoccao.com Sam Cao
+ *    Copyright 2021-2023-2026. caoccao.com Sam Cao
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ object Config {
         const val ANDROIDX_TEST = "1.1.5"
         const val APPCOMPAT = "1.3.1"
         const val DESUGAR_JDK_LIBS = "2.0.4"
-        const val JAVET = "5.0.2"
+        const val JAVET = "5.0.3"
         const val JUNIT = "5.10.1"
     }
 }

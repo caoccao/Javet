@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025. caoccao.com Sam Cao
+ * Copyright (c) 2021-2026. caoccao.com Sam Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,6 +138,8 @@ public interface IV8Native {
 
     long[] getInternalStatistic();
 
+    int getPriority(long v8RuntimeHandle);
+
     Object getV8HeapSpaceStatistics(long v8RuntimeHandle, Object v8AllocationSpace);
 
     Object getV8HeapStatistics(long v8RuntimeHandle);
@@ -156,13 +158,19 @@ public interface IV8Native {
 
     Object integerObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    boolean isBatterySaverModeEnabled(long v8RuntimeHandle);
+
     boolean isDead(long v8RuntimeHandle);
+
+    boolean isEfficiencyModeEnabled(long v8RuntimeHandle);
 
     boolean isExecutionTerminating(long v8RuntimeHandle);
 
     boolean isI18nEnabled();
 
     boolean isInUse(long v8RuntimeHandle);
+
+    boolean isMemorySaverModeEnabled(long v8RuntimeHandle);
 
     boolean isWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
@@ -396,6 +404,8 @@ public interface IV8Native {
 
     Object setAsArray(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
+    void setBatterySaverModeEnabled(long v8RuntimeHandle, boolean enabled);
+
     void setClear(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     Object setCreate(long v8RuntimeHandle);
@@ -405,6 +415,10 @@ public interface IV8Native {
     int setGetSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     boolean setHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+
+    void setMemorySaverModeEnabled(long v8RuntimeHandle, boolean enabled);
+
+    void setPriority(long v8RuntimeHandle, int priority);
 
     void setWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object objectReference);
 

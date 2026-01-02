@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2025. caoccao.com Sam Cao
+# Copyright (c) 2021-2026. caoccao.com Sam Cao
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,15 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet-linux-x86_64:5.0.2 -f docker/linux-x86_64/build.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-linux-x86_64:5.0.3 -f docker/linux-x86_64/build.Dockerfile .
 
 # Multi-stage Dockerfile for building Javet on Linux x86_64
 # Based on .github/workflows/linux_x86_64_build.yml
 
 # Build arguments
-ARG JAVET_NODE_VERSION=24.11.1
-ARG JAVET_V8_VERSION=14.3.127.14
-ARG JAVET_VERSION=5.0.2
+ARG JAVET_NODE_VERSION=24.12.0
+ARG JAVET_V8_VERSION=14.4.258.16
+ARG JAVET_VERSION=5.0.3
+ARG TEMPORAL_VERSION=0.1.2
 
 ###########################################
 # Stage 1: Base with common dependencies
@@ -31,10 +32,12 @@ FROM ubuntu:latest AS base
 ARG JAVET_NODE_VERSION
 ARG JAVET_V8_VERSION
 ARG JAVET_VERSION
+ARG TEMPORAL_VERSION
 
 ENV JAVET_NODE_VERSION=${JAVET_NODE_VERSION}
 ENV JAVET_V8_VERSION=${JAVET_V8_VERSION}
 ENV JAVET_VERSION=${JAVET_VERSION}
+ENV TEMPORAL_VERSION=${TEMPORAL_VERSION}
 ENV ROOT=/home/runner/work/Javet
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -63,6 +66,10 @@ RUN apt-get update -y && \
 # Setup Deno
 RUN curl -fsSL https://deno.land/install.sh | sh
 ENV PATH="/root/.deno/bin:${PATH}"
+
+# Setup Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Setup JDK 8
 RUN apt-get update -y && \
@@ -110,21 +117,32 @@ RUN cd ${ROOT}/google && gclient sync -D
 # Apply V8 patches
 RUN cd ${ROOT}/google/v8 && \
     sed -i '/#include "src\/libplatform\//a #include <cstdlib>' src/libplatform/default-thread-isolated-allocator.cc && \
-    sed -i '/bool KernelHasPkruFix()/a const char* env = std::getenv("JAVET_DISABLE_PKU"); if (env && std::strlen(env) > 0) { return false; }' src/libplatform/default-thread-isolated-allocator.cc
+    sed -i '/bool KernelHasPkruFix()/a const char* env = std::getenv("JAVET_DISABLE_PKU"); if (env && std::strlen(env) > 0) { return false; }' src/libplatform/default-thread-isolated-allocator.cc && \
+    sed -i '/return other_kind == "islamic-umalqura"/a\    case HijriSimulatedMecca:\n      return other_kind == "islamic-rgsa" || other_kind == "islamic";' src/objects/js-date-time-format.cc
 
 # Build V8 non-i18n
 RUN cd ${ROOT}/google/v8 && \
-    mkdir -p out.gn.non-i18n/x64.release && \
-    cp ${ROOT}/Javet/scripts/v8/gn/linux-x86_64-non-i18n-args.gn out.gn.non-i18n/x64.release/args.gn && \
-    gn gen out.gn.non-i18n/x64.release && \
-    ninja -C out.gn.non-i18n/x64.release v8_monolith
+    mkdir -p out.gn.linux.non-i18n/x64.release && \
+    cp ${ROOT}/Javet/scripts/v8/gn/linux-x86_64-non-i18n-args.gn out.gn.linux.non-i18n/x64.release/args.gn && \
+    gn gen out.gn.linux.non-i18n/x64.release && \
+    ninja -C out.gn.linux.non-i18n/x64.release v8_monolith
 
 # Build V8 i18n
 RUN cd ${ROOT}/google/v8 && \
-    mkdir -p out.gn.i18n/x64.release && \
-    cp ${ROOT}/Javet/scripts/v8/gn/linux-x86_64-i18n-args.gn out.gn.i18n/x64.release/args.gn && \
-    gn gen out.gn.i18n/x64.release && \
-    ninja -C out.gn.i18n/x64.release v8_monolith
+    mkdir -p out.gn.linux.i18n/x64.release && \
+    cp ${ROOT}/Javet/scripts/v8/gn/linux-x86_64-i18n-args.gn out.gn.linux.i18n/x64.release/args.gn && \
+    gn gen out.gn.linux.i18n/x64.release && \
+    ninja -C out.gn.linux.i18n/x64.release v8_monolith
+
+# Build Temporal CAPI for non-i18n
+RUN cd ${ROOT} && \
+    git clone https://github.com/boa-dev/temporal.git && \
+    cd temporal && \
+    git checkout v${TEMPORAL_VERSION} && \
+    deno run --allow-all ${ROOT}/Javet/scripts/deno/patch_v8_temporal.ts -p ./ && \
+    cargo build --release --package temporal_capi --features compiled_data,zoneinfo64 && \
+    cp target/release/libtemporal_capi.a ${ROOT}/google/v8/out.gn.linux.non-i18n/x64.release/obj/ && \
+    cp target/release/libtemporal_capi.a ${ROOT}/google/v8/out.gn.linux.i18n/x64.release/obj/
 
 # Copy i18n data
 RUN mkdir -p ${ROOT}/Javet/icu-v8 && \
@@ -134,13 +152,13 @@ RUN mkdir -p ${ROOT}/Javet/icu-v8 && \
 RUN cd ${ROOT}/Javet/cpp && \
     CC=${ROOT}/google/v8/third_party/llvm-build/Release+Asserts/bin/clang \
     CXX=${ROOT}/google/v8/third_party/llvm-build/Release+Asserts/bin/clang \
-    sh ./build-linux-x86_64.sh -DV8_DIR=${ROOT}/google/v8
+    deno run build --os linux --arch x86_64 --v8-dir ${ROOT}/google/v8
 
 # Build Javet JNI for V8 i18n
 RUN cd ${ROOT}/Javet/cpp && \
     CC=${ROOT}/google/v8/third_party/llvm-build/Release+Asserts/bin/clang \
     CXX=${ROOT}/google/v8/third_party/llvm-build/Release+Asserts/bin/clang \
-    sh ./build-linux-x86_64.sh -DV8_DIR=${ROOT}/google/v8 -DENABLE_I18N=1
+    deno run build --os linux --arch x86_64 --v8-dir ${ROOT}/google/v8 --i18n
 
 ###########################################
 # Stage 3: Build Node.js (both i18n and non-i18n)
@@ -188,12 +206,12 @@ RUN mkdir -p ${ROOT}/Javet/icu-node && \
 
 # Build Javet JNI for Node non-i18n
 RUN cd ${ROOT}/Javet/cpp && \
-    sh ./build-linux-x86_64.sh -DNODE_DIR=${ROOT}/node && \
+    deno run build --os linux --arch x86_64 --node-dir ${ROOT}/node && \
     cp ${ROOT}/Javet/src/main/resources/*.so ${ROOT}/Javet/artifacts-node-non-i18n/ || mkdir -p ${ROOT}/Javet/artifacts-node-non-i18n && cp ${ROOT}/Javet/src/main/resources/*.so ${ROOT}/Javet/artifacts-node-non-i18n/
 
 # Build Javet JNI for Node i18n
 RUN cd ${ROOT}/Javet/cpp && \
-    sh ./build-linux-x86_64.sh -DNODE_DIR=${ROOT}/node -DENABLE_I18N=1 && \
+    deno run build --os linux --arch x86_64 --node-dir ${ROOT}/node --i18n && \
     cp ${ROOT}/Javet/src/main/resources/*.so ${ROOT}/Javet/artifacts-node-i18n/ || mkdir -p ${ROOT}/Javet/artifacts-node-i18n && cp ${ROOT}/Javet/src/main/resources/*.so ${ROOT}/Javet/artifacts-node-i18n/
 
 ###########################################

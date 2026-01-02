@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2025. caoccao.com Sam Cao
+# Copyright (c) 2021-2026. caoccao.com Sam Cao
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,15 +25,16 @@
 #   3. Restart docker
 
 # set DOCKER_DEFAULT_PLATFORM=windows/amd64
-# Usage: docker build -t sjtucaocao/javet-windows-x86_64:5.0.2 -m 8G -f docker/windows-x86_64/build.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-windows-x86_64:5.0.3 -m 8G -f docker/windows-x86_64/build.Dockerfile .
 
 # Multi-stage Dockerfile for building Javet on Windows x86_64
 # Based on .github/workflows/windows_x86_64_build.yml
 
 # Build arguments
-ARG JAVET_NODE_VERSION=24.11.1
-ARG JAVET_V8_VERSION=14.3.127.14
-ARG JAVET_VERSION=5.0.2
+ARG JAVET_NODE_VERSION=24.12.0
+ARG JAVET_V8_VERSION=14.4.258.16
+ARG JAVET_VERSION=5.0.3
+ARG TEMPORAL_VERSION=0.1.2
 
 ###########################################
 # Stage 1: Base with common dependencies
@@ -43,10 +44,12 @@ FROM mcr.microsoft.com/windows/server:ltsc2022 AS base
 ARG JAVET_NODE_VERSION
 ARG JAVET_V8_VERSION
 ARG JAVET_VERSION
+ARG TEMPORAL_VERSION
 
 ENV JAVET_NODE_VERSION=${JAVET_NODE_VERSION}
 ENV JAVET_V8_VERSION=${JAVET_V8_VERSION}
 ENV JAVET_VERSION=${JAVET_VERSION}
+ENV TEMPORAL_VERSION=${TEMPORAL_VERSION}
 ENV ROOT=C:/
 
 SHELL ["cmd", "/S", "/C"]
@@ -73,6 +76,14 @@ RUN powershell -Command "\
     $ProgressPreference = 'SilentlyContinue'; \
     irm https://deno.land/install.ps1 | iex"
 RUN setx /M PATH "C:\Users\ContainerAdministrator\.deno\bin;%PATH%"
+
+# Install Rust
+RUN powershell -Command "\
+    $ProgressPreference = 'SilentlyContinue'; \
+    Invoke-WebRequest -Uri 'https://win.rustup.rs/x86_64' -OutFile 'rustup-init.exe'; \
+    .\rustup-init.exe -y --default-toolchain stable; \
+    Remove-Item rustup-init.exe"
+RUN setx /M PATH "C:\Users\ContainerAdministrator\.cargo\bin;%PATH%"
 
 # Install Visual Studio 2022 Community
 # https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-community
@@ -123,6 +134,10 @@ RUN cd google\v8 && git checkout %JAVET_V8_VERSION%
 # Sync V8 dependencies
 RUN cd google && depot_tools\gclient.bat sync -D
 
+# Apply V8 patch for backing-store.cc
+RUN cd google\v8 && \
+    powershell -Command "(Get-Content src\objects\backing-store.cc) -replace '  auto gc_retry = \[&\]\(const std::function<bool\(\)>& fn\)', '  auto gc_retry = [&](auto&& fn)' | Set-Content src\objects\backing-store.cc"
+
 # Build V8 non-i18n
 RUN cd google\v8 && \
     mkdir out.gn\x64.release && \
@@ -130,7 +145,7 @@ RUN cd google\v8 && \
     ..\depot_tools\gn.bat gen out.gn\x64.release && \
     ..\depot_tools\ninja.bat -C out.gn\x64.release v8_monolith || deno --allow-all C:\Javet\src\scripts\deno\patch_v8_build.ts -p .\ && \
     ..\depot_tools\ninja.bat -C out.gn\x64.release v8_monolith && \
-    move out.gn out.gn.non-i18n
+    move out.gn out.gn.windows.non-i18n
 
 # Build V8 i18n
 RUN cd google\v8 && \
@@ -139,21 +154,31 @@ RUN cd google\v8 && \
     ..\depot_tools\gn.bat gen out.gn\x64.release && \
     ..\depot_tools\ninja.bat -C out.gn\x64.release v8_monolith || deno --allow-all C:\Javet\src\scripts\deno\patch_v8_build.ts -p .\ && \
     ..\depot_tools\ninja.bat -C out.gn\x64.release v8_monolith && \
-    move out.gn out.gn.i18n
+    move out.gn out.gn.windows.i18n
+
+# Build Temporal CAPI
+RUN cd C:\ && \
+    git clone https://github.com/boa-dev/temporal.git && \
+    cd temporal && \
+    git checkout v%TEMPORAL_VERSION% && \
+    deno run --allow-all C:\Javet\scripts\deno\patch_v8_temporal.ts -p .\ && \
+    cargo build --release --package temporal_capi --features compiled_data,zoneinfo64 && \
+    copy target\release\temporal_capi.lib C:\google\v8\out.gn.windows.non-i18n\x64.release\obj && \
+    copy target\release\temporal_capi.lib C:\google\v8\out.gn.windows.i18n\x64.release\obj
 
 # Copy i18n data
 RUN mkdir C:\icu-v8 && \
     copy google\v8\third_party\icu\common\*.dat C:\icu-v8
 
 # Build Javet JNI for V8 non-i18n
-RUN cd C:\Javet\src\cpp && \
-    build-windows.cmd -DV8_DIR=C:\google\v8 -T ClangCL
+RUN cd C:\Javet\cpp && \
+    deno run build --os windows --arch x86_64 --v8-dir C:\google\v8
 RUN mkdir C:\artifacts-v8-non-i18n && \
     copy C:\Javet\src\main\resources\*.dll C:\artifacts-v8-non-i18n
 
 # Build Javet JNI for V8 i18n
-RUN cd C:\Javet\src\cpp && \
-    build-windows.cmd -DV8_DIR=C:\google\v8 -T ClangCL -DENABLE_I18N=1
+RUN cd C:\Javet\cpp && \
+    deno run build --os windows --arch x86_64 --v8-dir C:\google\v8 --i18n
 RUN mkdir C:\artifacts-v8-i18n && \
     copy C:\Javet\src\main\resources\*.dll C:\artifacts-v8-i18n
 
@@ -188,14 +213,14 @@ RUN mkdir C:\icu-node && \
     copy node\deps\icu-tmp\*.dat C:\icu-node
 
 # Build Javet JNI for Node non-i18n
-RUN cd C:\Javet\src\cpp && \
-    build-windows.cmd -DNODE_DIR=C:\node -T ClangCL
+RUN cd C:\Javet\cpp && \
+    deno run build --os windows --arch x86_64 --node-dir C:\node
 RUN mkdir C:\artifacts-node-non-i18n && \
     copy C:\Javet\src\main\resources\*.dll C:\artifacts-node-non-i18n
 
 # Build Javet JNI for Node i18n
-RUN cd C:\Javet\src\cpp && \
-    build-windows.cmd -DNODE_DIR=C:\node -T ClangCL -DENABLE_I18N=1
+RUN cd C:\Javet\cpp && \
+    deno run build --os windows --arch x86_64 --node-dir C:\node --i18n
 RUN mkdir C:\artifacts-node-i18n && \
     copy C:\Javet\src\main\resources\*.dll C:\artifacts-node-i18n
 

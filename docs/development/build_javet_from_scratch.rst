@@ -266,16 +266,27 @@ Build Node.js on Windows
 Build Javet JNI Library
 =======================
 
-Once Node.js and V8 are ready, please navigate to ``${JAVET_HOME}/cpp``, make sure CMake is accessible and execute corresponding build script.
+.. caution::
 
-============= =================================================================== ===================================================================
-OS            Node.js Command                                                     V8 Command
-============= =================================================================== ===================================================================
-Linux arm64   ``sh build-linux-arm64.sh -DNODE_DIR=${NODE_HOME}``                 ``sh build-linux-arm64.sh -DV8_DIR=${V8_HOME}``
-Linux x86_64  ``sh build-linux-x86_64.sh -DNODE_DIR=${NODE_HOME}``                ``sh build-linux-x86_64.sh -DV8_DIR=${V8_HOME}``
-Mac OS        ``sh build-macos.sh -DNODE_DIR=${NODE_HOME}``                       ``sh build-macos.sh -DV8_DIR=${V8_HOME}``
-Windows       ``build-windows.cmd -DNODE_DIR=%NODE_HOME%``                        ``build-windows.cmd -DV8_DIR=%V8_HOME% -T ClangCL``
-============= =================================================================== ===================================================================
+    The build script requires Deno.
+
+Once Node.js and V8 are ready, please navigate to ``${JAVET_HOME}/cpp``, make sure CMake is accessible and execute the unified build script.
+
+The build script supports additional options:
+
+* ``--i18n`` - Enable internationalization support
+* ``--cpu-count <n>`` - Set the number of CPU cores for parallel builds (default: auto-detect)
+* ``--log-debug``, ``--log-error``, ``--log-info``, ``--log-trace`` - Enable logging for debugging
+
+============== ======================================================================= =======================================================================
+OS             Node.js Command                                                         V8 Command
+============== ======================================================================= =======================================================================
+Linux arm64    ``deno run build --os linux --arch arm64 --node-dir ${NODE_HOME}``      ``deno run build --os linux --arch arm64 --v8-dir ${V8_HOME}``
+Linux x86_64   ``deno run build --os linux --arch x86_64 --node-dir ${NODE_HOME}``     ``deno run build --os linux --arch x86_64 --v8-dir ${V8_HOME}``
+Mac OS arm64   ``deno run build --os macos --arch arm64 --node-dir ${NODE_HOME}``      ``deno run build --os macos --arch arm64 --v8-dir ${V8_HOME}``
+Mac OS x86_64  ``deno run build --os macos --arch x86_64 --node-dir ${NODE_HOME}``     ``deno run build --os macos --arch x86_64 --v8-dir ${V8_HOME}``
+Windows        ``deno run build --os windows --arch x86_64 --node-dir %NODE_HOME%``    ``deno run build --os windows --arch x86_64 --v8-dir %V8_HOME%``
+============== ======================================================================= =======================================================================
 
 After a while, the following libraries will be placed in folder ``${JAVET_HOME}/src/main/resources``.
 
@@ -292,16 +303,22 @@ Windows         ``libjavet-node-windows-x86_64.v.*.*.*.dll``                ``li
 Build Javet JNI Library for Android
 ===================================
 
-Once V8 are ready, please navigate to ``./cpp``, make sure CMake is accessible and execute corresponding build script.
+.. caution::
 
-======= ==================================================================================================================
+    The build script requires Deno.
+
+Once V8 are ready, please navigate to ``${JAVET_HOME}/cpp``, make sure CMake is accessible and execute the unified build script.
+
+The Android NDK path can be specified using ``--android-ndk`` option. For additional options, see the Build Javet JNI Library section above.
+
+======= ====================================================================================================
 Arch    Command
-======= ==================================================================================================================
-arm     ``sh ./build-android.sh -DV8_DIR=${V8_HOME} -DCMAKE_ANDROID_NDK=${ANDROID_NDK_HOME} -DCMAKE_ANDROID_ARCH=arm``
-arm64   ``sh ./build-android.sh -DV8_DIR=${V8_HOME} -DCMAKE_ANDROID_NDK=${ANDROID_NDK_HOME} -DCMAKE_ANDROID_ARCH=arm64``
-x86     ``sh ./build-android.sh -DV8_DIR=${V8_HOME} -DCMAKE_ANDROID_NDK=${ANDROID_NDK_HOME} -DCMAKE_ANDROID_ARCH=x86``
-x86_64  ``sh ./build-android.sh -DV8_DIR=${V8_HOME} -DCMAKE_ANDROID_NDK=${ANDROID_NDK_HOME} -DCMAKE_ANDROID_ARCH=x86_64``
-======= ==================================================================================================================
+======= ====================================================================================================
+arm     ``deno run build --os android --arch arm --v8-dir ${V8_HOME} --android-ndk ${ANDROID_NDK_HOME}``
+arm64   ``deno run build --os android --arch arm64 --v8-dir ${V8_HOME} --android-ndk ${ANDROID_NDK_HOME}``
+x86     ``deno run build --os android --arch x86 --v8-dir ${V8_HOME} --android-ndk ${ANDROID_NDK_HOME}``
+x86_64  ``deno run build --os android --arch x86_64 --v8-dir ${V8_HOME} --android-ndk ${ANDROID_NDK_HOME}``
+======= ====================================================================================================
 
 After a while, the following libraries will be placed in folder ``${JAVET_HOME}/android/javet-android/src/main/jniLibs``.
 
@@ -317,7 +334,17 @@ x86_64  ``x86_64/libjavet-v8-android.v.*.*.*.so``
 Build Javet JNI Library with i18n
 =================================
 
-To enable i18n support, please append ``-DENABLE_I18N=1`` to the command.
+To enable i18n support, please append ``--i18n`` to the command.
+
+For example:
+
+.. code-block:: shell
+
+    # V8 build with i18n on Linux x86_64
+    deno run build --os linux --arch x86_64 --v8-dir ${V8_HOME} --i18n
+
+    # Node.js build with i18n on macOS arm64
+    deno run build --os macos --arch arm64 --node-dir ${NODE_HOME} --i18n
 
 Build Javet Jar
 ===============

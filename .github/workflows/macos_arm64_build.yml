@@ -7,9 +7,10 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 24.11.1
-  JAVET_V8_VERSION: 14.3.127.14
-  JAVET_VERSION: 5.0.2
+  JAVET_NODE_VERSION: 24.12.0
+  JAVET_V8_VERSION: 14.4.258.16
+  JAVET_VERSION: 5.0.3
+  TEMPORAL_VERSION: 0.1.2
   ROOT: /Users/runner/work/Javet
 
 jobs:
@@ -18,10 +19,10 @@ jobs:
       matrix:
         include:
           - name: i18n
-            cmake_flag: -DENABLE_I18N=1
+            i18n_flag: --i18n
             v8_flag: v8_enable_i18n_support=true
           - name: non-i18n
-            cmake_flag:
+            i18n_flag:
             v8_flag: v8_enable_i18n_support=false
 
     name: Build Javet V8 ${{ matrix.name }}
@@ -42,6 +43,16 @@ jobs:
       with:
         xcode-version: latest-stable
 
+    - name: Setup Deno
+      uses: denoland/setup-deno@v2
+      with:
+        deno-version: v2.x
+
+    - name: Setup Rust
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: stable
+
     - name: Setup Path
       run: |
         echo "${{ env.ROOT }}/google/depot_tools" >> $GITHUB_PATH
@@ -61,10 +72,20 @@ jobs:
         cd ..
         gclient sync -D
         cd v8
-        mkdir -p out.gn.${{ matrix.name }}/arm64.release
-        cp ../../Javet/scripts/v8/gn/macos-arm64-${{ matrix.name }}-args.gn out.gn.${{ matrix.name }}/arm64.release/args.gn
-        gn gen out.gn.${{ matrix.name }}/arm64.release
-        ninja -C out.gn.${{ matrix.name }}/arm64.release v8_monolith
+        mkdir -p out.gn.macos.${{ matrix.name }}/arm64.release
+        cp ../../Javet/scripts/v8/gn/macos-arm64-${{ matrix.name }}-args.gn out.gn.macos.${{ matrix.name }}/arm64.release/args.gn
+        gn gen out.gn.macos.${{ matrix.name }}/arm64.release
+        ninja -C out.gn.macos.${{ matrix.name }}/arm64.release v8_monolith
+
+    - name: Build Temporal CAPI
+      run: |
+        cd ${{ env.ROOT }}
+        git clone https://github.com/boa-dev/temporal.git
+        cd temporal
+        git checkout v${{ env.TEMPORAL_VERSION }}
+        deno run --allow-all ../Javet/scripts/deno/patch_v8_temporal.ts -p ./
+        cargo build --release --package temporal_capi --features compiled_data,zoneinfo64
+        cp target/release/libtemporal_capi.a ../google/v8/out.gn.macos.${{ matrix.name }}/arm64.release/obj
 
     - name: Copy the i18n
       if: matrix.name == 'i18n'
@@ -89,8 +110,7 @@ jobs:
         CXX: ${{ env.ROOT }}/google/v8/third_party/llvm-build/Release+Asserts/bin/clang
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
-        sed -i '.bak' 's/`nproc`/2/g' build-macos.sh
-        sh ./build-macos.sh -DV8_DIR=${{ env.ROOT }}/google/v8 ${{ matrix.cmake_flag }}
+        deno run build --os macos --arch arm64 --v8-dir ${{ env.ROOT }}/google/v8 --cpu-count 2 ${{ matrix.i18n_flag }}
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
@@ -110,10 +130,10 @@ jobs:
       matrix:
         include:
           - name: i18n
-            cmake_flag: -DENABLE_I18N=1
+            i18n_flag: --i18n
             node_flag: --with-intl=full-icu
           - name: non-i18n
-            cmake_flag:
+            i18n_flag:
             node_flag: --without-intl
 
     name: Build Javet Node ${{ matrix.name }}
@@ -156,11 +176,15 @@ jobs:
       with:
         cmake-version: '3.23.x'
 
+    - name: Setup Deno
+      uses: denoland/setup-deno@v2
+      with:
+        deno-version: v2.x
+
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
-        sed -i '.bak' 's/`nproc`/2/g' build-macos.sh
-        sh ./build-macos.sh -DNODE_DIR=${{ env.ROOT }}/node ${{ matrix.cmake_flag }}
+        deno run build --os macos --arch arm64 --node-dir ${{ env.ROOT }}/node --cpu-count 2 ${{ matrix.i18n_flag }}
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4

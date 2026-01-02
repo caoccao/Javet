@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025. caoccao.com Sam Cao
+ * Copyright (c) 2021-2026. caoccao.com Sam Cao
  * All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,19 +71,25 @@ class PatchV8Build {
   }
 
   private async patchMonolith(): Promise<void> {
-    const outGnPath = path.join(this.v8RepoPath, this.commonNinjaFileRoot);
-
     try {
-      for await (const entry of fs.walk(outGnPath, {
-        exts: [this.commonNinjaFileExtension.substring(1)],
-        includeDirs: false,
-      })) {
-        if (entry.isFile) {
-          await this.patchNinjaFile(entry.path);
+      for await (const entry of Deno.readDir(this.v8RepoPath)) {
+        if (entry.isDirectory && entry.name.startsWith(this.commonNinjaFileRoot)) {
+          const outGnPath = path.join(this.v8RepoPath, entry.name);
+          console.info(`Processing folder: ${outGnPath}`);
+          
+          // Walk through the folder to find .ninja files
+          for await (const fileEntry of fs.walk(outGnPath, {
+            exts: [this.commonNinjaFileExtension.substring(1)],
+            includeDirs: false,
+          })) {
+            if (fileEntry.isFile) {
+              await this.patchNinjaFile(fileEntry.path);
+            }
+          }
         }
       }
     } catch (error) {
-      console.error(`Error walking directory ${outGnPath}:`, error);
+      console.error(`Error scanning directories in ${this.v8RepoPath}:`, error);
       throw error;
     }
   }

@@ -393,6 +393,14 @@ JNIEXPORT jlongArray JNICALL Java_com_caoccao_javet_interop_V8Native_getInternal
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    getPriority
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getPriority
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getV8HeapSpaceStatistics
  * Signature: (JLjava/lang/Object;)Ljava/lang/Object;
  */
@@ -465,10 +473,26 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_integerObjectV
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    isBatterySaverModeEnabled
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isBatterySaverModeEnabled
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    isDead
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isDead
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    isEfficiencyModeEnabled
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isEfficiencyModeEnabled
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -493,6 +517,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isI18nEnabled
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isInUse
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    isMemorySaverModeEnabled
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isMemorySaverModeEnabled
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -1353,6 +1385,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_setAsArray
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    setBatterySaverModeEnabled
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setBatterySaverModeEnabled
+  (JNIEnv *, jobject, jlong, jboolean);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    setClear
  * Signature: (JJI)V
  */
@@ -1390,6 +1430,22 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_setGetSize
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setHas
   (JNIEnv *, jobject, jlong, jlong, jint, jobject);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    setMemorySaverModeEnabled
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setMemorySaverModeEnabled
+  (JNIEnv *, jobject, jlong, jboolean);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    setPriority
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setPriority
+  (JNIEnv *, jobject, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
