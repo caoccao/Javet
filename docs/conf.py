@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Javet'
-copyright = '2021-2025. caoccao.com Sam Cao'
+copyright = '2021-2026. caoccao.com Sam Cao'
 author = 'Sam Cao'
 
 # The full version, including alpha/beta/rc tags
