@@ -3,7 +3,7 @@ Javet
 
 |Maven Central| |Discord| |Donate|
 
-|Linux x86_64 Build| |MacOS x86_64 Build| |MacOS arm64 Build| |Windows x86_64 Build| |Android Node Build| |Android V8 i18n Build| |Android V8 non-i18n Build|
+|Linux x86_64 Build| |MacOS x86_64 Build| |MacOS arm64 Build| |Windows x86_64 Build| |Android Node Build| |Android V8 Build|
 
 .. |Maven Central| image:: https://img.shields.io/maven-central/v/com.caoccao.javet/javet?style=for-the-badge
     :target: https://central.sonatype.com/search?q=g:com.caoccao.javet
@@ -29,11 +29,8 @@ Javet
 .. |Android Node Build| image:: https://github.com/caoccao/Javet/actions/workflows/android_node_build.yml/badge.svg
     :target: https://github.com/caoccao/Javet/actions/workflows/android_node_build.yml
 
-.. |Android V8 i18n Build| image:: https://github.com/caoccao/Javet/actions/workflows/android_v8_i18n_build.yml/badge.svg
-    :target: https://github.com/caoccao/Javet/actions/workflows/android_v8_i18n_build.yml
-
-.. |Android V8 non-i18n Build| image:: https://github.com/caoccao/Javet/actions/workflows/android_v8_non_i18n_build.yml/badge.svg
-    :target: https://github.com/caoccao/Javet/actions/workflows/android_v8_non_i18n_build.yml
+.. |Android V8 Build| image:: https://github.com/caoccao/Javet/actions/workflows/android_v8_build.yml/badge.svg
+    :target: https://github.com/caoccao/Javet/actions/workflows/android_v8_build.yml
 
 `Javet <https://github.com/caoccao/Javet/>`_ is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.
 

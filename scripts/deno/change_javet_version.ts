@@ -47,12 +47,7 @@ class ChangeJavetVersion {
       /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/
     );
     this.updateFile(
-      ".github/workflows/android_v8_i18n_build.yml",
-      "\n",
-      /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/
-    );
-    this.updateFile(
-      ".github/workflows/android_v8_non_i18n_build.yml",
+      ".github/workflows/android_v8_build.yml",
       "\n",
       /JAVET_VERSION: (?<version>\d+\.\d+\.\d+)/
     );

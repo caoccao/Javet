@@ -1,7 +1,7 @@
-name: Android V8 non-i18n Build
+name: Android V8 Build
 
 concurrency:
-  group: android_v8_non_i18n_build_${{ github.ref }}
+  group: android_v8_build_${{ github.ref }}
   cancel-in-progress: true
 
 on:
@@ -21,21 +21,53 @@ jobs:
           - v8_release: arm
             android_arch: arm
             android_abi: armeabi-v7a
+            i18n_name: i18n
+            i18n_flag: --i18n
             rust_target: armv7-linux-androideabi
           - v8_release: arm64
             android_arch: arm64
             android_abi: arm64-v8a
+            i18n_name: i18n
+            i18n_flag: --i18n
             rust_target: aarch64-linux-android
           - v8_release: ia32
             android_arch: x86
             android_abi: x86
+            i18n_name: i18n
+            i18n_flag: --i18n
             rust_target: i686-linux-android
           - v8_release: x64
             android_arch: x86_64
             android_abi: x86_64
+            i18n_name: i18n
+            i18n_flag: --i18n
+            rust_target: x86_64-linux-android
+          - v8_release: arm
+            android_arch: arm
+            android_abi: armeabi-v7a
+            i18n_name: non-i18n
+            i18n_flag:
+            rust_target: armv7-linux-androideabi
+          - v8_release: arm64
+            android_arch: arm64
+            android_abi: arm64-v8a
+            i18n_name: non-i18n
+            i18n_flag:
+            rust_target: aarch64-linux-android
+          - v8_release: ia32
+            android_arch: x86
+            android_abi: x86
+            i18n_name: non-i18n
+            i18n_flag:
+            rust_target: i686-linux-android
+          - v8_release: x64
+            android_arch: x86_64
+            android_abi: x86_64
+            i18n_name: non-i18n
+            i18n_flag:
             rust_target: x86_64-linux-android
 
-    name: Build Javet ${{ matrix.android_arch }} non-i18n
+    name: Build Javet ${{ matrix.android_arch }} ${{ matrix.i18n_name }}
     runs-on: ubuntu-latest
 
     steps:
@@ -96,10 +128,10 @@ jobs:
         # Replace the NDK because the NDK from V8 is broken.
         mv third_party/android_toolchain/ndk third_party/android_toolchain/ndk.bak
         ln -s ${{ steps.setup-ndk.outputs.ndk-path }} third_party/android_toolchain/ndk
-        mkdir -p out.gn.android.non-i18n/${{ matrix.v8_release }}.release
-        cp ../../Javet/scripts/v8/gn/android-${{ matrix.android_arch }}-non-i18n-args.gn out.gn.android.non-i18n/${{ matrix.v8_release }}.release/args.gn
-        gn gen out.gn.android.non-i18n/${{ matrix.v8_release }}.release
-        ninja -C out.gn.android.non-i18n/${{ matrix.v8_release }}.release v8_monolith
+        mkdir -p out.gn.android.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
+        cp ../../Javet/scripts/v8/gn/android-${{ matrix.android_arch }}-${{ matrix.i18n_name }}-args.gn out.gn.android.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release/args.gn
+        gn gen out.gn.android.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
+        ninja -C out.gn.android.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release v8_monolith
 
     - name: Build Temporal CAPI
       run: |
@@ -109,7 +141,13 @@ jobs:
         git checkout v${{ env.TEMPORAL_VERSION }}
         deno run --allow-all ../Javet/scripts/deno/patch_v8_temporal.ts -p ./
         cargo build --release --target ${{ matrix.rust_target }} --package temporal_capi --features compiled_data,zoneinfo64
-        cp target/${{ matrix.rust_target }}/release/libtemporal_capi.a ../google/v8/out.gn.android.non-i18n/${{ matrix.v8_release }}.release/obj
+        cp target/${{ matrix.rust_target }}/release/libtemporal_capi.a ../google/v8/out.gn.android.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release/obj
+
+    - name: Copy the i18n
+      if: matrix.i18n_name == 'i18n' && matrix.android_arch == 'arm64'
+      run: |
+        mkdir icu-v8
+        cp ../google/v8/third_party/icu/android/*.dat icu-v8
 
     - name: Setup JDK 11
       uses: actions/setup-java@v4
@@ -125,13 +163,20 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
-        deno run build --os android --arch ${{ matrix.android_arch }} --v8-dir ${{ env.ROOT }}/google/v8 --android-ndk ${{ steps.setup-ndk.outputs.ndk-path }}
+        deno run build --os android --arch ${{ matrix.android_arch }} --v8-dir ${{ env.ROOT }}/google/v8 --android-ndk ${{ steps.setup-ndk.outputs.ndk-path }} ${{ matrix.i18n_flag }}
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: javet-android-v8-${{ matrix.android_arch }}-${{ env.JAVET_VERSION }}-non-i18n
+        name: javet-android-v8-${{ matrix.android_arch }}-${{ env.JAVET_VERSION }}-${{ matrix.i18n_name }}
         path: android/javet-android/src/main/jniLibs/${{ matrix.android_abi }}/*.so
+
+    - name: Upload the i18n
+      uses: actions/upload-artifact@v4
+      if: matrix.i18n_name == 'i18n' && matrix.android_arch == 'arm64'
+      with:
+        name: icu-v8
+        path: icu-v8/*.dat
 
   build_javet_aar:
     needs: [build_javet_lib]
@@ -165,6 +210,30 @@ jobs:
         mkdir -p android/javet-android/src/main/jniLibs/arm64-v8a
         mkdir -p android/javet-android/src/main/jniLibs/x86
         mkdir -p android/javet-android/src/main/jniLibs/x86_64
+
+    - name: Download Javet arm i18n
+      uses: actions/download-artifact@v4
+      with:
+        name: javet-android-v8-arm-${{ env.JAVET_VERSION }}-i18n
+        path: android/javet-android/src/main/jniLibs/armeabi-v7a
+
+    - name: Download Javet arm64 i18n
+      uses: actions/download-artifact@v4
+      with:
+        name: javet-android-v8-arm64-${{ env.JAVET_VERSION }}-i18n
+        path: android/javet-android/src/main/jniLibs/arm64-v8a
+
+    - name: Download Javet x86 i18n
+      uses: actions/download-artifact@v4
+      with:
+        name: javet-android-v8-x86-${{ env.JAVET_VERSION }}-i18n
+        path: android/javet-android/src/main/jniLibs/x86
+
+    - name: Download Javet x86_64 i18n
+      uses: actions/download-artifact@v4
+      with:
+        name: javet-android-v8-x86_64-${{ env.JAVET_VERSION }}-i18n
+        path: android/javet-android/src/main/jniLibs/x86_64
 
     - name: Download Javet arm non-i18n
       uses: actions/download-artifact@v4
@@ -200,8 +269,28 @@ jobs:
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: javet-android-v8-${{ env.JAVET_VERSION }}-non-i18n
+        name: javet-android-v8-${{ env.JAVET_VERSION }}
         path: android/javet-android/build/outputs/aar/javet*release.aar
+
+    - name: Delete Javet arm i18n
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: javet-android-v8-arm-${{ env.JAVET_VERSION }}-i18n
+
+    - name: Delete Javet arm64 i18n
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: javet-android-v8-arm64-${{ env.JAVET_VERSION }}-i18n
+
+    - name: Delete Javet x86 i18n
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: javet-android-v8-x86-${{ env.JAVET_VERSION }}-i18n
+
+    - name: Delete Javet x86_64 i18n
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: javet-android-v8-x86_64-${{ env.JAVET_VERSION }}-i18n
 
     - name: Delete Javet arm non-i18n
       uses: geekyeggo/delete-artifact@v4

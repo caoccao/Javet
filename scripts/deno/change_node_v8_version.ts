@@ -163,12 +163,7 @@ class ChangeV8Version extends ChangeVersion {
       /V8 ``v(?<version>\d+\.\d+\.\d+\.\d+)``/
     );
     this.updateFile(
-      ".github/workflows/android_v8_i18n_build.yml",
-      "\n",
-      /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/
-    );
-    this.updateFile(
-      ".github/workflows/android_v8_non_i18n_build.yml",
+      ".github/workflows/android_v8_build.yml",
       "\n",
       /JAVET_V8_VERSION: (?<version>\d+\.\d+\.\d+\.\d+)$/
     );
