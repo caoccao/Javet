@@ -759,9 +759,10 @@ V8 ABI  Javet Version      V8 Version
 
 
 ProGuard configuration
-^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: none
+
     # Javet - Keep all classes, methods, and fields required for JNI/reflection
     -keep class com.caoccao.javet.** { *; }
     -keep interface com.caoccao.javet.** { *; }
@@ -775,7 +776,6 @@ ProGuard configuration
         @com.caoccao.javet.annotations.** <methods>;
         @com.caoccao.javet.annotations.** <fields>;
     }
-
 
 Internationalization (i18n)
 ===========================
