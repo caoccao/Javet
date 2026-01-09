@@ -757,6 +757,26 @@ V8 ABI  Javet Version      V8 Version
 
 16K page size is supported from v4.1.4.
 
+
+ProGuard configuration
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: none
+
+    # Javet - Keep all classes, methods, and fields required for JNI/reflection
+    -keep class com.caoccao.javet.** { *; }
+    -keep interface com.caoccao.javet.** { *; }
+    -keepclassmembers class com.caoccao.javet.** { *; }
+
+    # Javet - Keep all related annotations
+    -keep @interface com.caoccao.javet.annotations.**
+
+    # Javet - Keep methods/fields annotated with any Javet annotation
+    -keepclassmembers class * {
+        @com.caoccao.javet.annotations.** <methods>;
+        @com.caoccao.javet.annotations.** <fields>;
+    }
+
 Internationalization (i18n)
 ===========================
 
