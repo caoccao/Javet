@@ -25,7 +25,7 @@
 #   3. Restart docker
 
 # set DOCKER_DEFAULT_PLATFORM=windows/amd64
-# Usage: docker build -t sjtucaocao/javet-windows-x86_64:5.0.3 -m 8G -f docker/windows-x86_64/build.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-windows-x86_64:5.0.4 -m 8G -f docker/windows-x86_64/build.Dockerfile .
 
 # Multi-stage Dockerfile for building Javet on Windows x86_64
 # Based on .github/workflows/windows_x86_64_build.yml
@@ -33,7 +33,7 @@
 # Build arguments
 ARG JAVET_NODE_VERSION=24.12.0
 ARG JAVET_V8_VERSION=14.4.258.16
-ARG JAVET_VERSION=5.0.3
+ARG JAVET_VERSION=5.0.4
 ARG TEMPORAL_VERSION=0.1.2
 
 ###########################################

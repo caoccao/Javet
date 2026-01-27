@@ -148,31 +148,6 @@ class ChangeJavetVersion {
       /^        <tag>(?<version>\d+\.\d+\.\d+)<\/tag>$/
     );
     this.updateFile(
-      "cpp/build-android.sh",
-      "\n",
-      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)$/
-    );
-    this.updateFile(
-      "cpp/build-linux-arm64.sh",
-      "\n",
-      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)$/
-    );
-    this.updateFile(
-      "cpp/build-linux-x86_64.sh",
-      "\n",
-      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)$/
-    );
-    this.updateFile(
-      "cpp/build-macos.sh",
-      "\n",
-      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)$/
-    );
-    this.updateFile(
-      "cpp/build-windows.cmd",
-      "\r\n",
-      /JAVET_VERSION=(?<version>\d+\.\d+\.\d+)$/
-    );
-    this.updateFile(
       "cpp/jni-build.ts",
       "\n",
       /JAVET_VERSION = "(?<version>\d+\.\d+\.\d+)";$/
@@ -272,7 +247,7 @@ class ChangeJavetVersion {
 }
 
 function main(): number {
-  const changeJavetVersion = new ChangeJavetVersion("5.0.3");
+  const changeJavetVersion = new ChangeJavetVersion("5.0.4");
   changeJavetVersion.update();
   return 0;
 }

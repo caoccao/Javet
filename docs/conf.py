@@ -22,7 +22,7 @@ copyright = '2021-2026. caoccao.com Sam Cao'
 author = 'Sam Cao'
 
 # The full version, including alpha/beta/rc tags
-release = '5.0.3'
+release = '5.0.4'
 
 
 # -- General configuration ---------------------------------------------------

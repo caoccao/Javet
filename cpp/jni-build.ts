@@ -48,7 +48,7 @@ import * as cli from "@std/cli";
 import { green, red, yellow } from "@std/fmt/colors";
 import * as path from "@std/path";
 
-const JAVET_VERSION = "5.0.3";
+const JAVET_VERSION = "5.0.4";
 
 // Calculate script directory and project root
 const SCRIPT_DIR = path.dirname(path.fromFileUrl(import.meta.url));
