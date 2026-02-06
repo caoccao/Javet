@@ -119,22 +119,46 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
     protected Semaphore semaphore;
 
     /**
+     * The snapshot blob.
+     *
+     * @since 5.0.4
+     */
+    protected byte[] snapshotBlob;
+
+    /**
      * Instantiates a new Javet engine pool.
      *
      * @since 0.7.0
      */
     public JavetEnginePool() {
-        this(new JavetEngineConfig());
+        this(new JavetEngineConfig(), null);
     }
 
     /**
      * Instantiates a new Javet engine pool.
      *
      * @param config the config
+     * @since 5.0.4
+     */
+    public JavetEnginePool(JavetEngineConfig config) { this(config, null); }
+
+    /**
+     * Instantiates a new Javet engine pool with a snapshot blob.
+     *
+     * @param snapshotBlob the snapshot blob
+     * @since 5.0.4
+     */
+    public JavetEnginePool(byte[] snapshotBlob) { this(new JavetEngineConfig(), snapshotBlob); }
+
+    /**
+     * Instantiates a new Javet engine pool.
+     *
+     * @param config the config
+     * @param snapshotBlob the snapshot blob
      * @since 0.7.0
      */
     @SuppressWarnings("unchecked")
-    public JavetEnginePool(JavetEngineConfig config) {
+    public JavetEnginePool(JavetEngineConfig config, byte[] snapshotBlob) {
         this.config = Objects.requireNonNull(config).freezePoolSize();
         idleEngineIndexList = new ConcurrentLinkedQueue<>();
         releasedEngineIndexList = new ConcurrentLinkedQueue<>();
@@ -145,6 +169,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         quitting = false;
         random = new Random();
         semaphore = null;
+        this.snapshotBlob = snapshotBlob;
         startDaemon();
     }
 
@@ -166,6 +191,9 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         if (runtimeOptions instanceof V8RuntimeOptions) {
             V8RuntimeOptions v8RuntimeOptions = (V8RuntimeOptions) runtimeOptions;
             v8RuntimeOptions.setGlobalName(config.getGlobalName());
+        }
+        if (snapshotBlob != null) {
+            runtimeOptions.setSnapshotBlob(snapshotBlob);
         }
         @SuppressWarnings("ConstantConditions")
         R v8Runtime = V8Host.getInstance(jsRuntimeType).createV8Runtime(true, runtimeOptions);
