@@ -166,6 +166,9 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         if (runtimeOptions instanceof V8RuntimeOptions) {
             V8RuntimeOptions v8RuntimeOptions = (V8RuntimeOptions) runtimeOptions;
             v8RuntimeOptions.setGlobalName(config.getGlobalName());
+            if (config.getSnapshotBlob() != null) {
+                v8RuntimeOptions.setSnapshotBlob(config.getSnapshotBlob());
+            }
         }
         @SuppressWarnings("ConstantConditions")
         R v8Runtime = V8Host.getInstance(jsRuntimeType).createV8Runtime(true, runtimeOptions);

@@ -121,6 +121,7 @@ public final class JavetEngineConfig {
     private int waitForEngineLogIntervalMillis;
     private int waitForEngineMaxRetryCount;
     private int[] waitForEngineSleepIntervalMillis;
+    private byte[] snapshotBlob;
 
     /**
      * Instantiates a new Javet engine config.
@@ -135,6 +136,7 @@ public final class JavetEngineConfig {
         setDefaultEngineGuardTimeoutMillis(V8Guard.DEFAULT_TIMEOUT_MILLIS);
         setGCBeforeEngineClose(false);
         setJSRuntimeType(DEFAULT_JS_RUNTIME_TYPE);
+        setSnapshotBlob(null);
         poolSizeFrozen = false;
         final int cpuCount = JavetOSUtils.getCPUCount();
         setPoolMinSize(Math.max(DEFAULT_POOL_MIN_SIZE, cpuCount >> 1));
@@ -179,6 +181,14 @@ public final class JavetEngineConfig {
     public String getGlobalName() {
         return globalName;
     }
+
+    /**
+     * Gets the snapshot blob
+     *
+     * @return the snapshot blob
+     * @since 5.0.5
+     */
+    public byte[] getSnapshotBlob() { return snapshotBlob; }
 
     /**
      * Gets JS runtime type.
@@ -392,6 +402,18 @@ public final class JavetEngineConfig {
     @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setGlobalName(String globalName) {
         this.globalName = globalName;
+        return this;
+    }
+
+    /**
+     * Sets the snapshot blob
+     *
+     * @param snapshotBlob the snapshot blob
+     * @return the self
+     * @since 5.0.5
+     */
+    public JavetEngineConfig setSnapshotBlob(byte[] snapshotBlob) {
+        this.snapshotBlob = snapshotBlob;
         return this;
     }
 
