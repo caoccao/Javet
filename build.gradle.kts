@@ -66,7 +66,7 @@ object Config {
         const val BYTE_BUDDY = "1.15.5"
         const val JACKSON_DATABIND = "2.16.0"
         const val JAVA_VERSION = "1.8"
-        const val JAVET = "5.0.4"
+        const val JAVET = "5.0.5"
         const val JAVET_BUDDY = "0.4.0"
         const val JETTY_WEBSOCKET = "9.4.53.v20231009"
         const val JUNIT = "5.11.3"
