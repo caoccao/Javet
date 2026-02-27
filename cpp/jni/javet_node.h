@@ -26,6 +26,7 @@
 #pragma warning(disable: 4819)
 #pragma warning(disable: 4996)
 #define NODE_WANT_INTERNALS 1
+#define HAVE_AMARO 1
 #include <node.h>
 #include <uv.h>
 #include <env-inl.h>
