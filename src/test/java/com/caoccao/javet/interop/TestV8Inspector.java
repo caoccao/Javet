@@ -69,7 +69,6 @@ public class TestV8Inspector extends BaseTestJavet {
             });
             thread.start();
             thread.join();
-            v8Runtime.getExecutor("const b = 1;").executeVoid();
             runAndWait(1000, () -> atomicInteger.get() == listener.getResponses().size());
             assertEquals(1, listener.getContextGroupIds().size());
             ObjectMapper objectMapper = new ObjectMapper();

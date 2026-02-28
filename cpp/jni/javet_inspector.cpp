@@ -77,6 +77,9 @@ namespace Javet {
             LOG_DEBUG("Sending request: " << message);
             auto stringViewMessagePointer = ConvertFromStdStringToStringViewPointer(message);
             client->dispatchProtocolMessage(*stringViewMessagePointer.get());
+            // Pump microtasks so that promise-based responses
+            // (e.g., Runtime.evaluate with replMode/awaitPromise) are delivered immediately.
+            v8Runtime->v8Isolate->PerformMicrotaskCheckpoint();
         }
 
         JavetInspector::~JavetInspector() {
