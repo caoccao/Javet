@@ -61,7 +61,7 @@ namespace Javet {
             jmethodIDV8InspectorRunIfWaitingForDebugger = jniEnv->GetMethodID(jclassV8Inspector, "runIfWaitingForDebugger", "(I)V");
         }
 
-        JavetInspector::JavetInspector(V8Runtime* v8Runtime, const jobject mV8Inspector) noexcept {
+        JavetInspector::JavetInspector(V8Runtime* v8Runtime, const jobject mV8Inspector, bool waitForDebugger) noexcept {
             FETCH_JNI_ENV(GlobalJavaVM);
             this->mV8Inspector = jniEnv->NewGlobalRef(mV8Inspector);
             INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
@@ -69,7 +69,7 @@ namespace Javet {
             jstring mName = (jstring)jniEnv->CallObjectMethod(this->mV8Inspector, jmethodIDV8InspectorGetName);
             char const* umName = jniEnv->GetStringUTFChars(mName, nullptr);
             std::string name(umName, jniEnv->GetStringUTFLength(mName));
-            client.reset(new JavetInspectorClient(v8Runtime, name, this->mV8Inspector));
+            client.reset(new JavetInspectorClient(v8Runtime, name, this->mV8Inspector, waitForDebugger));
             jniEnv->ReleaseStringUTFChars(mName, umName);
         }
 
@@ -90,6 +90,14 @@ namespace Javet {
             v8Runtime->v8Isolate->PerformMicrotaskCheckpoint();
         }
 
+        bool JavetInspector::isMessageLoopActive() const noexcept {
+            return client->isRunningMessageLoop() || client->isWaitingForDebugger();
+        }
+
+        bool JavetInspector::isWaitingForDebugger() const noexcept {
+            return client->isWaitingForDebugger();
+        }
+
         bool JavetInspector::isPaused() const noexcept {
             return client->isRunningMessageLoop();
         }
@@ -97,6 +105,10 @@ namespace Javet {
         void JavetInspector::postMessage(const std::string& message) noexcept {
             LOG_DEBUG("Queueing request: " << message);
             client->postMessage(message);
+        }
+
+        void JavetInspector::waitForDebugger() noexcept {
+            client->waitForDebuggerLoop();
         }
 
         JavetInspector::~JavetInspector() {
@@ -111,21 +123,27 @@ namespace Javet {
         JavetInspectorClient::JavetInspectorClient(
             V8Runtime* v8Runtime,
             const std::string& name,
-            const jobject mV8Inspector) noexcept
+            const jobject mV8Inspector,
+            bool waitForDebugger) noexcept
             : javetInspectorChannel(nullptr), v8Inspector(nullptr), v8InspectorSession(nullptr) {
             activateMessageLoop = false;
             runningMessageLoop.store(false);
+            waitingForDebugger.store(false);
             this->mV8Inspector = mV8Inspector;
             this->v8Runtime = v8Runtime;
             this->name = name;
             auto v8Context = v8Runtime->GetV8LocalContext();
             javetInspectorChannel.reset(new JavetInspectorChannel(v8Runtime, mV8Inspector));
             v8Inspector.reset(v8_inspector::V8Inspector::create(v8Runtime->v8Isolate, this).release());
+            auto pauseState = waitForDebugger
+                ? v8_inspector::V8Inspector::kWaitingForDebugger
+                : v8_inspector::V8Inspector::kNotWaitingForDebugger;
             v8InspectorSession.reset(v8Inspector->connect(
                 CONTEXT_GROUP_ID,
                 javetInspectorChannel.get(),
                 v8_inspector::StringView(),
-                v8_inspector::V8Inspector::kFullyTrusted).release());
+                v8_inspector::V8Inspector::kFullyTrusted,
+                pauseState).release());
             v8Context->SetAlignedPointerInEmbedderData(EMBEDDER_DATA_INDEX, this);
             auto humanReadableNamePointer = ConvertFromStdStringToStringViewPointer(name);
             v8Inspector->contextCreated(v8_inspector::V8ContextInfo(v8Context, CONTEXT_GROUP_ID, *humanReadableNamePointer.get()));
@@ -165,6 +183,10 @@ namespace Javet {
             return runningMessageLoop.load();
         }
 
+        bool JavetInspectorClient::isWaitingForDebugger() const noexcept {
+            return waitingForDebugger.load();
+        }
+
         void JavetInspectorClient::postMessage(const std::string& message) noexcept {
             {
                 std::lock_guard<std::mutex> lock(messageMutex);
@@ -179,6 +201,8 @@ namespace Javet {
         }
 
         void JavetInspectorClient::runIfWaitingForDebugger(int contextGroupId) {
+            waitingForDebugger.store(false);
+            messageCondition.notify_one();
             FETCH_JNI_ENV(GlobalJavaVM);
             jniEnv->CallVoidMethod(mV8Inspector, jmethodIDV8InspectorRunIfWaitingForDebugger, contextGroupId);
         }
@@ -202,6 +226,24 @@ namespace Javet {
                     }
                 }
                 runningMessageLoop.store(false);
+            }
+        }
+
+        void JavetInspectorClient::waitForDebuggerLoop() noexcept {
+            waitingForDebugger.store(true);
+            while (waitingForDebugger.load()) {
+                // Drain any queued protocol messages from the DevTools frontend.
+                drainQueue();
+                // Pump V8 platform tasks.
+                while (v8::platform::PumpMessageLoop(v8Runtime->v8PlatformPointer, v8Runtime->v8Isolate)) {
+                }
+                // Wait for new messages instead of busy-spinning.
+                {
+                    std::unique_lock<std::mutex> lock(messageMutex);
+                    if (waitingForDebugger.load() && messageQueue.empty()) {
+                        messageCondition.wait_for(lock, std::chrono::milliseconds(10));
+                    }
+                }
             }
         }
 

@@ -10,6 +10,7 @@ Release Notes 5.0.x
 * Fixed V8 inspector breakpoints not being hit by enabling protocol message dispatch inside the pause message loop
 * Fixed V8 inspector not notifying ``contextDestroyed`` / ``contextCreated`` on context reset, preventing stale context references
 * Fixed V8 inspector pause flag (``runningMessageLoop``) to use ``std::atomic<bool>`` for correct cross-thread visibility on ARM/Android
+* Added "break on start" support via ``V8Runtime.getV8Inspector(name, waitForDebugger)`` and ``V8Inspector.waitForDebugger()`` using V8's ``kWaitingForDebugger`` session state
 
 5.0.4
 -----

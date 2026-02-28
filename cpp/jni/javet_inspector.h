@@ -42,12 +42,15 @@ namespace Javet {
 
         class JavetInspector {
         public:
-            JavetInspector(V8Runtime* v8Runtime, const jobject mV8Inspector) noexcept;
+            JavetInspector(V8Runtime* v8Runtime, const jobject mV8Inspector, bool waitForDebugger) noexcept;
             void contextCreated() noexcept;
             void contextDestroyed() noexcept;
             void drainQueue() noexcept;
+            bool isMessageLoopActive() const noexcept;
             bool isPaused() const noexcept;
+            bool isWaitingForDebugger() const noexcept;
             void postMessage(const std::string& message) noexcept;
+            void waitForDebugger() noexcept;
             virtual ~JavetInspector();
         private:
             jobject mV8Inspector;
@@ -60,8 +63,10 @@ namespace Javet {
             JavetInspectorClient(
                 V8Runtime* v8Runtime,
                 const std::string& name,
-                const jobject mV8Inspector) noexcept;
+                const jobject mV8Inspector,
+                bool waitForDebugger) noexcept;
             bool isRunningMessageLoop() const noexcept;
+            bool isWaitingForDebugger() const noexcept;
             void contextCreated(const V8LocalContext& v8Context) noexcept;
             void contextDestroyed(const V8LocalContext& v8Context) noexcept;
             void dispatchProtocolMessage(const v8_inspector::StringView& message) noexcept;
@@ -70,11 +75,13 @@ namespace Javet {
             void quitMessageLoopOnPause() override;
             void runIfWaitingForDebugger(int contextGroupId) override;
             void runMessageLoopOnPause(int contextGroupId) override;
+            void waitForDebuggerLoop() noexcept;
             virtual ~JavetInspectorClient() = default;
         private:
             V8Runtime* v8Runtime;
             bool activateMessageLoop;
             std::atomic<bool> runningMessageLoop;
+            std::atomic<bool> waitingForDebugger;
             jobject mV8Inspector;
             std::string name;
             std::condition_variable messageCondition;

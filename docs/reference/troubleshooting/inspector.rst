@@ -374,6 +374,66 @@ You can provide a custom name for the inspector, which appears in the DevTools c
     // Custom name.
     V8Inspector v8Inspector = v8Runtime.getV8Inspector("My Application");
 
+Break on Start (Wait for Debugger)
+==================================
+
+You can pause execution before the first JavaScript statement runs by creating the inspector with ``waitForDebugger = true``. This connects the inspector session with ``kWaitingForDebugger``, allowing a DevTools client to set breakpoints and configure the debugger before any user code is executed.
+
+The calling thread blocks inside ``waitForDebugger()`` in a message-pumping loop, dispatching incoming CDP messages while waiting. Once the debugger sends ``Runtime.runIfWaitingForDebugger``, V8 invokes the ``runIfWaitingForDebugger()`` callback, the loop exits, and execution proceeds.
+
+.. code-block:: java
+
+    CountDownLatch waitingLatch = new CountDownLatch(1);
+    CountDownLatch completedLatch = new CountDownLatch(1);
+
+    IV8InspectorListener listener = new IV8InspectorListener() {
+        @Override public void flushProtocolNotifications() { }
+        @Override public void receiveNotification(String message) { }
+        @Override public void receiveResponse(String message) { }
+        @Override public void sendRequest(String message) { }
+
+        @Override
+        public void runIfWaitingForDebugger(int contextGroupId) {
+            waitingLatch.countDown();
+        }
+    };
+
+    try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+        // Create inspector with waitForDebugger=true.
+        V8Inspector v8Inspector = v8Runtime.getV8Inspector("my-app", true);
+        v8Inspector.addListeners(listener);
+
+        // Execute JavaScript on a separate thread.
+        Thread executionThread = new Thread(() -> {
+            try {
+                // Blocks until Runtime.runIfWaitingForDebugger is received.
+                v8Inspector.waitForDebugger();
+                v8Runtime.getExecutor("const x = 42;").executeVoid();
+                completedLatch.countDown();
+            } catch (JavetException e) {
+                e.printStackTrace(System.err);
+            }
+        });
+        executionThread.start();
+
+        // At this point the execution thread is blocked.
+        // Configure the debugger (set breakpoints, enable domains, etc.).
+        v8Inspector.sendRequest(
+            "{\"id\":1,\"method\":\"Debugger.enable\"}");
+
+        // Release the wait — execution begins.
+        v8Inspector.sendRequest(
+            "{\"id\":2,\"method\":\"Runtime.runIfWaitingForDebugger\"}");
+
+        assertTrue(waitingLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(completedLatch.await(5, TimeUnit.SECONDS));
+        executionThread.join(5000);
+    }
+
+.. tip::
+
+    This is the standard "break on start" pattern used by Chrome DevTools. The debugger connects, configures breakpoints and domains, then sends ``Runtime.runIfWaitingForDebugger`` to signal that it is ready. You can combine this with breakpoints to pause at the very first statement.
+
 Threading Model
 ===============
 
@@ -433,15 +493,6 @@ Multiple Inspector Sessions
 **Risk**: Cannot support multiple DevTools clients.
 
 The implementation creates exactly one ``V8InspectorSession`` in the constructor and stores it as a ``unique_ptr``. The V8 API supports multiple concurrent sessions (multiple DevTools frontends connecting simultaneously). There is no way to create additional sessions or disconnect/reconnect without destroying the entire inspector.
-
-Break on Start (waitingForDebugger)
------------------------------------
-
-**Priority**: High
-
-**Risk**: Cannot pause before first statement.
-
-``V8Inspector::connect()`` always passes ``kNotWaitingForDebugger``. For "break on start" debugging (common in DevTools when you want to pause before any user code runs), the session should be connected with ``kWaitingForDebugger``. Then V8 calls ``runIfWaitingForDebugger()`` and the embedder holds execution until the client sends ``Runtime.runIfWaitingForDebugger``. There is currently no Java API to control this.
 
 Migrate to connectShared()
 --------------------------

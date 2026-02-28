@@ -263,6 +263,143 @@ public class TestV8Inspector extends BaseTestJavet {
         assertEquals(atomicInteger.get(), listener.getResponses().size());
     }
 
+    @Test
+    public void testWaitForDebugger() throws JavetException, InterruptedException, JsonProcessingException {
+        // Verify that an inspector created with waitForDebugger=true blocks execution
+        // until Runtime.runIfWaitingForDebugger is sent, and that the
+        // runIfWaitingForDebugger callback is invoked.
+        if (isNode()) {
+            return;
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        CountDownLatch waitingLatch = new CountDownLatch(1);
+        CountDownLatch completedLatch = new CountDownLatch(1);
+        MockV8InspectorListener listener = new MockV8InspectorListener() {
+            @Override
+            public void runIfWaitingForDebugger(int contextGroupId) {
+                super.runIfWaitingForDebugger(contextGroupId);
+                waitingLatch.countDown();
+            }
+        };
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            // Create inspector with waitForDebugger=true.
+            V8Inspector v8Inspector = v8Runtime.getV8Inspector("test-wait", true);
+            assertNotNull(v8Inspector);
+            v8Inspector.addListeners(listener);
+            // On a separate thread: wait for debugger, then execute JavaScript.
+            Thread executionThread = new Thread(() -> {
+                try {
+                    // This blocks until Runtime.runIfWaitingForDebugger is processed.
+                    v8Inspector.waitForDebugger();
+                    v8Runtime.getExecutor("const result = 42;").executeVoid();
+                    completedLatch.countDown();
+                } catch (JavetException e) {
+                    e.printStackTrace(System.err);
+                    fail("Execution should not throw exception.");
+                }
+            });
+            executionThread.start();
+            // Give the execution thread time to enter the waiting loop.
+            Thread.sleep(200);
+            // The execution thread should be blocked (not completed yet).
+            assertEquals(1, completedLatch.getCount(), "Execution thread should still be waiting");
+            // Send Runtime.runIfWaitingForDebugger from the main thread.
+            v8Inspector.sendRequest("{\"id\":1,\"method\":\"Runtime.runIfWaitingForDebugger\"}");
+            // The callback should have been invoked.
+            assertTrue(waitingLatch.await(5, TimeUnit.SECONDS),
+                    "runIfWaitingForDebugger callback should be invoked");
+            // The execution thread should now complete.
+            assertTrue(completedLatch.await(5, TimeUnit.SECONDS),
+                    "Execution thread should complete after debugger is released");
+            executionThread.join(5000);
+            assertFalse(executionThread.isAlive(), "Execution thread should have finished");
+            // Verify the callback received the correct context group ID.
+            assertFalse(listener.getContextGroupIds().isEmpty(),
+                    "runIfWaitingForDebugger should have been called");
+            assertEquals(1, listener.getContextGroupIds().get(0));
+        }
+    }
+
+    @Test
+    public void testWaitForDebuggerWithBreakpointAfter() throws JavetException, InterruptedException, JsonProcessingException {
+        // Verify that after releasing the debugger wait, setting a breakpoint
+        // and hitting it still works correctly (tests interaction between
+        // waitForDebugger and runMessageLoopOnPause).
+        if (isNode()) {
+            return;
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        CountDownLatch waitingLatch = new CountDownLatch(1);
+        CountDownLatch pausedLatch = new CountDownLatch(1);
+        CountDownLatch resumedLatch = new CountDownLatch(1);
+        CountDownLatch completedLatch = new CountDownLatch(1);
+        MockV8InspectorListener listener = new MockV8InspectorListener() {
+            @Override
+            public void runIfWaitingForDebugger(int contextGroupId) {
+                super.runIfWaitingForDebugger(contextGroupId);
+                waitingLatch.countDown();
+            }
+
+            @Override
+            public void receiveNotification(String message) {
+                super.receiveNotification(message);
+                try {
+                    JsonNode node = objectMapper.readTree(message);
+                    if (node.has("method")) {
+                        String method = node.get("method").asText();
+                        if ("Debugger.paused".equals(method)) {
+                            pausedLatch.countDown();
+                        } else if ("Debugger.resumed".equals(method)) {
+                            resumedLatch.countDown();
+                        }
+                    }
+                } catch (JsonProcessingException e) {
+                    // ignore
+                }
+            }
+        };
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            V8Inspector v8Inspector = v8Runtime.getV8Inspector("test-wait-bp", true);
+            v8Inspector.addListeners(listener);
+            Thread executionThread = new Thread(() -> {
+                try {
+                    // Wait for debugger before executing anything.
+                    v8Inspector.waitForDebugger();
+                    // Now execute script with a breakpoint set on line 1.
+                    v8Runtime.getExecutor("const a = 1;\nconst b = a + 2;\nconst c = b + 3;")
+                            .setResourceName("wait-bp.js")
+                            .executeVoid();
+                    completedLatch.countDown();
+                } catch (JavetException e) {
+                    e.printStackTrace(System.err);
+                    fail("Execution should not throw: " + e.getMessage());
+                }
+            });
+            executionThread.start();
+            // Give time for the thread to enter the wait loop.
+            Thread.sleep(200);
+            // Enable debugger and set breakpoint while the execution thread is waiting.
+            v8Inspector.sendRequest("{\"id\":1,\"method\":\"Debugger.enable\"}");
+            v8Inspector.sendRequest("{\"id\":2,\"method\":\"Debugger.setBreakpointByUrl\","
+                    + "\"params\":{\"lineNumber\":1,\"url\":\"wait-bp.js\",\"columnNumber\":0,\"condition\":\"\"}}");
+            // Release the debugger wait.
+            v8Inspector.sendRequest("{\"id\":3,\"method\":\"Runtime.runIfWaitingForDebugger\"}");
+            assertTrue(waitingLatch.await(5, TimeUnit.SECONDS),
+                    "runIfWaitingForDebugger callback should be invoked");
+            // Now execution should start and hit the breakpoint at line 1.
+            assertTrue(pausedLatch.await(5, TimeUnit.SECONDS),
+                    "Should receive Debugger.paused notification");
+            // Resume execution.
+            v8Inspector.sendRequest("{\"id\":4,\"method\":\"Debugger.resume\"}");
+            assertTrue(resumedLatch.await(5, TimeUnit.SECONDS),
+                    "Should receive Debugger.resumed notification");
+            assertTrue(completedLatch.await(5, TimeUnit.SECONDS),
+                    "Execution thread should finish after resume");
+            executionThread.join(5000);
+            assertFalse(executionThread.isAlive(), "Execution thread should have completed");
+        }
+    }
+
     static class MockV8InspectorListener implements IV8InspectorListener {
         private final List<Integer> contextGroupIds;
         private final List<String> notifications;

@@ -67,7 +67,7 @@ public interface IV8Native {
 
     boolean contextSetLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int length);
 
-    void createV8Inspector(long v8RuntimeHandle, Object v8Inspector);
+    void createV8Inspector(long v8RuntimeHandle, Object v8Inspector, boolean waitForDebugger);
 
     long createV8Runtime(Object runtimeOptions);
 
@@ -455,4 +455,6 @@ public interface IV8Native {
     void unregisterNearHeapLimitCallback(long v8RuntimeHandle, long heapLimit);
 
     void v8InspectorSend(long v8RuntimeHandle, String message);
+
+    void v8InspectorWaitForDebugger(long v8RuntimeHandle);
 }

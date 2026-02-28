@@ -33,12 +33,16 @@ public final class V8Inspector {
     private IJavetLogger logger;
 
     V8Inspector(V8Runtime v8Runtime, String name, IV8Native v8Native) {
+        this(v8Runtime, name, v8Native, false);
+    }
+
+    V8Inspector(V8Runtime v8Runtime, String name, IV8Native v8Native, boolean waitForDebugger) {
         logger = v8Runtime.getLogger();
         this.name = name;
         listeners = new ArrayList<>();
         this.v8Runtime = v8Runtime;
         this.v8Native = v8Native;
-        v8Native.createV8Inspector(v8Runtime.getHandle(), this);
+        v8Native.createV8Inspector(v8Runtime.getHandle(), this, waitForDebugger);
     }
 
     public void addListeners(IV8InspectorListener... listeners) {
@@ -119,5 +123,26 @@ public final class V8Inspector {
     public void setLogger(IJavetLogger logger) {
         Objects.requireNonNull(logger);
         this.logger = logger;
+    }
+
+    /**
+     * Blocks the calling thread until all connected sessions have sent
+     * {@code Runtime.runIfWaitingForDebugger}. This method must be called
+     * from a thread that does <b>not</b> already hold the V8 isolate lock
+     * (typically an execution thread, before running any JavaScript).
+     * <p>
+     * The inspector must have been created with {@code waitForDebugger = true}
+     * (via {@link V8Runtime#getV8Inspector(String, boolean)}) for this to work.
+     * When called, the method acquires the V8 lock and enters a message-pumping
+     * loop, dispatching any incoming CDP messages while waiting. Once V8 invokes
+     * the {@code runIfWaitingForDebugger} callback, the loop exits and this
+     * method returns, allowing the thread to proceed with script execution.
+     *
+     * @since 5.0.5
+     */
+    public void waitForDebugger() {
+        if (!v8Runtime.isClosed()) {
+            v8Native.v8InspectorWaitForDebugger(v8Runtime.getHandle());
+        }
     }
 }

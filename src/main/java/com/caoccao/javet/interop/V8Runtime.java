@@ -1790,9 +1790,27 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.7.3
      */
     public V8Inspector getV8Inspector(String name) {
+        return getV8Inspector(name, false);
+    }
+
+    /**
+     * Gets V8 inspector by name, optionally waiting for a debugger to attach.
+     * <p>
+     * When {@code waitForDebugger} is {@code true}, the inspector session is
+     * connected with {@code kWaitingForDebugger}. V8 will call the
+     * {@link IV8InspectorListener#runIfWaitingForDebugger(int)} callback once
+     * all sessions have sent {@code Runtime.runIfWaitingForDebugger}. Use
+     * {@link V8Inspector#waitForDebugger()} to block execution until that signal.
+     *
+     * @param name             the name
+     * @param waitForDebugger  whether to wait for a debugger before execution
+     * @return the V8 inspector
+     * @since 5.0.5
+     */
+    public V8Inspector getV8Inspector(String name, boolean waitForDebugger) {
         if (!isClosed()) {
             if (v8Inspector == null) {
-                v8Inspector = new V8Inspector(this, name, v8Native);
+                v8Inspector = new V8Inspector(this, name, v8Native, waitForDebugger);
             }
             return v8Inspector;
         }

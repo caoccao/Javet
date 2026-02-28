@@ -100,9 +100,9 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Inspector
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mV8Inspector) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mV8Inspector, jboolean waitForDebugger) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    v8Runtime->v8Inspector.reset(new Javet::Inspector::JavetInspector(v8Runtime, mV8Inspector));
+    v8Runtime->v8Inspector.reset(new Javet::Inspector::JavetInspector(v8Runtime, mV8Inspector, waitForDebugger));
 }
 
 /*
@@ -513,19 +513,30 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
     std::string message(umMessage, jniEnv->GetStringUTFLength(mMessage));
     jniEnv->ReleaseStringUTFChars(mMessage, umMessage);
     if (v8Runtime->v8Inspector) {
-        // Always enqueue first (lock-free). Then acquire the V8 lock to drain
-        // the queue and pump microtasks. If another thread holds the lock
-        // (paused at breakpoint or in the TOCTOU window), the pause loop on
-        // that thread dispatches the message while we wait. When we finally
-        // get the lock, the queue is already empty and drain/pump are no-ops.
-        // V8's Locker is reentrant, so this is also safe when called from a
-        // thread that already holds the lock (e.g. during a JS->Java callback).
+        // Always enqueue first (lock-free). If a message loop is active
+        // (paused at breakpoint or waiting for debugger), the loop on the
+        // execution thread dispatches the message from the queue — no lock
+        // needed.  If no loop is active, acquire the V8 lock to drain the
+        // queue and pump microtasks ourselves.
+        // V8's Locker is reentrant, so the lock-acquire path is also safe
+        // when called from a thread that already holds the lock (e.g.
+        // during a JS→Java callback).
         v8Runtime->v8Inspector->postMessage(message);
-        auto v8Locker = v8Runtime->GetUniqueV8Locker();
-        auto v8IsolateScope = v8Runtime->GetV8IsolateScope();
-        V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
-        auto v8Context = v8Runtime->GetV8LocalContext();
-        auto v8ContextScope = v8Runtime->GetV8ContextScope(v8Context);
-        v8Runtime->v8Inspector->drainQueue();
+        if (!v8Runtime->v8Inspector->isMessageLoopActive()) {
+            auto v8Locker = v8Runtime->GetUniqueV8Locker();
+            auto v8IsolateScope = v8Runtime->GetV8IsolateScope();
+            V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
+            auto v8Context = v8Runtime->GetV8LocalContext();
+            auto v8ContextScope = v8Runtime->GetV8ContextScope(v8Context);
+            v8Runtime->v8Inspector->drainQueue();
+        }
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorWaitForDebugger
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    if (v8Runtime->v8Inspector) {
+        v8Runtime->v8Inspector->waitForDebugger();
     }
 }
