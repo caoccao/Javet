@@ -20,6 +20,7 @@ Release Notes 5.0.x
 * Added ``V8InspectorClient::resourceNameToUrl()`` override so DevTools shows clickable source URLs instead of raw resource names
 * Added ``IV8InspectorListener.installAdditionalCommandLineAPI(IV8ValueObject commandLineAPI)`` callback that receives the command-line API scope object, allowing listeners to install custom properties (e.g. ``$myHelper``) available during ``Runtime.evaluate`` with ``includeCommandLineAPI: true``
 * Added graceful inspector session shutdown via ``V8InspectorSession::stop()`` before destruction to disable debugger pausing and prevent callbacks during teardown
+* Set ``origin`` and ``auxData`` on ``V8ContextInfo`` so DevTools shows the inspector name as the security origin and identifies the context as default (``{"isDefault":true}``)
 
 5.0.4
 -----

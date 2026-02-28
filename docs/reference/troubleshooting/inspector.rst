@@ -583,15 +583,6 @@ Todo Features
 
 The following V8 Inspector features are not yet implemented in Javet. They are listed in priority order.
 
-Context Origin and Auxiliary Data
----------------------------------
-
-**Priority**: Medium
-
-**Risk**: DevTools shows incomplete context information.
-
-When calling ``v8Inspector->contextCreated()``, the ``origin`` and ``auxData`` fields of ``V8ContextInfo`` are never set. DevTools uses ``auxData`` to identify context type (e.g., ``{"isDefault": true}``) and ``origin`` for security-origin display. Without these, the DevTools context selector shows incomplete information.
-
 Async Stack Traces
 ------------------
 

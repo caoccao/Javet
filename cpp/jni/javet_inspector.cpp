@@ -158,7 +158,12 @@ namespace Javet {
             v8Inspector.reset(v8_inspector::V8Inspector::create(v8Runtime->v8Isolate, this).release());
             v8Context->SetAlignedPointerInEmbedderData(EMBEDDER_DATA_INDEX, this);
             auto humanReadableNamePointer = ConvertFromStdStringToStringViewPointer(name);
-            v8Inspector->contextCreated(v8_inspector::V8ContextInfo(v8Context, CONTEXT_GROUP_ID, *humanReadableNamePointer.get()));
+            v8_inspector::V8ContextInfo contextInfo(v8Context, CONTEXT_GROUP_ID, *humanReadableNamePointer.get());
+            contextInfo.origin = *humanReadableNamePointer.get();
+            static const std::string auxDataStr = "{\"isDefault\":true}";
+            auto auxDataPointer = ConvertFromStdStringToStringViewPointer(auxDataStr);
+            contextInfo.auxData = *auxDataPointer.get();
+            v8Inspector->contextCreated(contextInfo);
         }
 
         int JavetInspectorClient::addSession(const jobject mV8Inspector, bool waitForDebugger) noexcept {
@@ -179,7 +184,12 @@ namespace Javet {
         void JavetInspectorClient::contextCreated(const V8LocalContext& v8Context) noexcept {
             v8Context->SetAlignedPointerInEmbedderData(EMBEDDER_DATA_INDEX, this);
             auto humanReadableNamePointer = ConvertFromStdStringToStringViewPointer(name);
-            v8Inspector->contextCreated(v8_inspector::V8ContextInfo(v8Context, CONTEXT_GROUP_ID, *humanReadableNamePointer.get()));
+            v8_inspector::V8ContextInfo contextInfo(v8Context, CONTEXT_GROUP_ID, *humanReadableNamePointer.get());
+            contextInfo.origin = *humanReadableNamePointer.get();
+            static const std::string auxDataStr = "{\"isDefault\":true}";
+            auto auxDataPointer = ConvertFromStdStringToStringViewPointer(auxDataStr);
+            contextInfo.auxData = *auxDataPointer.get();
+            v8Inspector->contextCreated(contextInfo);
         }
 
         void JavetInspectorClient::contextDestroyed(const V8LocalContext& v8Context) noexcept {
