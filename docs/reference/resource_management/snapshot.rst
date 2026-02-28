@@ -124,3 +124,25 @@ Let's take a try.
       28 test.js
 
 * Read ``startup.blob`` to a ``byte[]`` and follow the previous section.
+
+Use a Snapshot with Engine Pool
+-------------------------------
+
+You can configure a ``JavetEnginePool`` to initialize every ``V8Runtime`` from a pre-existing snapshot via ``JavetEngineConfig``. This gives you the startup-time benefits of snapshots while still using the pool's lifecycle management.
+
+.. code-block:: java
+
+    // Assume snapshotBlob is a byte[] created earlier.
+    JavetEngineConfig config = new JavetEngineConfig();
+    config.setSnapshotBlob(snapshotBlob);
+    try (JavetEnginePool<V8Runtime> pool = new JavetEnginePool<>(config)) {
+        try (IJavetEngine<V8Runtime> engine = pool.getEngine()) {
+            V8Runtime v8Runtime = engine.getV8Runtime();
+            // The snapshot's pre-compiled functions are already available.
+            assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+        }
+    }
+
+.. note::
+
+    Snapshot blobs are only supported in **V8 mode**. If the engine config uses Node.js mode, the snapshot blob setting is ignored.
