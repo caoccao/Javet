@@ -392,9 +392,15 @@ public class TestV8Module extends BaseTestJavetRuntime {
             assertFalse(v8ValuePromise.isFulfilled());
         }
         v8Runtime.await();
-        assertEquals(
-                "TypeError: Cannot add property z, object is not extensible",
-                v8Runtime.getGlobalObject().getString("reason"));
+        if (isNode()) {
+            assertEquals(
+                    "TypeError: Cannot add property z, object is not extensible",
+                    v8Runtime.getGlobalObject().getString("reason"));
+        } else {
+            assertEquals(
+                    "TypeError: Cannot assign to property 'z' of [object Module]",
+                    v8Runtime.getGlobalObject().getString("reason"));
+        }
         assertEquals(1, v8Runtime.getV8ModuleCount());
     }
 
