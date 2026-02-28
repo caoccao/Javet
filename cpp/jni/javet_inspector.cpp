@@ -73,23 +73,30 @@ namespace Javet {
             jniEnv->ReleaseStringUTFChars(mName, umName);
         }
 
-        void JavetInspector::send(const std::string& message) noexcept {
-            LOG_DEBUG("Sending request: " << message);
-            if (client->isRunningMessageLoop()) {
-                // V8 is paused at a breakpoint. Queue the message for the pause loop
-                // to dispatch (avoids deadlock on the V8 isolate lock).
-                client->postMessage(message);
-            } else {
-                auto stringViewMessagePointer = ConvertFromStdStringToStringViewPointer(message);
-                client->dispatchProtocolMessage(*stringViewMessagePointer.get());
-                // Pump microtasks so that promise-based responses
-                // (e.g., Runtime.evaluate with replMode/awaitPromise) are delivered immediately.
-                v8Runtime->v8Isolate->PerformMicrotaskCheckpoint();
-            }
+        void JavetInspector::contextCreated() noexcept {
+            auto v8Context = v8Runtime->GetV8LocalContext();
+            client->contextCreated(v8Context);
+        }
+
+        void JavetInspector::contextDestroyed() noexcept {
+            auto v8Context = v8Runtime->GetV8LocalContext();
+            client->contextDestroyed(v8Context);
+        }
+
+        void JavetInspector::drainQueue() noexcept {
+            client->drainQueue();
+            // Pump microtasks so that promise-based responses
+            // (e.g., Runtime.evaluate with replMode/awaitPromise) are delivered immediately.
+            v8Runtime->v8Isolate->PerformMicrotaskCheckpoint();
         }
 
         bool JavetInspector::isPaused() const noexcept {
             return client->isRunningMessageLoop();
+        }
+
+        void JavetInspector::postMessage(const std::string& message) noexcept {
+            LOG_DEBUG("Queueing request: " << message);
+            client->postMessage(message);
         }
 
         JavetInspector::~JavetInspector() {
@@ -107,9 +114,10 @@ namespace Javet {
             const jobject mV8Inspector) noexcept
             : javetInspectorChannel(nullptr), v8Inspector(nullptr), v8InspectorSession(nullptr) {
             activateMessageLoop = false;
-            runningMessageLoop = false;
+            runningMessageLoop.store(false);
             this->mV8Inspector = mV8Inspector;
             this->v8Runtime = v8Runtime;
+            this->name = name;
             auto v8Context = v8Runtime->GetV8LocalContext();
             javetInspectorChannel.reset(new JavetInspectorChannel(v8Runtime, mV8Inspector));
             v8Inspector.reset(v8_inspector::V8Inspector::create(v8Runtime->v8Isolate, this).release());
@@ -123,8 +131,30 @@ namespace Javet {
             v8Inspector->contextCreated(v8_inspector::V8ContextInfo(v8Context, CONTEXT_GROUP_ID, *humanReadableNamePointer.get()));
         }
 
+        void JavetInspectorClient::contextCreated(const V8LocalContext& v8Context) noexcept {
+            v8Context->SetAlignedPointerInEmbedderData(EMBEDDER_DATA_INDEX, this);
+            auto humanReadableNamePointer = ConvertFromStdStringToStringViewPointer(name);
+            v8Inspector->contextCreated(v8_inspector::V8ContextInfo(v8Context, CONTEXT_GROUP_ID, *humanReadableNamePointer.get()));
+        }
+
+        void JavetInspectorClient::contextDestroyed(const V8LocalContext& v8Context) noexcept {
+            v8Inspector->contextDestroyed(v8Context);
+        }
+
         void JavetInspectorClient::dispatchProtocolMessage(const v8_inspector::StringView& message) noexcept {
             v8InspectorSession->dispatchProtocolMessage(message);
+        }
+
+        void JavetInspectorClient::drainQueue() noexcept {
+            std::unique_lock<std::mutex> lock(messageMutex);
+            while (!messageQueue.empty()) {
+                std::string message = std::move(messageQueue.front());
+                messageQueue.pop();
+                lock.unlock();
+                auto sv = ConvertFromStdStringToStringViewPointer(message);
+                v8InspectorSession->dispatchProtocolMessage(*sv);
+                lock.lock();
+            }
         }
 
         V8LocalContext JavetInspectorClient::ensureDefaultContextInGroup(int contextGroupId) {
@@ -132,7 +162,7 @@ namespace Javet {
         }
 
         bool JavetInspectorClient::isRunningMessageLoop() const noexcept {
-            return runningMessageLoop;
+            return runningMessageLoop.load();
         }
 
         void JavetInspectorClient::postMessage(const std::string& message) noexcept {
@@ -156,20 +186,10 @@ namespace Javet {
         void JavetInspectorClient::runMessageLoopOnPause(int contextGroupId) {
             if (!runningMessageLoop) {
                 activateMessageLoop = true;
-                runningMessageLoop = true;
+                runningMessageLoop.store(true);
                 while (activateMessageLoop) {
                     // Drain any queued protocol messages from the DevTools frontend.
-                    {
-                        std::unique_lock<std::mutex> lock(messageMutex);
-                        while (!messageQueue.empty()) {
-                            std::string message = std::move(messageQueue.front());
-                            messageQueue.pop();
-                            lock.unlock();
-                            auto sv = ConvertFromStdStringToStringViewPointer(message);
-                            v8InspectorSession->dispatchProtocolMessage(*sv);
-                            lock.lock();
-                        }
-                    }
+                    drainQueue();
                     // Pump V8 platform tasks.
                     while (v8::platform::PumpMessageLoop(v8Runtime->v8PlatformPointer, v8Runtime->v8Isolate)) {
                     }
@@ -181,7 +201,7 @@ namespace Javet {
                         }
                     }
                 }
-                runningMessageLoop = false;
+                runningMessageLoop.store(false);
             }
         }
 

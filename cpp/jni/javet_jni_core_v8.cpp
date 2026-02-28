@@ -513,18 +513,19 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
     std::string message(umMessage, jniEnv->GetStringUTFLength(mMessage));
     jniEnv->ReleaseStringUTFChars(mMessage, umMessage);
     if (v8Runtime->v8Inspector) {
-        if (v8Runtime->v8Inspector->isPaused()) {
-            // V8 is paused at a breakpoint on another thread which holds the isolate lock.
-            // Just queue the message — no V8 lock needed.
-            v8Runtime->v8Inspector->send(message);
-        } else {
-            // Not paused — acquire the V8 lock and scope before dispatching.
-            auto v8Locker = v8Runtime->GetUniqueV8Locker();
-            auto v8IsolateScope = v8Runtime->GetV8IsolateScope();
-            V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
-            auto v8Context = v8Runtime->GetV8LocalContext();
-            auto v8ContextScope = v8Runtime->GetV8ContextScope(v8Context);
-            v8Runtime->v8Inspector->send(message);
-        }
+        // Always enqueue first (lock-free). Then acquire the V8 lock to drain
+        // the queue and pump microtasks. If another thread holds the lock
+        // (paused at breakpoint or in the TOCTOU window), the pause loop on
+        // that thread dispatches the message while we wait. When we finally
+        // get the lock, the queue is already empty and drain/pump are no-ops.
+        // V8's Locker is reentrant, so this is also safe when called from a
+        // thread that already holds the lock (e.g. during a JS->Java callback).
+        v8Runtime->v8Inspector->postMessage(message);
+        auto v8Locker = v8Runtime->GetUniqueV8Locker();
+        auto v8IsolateScope = v8Runtime->GetV8IsolateScope();
+        V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
+        auto v8Context = v8Runtime->GetV8LocalContext();
+        auto v8ContextScope = v8Runtime->GetV8ContextScope(v8Context);
+        v8Runtime->v8Inspector->drainQueue();
     }
 }

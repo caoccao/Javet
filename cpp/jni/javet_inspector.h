@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <condition_variable>
 #include <jni.h>
 #include <mutex>
@@ -42,8 +43,11 @@ namespace Javet {
         class JavetInspector {
         public:
             JavetInspector(V8Runtime* v8Runtime, const jobject mV8Inspector) noexcept;
+            void contextCreated() noexcept;
+            void contextDestroyed() noexcept;
+            void drainQueue() noexcept;
             bool isPaused() const noexcept;
-            void send(const std::string& message) noexcept;
+            void postMessage(const std::string& message) noexcept;
             virtual ~JavetInspector();
         private:
             jobject mV8Inspector;
@@ -58,7 +62,10 @@ namespace Javet {
                 const std::string& name,
                 const jobject mV8Inspector) noexcept;
             bool isRunningMessageLoop() const noexcept;
+            void contextCreated(const V8LocalContext& v8Context) noexcept;
+            void contextDestroyed(const V8LocalContext& v8Context) noexcept;
             void dispatchProtocolMessage(const v8_inspector::StringView& message) noexcept;
+            void drainQueue() noexcept;
             void postMessage(const std::string& message) noexcept;
             void quitMessageLoopOnPause() override;
             void runIfWaitingForDebugger(int contextGroupId) override;
@@ -67,8 +74,9 @@ namespace Javet {
         private:
             V8Runtime* v8Runtime;
             bool activateMessageLoop;
-            bool runningMessageLoop;
+            std::atomic<bool> runningMessageLoop;
             jobject mV8Inspector;
+            std::string name;
             std::condition_variable messageCondition;
             std::mutex messageMutex;
             std::queue<std::string> messageQueue;

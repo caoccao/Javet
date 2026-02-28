@@ -153,6 +153,10 @@ namespace Javet {
             auto v8IsolateScope = GetV8IsolateScope();
             V8HandleScope v8HandleScope(v8Isolate);
             auto v8LocalContext = GetV8LocalContext();
+            // Notify the inspector that the context is being destroyed.
+            if (v8Inspector) {
+                v8Inspector->contextDestroyed();
+            }
             Unregister(v8LocalContext);
             v8GlobalObject.Reset();
         }
@@ -327,6 +331,10 @@ namespace Javet {
         v8GlobalContext.Reset(v8Isolate, v8LocalContext);
         v8GlobalObject.Reset(
             v8Isolate, v8LocalContext->Global()->ToObject(v8LocalContext).ToLocalChecked());
+        // Notify the inspector about the new context.
+        if (v8Inspector) {
+            v8Inspector->contextCreated();
+        }
     }
 
     void V8Runtime::CreateV8Isolate(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept {

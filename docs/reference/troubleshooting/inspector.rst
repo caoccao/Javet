@@ -416,24 +416,6 @@ Todo Features
 
 The following V8 Inspector features are not yet implemented in Javet. They are listed in priority order.
 
-Context Destroyed Notification
-------------------------------
-
-**Priority**: Critical
-
-**Risk**: Stale context references, potential crash.
-
-When ``resetV8Context()`` or ``resetV8Isolate()`` is called, the old V8 context is destroyed but the inspector is never notified via ``v8Inspector->contextDestroyed(oldContext)``. This leaves the inspector holding stale context references. If a DevTools client is connected during a context reset, it may reference a dead context, leading to undefined behavior or crashes.
-
-Atomic State for Pause Flag
-----------------------------
-
-**Priority**: Critical
-
-**Risk**: Undefined behavior on ARM/Android.
-
-The ``runningMessageLoop`` flag is a plain ``bool`` written on the execution thread (inside ``runMessageLoopOnPause``) and read on the JNI/DevTools thread (via ``isPaused()``). On x86 this works due to strong memory ordering, but it is undefined behavior per the C++ standard and will break on ARM architectures (including Android). It should be ``std::atomic<bool>``.
-
 Console API Message Forwarding
 ------------------------------
 

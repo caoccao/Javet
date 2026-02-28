@@ -8,6 +8,8 @@ Release Notes 5.0.x
 * Upgraded Node.js to ``v24.14.0`` `(2026-02-24) <https://nodejs.org/en/blog/release/v24.14.0>`_
 * Fixed V8 inspector not delivering promise-based responses until the next request by pumping microtasks after dispatching protocol messages
 * Fixed V8 inspector breakpoints not being hit by enabling protocol message dispatch inside the pause message loop
+* Fixed V8 inspector not notifying ``contextDestroyed`` / ``contextCreated`` on context reset, preventing stale context references
+* Fixed V8 inspector pause flag (``runningMessageLoop``) to use ``std::atomic<bool>`` for correct cross-thread visibility on ARM/Android
 
 5.0.4
 -----

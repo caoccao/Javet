@@ -119,6 +119,107 @@ public class TestV8Inspector extends BaseTestJavet {
     }
 
     @Test
+    public void testBreakpointHitAndResumeMultipleCycles() throws JavetException, InterruptedException, JsonProcessingException {
+        // Stress-test the cross-thread pause flag visibility by doing multiple breakpoint-hit-and-resume cycles.
+        // This exercises the std::atomic<bool> runningMessageLoop flag under concurrent access.
+        if (isNode()) {
+            return;
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            for (int cycle = 0; cycle < 5; cycle++) {
+                CountDownLatch pausedLatch = new CountDownLatch(1);
+                CountDownLatch resumedLatch = new CountDownLatch(1);
+                MockV8InspectorListener listener = new MockV8InspectorListener() {
+                    @Override
+                    public void receiveNotification(String message) {
+                        super.receiveNotification(message);
+                        try {
+                            JsonNode node = objectMapper.readTree(message);
+                            if (node.has("method")) {
+                                String method = node.get("method").asText();
+                                if ("Debugger.paused".equals(method)) {
+                                    pausedLatch.countDown();
+                                } else if ("Debugger.resumed".equals(method)) {
+                                    resumedLatch.countDown();
+                                }
+                            }
+                        } catch (JsonProcessingException e) {
+                            // ignore
+                        }
+                    }
+                };
+                V8Inspector v8Inspector = v8Runtime.getV8Inspector();
+                v8Inspector.addListeners(listener);
+                int baseId = cycle * 10;
+                v8Inspector.sendRequest("{\"id\":" + (baseId + 1) + ",\"method\":\"Debugger.enable\"}");
+                v8Inspector.sendRequest("{\"id\":" + (baseId + 2) + ",\"method\":\"Debugger.setBreakpointByUrl\","
+                        + "\"params\":{\"lineNumber\":1,\"url\":\"cycle" + cycle + ".js\",\"columnNumber\":0,\"condition\":\"\"}}");
+                final int c = cycle;
+                Thread executionThread = new Thread(() -> {
+                    try {
+                        v8Runtime.getExecutor("const x" + c + " = 1;\nconst y" + c + " = 2;\nconst z" + c + " = 3;")
+                                .setResourceName("cycle" + c + ".js")
+                                .executeVoid();
+                    } catch (JavetException e) {
+                        fail("Execution should not throw: " + e.getMessage());
+                    }
+                });
+                executionThread.start();
+                assertTrue(pausedLatch.await(5, TimeUnit.SECONDS),
+                        "Cycle " + cycle + ": should receive Debugger.paused");
+                v8Inspector.sendRequest("{\"id\":" + (baseId + 3) + ",\"method\":\"Debugger.resume\"}");
+                executionThread.join(5000);
+                assertFalse(executionThread.isAlive(),
+                        "Cycle " + cycle + ": execution thread should have completed");
+                assertTrue(resumedLatch.await(5, TimeUnit.SECONDS),
+                        "Cycle " + cycle + ": should receive Debugger.resumed");
+                v8Inspector.sendRequest("{\"id\":" + (baseId + 4) + ",\"method\":\"Debugger.disable\"}");
+                v8Inspector.removeListeners(listener);
+            }
+        }
+    }
+
+    @Test
+    public void testContextResetWithInspector() throws JavetException, TimeoutException, InterruptedException, JsonProcessingException {
+        // Verify that resetting the V8 context while an inspector is active does not crash.
+        // Previously, contextDestroyed() was not called before closing the old context,
+        // leaving the inspector with stale context references.
+        if (isNode()) {
+            return;
+        }
+        MockV8InspectorListener listener = new MockV8InspectorListener();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            V8Inspector v8Inspector = v8Runtime.getV8Inspector();
+            v8Inspector.addListeners(listener);
+            // Evaluate a variable in the original context.
+            v8Runtime.getExecutor("const a = 10;").executeVoid();
+            v8Inspector.sendRequest("{\"id\":1,\"method\":\"Runtime.enable\"}");
+            v8Inspector.sendRequest("{\"id\":2,\"method\":\"Runtime.evaluate\","
+                    + "\"params\":{\"expression\":\"a\",\"replMode\":true}}");
+            runAndWait(1000, () -> listener.getResponses().size() >= 2);
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(listener.getResponses().get(1));
+            assertEquals(10, jsonNode.get("result").get("result").get("value").asInt());
+            // Reset the context. This should call contextDestroyed then contextCreated internally.
+            listener.getResponses().clear();
+            listener.getNotifications().clear();
+            v8Runtime.resetContext();
+            // After reset, old variables are gone. Define a new one and evaluate via inspector.
+            v8Runtime.getExecutor("const b = 20;").executeVoid();
+            v8Inspector.sendRequest("{\"id\":3,\"method\":\"Runtime.enable\"}");
+            v8Inspector.sendRequest("{\"id\":4,\"method\":\"Runtime.evaluate\","
+                    + "\"params\":{\"expression\":\"b\",\"replMode\":true}}");
+            runAndWait(1000, () -> listener.getResponses().size() >= 2);
+            JsonNode jsonNode2 = objectMapper.readTree(listener.getResponses().get(1));
+            assertTrue(jsonNode2.has("result"));
+            JsonNode resultResult = jsonNode2.get("result").get("result");
+            assertEquals("number", resultResult.get("type").asText());
+            assertEquals(20, resultResult.get("value").asInt());
+        }
+    }
+
+    @Test
     public void testEvaluateValue() throws JavetException, TimeoutException, InterruptedException, JsonProcessingException {
         if (isNode()) {
             // Node has its own protocol which is much more complicated. Javet doesn't test node inspector.
