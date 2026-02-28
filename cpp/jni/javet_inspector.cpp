@@ -75,6 +75,7 @@ namespace Javet {
             jclassV8Inspector = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/V8Inspector");
             jmethodIDV8InspectorConsoleAPIMessage = jniEnv->GetMethodID(jclassV8Inspector, "consoleAPIMessage", "(IILjava/lang/String;Ljava/lang/String;II)V");
             jmethodIDV8InspectorFlushProtocolNotifications = jniEnv->GetMethodID(jclassV8Inspector, "flushProtocolNotifications", "()V");
+            jmethodIDV8InspectorInstallAdditionalCommandLineAPI = jniEnv->GetMethodID(jclassV8Inspector, "installAdditionalCommandLineAPI", "(Lcom/caoccao/javet/values/reference/IV8ValueObject;)V");
             jmethodIDV8InspectorReceiveNotification = jniEnv->GetMethodID(jclassV8Inspector, "receiveNotification", "(Ljava/lang/String;)V");
             jmethodIDV8InspectorReceiveResponse = jniEnv->GetMethodID(jclassV8Inspector, "receiveResponse", "(Ljava/lang/String;)V");
             jmethodIDV8InspectorRunIfWaitingForDebugger = jniEnv->GetMethodID(jclassV8Inspector, "runIfWaitingForDebugger", "(I)V");
@@ -243,6 +244,28 @@ namespace Javet {
             v8Inspector->idleStarted();
         }
 
+        void JavetInspectorClient::installAdditionalCommandLineAPI(
+                v8::Local<v8::Context> v8Context, v8::Local<v8::Object> commandLineAPI) {
+            // Wrap the command-line API object via the converter so Java
+            // listeners can install custom properties on it.
+            // The Java side is responsible for closing the object.
+            FETCH_JNI_ENV(GlobalJavaVM);
+            jobject jCommandLineAPI = Javet::Converter::ToExternalV8Value(
+                jniEnv, v8Runtime, v8Context, commandLineAPI);
+            if (jCommandLineAPI != nullptr) {
+                std::vector<jobject> javaObjects;
+                {
+                    std::lock_guard<std::mutex> lock(messageMutex);
+                    for (auto& [id, session] : sessionMap) {
+                        javaObjects.push_back(session->getJavaObject());
+                    }
+                }
+                for (jobject jobj : javaObjects) {
+                    jniEnv->CallVoidMethod(jobj, jmethodIDV8InspectorInstallAdditionalCommandLineAPI, jCommandLineAPI);
+                }
+            }
+        }
+
         bool JavetInspectorClient::isRunningMessageLoop() const noexcept {
             return runningMessageLoop.load();
         }
@@ -265,6 +288,12 @@ namespace Javet {
         void JavetInspectorClient::quitMessageLoopOnPause() {
             activateMessageLoop = false;
             messageCondition.notify_one();
+        }
+
+        std::unique_ptr<v8_inspector::StringBuffer> JavetInspectorClient::resourceNameToUrl(
+                const v8_inspector::StringView& resourceName) {
+            // Pass the resource name through as a URL so DevTools shows clickable source links.
+            return v8_inspector::StringBuffer::create(resourceName);
         }
 
         void JavetInspectorClient::runIfWaitingForDebugger(int contextGroupId) {
@@ -402,8 +431,17 @@ namespace Javet {
             return !messageQueue.empty();
         }
 
+        void JavetInspectorSession::stop() noexcept {
+            if (v8InspectorSession) {
+                v8InspectorSession->stop();
+            }
+        }
+
         JavetInspectorSession::~JavetInspectorSession() {
-            // Disconnect the session first (may reference the channel).
+            // Gracefully stop the session to disable debugger pausing
+            // and prevent callbacks during teardown.
+            stop();
+            // Disconnect the session (may reference the channel).
             v8InspectorSession.reset();
             channel.reset();
             if (mV8Inspector != nullptr) {

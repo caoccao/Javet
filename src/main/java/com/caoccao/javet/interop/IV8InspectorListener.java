@@ -16,6 +16,8 @@
 
 package com.caoccao.javet.interop;
 
+import com.caoccao.javet.values.reference.IV8ValueObject;
+
 public interface IV8InspectorListener {
 
     /**
@@ -36,6 +38,26 @@ public interface IV8InspectorListener {
     }
 
     void flushProtocolNotifications();
+
+    /**
+     * Called when V8 sets up the command-line API for a context, allowing listeners
+     * to install custom helper functions in the DevTools console scope.
+     * <p>
+     * Properties set on {@code commandLineAPI} become available as "magic" variables
+     * during {@code Runtime.evaluate} with {@code includeCommandLineAPI: true}.
+     * For example, you can define custom helpers like {@code $myHelper()} that are
+     * only visible in the DevTools console, not in the global scope.
+     * </p>
+     * <p>
+     * <strong>Important:</strong> Do not close the {@code commandLineAPI} object;
+     * its lifecycle is managed by the inspector.
+     * </p>
+     *
+     * @param commandLineAPI the command-line API scope object to install properties on
+     * @since 5.0.5
+     */
+    default void installAdditionalCommandLineAPI(IV8ValueObject commandLineAPI) {
+    }
 
     void receiveNotification(String message);
 

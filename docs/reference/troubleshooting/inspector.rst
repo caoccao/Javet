@@ -59,6 +59,8 @@ Listener Interface
       - Called when V8 sends an unsolicited event (e.g., ``Debugger.paused``, ``Debugger.scriptParsed``).
     * - ``flushProtocolNotifications()``
       - Called by V8 to signal that all pending notifications have been flushed.
+    * - ``installAdditionalCommandLineAPI(IV8ValueObject commandLineAPI)``
+      - Called when V8 sets up the command-line API for a context. Properties set on ``commandLineAPI`` become available as "magic" variables during ``Runtime.evaluate`` with ``includeCommandLineAPI: true``. This allows custom DevTools console helpers without polluting the global scope. Has a default empty implementation so existing listeners do not need to override it.
     * - ``runIfWaitingForDebugger(int contextGroupId)``
       - Called when V8 is ready to run but may be waiting for a debugger to attach.
     * - ``sendRequest(String message)``
@@ -353,6 +355,52 @@ You can add and remove listeners dynamically. Multiple listeners receive the sam
         v8Inspector.removeListeners(listener1);
     }
 
+Custom Command Line API
+=======================
+
+You can install custom helper functions in the DevTools console scope by overriding ``installAdditionalCommandLineAPI()``. Properties set on the ``commandLineAPI`` object are available during ``Runtime.evaluate`` with ``includeCommandLineAPI: true``, but do **not** pollute the JavaScript global scope.
+
+V8 calls this callback each time an evaluation with ``includeCommandLineAPI: true`` is about to execute, so the helpers are installed fresh each time.
+
+.. code-block:: java
+
+    try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+         V8Inspector v8Inspector = v8Runtime.createV8Inspector("inspector")) {
+        v8Inspector.addListeners(new IV8InspectorListener() {
+            @Override public void flushProtocolNotifications() { }
+            @Override public void receiveNotification(String message) { }
+            @Override public void receiveResponse(String message) { }
+            @Override public void runIfWaitingForDebugger(int contextGroupId) { }
+            @Override public void sendRequest(String message) { }
+
+            @Override
+            public void installAdditionalCommandLineAPI(IV8ValueObject commandLineAPI) {
+                try {
+                    // Define a custom $myHelper variable visible in DevTools console.
+                    commandLineAPI.set("$myHelper", 42);
+                    // Define a custom function.
+                    commandLineAPI.set("$greet", v8Runtime.createV8ValueFunction(
+                        "return 'Hello, ' + name;", "name"));
+                } catch (JavetException e) {
+                    // handle error
+                }
+            }
+        });
+
+        // When evaluating with includeCommandLineAPI:true, $myHelper and $greet are available.
+        v8Inspector.sendRequest("{\"id\":1,\"method\":\"Runtime.enable\"}");
+        v8Inspector.sendRequest(
+            "{\"id\":2,\"method\":\"Runtime.evaluate\","
+            + "\"params\":{\"expression\":\"$myHelper\","
+            + "\"includeCommandLineAPI\":true,"
+            + "\"replMode\":true}}");
+        // Response: {"result":{"type":"number","value":42}}
+    }
+
+.. tip::
+
+    Do not close the ``commandLineAPI`` object — its lifecycle is managed by the inspector. Properties you install are scoped to DevTools evaluation only; they are not visible to regular JavaScript execution.
+
 Custom Logger
 =============
 
@@ -568,30 +616,3 @@ Session-Level API Exposure
 - ``evaluate()`` — direct evaluation returning a ``v8::Value`` (avoids CDP JSON overhead).
 - ``state()`` — serialize session state for later reconnection.
 - ``wrapObject()`` / ``unwrapObject()`` — direct object remoting.
-
-Resource Name to URL Mapping
------------------------------
-
-**Priority**: Low
-
-**Risk**: Source URL display.
-
-``V8InspectorClient::resourceNameToUrl()`` is not overridden. Without this, V8 cannot translate internal resource names to URLs. DevTools may show raw resource names instead of clickable source URLs.
-
-Additional Command Line API
-----------------------------
-
-**Priority**: Low
-
-**Risk**: Console API enrichment.
-
-``V8InspectorClient::installAdditionalCommandLineAPI()`` is not overridden. This callback lets embedders add custom functions to the DevTools console scope (like custom helpers), providing a richer debugging experience.
-
-Graceful Session Shutdown
--------------------------
-
-**Priority**: Low
-
-**Risk**: Potential callbacks during teardown.
-
-When ``V8Runtime`` is closed, the inspector ``unique_ptr`` is simply destroyed. There is no explicit ``v8InspectorSession->stop()`` call, which is the recommended way to gracefully disconnect and prevent callbacks during teardown.

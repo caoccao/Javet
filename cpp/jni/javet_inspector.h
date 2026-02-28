@@ -36,6 +36,7 @@ namespace Javet {
         static jclass jclassV8Inspector;
         static jmethodID jmethodIDV8InspectorConsoleAPIMessage;
         static jmethodID jmethodIDV8InspectorFlushProtocolNotifications;
+        static jmethodID jmethodIDV8InspectorInstallAdditionalCommandLineAPI;
         static jmethodID jmethodIDV8InspectorReceiveNotification;
         static jmethodID jmethodIDV8InspectorReceiveResponse;
         static jmethodID jmethodIDV8InspectorRunIfWaitingForDebugger;
@@ -82,11 +83,14 @@ namespace Javet {
             void drainQueue() noexcept;
             void idleFinished() noexcept;
             void idleStarted() noexcept;
+            void installAdditionalCommandLineAPI(v8::Local<v8::Context>, v8::Local<v8::Object>) override;
             bool isRunningMessageLoop() const noexcept;
             bool isWaitingForDebugger() const noexcept;
             void postMessage(int sessionId, const std::string& message) noexcept;
             void quitMessageLoopOnPause() override;
             void removeSession(int sessionId) noexcept;
+            std::unique_ptr<v8_inspector::StringBuffer> resourceNameToUrl(
+                const v8_inspector::StringView& resourceName) override;
             void runIfWaitingForDebugger(int contextGroupId) override;
             void runMessageLoopOnPause(int contextGroupId) override;
             void waitForDebuggerLoop() noexcept;
@@ -119,6 +123,7 @@ namespace Javet {
             void drainQueue() noexcept;
             void postMessage(const std::string& message) noexcept;
             bool hasQueuedMessages() const noexcept;
+            void stop() noexcept;
             ~JavetInspectorSession();
         private:
             int sessionId;

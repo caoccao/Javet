@@ -17,6 +17,9 @@ Release Notes 5.0.x
 * Removed cached ``V8Runtime.getV8Inspector()`` in favor of always creating new sessions via ``V8Runtime.createV8Inspector(name)``
 * Added console API message forwarding via ``IV8InspectorListener.consoleAPIMessage()`` so that ``console.log()``, ``console.warn()``, ``console.error()``, etc. are delivered to Java listeners without requiring ``Runtime.enable``
 * Added V8 idle notifications (``idleStarted()`` / ``idleFinished()``) tied to explicit ``lock()`` / ``unlock()`` so the CPU profiler can accurately distinguish idle time from active execution
+* Added ``V8InspectorClient::resourceNameToUrl()`` override so DevTools shows clickable source URLs instead of raw resource names
+* Added ``IV8InspectorListener.installAdditionalCommandLineAPI(IV8ValueObject commandLineAPI)`` callback that receives the command-line API scope object, allowing listeners to install custom properties (e.g. ``$myHelper``) available during ``Runtime.evaluate`` with ``includeCommandLineAPI: true``
+* Added graceful inspector session shutdown via ``V8InspectorSession::stop()`` before destruction to disable debugger pausing and prevent callbacks during teardown
 
 5.0.4
 -----

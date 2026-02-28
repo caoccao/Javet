@@ -18,6 +18,7 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.reference.IV8ValueObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -304,6 +305,53 @@ public class TestV8Inspector extends BaseTestJavet {
             assertEquals(3, jsonNodeResultResult.get("value").asInt());
         }
         assertEquals(atomicInteger.get(), listener.getResponses().size());
+    }
+
+    @Test
+    public void testInstallAdditionalCommandLineAPI() throws JavetException, InterruptedException, JsonProcessingException, TimeoutException {
+        // Verify that installAdditionalCommandLineAPI is called when Runtime.evaluate
+        // uses includeCommandLineAPI:true, and that properties set on the command-line
+        // API object are available during evaluation.
+        if (isNode()) {
+            return;
+        }
+        AtomicInteger callbackCount = new AtomicInteger(0);
+        MockV8InspectorListener listener = new MockV8InspectorListener() {
+            @Override
+            public void installAdditionalCommandLineAPI(IV8ValueObject commandLineAPI) {
+                callbackCount.incrementAndGet();
+                try {
+                    commandLineAPI.set("$myHelper", 42);
+                } catch (JavetException e) {
+                    fail("Should not throw: " + e.getMessage());
+                }
+            }
+        };
+        ObjectMapper objectMapper = new ObjectMapper();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+             V8Inspector v8Inspector = v8Runtime.createV8Inspector("cmdline-api-test")) {
+            v8Inspector.addListeners(listener);
+            // Enable Runtime domain.
+            v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet()
+                    + ",\"method\":\"Runtime.enable\"}");
+            // Evaluate with includeCommandLineAPI:true to trigger installAdditionalCommandLineAPI.
+            v8Inspector.sendRequest("{\"id\":" + atomicInteger.incrementAndGet()
+                    + ",\"method\":\"Runtime.evaluate\","
+                    + "\"params\":{\"expression\":\"$myHelper\","
+                    + "\"includeCommandLineAPI\":true,"
+                    + "\"replMode\":true}}");
+            runAndWait(1000, () -> listener.getResponses().size() >= 2);
+            // The callback should have been invoked at least once.
+            assertTrue(callbackCount.get() > 0,
+                    "installAdditionalCommandLineAPI should have been called");
+            // The evaluation response should contain the custom helper value.
+            String evalResponse = listener.getResponses().get(1);
+            JsonNode jsonNode = objectMapper.readTree(evalResponse);
+            JsonNode result = jsonNode.get("result").get("result");
+            assertEquals("number", result.get("type").asText());
+            assertEquals(42, result.get("value").asInt(),
+                    "$myHelper should resolve to 42 from the command-line API");
+        }
     }
 
     @Test

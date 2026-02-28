@@ -21,6 +21,8 @@ import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.utils.SimpleList;
 
+import com.caoccao.javet.values.reference.IV8ValueObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -105,6 +107,21 @@ public final class V8Inspector implements IJavetClosable {
             } catch (Throwable t) {
                 logger.logError(t, t.getMessage());
             }
+        }
+    }
+
+    public void installAdditionalCommandLineAPI(IV8ValueObject commandLineAPI) {
+        logger.logDebug("Receiving installAdditionalCommandLineAPI");
+        try (IV8ValueObject api = commandLineAPI) {
+            for (IV8InspectorListener listener : listeners) {
+                try {
+                    listener.installAdditionalCommandLineAPI(api);
+                } catch (Throwable t) {
+                    logger.logError(t, t.getMessage());
+                }
+            }
+        } catch (Throwable t) {
+            logger.logError(t, t.getMessage());
         }
     }
 
