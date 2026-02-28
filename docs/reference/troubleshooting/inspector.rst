@@ -51,6 +51,8 @@ Listener Interface
 
     * - Method
       - Description
+    * - ``consoleAPIMessage(int contextGroupId, int level, String message, String url, int lineNumber, int columnNumber)``
+      - Called when JavaScript calls a console API method (``console.log()``, ``console.warn()``, ``console.error()``, etc.). The ``level`` indicates severity: 1 = log, 2 = debug, 4 = info, 8 = error, 16 = warning. Has a default empty implementation so existing listeners do not need to override it.
     * - ``receiveResponse(String message)``
       - Called when V8 sends a response to a request you sent (matched by ``id``).
     * - ``receiveNotification(String message)``
@@ -532,15 +534,6 @@ Todo Features
 =============
 
 The following V8 Inspector features are not yet implemented in Javet. They are listed in priority order.
-
-Console API Message Forwarding
-------------------------------
-
-**Priority**: High
-
-**Risk**: Console output lost.
-
-``V8InspectorClient::consoleAPIMessage()`` is never overridden. This means ``console.log()``, ``console.warn()``, ``console.error()``, etc. issued from JavaScript are not forwarded to Java listeners. DevTools relies on this callback to populate the Console panel. Without it, console output is only available through protocol-level ``Runtime.consoleAPICalled`` events (which requires ``Runtime.enable`` first).
 
 Context Origin and Auxiliary Data
 ---------------------------------

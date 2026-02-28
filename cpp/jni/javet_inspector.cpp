@@ -25,6 +25,25 @@
 
 namespace Javet {
     namespace Inspector {
+        static inline std::unique_ptr<std::string> ConvertFromStringViewToStdStringPointer(
+            v8::Isolate* v8Isolate,
+            const v8_inspector::StringView& stringView) {
+            int length = static_cast<int>(stringView.length());
+            V8LocalString v8StringMessage;
+            if (length > 0) {
+                if (stringView.is8Bit()) {
+                    v8StringMessage = v8::String::NewFromOneByte(v8Isolate, reinterpret_cast<const uint8_t*>(
+                        stringView.characters8()), v8::NewStringType::kNormal, length).ToLocalChecked();
+                }
+                else {
+                    v8StringMessage = v8::String::NewFromTwoByte(v8Isolate, reinterpret_cast<const uint16_t*>(
+                        stringView.characters16()), v8::NewStringType::kNormal, length).ToLocalChecked();
+                }
+            }
+            V8StringUtf8Value v8Utf8Value(v8Isolate, v8StringMessage);
+            return std::make_unique<std::string>(*v8Utf8Value);
+        }
+
         static inline std::unique_ptr<v8_inspector::StringView> ConvertFromStdStringToStringViewPointer(
             const std::string& stdString) {
             return std::make_unique<v8_inspector::StringView>(
@@ -54,6 +73,7 @@ namespace Javet {
 
         void Initialize(JNIEnv* jniEnv) noexcept {
             jclassV8Inspector = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/V8Inspector");
+            jmethodIDV8InspectorConsoleAPIMessage = jniEnv->GetMethodID(jclassV8Inspector, "consoleAPIMessage", "(IILjava/lang/String;Ljava/lang/String;II)V");
             jmethodIDV8InspectorFlushProtocolNotifications = jniEnv->GetMethodID(jclassV8Inspector, "flushProtocolNotifications", "()V");
             jmethodIDV8InspectorReceiveNotification = jniEnv->GetMethodID(jclassV8Inspector, "receiveNotification", "(Ljava/lang/String;)V");
             jmethodIDV8InspectorReceiveResponse = jniEnv->GetMethodID(jclassV8Inspector, "receiveResponse", "(Ljava/lang/String;)V");
@@ -155,6 +175,37 @@ namespace Javet {
 
         void JavetInspectorClient::contextDestroyed(const V8LocalContext& v8Context) noexcept {
             v8Inspector->contextDestroyed(v8Context);
+        }
+
+        void JavetInspectorClient::consoleAPIMessage(
+                int contextGroupId,
+                v8::Isolate::MessageErrorLevel level,
+                const v8_inspector::StringView& message,
+                const v8_inspector::StringView& url,
+                unsigned lineNumber,
+                unsigned columnNumber,
+                v8_inspector::V8StackTrace*) {
+            V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
+            auto stdMessage = ConvertFromStringViewToStdStringPointer(v8Runtime->v8Isolate, message);
+            auto stdUrl = ConvertFromStringViewToStdStringPointer(v8Runtime->v8Isolate, url);
+            // Notify all sessions' Java objects.
+            std::vector<jobject> javaObjects;
+            {
+                std::lock_guard<std::mutex> lock(messageMutex);
+                for (auto& [id, session] : sessionMap) {
+                    javaObjects.push_back(session->getJavaObject());
+                }
+            }
+            FETCH_JNI_ENV(GlobalJavaVM);
+            jstring jMessage = Javet::Converter::ToJavaString(jniEnv, stdMessage->c_str());
+            jstring jUrl = Javet::Converter::ToJavaString(jniEnv, stdUrl->c_str());
+            for (jobject jobj : javaObjects) {
+                jniEnv->CallVoidMethod(jobj, jmethodIDV8InspectorConsoleAPIMessage,
+                    contextGroupId, static_cast<jint>(level), jMessage, jUrl,
+                    static_cast<jint>(lineNumber), static_cast<jint>(columnNumber));
+            }
+            jniEnv->DeleteLocalRef(jMessage);
+            jniEnv->DeleteLocalRef(jUrl);
         }
 
         void JavetInspectorClient::drainQueue() noexcept {

@@ -18,6 +18,23 @@ package com.caoccao.javet.interop;
 
 public interface IV8InspectorListener {
 
+    /**
+     * Called when JavaScript calls a console API method (e.g., {@code console.log()},
+     * {@code console.warn()}, {@code console.error()}).
+     *
+     * @param contextGroupId the context group that produced the message
+     * @param level          the message severity (1 = log, 2 = debug, 4 = info, 8 = error, 16 = warning)
+     * @param message        the console message text
+     * @param url            the source URL where the call was made
+     * @param lineNumber     the 0-based line number
+     * @param columnNumber   the 0-based column number
+     * @since 5.0.5
+     */
+    default void consoleAPIMessage(
+            int contextGroupId, int level, String message,
+            String url, int lineNumber, int columnNumber) {
+    }
+
     void flushProtocolNotifications();
 
     void receiveNotification(String message);

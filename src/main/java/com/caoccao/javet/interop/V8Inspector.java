@@ -84,6 +84,19 @@ public final class V8Inspector implements IJavetClosable {
         }
     }
 
+    public void consoleAPIMessage(
+            int contextGroupId, int level, String message,
+            String url, int lineNumber, int columnNumber) {
+        logger.logDebug("Receiving consoleAPIMessage: {0}", message);
+        for (IV8InspectorListener listener : listeners) {
+            try {
+                listener.consoleAPIMessage(contextGroupId, level, message, url, lineNumber, columnNumber);
+            } catch (Throwable t) {
+                logger.logError(t, t.getMessage());
+            }
+        }
+    }
+
     public void flushProtocolNotifications() {
         logger.logDebug("Receiving flushProtocolNotifications");
         for (IV8InspectorListener listener : listeners) {

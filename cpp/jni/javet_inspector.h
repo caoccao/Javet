@@ -34,6 +34,7 @@ namespace Javet {
         class JavetInspectorSession;
 
         static jclass jclassV8Inspector;
+        static jmethodID jmethodIDV8InspectorConsoleAPIMessage;
         static jmethodID jmethodIDV8InspectorFlushProtocolNotifications;
         static jmethodID jmethodIDV8InspectorReceiveNotification;
         static jmethodID jmethodIDV8InspectorReceiveResponse;
@@ -73,6 +74,14 @@ namespace Javet {
             void contextDestroyed(const V8LocalContext& v8Context) noexcept;
             void drainQueue() noexcept;
             void postMessage(int sessionId, const std::string& message) noexcept;
+            void consoleAPIMessage(
+                int contextGroupId,
+                v8::Isolate::MessageErrorLevel level,
+                const v8_inspector::StringView& message,
+                const v8_inspector::StringView& url,
+                unsigned lineNumber,
+                unsigned columnNumber,
+                v8_inspector::V8StackTrace*) override;
             void quitMessageLoopOnPause() override;
             void runIfWaitingForDebugger(int contextGroupId) override;
             void runMessageLoopOnPause(int contextGroupId) override;
