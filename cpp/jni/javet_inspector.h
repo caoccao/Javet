@@ -46,14 +46,16 @@ namespace Javet {
         public:
             JavetInspector(V8Runtime* v8Runtime, const std::string& name) noexcept;
             int addSession(const jobject mV8Inspector, bool waitForDebugger) noexcept;
-            void removeSession(int sessionId) noexcept;
             void contextCreated() noexcept;
             void contextDestroyed() noexcept;
             void drainQueue() noexcept;
+            void idleFinished() noexcept;
+            void idleStarted() noexcept;
             bool isMessageLoopActive() const noexcept;
             bool isPaused() const noexcept;
             bool isWaitingForDebugger() const noexcept;
             void postMessage(int sessionId, const std::string& message) noexcept;
+            void removeSession(int sessionId) noexcept;
             void waitForDebugger() noexcept;
             virtual ~JavetInspector();
         private:
@@ -67,13 +69,6 @@ namespace Javet {
                 V8Runtime* v8Runtime,
                 const std::string& name) noexcept;
             int addSession(const jobject mV8Inspector, bool waitForDebugger) noexcept;
-            void removeSession(int sessionId) noexcept;
-            bool isRunningMessageLoop() const noexcept;
-            bool isWaitingForDebugger() const noexcept;
-            void contextCreated(const V8LocalContext& v8Context) noexcept;
-            void contextDestroyed(const V8LocalContext& v8Context) noexcept;
-            void drainQueue() noexcept;
-            void postMessage(int sessionId, const std::string& message) noexcept;
             void consoleAPIMessage(
                 int contextGroupId,
                 v8::Isolate::MessageErrorLevel level,
@@ -82,7 +77,16 @@ namespace Javet {
                 unsigned lineNumber,
                 unsigned columnNumber,
                 v8_inspector::V8StackTrace*) override;
+            void contextCreated(const V8LocalContext& v8Context) noexcept;
+            void contextDestroyed(const V8LocalContext& v8Context) noexcept;
+            void drainQueue() noexcept;
+            void idleFinished() noexcept;
+            void idleStarted() noexcept;
+            bool isRunningMessageLoop() const noexcept;
+            bool isWaitingForDebugger() const noexcept;
+            void postMessage(int sessionId, const std::string& message) noexcept;
             void quitMessageLoopOnPause() override;
+            void removeSession(int sessionId) noexcept;
             void runIfWaitingForDebugger(int contextGroupId) override;
             void runMessageLoopOnPause(int contextGroupId) override;
             void waitForDebuggerLoop() noexcept;

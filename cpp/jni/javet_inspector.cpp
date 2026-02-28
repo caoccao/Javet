@@ -110,6 +110,14 @@ namespace Javet {
             v8Runtime->v8Isolate->PerformMicrotaskCheckpoint();
         }
 
+        void JavetInspector::idleFinished() noexcept {
+            client->idleFinished();
+        }
+
+        void JavetInspector::idleStarted() noexcept {
+            client->idleStarted();
+        }
+
         bool JavetInspector::isMessageLoopActive() const noexcept {
             return client->isRunningMessageLoop() || client->isWaitingForDebugger();
         }
@@ -225,6 +233,14 @@ namespace Javet {
 
         V8LocalContext JavetInspectorClient::ensureDefaultContextInGroup(int contextGroupId) {
             return v8Runtime->GetV8LocalContext();
+        }
+
+        void JavetInspectorClient::idleFinished() noexcept {
+            v8Inspector->idleFinished();
+        }
+
+        void JavetInspectorClient::idleStarted() noexcept {
+            v8Inspector->idleStarted();
         }
 
         bool JavetInspectorClient::isRunningMessageLoop() const noexcept {

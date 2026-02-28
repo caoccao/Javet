@@ -317,6 +317,9 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
         return false;
     }
     v8Runtime->Lock();
+    if (v8Runtime->v8Inspector) {
+        v8Runtime->v8Inspector->idleFinished();
+    }
     return true;
 }
 
@@ -488,6 +491,9 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runti
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     if (!v8Runtime->IsLocked()) {
         return false;
+    }
+    if (v8Runtime->v8Inspector) {
+        v8Runtime->v8Inspector->idleStarted();
     }
     v8Runtime->Unlock();
     return true;

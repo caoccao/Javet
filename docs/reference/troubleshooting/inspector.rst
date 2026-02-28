@@ -569,15 +569,6 @@ Session-Level API Exposure
 - ``state()`` — serialize session state for later reconnection.
 - ``wrapObject()`` / ``unwrapObject()`` — direct object remoting.
 
-Idle Notifications
-------------------
-
-**Priority**: Low
-
-**Risk**: Profiler accuracy.
-
-``idleStarted()`` / ``idleFinished()`` are never called on the ``V8Inspector`` instance. V8's CPU profiler uses these to distinguish idle time from active execution. Profiling results in DevTools will attribute idle time as active CPU time.
-
 Resource Name to URL Mapping
 -----------------------------
 

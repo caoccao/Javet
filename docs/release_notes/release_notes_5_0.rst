@@ -16,6 +16,7 @@ Release Notes 5.0.x
 * Migrated V8 inspector from deprecated ``v8Inspector->connect()`` to ``v8Inspector->connectShared()`` returning ``shared_ptr`` for safer concurrent session access
 * Removed cached ``V8Runtime.getV8Inspector()`` in favor of always creating new sessions via ``V8Runtime.createV8Inspector(name)``
 * Added console API message forwarding via ``IV8InspectorListener.consoleAPIMessage()`` so that ``console.log()``, ``console.warn()``, ``console.error()``, etc. are delivered to Java listeners without requiring ``Runtime.enable``
+* Added V8 idle notifications (``idleStarted()`` / ``idleFinished()``) tied to explicit ``lock()`` / ``unlock()`` so the CPU profiler can accurately distinguish idle time from active execution
 
 5.0.4
 -----
