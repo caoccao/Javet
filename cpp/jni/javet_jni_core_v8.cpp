@@ -508,9 +508,23 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterNearHea
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jstring mMessage) {
-    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE_WITH_UNIQUE_LOCKER(v8RuntimeHandle);
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     char const* umMessage = jniEnv->GetStringUTFChars(mMessage, nullptr);
     std::string message(umMessage, jniEnv->GetStringUTFLength(mMessage));
-    v8Runtime->v8Inspector->send(message);
     jniEnv->ReleaseStringUTFChars(mMessage, umMessage);
+    if (v8Runtime->v8Inspector) {
+        if (v8Runtime->v8Inspector->isPaused()) {
+            // V8 is paused at a breakpoint on another thread which holds the isolate lock.
+            // Just queue the message — no V8 lock needed.
+            v8Runtime->v8Inspector->send(message);
+        } else {
+            // Not paused — acquire the V8 lock and scope before dispatching.
+            auto v8Locker = v8Runtime->GetUniqueV8Locker();
+            auto v8IsolateScope = v8Runtime->GetV8IsolateScope();
+            V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
+            auto v8Context = v8Runtime->GetV8LocalContext();
+            auto v8ContextScope = v8Runtime->GetV8ContextScope(v8Context);
+            v8Runtime->v8Inspector->send(message);
+        }
+    }
 }

@@ -75,11 +75,21 @@ namespace Javet {
 
         void JavetInspector::send(const std::string& message) noexcept {
             LOG_DEBUG("Sending request: " << message);
-            auto stringViewMessagePointer = ConvertFromStdStringToStringViewPointer(message);
-            client->dispatchProtocolMessage(*stringViewMessagePointer.get());
-            // Pump microtasks so that promise-based responses
-            // (e.g., Runtime.evaluate with replMode/awaitPromise) are delivered immediately.
-            v8Runtime->v8Isolate->PerformMicrotaskCheckpoint();
+            if (client->isRunningMessageLoop()) {
+                // V8 is paused at a breakpoint. Queue the message for the pause loop
+                // to dispatch (avoids deadlock on the V8 isolate lock).
+                client->postMessage(message);
+            } else {
+                auto stringViewMessagePointer = ConvertFromStdStringToStringViewPointer(message);
+                client->dispatchProtocolMessage(*stringViewMessagePointer.get());
+                // Pump microtasks so that promise-based responses
+                // (e.g., Runtime.evaluate with replMode/awaitPromise) are delivered immediately.
+                v8Runtime->v8Isolate->PerformMicrotaskCheckpoint();
+            }
+        }
+
+        bool JavetInspector::isPaused() const noexcept {
+            return client->isRunningMessageLoop();
         }
 
         JavetInspector::~JavetInspector() {
@@ -117,8 +127,25 @@ namespace Javet {
             v8InspectorSession->dispatchProtocolMessage(message);
         }
 
+        V8LocalContext JavetInspectorClient::ensureDefaultContextInGroup(int contextGroupId) {
+            return v8Runtime->GetV8LocalContext();
+        }
+
+        bool JavetInspectorClient::isRunningMessageLoop() const noexcept {
+            return runningMessageLoop;
+        }
+
+        void JavetInspectorClient::postMessage(const std::string& message) noexcept {
+            {
+                std::lock_guard<std::mutex> lock(messageMutex);
+                messageQueue.push(message);
+            }
+            messageCondition.notify_one();
+        }
+
         void JavetInspectorClient::quitMessageLoopOnPause() {
             activateMessageLoop = false;
+            messageCondition.notify_one();
         }
 
         void JavetInspectorClient::runIfWaitingForDebugger(int contextGroupId) {
@@ -131,16 +158,31 @@ namespace Javet {
                 activateMessageLoop = true;
                 runningMessageLoop = true;
                 while (activateMessageLoop) {
+                    // Drain any queued protocol messages from the DevTools frontend.
+                    {
+                        std::unique_lock<std::mutex> lock(messageMutex);
+                        while (!messageQueue.empty()) {
+                            std::string message = std::move(messageQueue.front());
+                            messageQueue.pop();
+                            lock.unlock();
+                            auto sv = ConvertFromStdStringToStringViewPointer(message);
+                            v8InspectorSession->dispatchProtocolMessage(*sv);
+                            lock.lock();
+                        }
+                    }
+                    // Pump V8 platform tasks.
                     while (v8::platform::PumpMessageLoop(v8Runtime->v8PlatformPointer, v8Runtime->v8Isolate)) {
+                    }
+                    // Wait for new messages instead of busy-spinning.
+                    {
+                        std::unique_lock<std::mutex> lock(messageMutex);
+                        if (activateMessageLoop && messageQueue.empty()) {
+                            messageCondition.wait_for(lock, std::chrono::milliseconds(10));
+                        }
                     }
                 }
                 runningMessageLoop = false;
-                activateMessageLoop = false;
             }
-        }
-
-        V8LocalContext JavetInspectorClient::ensureDefaultContextInGroup(int contextGroupId) {
-            return v8Runtime->GetV8LocalContext();
         }
 
         JavetInspectorChannel::JavetInspectorChannel(V8Runtime* v8Runtime, const jobject mV8Inspector) noexcept {

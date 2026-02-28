@@ -17,7 +17,10 @@
 
 #pragma once
 
+#include <condition_variable>
 #include <jni.h>
+#include <mutex>
+#include <queue>
 #include "javet_v8_runtime.h"
 #include "javet_v8.h"
 
@@ -39,6 +42,7 @@ namespace Javet {
         class JavetInspector {
         public:
             JavetInspector(V8Runtime* v8Runtime, const jobject mV8Inspector) noexcept;
+            bool isPaused() const noexcept;
             void send(const std::string& message) noexcept;
             virtual ~JavetInspector();
         private:
@@ -53,16 +57,21 @@ namespace Javet {
                 V8Runtime* v8Runtime,
                 const std::string& name,
                 const jobject mV8Inspector) noexcept;
+            bool isRunningMessageLoop() const noexcept;
             void dispatchProtocolMessage(const v8_inspector::StringView& message) noexcept;
+            void postMessage(const std::string& message) noexcept;
             void quitMessageLoopOnPause() override;
             void runIfWaitingForDebugger(int contextGroupId) override;
             void runMessageLoopOnPause(int contextGroupId) override;
             virtual ~JavetInspectorClient() = default;
         private:
-            bool activateMessageLoop;
-            jobject mV8Inspector;
-            bool runningMessageLoop;
             V8Runtime* v8Runtime;
+            bool activateMessageLoop;
+            bool runningMessageLoop;
+            jobject mV8Inspector;
+            std::condition_variable messageCondition;
+            std::mutex messageMutex;
+            std::queue<std::string> messageQueue;
             std::unique_ptr<JavetInspectorChannel> javetInspectorChannel;
             std::unique_ptr<v8_inspector::V8Inspector> v8Inspector;
             std::unique_ptr<v8_inspector::V8InspectorSession> v8InspectorSession;

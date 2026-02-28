@@ -26,6 +26,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,6 +44,78 @@ public class TestV8Inspector extends BaseTestJavet {
     @BeforeEach
     public void beforeEach() {
         atomicInteger.set(0);
+    }
+
+    @Test
+    public void testBreakpointHitAndResume() throws JavetException, InterruptedException, JsonProcessingException {
+        if (isNode()) {
+            return;
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        CountDownLatch pausedLatch = new CountDownLatch(1);
+        CountDownLatch resumedLatch = new CountDownLatch(1);
+        // Listener that detects Debugger.paused and signals the latch.
+        MockV8InspectorListener listener = new MockV8InspectorListener() {
+            @Override
+            public void receiveNotification(String message) {
+                super.receiveNotification(message);
+                try {
+                    JsonNode node = objectMapper.readTree(message);
+                    if (node.has("method") && "Debugger.paused".equals(node.get("method").asText())) {
+                        pausedLatch.countDown();
+                    }
+                    if (node.has("method") && "Debugger.resumed".equals(node.get("method").asText())) {
+                        resumedLatch.countDown();
+                    }
+                } catch (JsonProcessingException e) {
+                    // ignore
+                }
+            }
+        };
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            V8Inspector v8Inspector = v8Runtime.getV8Inspector();
+            assertNotNull(v8Inspector);
+            v8Inspector.addListeners(listener);
+            // Enable debugger and set breakpoint on line 2 of the script.
+            v8Inspector.sendRequest("{\"id\":1,\"method\":\"Debugger.enable\"}");
+            // Set breakpoint on line 1 (0-based) of a script that will be compiled with URL "test.js".
+            v8Inspector.sendRequest("{\"id\":2,\"method\":\"Debugger.setBreakpointByUrl\",\"params\":{\"lineNumber\":1,\"url\":\"test.js\",\"columnNumber\":0,\"condition\":\"\"}}");
+            // Execute JavaScript on a separate thread because execution will pause at the breakpoint.
+            Thread executionThread = new Thread(() -> {
+                try {
+                    // Line 0: const x = 1;
+                    // Line 1: const y = x + 2;  <-- breakpoint here
+                    // Line 2: const z = y + 3;
+                    v8Runtime.getExecutor("const x = 1;\nconst y = x + 2;\nconst z = y + 3;")
+                            .setResourceName("test.js")
+                            .executeVoid();
+                } catch (JavetException e) {
+                    e.printStackTrace(System.err);
+                    fail("Execution should not throw exception.");
+                }
+            });
+            executionThread.start();
+            // Wait for the Debugger.paused notification.
+            assertTrue(pausedLatch.await(5, TimeUnit.SECONDS), "Should receive Debugger.paused notification");
+            // Verify the paused notification contains breakpoint hit reason.
+            boolean foundPausedNotification = false;
+            for (String notification : listener.getNotifications()) {
+                JsonNode node = objectMapper.readTree(notification);
+                if (node.has("method") && "Debugger.paused".equals(node.get("method").asText())) {
+                    foundPausedNotification = true;
+                    assertTrue(node.has("params"));
+                    break;
+                }
+            }
+            assertTrue(foundPausedNotification, "Debugger.paused notification should be present");
+            // Send Debugger.resume from this thread (while V8 is paused on the execution thread).
+            v8Inspector.sendRequest("{\"id\":3,\"method\":\"Debugger.resume\"}");
+            // Wait for execution to complete (it should resume after our resume command).
+            executionThread.join(5000);
+            assertFalse(executionThread.isAlive(), "Execution thread should have completed after resume");
+            // Verify that Debugger.resumed notification was received.
+            assertTrue(resumedLatch.await(5, TimeUnit.SECONDS), "Should receive Debugger.resumed notification");
+        }
     }
 
     @Test
@@ -84,7 +158,6 @@ public class TestV8Inspector extends BaseTestJavet {
             assertEquals("number", jsonNodeResultResult.get("type").asText());
             assertTrue(jsonNodeResultResult.has("value"));
             assertEquals(3, jsonNodeResultResult.get("value").asInt());
-
         }
         assertEquals(atomicInteger.get(), listener.getResponses().size());
     }
