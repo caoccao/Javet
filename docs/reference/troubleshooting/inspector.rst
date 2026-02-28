@@ -11,12 +11,12 @@ Javet exposes the `Chrome DevTools Protocol <https://chromedevtools.github.io/de
 Getting Started
 ===============
 
-The entry point is ``V8Inspector``, obtained from a ``V8Runtime``. You register one or more ``IV8InspectorListener`` implementations to receive protocol responses and notifications, then send CDP requests as JSON strings.
+The entry point is ``V8Inspector``, obtained from a ``V8Runtime``. You register one or more ``IV8InspectorListener`` implementations to receive protocol responses and notifications, then send CDP requests as JSON strings. A single ``V8Runtime`` can host multiple independent inspector sessions — see `Multiple Inspector Sessions`_ for details.
 
 .. code-block:: java
 
-    try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-        V8Inspector v8Inspector = v8Runtime.getV8Inspector();
+    try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+         V8Inspector v8Inspector = v8Runtime.createV8Inspector("inspector")) {
         v8Inspector.addListeners(new IV8InspectorListener() {
             @Override
             public void flushProtocolNotifications() { }
@@ -71,8 +71,8 @@ Javet pumps the V8 microtask queue after dispatching each protocol message, so p
 
 .. code-block:: java
 
-    try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-        V8Inspector v8Inspector = v8Runtime.getV8Inspector();
+    try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+         V8Inspector v8Inspector = v8Runtime.createV8Inspector("inspector")) {
         List<String> responses = new ArrayList<>();
         v8Inspector.addListeners(new IV8InspectorListener() {
             @Override public void flushProtocolNotifications() { }
@@ -138,8 +138,8 @@ When V8 is paused, Javet routes incoming protocol messages through a thread-safe
         }
     };
 
-    try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-        V8Inspector v8Inspector = v8Runtime.getV8Inspector();
+    try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+         V8Inspector v8Inspector = v8Runtime.createV8Inspector("inspector")) {
         v8Inspector.addListeners(listener);
 
         // 1. Enable the Debugger domain.
@@ -233,8 +233,8 @@ Use the ``Profiler`` domain to collect CPU profiling data.
 
 .. code-block:: java
 
-    try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-        V8Inspector v8Inspector = v8Runtime.getV8Inspector();
+    try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+         V8Inspector v8Inspector = v8Runtime.createV8Inspector("inspector")) {
         // ... add listener to capture responses ...
 
         // Enable the Profiler domain.
@@ -262,8 +262,8 @@ Use the ``HeapProfiler`` domain to take heap snapshots for memory analysis.
 
 .. code-block:: java
 
-    try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-        V8Inspector v8Inspector = v8Runtime.getV8Inspector();
+    try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+         V8Inspector v8Inspector = v8Runtime.createV8Inspector("inspector")) {
         StringBuilder heapSnapshot = new StringBuilder();
         v8Inspector.addListeners(new IV8InspectorListener() {
             @Override public void flushProtocolNotifications() { }
@@ -305,8 +305,8 @@ Use the ``Profiler`` domain to collect precise code coverage data, useful for id
 
 .. code-block:: java
 
-    try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-        V8Inspector v8Inspector = v8Runtime.getV8Inspector();
+    try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+         V8Inspector v8Inspector = v8Runtime.createV8Inspector("inspector")) {
         // ... add listener to capture responses ...
 
         // Enable Profiler and start precise coverage.
@@ -340,16 +340,16 @@ You can add and remove listeners dynamically. Multiple listeners receive the sam
 
 .. code-block:: java
 
-    V8Inspector v8Inspector = v8Runtime.getV8Inspector();
+    try (V8Inspector v8Inspector = v8Runtime.createV8Inspector("inspector")) {
+        IV8InspectorListener listener1 = new MyListener();
+        IV8InspectorListener listener2 = new MyListener();
 
-    IV8InspectorListener listener1 = new MyListener();
-    IV8InspectorListener listener2 = new MyListener();
+        // Add multiple listeners.
+        v8Inspector.addListeners(listener1, listener2);
 
-    // Add multiple listeners.
-    v8Inspector.addListeners(listener1, listener2);
-
-    // Remove a specific listener.
-    v8Inspector.removeListeners(listener1);
+        // Remove a specific listener.
+        v8Inspector.removeListeners(listener1);
+    }
 
 Custom Logger
 =============
@@ -358,21 +358,79 @@ The inspector uses the ``V8Runtime`` logger by default. You can replace it with 
 
 .. code-block:: java
 
-    V8Inspector v8Inspector = v8Runtime.getV8Inspector();
-    v8Inspector.setLogger(myCustomLogger);
+    try (V8Inspector v8Inspector = v8Runtime.createV8Inspector("inspector")) {
+        v8Inspector.setLogger(myCustomLogger);
+    }
 
 Named Inspector
 ===============
 
-You can provide a custom name for the inspector, which appears in the DevTools context selector.
+You can provide a custom name for the inspector, which appears in the DevTools context selector. Pass any name you like to ``createV8Inspector()``.
 
 .. code-block:: java
 
-    // Default name is "Javet Inspector <handle>".
-    V8Inspector v8Inspector = v8Runtime.getV8Inspector();
+    // Pass any name you want.
+    try (V8Inspector v8Inspector = v8Runtime.createV8Inspector("My Application")) {
+        // ...
+    }
 
-    // Custom name.
-    V8Inspector v8Inspector = v8Runtime.getV8Inspector("My Application");
+Multiple Inspector Sessions
+===========================
+
+A single ``V8Runtime`` can host multiple inspector sessions simultaneously, allowing several DevTools clients (or independent Java listeners) to connect at the same time. Each session has its own ``V8InspectorSession`` and ``Channel`` on the C++ side, so responses and notifications are routed independently.
+
+Every call to ``V8Runtime.createV8Inspector()`` creates a new independent session. Each returned ``V8Inspector`` has a unique ``sessionId``. Sessions implement ``IJavetClosable`` and can be closed individually without affecting other sessions.
+
+.. code-block:: java
+
+    try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+         V8Inspector session1 = v8Runtime.createV8Inspector("session-1");
+         V8Inspector session2 = v8Runtime.createV8Inspector("session-2")) {
+        v8Runtime.getExecutor("const a = 10; const b = 20;").executeVoid();
+
+        session1.addListeners(listener1);
+        session2.addListeners(listener2);
+
+        // Enable Runtime on both.
+        session1.sendRequest("{\"id\":1,\"method\":\"Runtime.enable\"}");
+        session2.sendRequest("{\"id\":1,\"method\":\"Runtime.enable\"}");
+
+        // Evaluate on session 1 — only listener1 receives the response.
+        session1.sendRequest(
+            "{\"id\":2,\"method\":\"Runtime.evaluate\","
+            + "\"params\":{\"expression\":\"a\",\"replMode\":true}}");
+
+        // Evaluate on session 2 — only listener2 receives the response.
+        session2.sendRequest(
+            "{\"id\":2,\"method\":\"Runtime.evaluate\","
+            + "\"params\":{\"expression\":\"b\",\"replMode\":true}}");
+    }
+
+.. tip::
+
+    Every call to ``createV8Inspector()`` creates a new independent session. This makes it easy to connect multiple DevTools frontends, or run a logging session alongside a debugging session.
+
+Breakpoints with Multiple Sessions
+-----------------------------------
+
+When multiple sessions have ``Debugger.enable`` active, all sessions receive ``Debugger.paused`` notifications when a breakpoint is hit. Any session can send ``Debugger.resume`` to resume execution.
+
+.. code-block:: java
+
+    try (V8Inspector debugSession = v8Runtime.createV8Inspector("debugger");
+         V8Inspector logSession = v8Runtime.createV8Inspector("logger")) {
+        debugSession.sendRequest("{\"id\":1,\"method\":\"Debugger.enable\"}");
+        logSession.sendRequest("{\"id\":1,\"method\":\"Debugger.enable\"}");
+
+        // Set breakpoint on the debug session.
+        debugSession.sendRequest(
+            "{\"id\":2,\"method\":\"Debugger.setBreakpointByUrl\","
+            + "\"params\":{\"lineNumber\":1,\"url\":\"app.js\"}}");
+
+        // When the breakpoint is hit, BOTH sessions receive Debugger.paused.
+        // Resume from either session.
+        logSession.sendRequest("{\"id\":2,\"method\":\"Debugger.resume\"}");
+    }
 
 Break on Start (Wait for Debugger)
 ==================================
@@ -398,9 +456,8 @@ The calling thread blocks inside ``waitForDebugger()`` in a message-pumping loop
         }
     };
 
-    try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-        // Create inspector with waitForDebugger=true.
-        V8Inspector v8Inspector = v8Runtime.getV8Inspector("my-app", true);
+    try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+         V8Inspector v8Inspector = v8Runtime.createV8Inspector("my-app", true)) {
         v8Inspector.addListeners(listener);
 
         // Execute JavaScript on a separate thread.
@@ -484,24 +541,6 @@ Console API Message Forwarding
 **Risk**: Console output lost.
 
 ``V8InspectorClient::consoleAPIMessage()`` is never overridden. This means ``console.log()``, ``console.warn()``, ``console.error()``, etc. issued from JavaScript are not forwarded to Java listeners. DevTools relies on this callback to populate the Console panel. Without it, console output is only available through protocol-level ``Runtime.consoleAPICalled`` events (which requires ``Runtime.enable`` first).
-
-Multiple Inspector Sessions
-----------------------------
-
-**Priority**: High
-
-**Risk**: Cannot support multiple DevTools clients.
-
-The implementation creates exactly one ``V8InspectorSession`` in the constructor and stores it as a ``unique_ptr``. The V8 API supports multiple concurrent sessions (multiple DevTools frontends connecting simultaneously). There is no way to create additional sessions or disconnect/reconnect without destroying the entire inspector.
-
-Migrate to connectShared()
---------------------------
-
-**Priority**: Medium
-
-**Risk**: Deprecated API may be removed in a future V8 version.
-
-The code uses the deprecated ``v8Inspector->connect()`` returning ``unique_ptr``. V8 recommends ``connectShared()`` returning ``shared_ptr``, which allows safer concurrent access to the session.
 
 Context Origin and Auxiliary Data
 ---------------------------------

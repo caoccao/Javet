@@ -99,10 +99,16 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
     INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteV8Runtime);
 }
 
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Inspector
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mV8Inspector, jboolean waitForDebugger) {
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Inspector
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mV8Inspector, jstring mName, jboolean waitForDebugger) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    v8Runtime->v8Inspector.reset(new Javet::Inspector::JavetInspector(v8Runtime, mV8Inspector, waitForDebugger));
+    if (!v8Runtime->v8Inspector) {
+        char const* umName = jniEnv->GetStringUTFChars(mName, nullptr);
+        std::string name(umName, jniEnv->GetStringUTFLength(mName));
+        jniEnv->ReleaseStringUTFChars(mName, umName);
+        v8Runtime->v8Inspector.reset(new Javet::Inspector::JavetInspector(v8Runtime, name));
+    }
+    return v8Runtime->v8Inspector->addSession(mV8Inspector, waitForDebugger);
 }
 
 /*
@@ -507,7 +513,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterNearHea
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jstring mMessage) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId, jstring mMessage) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     char const* umMessage = jniEnv->GetStringUTFChars(mMessage, nullptr);
     std::string message(umMessage, jniEnv->GetStringUTFLength(mMessage));
@@ -521,7 +527,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
         // V8's Locker is reentrant, so the lock-acquire path is also safe
         // when called from a thread that already holds the lock (e.g.
         // during a JS→Java callback).
-        v8Runtime->v8Inspector->postMessage(message);
+        v8Runtime->v8Inspector->postMessage(sessionId, message);
         if (!v8Runtime->v8Inspector->isMessageLoopActive()) {
             auto v8Locker = v8Runtime->GetUniqueV8Locker();
             auto v8IsolateScope = v8Runtime->GetV8IsolateScope();
@@ -530,6 +536,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
             auto v8ContextScope = v8Runtime->GetV8ContextScope(v8Context);
             v8Runtime->v8Inspector->drainQueue();
         }
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorCloseSession
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    if (v8Runtime->v8Inspector) {
+        v8Runtime->v8Inspector->removeSession(sessionId);
     }
 }
 

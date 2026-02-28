@@ -72,8 +72,8 @@ public class TestV8Inspector extends BaseTestJavet {
                 }
             }
         };
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-            V8Inspector v8Inspector = v8Runtime.getV8Inspector();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+             V8Inspector v8Inspector = v8Runtime.createV8Inspector("bp-test")) {
             assertNotNull(v8Inspector);
             v8Inspector.addListeners(listener);
             // Enable debugger and set breakpoint on line 2 of the script.
@@ -149,33 +149,77 @@ public class TestV8Inspector extends BaseTestJavet {
                         }
                     }
                 };
-                V8Inspector v8Inspector = v8Runtime.getV8Inspector();
-                v8Inspector.addListeners(listener);
-                int baseId = cycle * 10;
-                v8Inspector.sendRequest("{\"id\":" + (baseId + 1) + ",\"method\":\"Debugger.enable\"}");
-                v8Inspector.sendRequest("{\"id\":" + (baseId + 2) + ",\"method\":\"Debugger.setBreakpointByUrl\","
-                        + "\"params\":{\"lineNumber\":1,\"url\":\"cycle" + cycle + ".js\",\"columnNumber\":0,\"condition\":\"\"}}");
-                final int c = cycle;
-                Thread executionThread = new Thread(() -> {
-                    try {
-                        v8Runtime.getExecutor("const x" + c + " = 1;\nconst y" + c + " = 2;\nconst z" + c + " = 3;")
-                                .setResourceName("cycle" + c + ".js")
-                                .executeVoid();
-                    } catch (JavetException e) {
-                        fail("Execution should not throw: " + e.getMessage());
-                    }
-                });
-                executionThread.start();
-                assertTrue(pausedLatch.await(5, TimeUnit.SECONDS),
-                        "Cycle " + cycle + ": should receive Debugger.paused");
-                v8Inspector.sendRequest("{\"id\":" + (baseId + 3) + ",\"method\":\"Debugger.resume\"}");
-                executionThread.join(5000);
-                assertFalse(executionThread.isAlive(),
-                        "Cycle " + cycle + ": execution thread should have completed");
-                assertTrue(resumedLatch.await(5, TimeUnit.SECONDS),
-                        "Cycle " + cycle + ": should receive Debugger.resumed");
-                v8Inspector.sendRequest("{\"id\":" + (baseId + 4) + ",\"method\":\"Debugger.disable\"}");
-                v8Inspector.removeListeners(listener);
+                try (V8Inspector v8Inspector = v8Runtime.createV8Inspector("bp-cycle-" + cycle)) {
+                    v8Inspector.addListeners(listener);
+                    int baseId = cycle * 10;
+                    v8Inspector.sendRequest("{\"id\":" + (baseId + 1) + ",\"method\":\"Debugger.enable\"}");
+                    v8Inspector.sendRequest("{\"id\":" + (baseId + 2) + ",\"method\":\"Debugger.setBreakpointByUrl\","
+                            + "\"params\":{\"lineNumber\":1,\"url\":\"cycle" + cycle + ".js\",\"columnNumber\":0,\"condition\":\"\"}}");
+                    final int c = cycle;
+                    Thread executionThread = new Thread(() -> {
+                        try {
+                            v8Runtime.getExecutor("const x" + c + " = 1;\nconst y" + c + " = 2;\nconst z" + c + " = 3;")
+                                    .setResourceName("cycle" + c + ".js")
+                                    .executeVoid();
+                        } catch (JavetException e) {
+                            fail("Execution should not throw: " + e.getMessage());
+                        }
+                    });
+                    executionThread.start();
+                    assertTrue(pausedLatch.await(5, TimeUnit.SECONDS),
+                            "Cycle " + cycle + ": should receive Debugger.paused");
+                    v8Inspector.sendRequest("{\"id\":" + (baseId + 3) + ",\"method\":\"Debugger.resume\"}");
+                    executionThread.join(5000);
+                    assertFalse(executionThread.isAlive(),
+                            "Cycle " + cycle + ": execution thread should have completed");
+                    assertTrue(resumedLatch.await(5, TimeUnit.SECONDS),
+                            "Cycle " + cycle + ": should receive Debugger.resumed");
+                    v8Inspector.sendRequest("{\"id\":" + (baseId + 4) + ",\"method\":\"Debugger.disable\"}");
+                    v8Inspector.removeListeners(listener);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testCloseSession() throws JavetException, InterruptedException, JsonProcessingException, TimeoutException {
+        // Verify that closing one session does not affect other sessions.
+        if (isNode()) {
+            return;
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        MockV8InspectorListener listener1 = new MockV8InspectorListener();
+        MockV8InspectorListener listener2 = new MockV8InspectorListener();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            v8Runtime.getExecutor("const val = 99;").executeVoid();
+            try (V8Inspector session1 = v8Runtime.createV8Inspector("close-test-1");
+                 V8Inspector session2 = v8Runtime.createV8Inspector("close-test-2")) {
+                session1.addListeners(listener1);
+                session2.addListeners(listener2);
+                // Verify both work.
+                session1.sendRequest("{\"id\":1,\"method\":\"Runtime.enable\"}");
+                session2.sendRequest("{\"id\":1,\"method\":\"Runtime.enable\"}");
+                runAndWait(1000, () -> listener1.getResponses().size() >= 1);
+                runAndWait(1000, () -> listener2.getResponses().size() >= 1);
+                // Close session 1.
+                session1.close();
+                assertTrue(session1.isClosed());
+                assertFalse(session2.isClosed());
+                // Session 2 should still work.
+                listener2.getResponses().clear();
+                session2.sendRequest("{\"id\":2,\"method\":\"Runtime.evaluate\","
+                        + "\"params\":{\"expression\":\"val\",\"replMode\":true}}");
+                runAndWait(1000, () -> listener2.getResponses().size() >= 1);
+                JsonNode resp = objectMapper.readTree(listener2.getResponses().get(0));
+                assertEquals(99, resp.get("result").get("result").get("value").asInt(),
+                        "Session 2 should still evaluate correctly after session 1 is closed");
+                // Sending on closed session should be silently ignored.
+                int prevSize = listener1.getResponses().size();
+                session1.sendRequest("{\"id\":99,\"method\":\"Runtime.evaluate\","
+                        + "\"params\":{\"expression\":\"1+1\"}}");
+                Thread.sleep(200);
+                assertEquals(prevSize, listener1.getResponses().size(),
+                        "Closed session should not receive responses");
             }
         }
     }
@@ -189,8 +233,8 @@ public class TestV8Inspector extends BaseTestJavet {
             return;
         }
         MockV8InspectorListener listener = new MockV8InspectorListener();
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-            V8Inspector v8Inspector = v8Runtime.getV8Inspector();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+             V8Inspector v8Inspector = v8Runtime.createV8Inspector("ctx-reset")) {
             v8Inspector.addListeners(listener);
             // Evaluate a variable in the original context.
             v8Runtime.getExecutor("const a = 10;").executeVoid();
@@ -226,9 +270,8 @@ public class TestV8Inspector extends BaseTestJavet {
             return;
         }
         MockV8InspectorListener listener = new MockV8InspectorListener();
-        V8Inspector v8Inspector;
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-            v8Inspector = v8Runtime.getV8Inspector();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+             V8Inspector v8Inspector = v8Runtime.createV8Inspector("eval-test")) {
             assertNotNull(v8Inspector);
             v8Inspector.addListeners(listener);
             Thread thread = new Thread(() -> {
@@ -264,6 +307,131 @@ public class TestV8Inspector extends BaseTestJavet {
     }
 
     @Test
+    public void testMultipleInspectorSessions() throws JavetException, InterruptedException, JsonProcessingException, TimeoutException {
+        // Verify that two independent sessions on the same runtime each receive
+        // their own responses and can evaluate independently.
+        if (isNode()) {
+            return;
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        MockV8InspectorListener listener1 = new MockV8InspectorListener();
+        MockV8InspectorListener listener2 = new MockV8InspectorListener();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            v8Runtime.getExecutor("const a = 10; const b = 20;").executeVoid();
+            // Create two independent sessions.
+            try (V8Inspector session1 = v8Runtime.createV8Inspector("session-1");
+                 V8Inspector session2 = v8Runtime.createV8Inspector("session-2")) {
+                assertNotNull(session1);
+                assertNotNull(session2);
+                assertNotSame(session1, session2);
+                assertTrue(session1.getSessionId() != session2.getSessionId(),
+                        "Sessions should have different IDs");
+                session1.addListeners(listener1);
+                session2.addListeners(listener2);
+                // Enable Runtime on both sessions.
+                session1.sendRequest("{\"id\":1,\"method\":\"Runtime.enable\"}");
+                session2.sendRequest("{\"id\":1,\"method\":\"Runtime.enable\"}");
+                // Evaluate "a" on session 1.
+                session1.sendRequest("{\"id\":2,\"method\":\"Runtime.evaluate\","
+                        + "\"params\":{\"expression\":\"a\",\"replMode\":true}}");
+                runAndWait(1000, () -> listener1.getResponses().size() >= 2);
+                // Evaluate "b" on session 2.
+                session2.sendRequest("{\"id\":2,\"method\":\"Runtime.evaluate\","
+                        + "\"params\":{\"expression\":\"b\",\"replMode\":true}}");
+                runAndWait(1000, () -> listener2.getResponses().size() >= 2);
+                // Verify session 1 got value 10 (a).
+                JsonNode resp1 = objectMapper.readTree(listener1.getResponses().get(1));
+                assertEquals(10, resp1.get("result").get("result").get("value").asInt(),
+                        "Session 1 should evaluate 'a' = 10");
+                // Verify session 2 got value 20 (b).
+                JsonNode resp2 = objectMapper.readTree(listener2.getResponses().get(1));
+                assertEquals(20, resp2.get("result").get("result").get("value").asInt(),
+                        "Session 2 should evaluate 'b' = 20");
+                // Verify responses are independent (session 1 doesn't have session 2's responses).
+                assertEquals(2, listener1.getResponses().size(),
+                        "Session 1 should only have its own responses");
+                assertEquals(2, listener2.getResponses().size(),
+                        "Session 2 should only have its own responses");
+            }
+        }
+    }
+
+    @Test
+    public void testMultipleSessionsBreakpoint() throws JavetException, InterruptedException, JsonProcessingException {
+        // Verify that when two sessions both enable the debugger and one sets a breakpoint,
+        // both sessions see the Debugger.paused notification when the breakpoint is hit.
+        if (isNode()) {
+            return;
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        CountDownLatch pausedLatch1 = new CountDownLatch(1);
+        CountDownLatch pausedLatch2 = new CountDownLatch(1);
+        CountDownLatch completedLatch = new CountDownLatch(1);
+        MockV8InspectorListener listener1 = new MockV8InspectorListener() {
+            @Override
+            public void receiveNotification(String message) {
+                super.receiveNotification(message);
+                try {
+                    JsonNode node = objectMapper.readTree(message);
+                    if (node.has("method") && "Debugger.paused".equals(node.get("method").asText())) {
+                        pausedLatch1.countDown();
+                    }
+                } catch (JsonProcessingException e) {
+                    // ignore
+                }
+            }
+        };
+        MockV8InspectorListener listener2 = new MockV8InspectorListener() {
+            @Override
+            public void receiveNotification(String message) {
+                super.receiveNotification(message);
+                try {
+                    JsonNode node = objectMapper.readTree(message);
+                    if (node.has("method") && "Debugger.paused".equals(node.get("method").asText())) {
+                        pausedLatch2.countDown();
+                    }
+                } catch (JsonProcessingException e) {
+                    // ignore
+                }
+            }
+        };
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+             V8Inspector session1 = v8Runtime.createV8Inspector("multi-bp-1");
+             V8Inspector session2 = v8Runtime.createV8Inspector("multi-bp-2")) {
+            session1.addListeners(listener1);
+            session2.addListeners(listener2);
+            // Enable debugger on both sessions.
+            session1.sendRequest("{\"id\":1,\"method\":\"Debugger.enable\"}");
+            session2.sendRequest("{\"id\":1,\"method\":\"Debugger.enable\"}");
+            // Set breakpoint via session 1 only.
+            session1.sendRequest("{\"id\":2,\"method\":\"Debugger.setBreakpointByUrl\","
+                    + "\"params\":{\"lineNumber\":1,\"url\":\"multi-bp.js\",\"columnNumber\":0,\"condition\":\"\"}}");
+            Thread executionThread = new Thread(() -> {
+                try {
+                    v8Runtime.getExecutor("const x = 1;\nconst y = 2;\nconst z = 3;")
+                            .setResourceName("multi-bp.js")
+                            .executeVoid();
+                    completedLatch.countDown();
+                } catch (JavetException e) {
+                    fail("Execution should not throw: " + e.getMessage());
+                }
+            });
+            executionThread.start();
+            // Both sessions should see Debugger.paused.
+            assertTrue(pausedLatch1.await(5, TimeUnit.SECONDS),
+                    "Session 1 should see Debugger.paused");
+            assertTrue(pausedLatch2.await(5, TimeUnit.SECONDS),
+                    "Session 2 should see Debugger.paused");
+            // Resume from session 2.
+            session2.sendRequest("{\"id\":2,\"method\":\"Debugger.resume\"}");
+            assertTrue(completedLatch.await(5, TimeUnit.SECONDS),
+                    "Execution should complete after resume");
+            executionThread.join(5000);
+            assertFalse(executionThread.isAlive());
+        }
+    }
+
+    @Test
     public void testWaitForDebugger() throws JavetException, InterruptedException, JsonProcessingException {
         // Verify that an inspector created with waitForDebugger=true blocks execution
         // until Runtime.runIfWaitingForDebugger is sent, and that the
@@ -281,9 +449,9 @@ public class TestV8Inspector extends BaseTestJavet {
                 waitingLatch.countDown();
             }
         };
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-            // Create inspector with waitForDebugger=true.
-            V8Inspector v8Inspector = v8Runtime.getV8Inspector("test-wait", true);
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+             // Create inspector with waitForDebugger=true.
+             V8Inspector v8Inspector = v8Runtime.createV8Inspector("test-wait", true)) {
             assertNotNull(v8Inspector);
             v8Inspector.addListeners(listener);
             // On a separate thread: wait for debugger, then execute JavaScript.
@@ -358,8 +526,8 @@ public class TestV8Inspector extends BaseTestJavet {
                 }
             }
         };
-        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-            V8Inspector v8Inspector = v8Runtime.getV8Inspector("test-wait-bp", true);
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+             V8Inspector v8Inspector = v8Runtime.createV8Inspector("test-wait-bp", true)) {
             v8Inspector.addListeners(listener);
             Thread executionThread = new Thread(() -> {
                 try {

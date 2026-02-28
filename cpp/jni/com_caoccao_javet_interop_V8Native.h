@@ -162,10 +162,10 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_contextSetLen
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    createV8Inspector
- * Signature: (JLjava/lang/Object;Z)V
+ * Signature: (JLjava/lang/Object;Ljava/lang/String;Z)I
  */
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Inspector
-  (JNIEnv *, jobject, jlong, jobject, jboolean);
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Inspector
+  (JNIEnv *, jobject, jlong, jobject, jstring, jboolean);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -1586,10 +1586,18 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterNearHea
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    v8InspectorSend
- * Signature: (JLjava/lang/String;)V
+ * Signature: (JILjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
-  (JNIEnv *, jobject, jlong, jstring);
+  (JNIEnv *, jobject, jlong, jint, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    v8InspectorCloseSession
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorCloseSession
+  (JNIEnv *, jobject, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

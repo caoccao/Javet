@@ -10,7 +10,11 @@ Release Notes 5.0.x
 * Fixed V8 inspector breakpoints not being hit by enabling protocol message dispatch inside the pause message loop
 * Fixed V8 inspector not notifying ``contextDestroyed`` / ``contextCreated`` on context reset, preventing stale context references
 * Fixed V8 inspector pause flag (``runningMessageLoop``) to use ``std::atomic<bool>`` for correct cross-thread visibility on ARM/Android
-* Added "break on start" support via ``V8Runtime.getV8Inspector(name, waitForDebugger)`` and ``V8Inspector.waitForDebugger()`` using V8's ``kWaitingForDebugger`` session state
+* Added "break on start" support via ``V8Runtime.createV8Inspector(name, waitForDebugger)`` and ``V8Inspector.waitForDebugger()`` using V8's ``kWaitingForDebugger`` session state
+* Added multiple inspector sessions support via ``V8Runtime.createV8Inspector()`` allowing multiple DevTools clients to connect to the same runtime simultaneously, with per-session message routing, independent ``V8Inspector`` lifecycle (``IJavetClosable``), and ``close()`` for graceful session disconnect
+* Changed ``V8Inspector`` to implement ``IJavetClosable`` instead of ``AutoCloseable``
+* Migrated V8 inspector from deprecated ``v8Inspector->connect()`` to ``v8Inspector->connectShared()`` returning ``shared_ptr`` for safer concurrent session access
+* Removed cached ``V8Runtime.getV8Inspector()`` in favor of always creating new sessions via ``V8Runtime.createV8Inspector(name)``
 
 5.0.4
 -----
