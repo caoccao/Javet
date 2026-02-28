@@ -1585,11 +1585,19 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterNearHea
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
- * Method:    v8InspectorSend
- * Signature: (JILjava/lang/String;)V
+ * Method:    v8InspectorBreakProgram
+ * Signature: (JILjava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
-  (JNIEnv *, jobject, jlong, jint, jstring);
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorBreakProgram
+  (JNIEnv *, jobject, jlong, jint, jstring, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    v8InspectorCancelPauseOnNextStatement
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorCancelPauseOnNextStatement
+  (JNIEnv *, jobject, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
@@ -1598,6 +1606,38 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorCloseSession
   (JNIEnv *, jobject, jlong, jint);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    v8InspectorEvaluate
+ * Signature: (JILjava/lang/String;Z)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorEvaluate
+  (JNIEnv *, jobject, jlong, jint, jstring, jboolean);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    v8InspectorSchedulePauseOnNextStatement
+ * Signature: (JILjava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSchedulePauseOnNextStatement
+  (JNIEnv *, jobject, jlong, jint, jstring, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    v8InspectorSend
+ * Signature: (JILjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
+  (JNIEnv *, jobject, jlong, jint, jstring);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    v8InspectorSetSkipAllPauses
+ * Signature: (JIZ)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSetSkipAllPauses
+  (JNIEnv *, jobject, jlong, jint, jboolean);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native

@@ -556,6 +556,136 @@ The V8 Inspector in Javet has a specific threading model that you need to unders
 
     Calling ``sendRequest()`` from the same thread that is executing JavaScript while paused will deadlock. Always use a separate thread for sending debugger commands during a pause.
 
+Direct Session API
+==================
+
+In addition to the CDP JSON protocol (``sendRequest`` / ``receiveResponse``), ``V8Inspector`` exposes several ``V8InspectorSession`` methods directly. These avoid the overhead of JSON serialization and give the embedder programmatic control over debugging without constructing protocol messages.
+
+.. list-table::
+    :header-rows: 1
+    :widths: 35 65
+
+    * - Method
+      - Description
+    * - ``schedulePauseOnNextStatement(String breakReason, String breakDetails)``
+      - Schedules a pause on the next JavaScript statement. The pause fires asynchronously — V8 will trigger a ``Debugger.paused`` notification the next time it is about to execute a statement. Use this for programmatic "break on next" functionality.
+    * - ``cancelPauseOnNextStatement()``
+      - Cancels a previously scheduled pause before it fires.
+    * - ``breakProgram(String breakReason, String breakDetails)``
+      - Forces an immediate break (pause). Unlike ``schedulePauseOnNextStatement()``, this breaks immediately and must be called while V8 is executing JavaScript (e.g., from a Java callback invoked by JS).
+    * - ``setSkipAllPauses(boolean skip)``
+      - Temporarily disables all breakpoints without removing them. Call ``setSkipAllPauses(false)`` to re-enable pausing.
+    * - ``evaluate(String expression, boolean includeCommandLineAPI)``
+      - Evaluates a JavaScript expression directly through the inspector session, returning a Javet ``V8Value``. This bypasses CDP JSON serialization and is faster than ``Runtime.evaluate`` via ``sendRequest()``. The returned value must be closed when no longer needed (if it is a reference type).
+
+Programmatic Pause
+------------------
+
+Use ``schedulePauseOnNextStatement()`` to pause V8 on the next JavaScript statement without setting a breakpoint at a specific source location. This is useful for "break on next" scenarios.
+
+.. code-block:: java
+
+    try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+         V8Inspector v8Inspector = v8Runtime.createV8Inspector("pause-test")) {
+        v8Inspector.addListeners(new IV8InspectorListener() { /* ... */ });
+        v8Inspector.sendRequest("{\"id\":1,\"method\":\"Debugger.enable\"}");
+
+        // Schedule a pause — the next JS statement will trigger Debugger.paused.
+        v8Inspector.schedulePauseOnNextStatement("ambiguous", "{}");
+
+        // Execute on another thread (execution will pause immediately).
+        Thread executionThread = new Thread(() -> {
+            v8Runtime.getExecutor("const x = 1; const y = 2;").executeVoid();
+        });
+        executionThread.start();
+        // ... wait for Debugger.paused, then resume via sendRequest.
+    }
+
+To cancel a scheduled pause before it fires:
+
+.. code-block:: java
+
+    v8Inspector.schedulePauseOnNextStatement("ambiguous", "{}");
+    // Changed our mind — cancel the pause.
+    v8Inspector.cancelPauseOnNextStatement();
+
+Immediate Break (breakProgram)
+------------------------------
+
+Use ``breakProgram()`` to force an immediate pause from inside a Java callback that is being invoked by JavaScript. Unlike ``schedulePauseOnNextStatement()``, this breaks synchronously — V8 enters the pause loop right away and sends a ``Debugger.paused`` notification. The call **must** happen on the V8 execution thread (i.e., with JS frames on the stack).
+
+A typical pattern is to register a Javet direct-call callback as a global JS function, then call it from JavaScript:
+
+.. code-block:: java
+
+    try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+         V8Inspector v8Inspector = v8Runtime.createV8Inspector("break-test")) {
+        v8Inspector.addListeners(listener);
+        v8Inspector.sendRequest("{\"id\":1,\"method\":\"Debugger.enable\"}");
+
+        // Register a Java callback that triggers an immediate break.
+        JavetCallbackContext callbackContext = new JavetCallbackContext(
+                "triggerBreak", JavetCallbackType.DirectCallNoThisAndNoResult,
+                (IJavetDirectCallable.NoThisAndNoResult<Exception>) (v8Values) ->
+                        v8Inspector.breakProgram("embedder-break", "{}"));
+        try (V8ValueFunction fn = v8Runtime.createV8ValueFunction(callbackContext)) {
+            v8Runtime.getGlobalObject().set("triggerBreak", fn);
+        }
+
+        // Execute on a separate thread — triggerBreak() pauses immediately.
+        Thread executionThread = new Thread(() -> {
+            try {
+                v8Runtime.getExecutor("triggerBreak();\nconst y = 2;")
+                        .setResourceName("app.js")
+                        .executeVoid();
+            } catch (JavetException e) {
+                e.printStackTrace(System.err);
+            }
+        });
+        executionThread.start();
+        // ... wait for Debugger.paused, then send Debugger.resume from main thread.
+    }
+
+.. tip::
+
+    ``breakProgram()`` is the V8 equivalent of a programmatic ``debugger;`` statement. Use it when you need to break at a point controlled by Java logic rather than by JavaScript source location.
+
+Skip All Pauses
+---------------
+
+Temporarily disable all breakpoints without removing them:
+
+.. code-block:: java
+
+    // Disable all breakpoints temporarily.
+    v8Inspector.setSkipAllPauses(true);
+    v8Runtime.getExecutor("/* breakpoints in here will not fire */").executeVoid();
+
+    // Re-enable breakpoints.
+    v8Inspector.setSkipAllPauses(false);
+
+Direct Evaluation
+-----------------
+
+Use ``evaluate()`` to evaluate expressions directly, returning a Javet ``V8Value`` instead of CDP JSON:
+
+.. code-block:: java
+
+    try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+         V8Inspector v8Inspector = v8Runtime.createV8Inspector("eval-test")) {
+        v8Runtime.getExecutor("const answer = 42;").executeVoid();
+
+        // Evaluate directly — no JSON overhead.
+        try (V8ValueInteger result = v8Inspector.evaluate("answer", false)) {
+            System.out.println(result.getValue()); // 42
+        }
+
+        // With command-line API scope (same as includeCommandLineAPI in CDP).
+        try (V8ValueInteger result = v8Inspector.evaluate("1 + 2", true)) {
+            System.out.println(result.getValue()); // 3
+        }
+    }
+
 Chrome DevTools Protocol Domains
 ================================
 
@@ -591,19 +721,3 @@ Async Stack Traces
 **Risk**: Debugging async code is difficult.
 
 None of the async task tracking APIs are called: ``asyncTaskScheduled()``, ``asyncTaskStarted()``, ``asyncTaskFinished()``, ``asyncTaskCanceled()``, ``storeCurrentStackTrace()``, ``externalAsyncTaskStarted()``, ``externalAsyncTaskFinished()``. This means DevTools shows no async stack traces. When debugging promise chains or ``setTimeout`` callbacks, the call stack stops at the async boundary instead of showing the originating call site.
-
-Session-Level API Exposure
---------------------------
-
-**Priority**: Medium
-
-**Risk**: Forces everything through CDP JSON.
-
-``V8InspectorSession`` has useful direct methods that could be exposed to Java without going through protocol JSON:
-
-- ``schedulePauseOnNextStatement()`` / ``cancelPauseOnNextStatement()`` — programmatic pause.
-- ``breakProgram()`` — force-break from the embedder.
-- ``setSkipAllPauses()`` — disable all breakpoints temporarily.
-- ``evaluate()`` — direct evaluation returning a ``v8::Value`` (avoids CDP JSON overhead).
-- ``state()`` — serialize session state for later reconnection.
-- ``wrapObject()`` / ``unwrapObject()`` — direct object remoting.

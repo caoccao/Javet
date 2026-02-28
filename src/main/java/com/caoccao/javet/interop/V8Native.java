@@ -688,10 +688,25 @@ class V8Native implements IV8Native {
     public native void unregisterNearHeapLimitCallback(long v8RuntimeHandle, long heapLimit);
 
     @Override
+    public native void v8InspectorBreakProgram(long v8RuntimeHandle, int sessionId, String breakReason, String breakDetails);
+
+    @Override
+    public native void v8InspectorCancelPauseOnNextStatement(long v8RuntimeHandle, int sessionId);
+
+    @Override
     public native void v8InspectorCloseSession(long v8RuntimeHandle, int sessionId);
 
     @Override
+    public native Object v8InspectorEvaluate(long v8RuntimeHandle, int sessionId, String expression, boolean includeCommandLineAPI);
+
+    @Override
+    public native void v8InspectorSchedulePauseOnNextStatement(long v8RuntimeHandle, int sessionId, String breakReason, String breakDetails);
+
+    @Override
     public native void v8InspectorSend(long v8RuntimeHandle, int sessionId, String message);
+
+    @Override
+    public native void v8InspectorSetSkipAllPauses(long v8RuntimeHandle, int sessionId, boolean skip);
 
     @Override
     public native void v8InspectorWaitForDebugger(long v8RuntimeHandle);

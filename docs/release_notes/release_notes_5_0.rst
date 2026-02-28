@@ -22,6 +22,7 @@ Release Notes 5.0.x
 * Added ``IV8InspectorListener.installAdditionalCommandLineAPI(IV8ValueObject commandLineAPI)`` callback that receives the command-line API scope object, allowing listeners to install custom properties (e.g. ``$myHelper``) available during ``Runtime.evaluate`` with ``includeCommandLineAPI: true``
 * Added graceful inspector session shutdown via ``V8InspectorSession::stop()`` before destruction to disable debugger pausing and prevent callbacks during teardown
 * Set ``origin`` and ``auxData`` on ``V8ContextInfo`` so DevTools shows the inspector name as the security origin and identifies the context as default (``{"isDefault":true}``)
+* Added direct session-level API methods on ``V8Inspector``: ``schedulePauseOnNextStatement()`` / ``cancelPauseOnNextStatement()`` for programmatic pause, ``breakProgram()`` for immediate break, ``setSkipAllPauses()`` to temporarily disable all breakpoints, and ``evaluate()`` for direct expression evaluation returning a Javet ``V8Value`` without CDP JSON overhead
 
 5.0.4
 -----

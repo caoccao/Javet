@@ -545,11 +545,67 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
     }
 }
 
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorBreakProgram
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId, jstring mBreakReason, jstring mBreakDetails) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    if (v8Runtime->v8Inspector) {
+        char const* umBreakReason = jniEnv->GetStringUTFChars(mBreakReason, nullptr);
+        std::string breakReason(umBreakReason, jniEnv->GetStringUTFLength(mBreakReason));
+        jniEnv->ReleaseStringUTFChars(mBreakReason, umBreakReason);
+        char const* umBreakDetails = jniEnv->GetStringUTFChars(mBreakDetails, nullptr);
+        std::string breakDetails(umBreakDetails, jniEnv->GetStringUTFLength(mBreakDetails));
+        jniEnv->ReleaseStringUTFChars(mBreakDetails, umBreakDetails);
+        v8Runtime->v8Inspector->breakProgram(sessionId, breakReason, breakDetails);
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorCancelPauseOnNextStatement
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    if (v8Runtime->v8Inspector) {
+        v8Runtime->v8Inspector->cancelPauseOnNextStatement(sessionId);
+    }
+}
+
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorCloseSession
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     if (v8Runtime->v8Inspector) {
         v8Runtime->v8Inspector->removeSession(sessionId);
+    }
+}
+
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorEvaluate
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId, jstring mExpression, jboolean includeCommandLineAPI) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    if (v8Runtime->v8Inspector) {
+        char const* umExpression = jniEnv->GetStringUTFChars(mExpression, nullptr);
+        std::string expression(umExpression, jniEnv->GetStringUTFLength(mExpression));
+        jniEnv->ReleaseStringUTFChars(mExpression, umExpression);
+        return v8Runtime->v8Inspector->evaluate(jniEnv, sessionId, expression, includeCommandLineAPI);
+    }
+    return nullptr;
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSchedulePauseOnNextStatement
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId, jstring mBreakReason, jstring mBreakDetails) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    if (v8Runtime->v8Inspector) {
+        char const* umBreakReason = jniEnv->GetStringUTFChars(mBreakReason, nullptr);
+        std::string breakReason(umBreakReason, jniEnv->GetStringUTFLength(mBreakReason));
+        jniEnv->ReleaseStringUTFChars(mBreakReason, umBreakReason);
+        char const* umBreakDetails = jniEnv->GetStringUTFChars(mBreakDetails, nullptr);
+        std::string breakDetails(umBreakDetails, jniEnv->GetStringUTFLength(mBreakDetails));
+        jniEnv->ReleaseStringUTFChars(mBreakDetails, umBreakDetails);
+        v8Runtime->v8Inspector->schedulePauseOnNextStatement(sessionId, breakReason, breakDetails);
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSetSkipAllPauses
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId, jboolean skip) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    if (v8Runtime->v8Inspector) {
+        v8Runtime->v8Inspector->setSkipAllPauses(sessionId, skip);
     }
 }
 

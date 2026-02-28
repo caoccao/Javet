@@ -90,8 +90,16 @@ namespace Javet {
             return client->addSession(mV8Inspector, waitForDebugger);
         }
 
-        void JavetInspector::removeSession(int sessionId) noexcept {
-            client->removeSession(sessionId);
+        void JavetInspector::breakProgram(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept {
+            client->breakProgram(sessionId, breakReason, breakDetails);
+        }
+
+        void JavetInspector::cancelPauseOnNextStatement(int sessionId) noexcept {
+            client->cancelPauseOnNextStatement(sessionId);
+        }
+
+        jobject JavetInspector::evaluate(JNIEnv* jniEnv, int sessionId, const std::string& expression, bool includeCommandLineAPI) noexcept {
+            return client->evaluate(jniEnv, sessionId, expression, includeCommandLineAPI);
         }
 
         void JavetInspector::contextCreated() noexcept {
@@ -136,6 +144,18 @@ namespace Javet {
             client->postMessage(sessionId, message);
         }
 
+        void JavetInspector::removeSession(int sessionId) noexcept {
+            client->removeSession(sessionId);
+        }
+
+        void JavetInspector::schedulePauseOnNextStatement(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept {
+            client->schedulePauseOnNextStatement(sessionId, breakReason, breakDetails);
+        }
+
+        void JavetInspector::setSkipAllPauses(int sessionId, bool skip) noexcept {
+            client->setSkipAllPauses(sessionId, skip);
+        }
+
         void JavetInspector::waitForDebugger() noexcept {
             client->waitForDebuggerLoop();
         }
@@ -176,9 +196,36 @@ namespace Javet {
             return sessionId;
         }
 
-        void JavetInspectorClient::removeSession(int sessionId) noexcept {
-            std::lock_guard<std::mutex> lock(messageMutex);
-            sessionMap.erase(sessionId);
+        void JavetInspectorClient::breakProgram(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept {
+            // Look up the session under the lock, then release it before
+            // calling breakProgram().  V8's breakProgram() may enter
+            // runMessageLoopOnPause() which also acquires messageMutex,
+            // so holding it here would deadlock.
+            JavetInspectorSession* sessionPtr = nullptr;
+            {
+                std::lock_guard<std::mutex> lock(messageMutex);
+                auto it = sessionMap.find(sessionId);
+                if (it != sessionMap.end()) {
+                    sessionPtr = it->second.get();
+                }
+            }
+            if (sessionPtr) {
+                sessionPtr->breakProgram(breakReason, breakDetails);
+            }
+        }
+
+        void JavetInspectorClient::cancelPauseOnNextStatement(int sessionId) noexcept {
+            JavetInspectorSession* sessionPtr = nullptr;
+            {
+                std::lock_guard<std::mutex> lock(messageMutex);
+                auto it = sessionMap.find(sessionId);
+                if (it != sessionMap.end()) {
+                    sessionPtr = it->second.get();
+                }
+            }
+            if (sessionPtr) {
+                sessionPtr->cancelPauseOnNextStatement();
+            }
         }
 
         void JavetInspectorClient::contextCreated(const V8LocalContext& v8Context) noexcept {
@@ -246,6 +293,21 @@ namespace Javet {
             return v8Runtime->GetV8LocalContext();
         }
 
+        jobject JavetInspectorClient::evaluate(JNIEnv* jniEnv, int sessionId, const std::string& expression, bool includeCommandLineAPI) noexcept {
+            JavetInspectorSession* sessionPtr = nullptr;
+            {
+                std::lock_guard<std::mutex> lock(messageMutex);
+                auto it = sessionMap.find(sessionId);
+                if (it != sessionMap.end()) {
+                    sessionPtr = it->second.get();
+                }
+            }
+            if (sessionPtr) {
+                return sessionPtr->evaluate(jniEnv, expression, includeCommandLineAPI);
+            }
+            return nullptr;
+        }
+
         void JavetInspectorClient::idleFinished() noexcept {
             v8Inspector->idleFinished();
         }
@@ -285,12 +347,16 @@ namespace Javet {
         }
 
         void JavetInspectorClient::postMessage(int sessionId, const std::string& message) noexcept {
+            JavetInspectorSession* sessionPtr = nullptr;
             {
                 std::lock_guard<std::mutex> lock(messageMutex);
                 auto it = sessionMap.find(sessionId);
                 if (it != sessionMap.end()) {
-                    it->second->postMessage(message);
+                    sessionPtr = it->second.get();
                 }
+            }
+            if (sessionPtr) {
+                sessionPtr->postMessage(message);
             }
             messageCondition.notify_one();
         }
@@ -298,6 +364,11 @@ namespace Javet {
         void JavetInspectorClient::quitMessageLoopOnPause() {
             activateMessageLoop = false;
             messageCondition.notify_one();
+        }
+
+        void JavetInspectorClient::removeSession(int sessionId) noexcept {
+            std::lock_guard<std::mutex> lock(messageMutex);
+            sessionMap.erase(sessionId);
         }
 
         std::unique_ptr<v8_inspector::StringBuffer> JavetInspectorClient::resourceNameToUrl(
@@ -349,6 +420,34 @@ namespace Javet {
                     }
                 }
                 runningMessageLoop.store(false);
+            }
+        }
+
+        void JavetInspectorClient::schedulePauseOnNextStatement(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept {
+            JavetInspectorSession* sessionPtr = nullptr;
+            {
+                std::lock_guard<std::mutex> lock(messageMutex);
+                auto it = sessionMap.find(sessionId);
+                if (it != sessionMap.end()) {
+                    sessionPtr = it->second.get();
+                }
+            }
+            if (sessionPtr) {
+                sessionPtr->schedulePauseOnNextStatement(breakReason, breakDetails);
+            }
+        }
+
+        void JavetInspectorClient::setSkipAllPauses(int sessionId, bool skip) noexcept {
+            JavetInspectorSession* sessionPtr = nullptr;
+            {
+                std::lock_guard<std::mutex> lock(messageMutex);
+                auto it = sessionMap.find(sessionId);
+                if (it != sessionMap.end()) {
+                    sessionPtr = it->second.get();
+                }
+            }
+            if (sessionPtr) {
+                sessionPtr->setSkipAllPauses(skip);
             }
         }
 
@@ -432,7 +531,7 @@ namespace Javet {
         }
 
         void JavetInspectorSession::postMessage(const std::string& message) noexcept {
-            // Caller already holds sharedMutex via JavetInspectorClient::postMessage.
+            std::lock_guard<std::mutex> lock(sharedMutex);
             messageQueue.push(message);
         }
 
@@ -444,6 +543,49 @@ namespace Javet {
         void JavetInspectorSession::stop() noexcept {
             if (v8InspectorSession) {
                 v8InspectorSession->stop();
+            }
+        }
+
+        void JavetInspectorSession::breakProgram(const std::string& breakReason, const std::string& breakDetails) noexcept {
+            if (v8InspectorSession) {
+                auto reasonSV = ConvertFromStdStringToStringViewPointer(breakReason);
+                auto detailsSV = ConvertFromStdStringToStringViewPointer(breakDetails);
+                v8InspectorSession->breakProgram(*reasonSV, *detailsSV);
+            }
+        }
+
+        void JavetInspectorSession::cancelPauseOnNextStatement() noexcept {
+            if (v8InspectorSession) {
+                v8InspectorSession->cancelPauseOnNextStatement();
+            }
+        }
+
+        jobject JavetInspectorSession::evaluate(JNIEnv* jniEnv, const std::string& expression, bool includeCommandLineAPI) noexcept {
+            if (v8InspectorSession) {
+                auto v8Context = v8Runtime->GetV8LocalContext();
+                auto expressionSV = ConvertFromStdStringToStringViewPointer(expression);
+                auto result = v8InspectorSession->evaluate(v8Context, *expressionSV, includeCommandLineAPI);
+                if (result.type == v8_inspector::V8InspectorSession::EvaluateResult::ResultType::kSuccess
+                    || result.type == v8_inspector::V8InspectorSession::EvaluateResult::ResultType::kException) {
+                    if (!result.value.IsEmpty()) {
+                        return Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, result.value);
+                    }
+                }
+            }
+            return nullptr;
+        }
+
+        void JavetInspectorSession::schedulePauseOnNextStatement(const std::string& breakReason, const std::string& breakDetails) noexcept {
+            if (v8InspectorSession) {
+                auto reasonSV = ConvertFromStdStringToStringViewPointer(breakReason);
+                auto detailsSV = ConvertFromStdStringToStringViewPointer(breakDetails);
+                v8InspectorSession->schedulePauseOnNextStatement(*reasonSV, *detailsSV);
+            }
+        }
+
+        void JavetInspectorSession::setSkipAllPauses(bool skip) noexcept {
+            if (v8InspectorSession) {
+                v8InspectorSession->setSkipAllPauses(skip);
             }
         }
 

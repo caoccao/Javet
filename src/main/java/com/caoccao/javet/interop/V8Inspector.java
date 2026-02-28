@@ -20,6 +20,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.utils.SimpleList;
+import com.caoccao.javet.values.V8Value;
 
 import com.caoccao.javet.values.reference.IV8ValueObject;
 
@@ -70,6 +71,29 @@ public final class V8Inspector implements IJavetClosable {
     }
 
     /**
+     * Forces the V8 runtime to break (pause) immediately, as if a breakpoint
+     * were hit. This triggers a {@code Debugger.paused} notification with the
+     * specified break reason.
+     * <p>
+     * Unlike {@link #schedulePauseOnNextStatement(String, String)}, this method
+     * breaks <em>immediately</em> rather than waiting for the next JavaScript
+     * statement to execute.
+     * <p>
+     * The caller must hold the V8 isolate lock (e.g., call from a thread that
+     * is currently executing JavaScript).
+     *
+     * @param breakReason  a short reason string (e.g., "embedder-requested")
+     * @param breakDetails additional JSON details (can be empty)
+     * @since 5.0.5
+     */
+    public void breakProgram(String breakReason, String breakDetails) {
+        if (!closed && !v8Runtime.isClosed()) {
+            v8Native.v8InspectorBreakProgram(v8Runtime.getHandle(), sessionId,
+                    Objects.requireNonNull(breakReason), Objects.requireNonNull(breakDetails));
+        }
+    }
+
+    /**
      * Closes this inspector session, disconnecting it from the V8 runtime.
      * After closing, calls to {@link #sendRequest(String)} are silently ignored.
      * Other sessions on the same runtime are not affected.
@@ -86,6 +110,18 @@ public final class V8Inspector implements IJavetClosable {
         }
     }
 
+    /**
+     * Cancels a previously scheduled pause on the next statement.
+     *
+     * @see #schedulePauseOnNextStatement(String, String)
+     * @since 5.0.5
+     */
+    public void cancelPauseOnNextStatement() {
+        if (!closed && !v8Runtime.isClosed()) {
+            v8Native.v8InspectorCancelPauseOnNextStatement(v8Runtime.getHandle(), sessionId);
+        }
+    }
+
     public void consoleAPIMessage(
             int contextGroupId, int level, String message,
             String url, int lineNumber, int columnNumber) {
@@ -97,6 +133,30 @@ public final class V8Inspector implements IJavetClosable {
                 logger.logError(t, t.getMessage());
             }
         }
+    }
+
+    /**
+     * Evaluates a JavaScript expression directly through the inspector session,
+     * bypassing CDP JSON serialization. This returns the raw V8 value, which is
+     * faster than using {@code Runtime.evaluate} via {@link #sendRequest(String)}.
+     * <p>
+     * The caller must hold the V8 isolate lock. The returned value is a Javet
+     * V8 value that must be closed when no longer needed (if it is a reference type).
+     *
+     * @param <T>                   the expected V8 value type
+     * @param expression           the JavaScript expression to evaluate
+     * @param includeCommandLineAPI whether to include the command-line API scope
+     * @return the evaluation result as a V8 value, or {@code null} if the session
+     *         is closed, the expression could not be run, or the result is empty
+     * @since 5.0.5
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends V8Value> T evaluate(String expression, boolean includeCommandLineAPI) {
+        if (!closed && !v8Runtime.isClosed()) {
+            return (T) v8Native.v8InspectorEvaluate(v8Runtime.getHandle(), sessionId,
+                    Objects.requireNonNull(expression), includeCommandLineAPI);
+        }
+        return null;
     }
 
     public void flushProtocolNotifications() {
@@ -190,6 +250,29 @@ public final class V8Inspector implements IJavetClosable {
         }
     }
 
+    /**
+     * Schedules a pause (breakpoint) on the next JavaScript statement that
+     * executes. The pause happens asynchronously — the next time V8 is about
+     * to execute a statement, it will trigger a {@code Debugger.paused}
+     * notification with the specified reason.
+     * <p>
+     * This is useful for programmatic "break on next" functionality without
+     * needing to set a breakpoint at a specific source location.
+     * <p>
+     * Call {@link #cancelPauseOnNextStatement()} to revoke a scheduled pause
+     * before it fires.
+     *
+     * @param breakReason  a short reason string (e.g., "ambiguous")
+     * @param breakDetails additional JSON details (can be empty)
+     * @since 5.0.5
+     */
+    public void schedulePauseOnNextStatement(String breakReason, String breakDetails) {
+        if (!closed && !v8Runtime.isClosed()) {
+            v8Native.v8InspectorSchedulePauseOnNextStatement(v8Runtime.getHandle(), sessionId,
+                    Objects.requireNonNull(breakReason), Objects.requireNonNull(breakDetails));
+        }
+    }
+
     @SuppressWarnings("RedundantThrows")
     public void sendRequest(String message) throws JavetException {
         if (!closed && !v8Runtime.isClosed()) {
@@ -208,6 +291,20 @@ public final class V8Inspector implements IJavetClosable {
     public void setLogger(IJavetLogger logger) {
         Objects.requireNonNull(logger);
         this.logger = logger;
+    }
+
+    /**
+     * Tells V8 to skip all breakpoints (pauses) for this session.
+     * This is useful for temporarily disabling debugging without removing
+     * breakpoints. Call {@code setSkipAllPauses(false)} to re-enable pausing.
+     *
+     * @param skip {@code true} to skip all pauses, {@code false} to re-enable
+     * @since 5.0.5
+     */
+    public void setSkipAllPauses(boolean skip) {
+        if (!closed && !v8Runtime.isClosed()) {
+            v8Native.v8InspectorSetSkipAllPauses(v8Runtime.getHandle(), sessionId, skip);
+        }
     }
 
     /**

@@ -18,7 +18,15 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.interop.callback.IJavetDirectCallable;
+import com.caoccao.javet.interop.callback.JavetCallbackContext;
+import com.caoccao.javet.interop.callback.JavetCallbackType;
 import com.caoccao.javet.values.reference.IV8ValueObject;
+import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.primitive.V8ValueInteger;
+import com.caoccao.javet.values.primitive.V8ValueString;
+import com.caoccao.javet.values.reference.V8ValueFunction;
+import com.caoccao.javet.values.reference.V8ValueObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,6 +53,72 @@ public class TestV8Inspector extends BaseTestJavet {
     @BeforeEach
     public void beforeEach() {
         atomicInteger.set(0);
+    }
+
+    @Test
+    public void testBreakProgram() throws JavetException, InterruptedException, JsonProcessingException {
+        // Verify that breakProgram() triggers an immediate Debugger.paused
+        // notification when called during active JavaScript execution.
+        // A Javet direct-call callback is registered as a JS function. When
+        // JS calls the function, the Java callback invokes breakProgram()
+        // on the V8 execution thread (which has JS frames on the stack).
+        // V8 pauses immediately, the main thread sends Debugger.resume,
+        // and execution completes.
+        if (isNode()) {
+            return;
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        CountDownLatch pausedLatch = new CountDownLatch(1);
+        CountDownLatch completedLatch = new CountDownLatch(1);
+        MockV8InspectorListener listener = new MockV8InspectorListener() {
+            @Override
+            public void receiveNotification(String message) {
+                super.receiveNotification(message);
+                try {
+                    JsonNode node = objectMapper.readTree(message);
+                    if (node.has("method") && "Debugger.paused".equals(node.get("method").asText())) {
+                        pausedLatch.countDown();
+                    }
+                } catch (JsonProcessingException e) {
+                    // ignore
+                }
+            }
+        };
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+             V8Inspector v8Inspector = v8Runtime.createV8Inspector("break-program-test")) {
+            v8Inspector.addListeners(listener);
+            v8Inspector.sendRequest("{\"id\":1,\"method\":\"Debugger.enable\"}");
+            // Register a Java callback that calls breakProgram() when invoked from JS.
+            JavetCallbackContext callbackContext = new JavetCallbackContext(
+                    "triggerBreak", JavetCallbackType.DirectCallNoThisAndNoResult,
+                    (IJavetDirectCallable.NoThisAndNoResult<Exception>) (v8Values) ->
+                            v8Inspector.breakProgram("embedder-break", "{}"));
+            try (V8ValueFunction triggerFn = v8Runtime.createV8ValueFunction(callbackContext)) {
+                v8Runtime.getGlobalObject().set("triggerBreak", triggerFn);
+            }
+            Thread executionThread = new Thread(() -> {
+                try {
+                    // triggerBreak() calls breakProgram() on the V8 execution thread.
+                    // V8 pauses immediately, then resumes after Debugger.resume.
+                    v8Runtime.getExecutor("triggerBreak();\nconst y = 2;")
+                            .setResourceName("break-prog.js")
+                            .executeVoid();
+                    completedLatch.countDown();
+                } catch (JavetException e) {
+                    fail("Execution should not throw: " + e.getMessage());
+                }
+            });
+            executionThread.start();
+            assertTrue(pausedLatch.await(5, TimeUnit.SECONDS),
+                    "Should receive Debugger.paused from breakProgram()");
+            // Resume to let execution complete.
+            v8Inspector.sendRequest("{\"id\":2,\"method\":\"Debugger.resume\"}");
+            assertTrue(completedLatch.await(5, TimeUnit.SECONDS),
+                    "Execution should complete after resume");
+            executionThread.join(5000);
+            assertFalse(executionThread.isAlive());
+            v8Runtime.getGlobalObject().delete("triggerBreak");
+        }
     }
 
     @Test
@@ -183,6 +257,37 @@ public class TestV8Inspector extends BaseTestJavet {
     }
 
     @Test
+    public void testCancelPauseOnNextStatement() throws JavetException, InterruptedException {
+        // Verify that cancelPauseOnNextStatement() cancels a previously scheduled pause.
+        if (isNode()) {
+            return;
+        }
+        CountDownLatch pausedLatch = new CountDownLatch(1);
+        MockV8InspectorListener listener = new MockV8InspectorListener() {
+            @Override
+            public void receiveNotification(String message) {
+                super.receiveNotification(message);
+                if (message.contains("Debugger.paused")) {
+                    pausedLatch.countDown();
+                }
+            }
+        };
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+             V8Inspector v8Inspector = v8Runtime.createV8Inspector("cancel-pause-test")) {
+            v8Inspector.addListeners(listener);
+            v8Inspector.sendRequest("{\"id\":1,\"method\":\"Debugger.enable\"}");
+            // Schedule a pause, then immediately cancel it.
+            v8Inspector.schedulePauseOnNextStatement("test", "{}");
+            v8Inspector.cancelPauseOnNextStatement();
+            // Execute JavaScript — it should NOT pause.
+            v8Runtime.getExecutor("const a = 1; const b = 2;").executeVoid();
+            // Give a short window for any pause notification to arrive.
+            assertFalse(pausedLatch.await(500, TimeUnit.MILLISECONDS),
+                    "Should NOT receive Debugger.paused after cancellation");
+        }
+    }
+
+    @Test
     public void testCloseSession() throws JavetException, InterruptedException, JsonProcessingException, TimeoutException {
         // Verify that closing one session does not affect other sessions.
         if (isNode()) {
@@ -261,6 +366,44 @@ public class TestV8Inspector extends BaseTestJavet {
             JsonNode resultResult = jsonNode2.get("result").get("result");
             assertEquals("number", resultResult.get("type").asText());
             assertEquals(20, resultResult.get("value").asInt());
+        }
+    }
+
+    @Test
+    public void testDirectEvaluate() throws JavetException {
+        // Verify that the direct evaluate() method returns a V8 value
+        // without going through CDP JSON serialization.
+        if (isNode()) {
+            return;
+        }
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+             V8Inspector v8Inspector = v8Runtime.createV8Inspector("direct-eval-test")) {
+            v8Runtime.getExecutor("const directVal = 42;").executeVoid();
+            // Evaluate a simple expression.
+            try (V8ValueInteger result = v8Inspector.evaluate("directVal", false)) {
+                assertNotNull(result, "evaluate() should return a non-null result");
+                assertEquals(42, result.getValue(), "Should evaluate to 42");
+            }
+            // Evaluate a string expression.
+            try (V8ValueString strResult = v8Inspector.evaluate("'hello'", false)) {
+                assertNotNull(strResult, "evaluate() should return a non-null result for strings");
+                assertEquals("hello", strResult.getValue());
+            }
+            // Evaluate an object expression.
+            try (V8ValueObject objResult = v8Inspector.evaluate("({a: 1, b: 2})", false)) {
+                assertNotNull(objResult, "evaluate() should return a non-null result for objects");
+                assertEquals(1, objResult.getInteger("a"));
+                assertEquals(2, objResult.getInteger("b"));
+            }
+            // Evaluate an expression that throws — should return the exception value.
+            V8Value errorResult = v8Inspector.evaluate("throw new Error('test error')", false);
+            if (errorResult != null) {
+                errorResult.close();
+            }
+            // Evaluate on a closed session should return null.
+            v8Inspector.close();
+            V8Value nullResult = v8Inspector.evaluate("1 + 1", false);
+            assertNull(nullResult, "evaluate() on closed session should return null");
         }
     }
 
@@ -476,6 +619,41 @@ public class TestV8Inspector extends BaseTestJavet {
                     "Execution should complete after resume");
             executionThread.join(5000);
             assertFalse(executionThread.isAlive());
+        }
+    }
+
+    @Test
+    public void testSetSkipAllPauses() throws JavetException, InterruptedException {
+        // Verify that setSkipAllPauses(true) prevents breakpoints from firing.
+        if (isNode()) {
+            return;
+        }
+        CountDownLatch pausedLatch = new CountDownLatch(1);
+        MockV8InspectorListener listener = new MockV8InspectorListener() {
+            @Override
+            public void receiveNotification(String message) {
+                super.receiveNotification(message);
+                if (message.contains("Debugger.paused")) {
+                    pausedLatch.countDown();
+                }
+            }
+        };
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+             V8Inspector v8Inspector = v8Runtime.createV8Inspector("skip-pauses-test")) {
+            v8Inspector.addListeners(listener);
+            v8Inspector.sendRequest("{\"id\":1,\"method\":\"Debugger.enable\"}");
+            v8Inspector.sendRequest("{\"id\":2,\"method\":\"Debugger.setBreakpointByUrl\","
+                    + "\"params\":{\"lineNumber\":1,\"url\":\"skip.js\",\"columnNumber\":0,\"condition\":\"\"}}");
+            // Skip all pauses — the breakpoint should not fire.
+            v8Inspector.setSkipAllPauses(true);
+            v8Runtime.getExecutor("const s1 = 1;\nconst s2 = 2;\nconst s3 = 3;")
+                    .setResourceName("skip.js")
+                    .executeVoid();
+            // Give a short window for any pause notification to arrive.
+            assertFalse(pausedLatch.await(500, TimeUnit.MILLISECONDS),
+                    "Should NOT receive Debugger.paused when skip is enabled");
+            // Re-enable pauses.
+            v8Inspector.setSkipAllPauses(false);
         }
     }
 

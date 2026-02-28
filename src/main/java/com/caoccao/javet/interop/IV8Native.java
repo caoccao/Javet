@@ -454,9 +454,19 @@ public interface IV8Native {
 
     void unregisterNearHeapLimitCallback(long v8RuntimeHandle, long heapLimit);
 
+    void v8InspectorBreakProgram(long v8RuntimeHandle, int sessionId, String breakReason, String breakDetails);
+
+    void v8InspectorCancelPauseOnNextStatement(long v8RuntimeHandle, int sessionId);
+
     void v8InspectorCloseSession(long v8RuntimeHandle, int sessionId);
 
+    Object v8InspectorEvaluate(long v8RuntimeHandle, int sessionId, String expression, boolean includeCommandLineAPI);
+
+    void v8InspectorSchedulePauseOnNextStatement(long v8RuntimeHandle, int sessionId, String breakReason, String breakDetails);
+
     void v8InspectorSend(long v8RuntimeHandle, int sessionId, String message);
+
+    void v8InspectorSetSkipAllPauses(long v8RuntimeHandle, int sessionId, boolean skip);
 
     void v8InspectorWaitForDebugger(long v8RuntimeHandle);
 }

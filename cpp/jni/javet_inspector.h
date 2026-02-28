@@ -47,9 +47,12 @@ namespace Javet {
         public:
             JavetInspector(V8Runtime* v8Runtime, const std::string& name) noexcept;
             int addSession(const jobject mV8Inspector, bool waitForDebugger) noexcept;
+            void breakProgram(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept;
+            void cancelPauseOnNextStatement(int sessionId) noexcept;
             void contextCreated() noexcept;
             void contextDestroyed() noexcept;
             void drainQueue() noexcept;
+            jobject evaluate(JNIEnv* jniEnv, int sessionId, const std::string& expression, bool includeCommandLineAPI) noexcept;
             void idleFinished() noexcept;
             void idleStarted() noexcept;
             bool isMessageLoopActive() const noexcept;
@@ -57,6 +60,8 @@ namespace Javet {
             bool isWaitingForDebugger() const noexcept;
             void postMessage(int sessionId, const std::string& message) noexcept;
             void removeSession(int sessionId) noexcept;
+            void schedulePauseOnNextStatement(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept;
+            void setSkipAllPauses(int sessionId, bool skip) noexcept;
             void waitForDebugger() noexcept;
             virtual ~JavetInspector();
         private:
@@ -70,6 +75,8 @@ namespace Javet {
                 V8Runtime* v8Runtime,
                 const std::string& name) noexcept;
             int addSession(const jobject mV8Inspector, bool waitForDebugger) noexcept;
+            void breakProgram(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept;
+            void cancelPauseOnNextStatement(int sessionId) noexcept;
             void consoleAPIMessage(
                 int contextGroupId,
                 v8::Isolate::MessageErrorLevel level,
@@ -81,6 +88,7 @@ namespace Javet {
             void contextCreated(const V8LocalContext& v8Context) noexcept;
             void contextDestroyed(const V8LocalContext& v8Context) noexcept;
             void drainQueue() noexcept;
+            jobject evaluate(JNIEnv* jniEnv, int sessionId, const std::string& expression, bool includeCommandLineAPI) noexcept;
             void idleFinished() noexcept;
             void idleStarted() noexcept;
             void installAdditionalCommandLineAPI(v8::Local<v8::Context>, v8::Local<v8::Object>) override;
@@ -93,6 +101,8 @@ namespace Javet {
                 const v8_inspector::StringView& resourceName) override;
             void runIfWaitingForDebugger(int contextGroupId) override;
             void runMessageLoopOnPause(int contextGroupId) override;
+            void schedulePauseOnNextStatement(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept;
+            void setSkipAllPauses(int sessionId, bool skip) noexcept;
             void waitForDebuggerLoop() noexcept;
             virtual ~JavetInspectorClient() = default;
         private:
@@ -120,9 +130,14 @@ namespace Javet {
                 std::mutex& sharedMutex) noexcept;
             int getSessionId() const noexcept;
             jobject getJavaObject() const noexcept;
+            void breakProgram(const std::string& breakReason, const std::string& breakDetails) noexcept;
+            void cancelPauseOnNextStatement() noexcept;
             void drainQueue() noexcept;
-            void postMessage(const std::string& message) noexcept;
+            jobject evaluate(JNIEnv* jniEnv, const std::string& expression, bool includeCommandLineAPI) noexcept;
             bool hasQueuedMessages() const noexcept;
+            void postMessage(const std::string& message) noexcept;
+            void schedulePauseOnNextStatement(const std::string& breakReason, const std::string& breakDetails) noexcept;
+            void setSkipAllPauses(bool skip) noexcept;
             void stop() noexcept;
             ~JavetInspectorSession();
         private:
