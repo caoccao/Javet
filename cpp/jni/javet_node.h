@@ -27,6 +27,8 @@
 #pragma warning(disable: 4996)
 #define NODE_WANT_INTERNALS 1
 #define HAVE_AMARO 1
+#define HAVE_INSPECTOR 1
+#define HAVE_OPENSSL 1
 #include <node.h>
 #include <uv.h>
 #include <env-inl.h>
@@ -78,5 +80,16 @@
 constexpr auto DEFAULT_SCRIPT_NAME = "javet.js";
 constexpr auto INIT_SCRIPT_WITH_SNAPSHOT = "globalThis.require = require;";
 constexpr auto INIT_SCRIPT_WITHOUT_SNAPSHOT = "globalThis.require = require('module').createRequire(process.cwd() + '/');";
+
+namespace Javet {
+    // Creates a V8 isolate initialized from snapshot data, bypassing
+    // node::NewIsolate's static variable that forces all isolates
+    // to use the first-ever snapshot blob (shared-readonly-heap).
+    v8::Isolate* NewIsolateForSnapshotRestore(
+        node::MultiIsolatePlatform* platform,
+        uv_loop_t* event_loop,
+        const node::EmbedderSnapshotData* snapshotData,
+        std::shared_ptr<node::ArrayBufferAllocator> allocator);
+}
 
 #endif

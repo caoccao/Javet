@@ -234,7 +234,29 @@ public class TestV8Runtime extends BaseTestJavet {
     }
 
     @Test
-    public void testSnapshot() throws JavetException {
+    public void testNodeSnapshot() throws JavetException {
+        if (isNode()) {
+            RuntimeOptions<?> options = v8Host.getJSRuntimeType().getRuntimeOptions();
+            options.setCreateSnapshotEnabled(true);
+            byte[] snapshotBlob;
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                v8Runtime.getExecutor("const add = (a, b) => a + b;").executeVoid();
+                assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+                snapshotBlob = v8Runtime.createSnapshot();
+                assertNotNull(snapshotBlob);
+                assertTrue(snapshotBlob.length > 0);
+            }
+            // Restore from the snapshot.
+            options.setCreateSnapshotEnabled(false).setSnapshotBlob(snapshotBlob);
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+            }
+            options.setSnapshotBlob(null);
+        }
+    }
+
+    @Test
+    public void testV8Snapshot() throws JavetException {
         if (isV8()) {
             RuntimeOptions<?> options = v8Host.getJSRuntimeType().getRuntimeOptions();
             // Set create snapshot enabled.

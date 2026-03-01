@@ -834,6 +834,15 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     /**
      * Create snapshot in byte array.
+     * <p>
+     * In V8 mode, the runtime remains usable after the snapshot is created.
+     * In Node.js mode, the snapshot creation is a destructive operation that
+     * consumes the environment and context. The runtime must be closed after
+     * the snapshot is created and must not be used for further script execution.
+     * <p>
+     * In V8 mode, a snapshot can be created from a runtime that was itself
+     * restored from a snapshot (chained snapshots). In Node.js mode, this is
+     * not supported: a runtime restored from a snapshot cannot create a new snapshot.
      *
      * @return the byte array
      * @throws JavetException the javet exception

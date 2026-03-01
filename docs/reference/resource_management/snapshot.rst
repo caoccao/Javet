@@ -21,7 +21,8 @@ Benefits
 Limitations
 -----------
 
-* **Node.js mode not supported**: Snapshot is only available in the V8 mode. There are some technical difficulties to be resolved in the Node.js mode.
+* **Node.js mode snapshot is destructive**: In Node.js mode, ``createSnapshot()`` is a destructive operation that consumes the environment and context. The runtime must be closed after the snapshot is created and must not be used for further script execution. In V8 mode, the runtime remains usable after the snapshot is created.
+* **No chained snapshots in Node.js mode**: In Node.js mode, a runtime restored from a snapshot cannot create a new snapshot. In V8 mode, chained snapshots are supported (create a runtime from a snapshot, then create a new snapshot from that runtime).
 * **Dynamic code updates not possible**: Once a snapshot is created, it's static and cannot be updated with new code without creating a new snapshot.
 * **V8 version dependent**: The snapshot created from a particular version of V8 only works in that version of V8. If you want to support a new version of V8, you will have to create a new snapshot in that new version of V8.
 
@@ -30,6 +31,9 @@ How to Create a Snapshot
 
 Create a Snapshot in Javet
 --------------------------
+
+V8 Mode
+^^^^^^^
 
 It's simple to create a snapshot or provide an existing snapshot in Javet via the ``V8RuntimeOptions``.
 
@@ -85,9 +89,43 @@ It's simple to create a snapshot or provide an existing snapshot in Javet via th
         }
     }
 
-.. note:: 
+.. note::
 
     * Both ``setCreateSnapshotEnabled()`` and ``setSnapshotBlob()`` can be used together so that you may create a V8 runtime by an existing snapshot, then create a new snapshot from that V8 runtime.
+
+Node.js Mode
+^^^^^^^^^^^^^
+
+Snapshot is also supported in Node.js mode via the ``NodeRuntimeOptions``. The usage is similar to V8 mode, but with one important difference: **snapshot creation is a destructive operation in Node.js mode**. The runtime must be closed after the snapshot is created and must not be used for further script execution.
+
+.. code-block:: java
+
+    NodeRuntimeOptions options = new NodeRuntimeOptions();
+    // Set create snapshot enabled.
+    options.setCreateSnapshotEnabled(true);
+    byte[] snapshotBlob;
+    try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+        // Prepare function add.
+        v8Runtime.getExecutor("const add = (a, b) => a + b;").executeVoid();
+        assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+        // Create a snapshot with function add.
+        snapshotBlob = v8Runtime.createSnapshot();
+        assertNotNull(snapshotBlob);
+        assertTrue(snapshotBlob.length > 0);
+        // Do NOT use the runtime after createSnapshot() in Node.js mode.
+    }
+    // Set the snapshot blob.
+    options.setCreateSnapshotEnabled(false);
+    options.setSnapshotBlob(snapshotBlob);
+    try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+        // Test the function add.
+        assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+    }
+    options.setSnapshotBlob(null);
+
+.. warning::
+
+    In Node.js mode, ``createSnapshot()`` consumes the environment and context. The runtime must be closed immediately after the snapshot is created. Attempting to execute scripts after ``createSnapshot()`` in Node.js mode will result in a crash.
 
 Create a Snapshot via mksnapshot
 --------------------------------
@@ -142,7 +180,3 @@ You can configure a ``JavetEnginePool`` to initialize every ``V8Runtime`` from a
             assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
         }
     }
-
-.. note::
-
-    Snapshot blobs are only supported in **V8 mode**. If the engine config uses Node.js mode, the snapshot blob setting is ignored.

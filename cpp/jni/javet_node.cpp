@@ -34,4 +34,53 @@ namespace node {
     }
 
 }
+
+namespace Javet {
+
+    v8::Isolate* NewIsolateForSnapshotRestore(
+        node::MultiIsolatePlatform* platform,
+        uv_loop_t* event_loop,
+        const node::EmbedderSnapshotData* snapshotData,
+        std::shared_ptr<node::ArrayBufferAllocator> allocator) {
+
+        const node::SnapshotData* snapData =
+            node::SnapshotData::FromEmbedderWrapper(snapshotData);
+        if (snapData == nullptr) {
+            return nullptr;
+        }
+
+        v8::Isolate::CreateParams params;
+        params.array_buffer_allocator_shared = allocator;
+
+        // InitializeIsolateParams sets snapshot_blob and external_references.
+        node::SnapshotBuilder::InitializeIsolateParams(snapData, &params);
+
+        // Allocate the isolate in the same group as other Node.js isolates.
+        v8::Isolate* isolate = v8::Isolate::Allocate(node::GetOrCreateIsolateGroup());
+        if (isolate == nullptr) {
+            return nullptr;
+        }
+
+        // Register with platform before initialization (for V8 memory reducer).
+        platform->RegisterIsolate(isolate, event_loop);
+
+        // CppHeap is required for Node.js environments.
+        params.cpp_heap = v8::CppHeap::Create(
+            platform, v8::CppHeapCreateParams{{}}).release();
+
+        node::SetIsolateCreateParamsForNode(&params);
+        v8::Isolate::Initialize(isolate, params);
+
+        {
+            v8::Isolate::Scope isolate_scope(isolate);
+            // Use SetIsolateMiscHandlers (not SetIsolateUpForNode) for snapshot
+            // restoration: error handlers are set during context deserialization
+            // in node::CreateEnvironment via SetIsolateErrorHandlers.
+            node::SetIsolateMiscHandlers(isolate, {});
+        }
+
+        return isolate;
+    }
+
+}
 #endif

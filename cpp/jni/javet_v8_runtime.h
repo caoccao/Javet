@@ -185,6 +185,12 @@ namespace Javet {
         std::unique_ptr<node::IsolateData, decltype(&node::FreeIsolateData)> nodeIsolateData;
         std::atomic_bool nodeStopping;
         uv_loop_t uvLoop;
+        // CommonEnvironmentSetup manages the full lifecycle for snapshot
+        // creation (CreateForSnapshotting) and restoration (CreateFromSnapshot).
+        // When set, nodeEnvironment/nodeIsolateData/uvLoop are NOT used;
+        // the setup owns the isolate, environment, and event loop internally.
+        std::unique_ptr<node::CommonEnvironmentSetup> nodeCommonSetup;
+        node::EmbedderSnapshotData::Pointer nodeSnapshotData;
 #else
         std::shared_ptr<V8ArrayBufferAllocator> v8ArrayBufferAllocator;
 #endif

@@ -19,7 +19,6 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.annotations.NodeModule;
 import com.caoccao.javet.enums.JSRuntimeType;
-import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.node.modules.INodeModule;
@@ -86,11 +85,6 @@ public class NodeRuntime extends V8Runtime {
             RuntimeOptions<?> runtimeOptions) {
         super(v8Host, handle, pooled, v8Native, jsRuntimeType, runtimeOptions);
         nodeModuleMap = new HashMap<>();
-    }
-
-    @Override
-    public byte[] createSnapshot() throws JavetException {
-        throw new JavetException(JavetError.RuntimeCreateSnapshotDisabled);
     }
 
     /**

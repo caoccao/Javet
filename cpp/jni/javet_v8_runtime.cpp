@@ -108,6 +108,8 @@ namespace Javet {
             uvRunMode = UV_RUN_NOWAIT;
             break;
         }
+        uv_loop_t* loop = nodeCommonSetup ? nodeCommonSetup->event_loop() : &uvLoop;
+        node::Environment* env = nodeCommonSetup ? nodeCommonSetup->env() : nodeEnvironment.get();
         do {
             {
                 // Reduce the locking granularity so that Node.js can respond to requests from other threads.
@@ -116,11 +118,11 @@ namespace Javet {
                 V8HandleScope v8HandleScope(v8Isolate);
                 auto v8Context = GetV8LocalContext();
                 auto v8ContextScope = GetV8ContextScope(v8Context);
-                uv_run(&uvLoop, uvRunMode);
+                uv_run(loop, uvRunMode);
                 // DrainTasks is thread-safe.
                 v8PlatformPointer->DrainTasks(v8Isolate);
             }
-            hasMoreTasks = uv_loop_alive(&uvLoop);
+            hasMoreTasks = uv_loop_alive(loop);
             if (awaitMode == RunTillNoMoreTasks && hasMoreTasks) {
                 // Sleep a while to give CPU cycles to other threads.
                 std::this_thread::sleep_for(oneMillisecond);
@@ -132,8 +134,8 @@ namespace Javet {
                 auto v8Context = GetV8LocalContext();
                 auto v8ContextScope = GetV8ContextScope(v8Context);
                 // node::EmitProcessBeforeExit is thread-safe.
-                node::EmitProcessBeforeExit(nodeEnvironment.get());
-                hasMoreTasks = uv_loop_alive(&uvLoop);
+                node::EmitProcessBeforeExit(env);
+                hasMoreTasks = uv_loop_alive(loop);
             }
         } while (awaitMode == RunTillNoMoreTasks && hasMoreTasks);
         return hasMoreTasks;
@@ -148,12 +150,11 @@ namespace Javet {
 
     void V8Runtime::CloseV8Context() noexcept {
         v8Locker.reset();
-        {
+        if (!v8GlobalContext.IsEmpty()) {
             auto internalV8Locker = GetUniqueV8Locker();
             auto v8IsolateScope = GetV8IsolateScope();
             V8HandleScope v8HandleScope(v8Isolate);
             auto v8LocalContext = GetV8LocalContext();
-            // Notify the inspector that the context is being destroyed.
             if (v8Inspector) {
                 v8Inspector->contextDestroyed();
             }
@@ -161,35 +162,52 @@ namespace Javet {
             v8GlobalObject.Reset();
         }
 #ifdef ENABLE_NODE
-        int errorCode = 0;
-        if (!IsStopping()) {
-            auto internalV8Locker = GetUniqueV8Locker();
-            auto v8IsolateScope = GetV8IsolateScope();
-            V8HandleScope v8HandleScope(v8Isolate);
-            auto v8LocalContext = GetV8LocalContext();
-            auto v8ContextScope = GetV8ContextScope(v8LocalContext);
-            errorCode = node::SpinEventLoop(nodeEnvironment.get()).FromMaybe(1);
-        }
-        v8GlobalContext.Reset();
-        if (errorCode != 0) {
-            LOG_ERROR("node::EmitProcessExit() returns " << errorCode << ".");
-        }
-        else {
-            // node::Stop is thread-safe.
-            errorCode = node::Stop(nodeEnvironment.get());
-            if (errorCode != 0) {
-                LOG_ERROR("node::Stop() returns " << errorCode << ".");
+        if (nodeCommonSetup) {
+            if (!nodeCommonSetup->snapshot_creator()) {
+                // Restoration path: drain event loop and stop before setup destructor.
+                int errorCode = 0;
+                if (!IsStopping()) {
+                    auto internalV8Locker = GetUniqueV8Locker();
+                    auto v8IsolateScope = GetV8IsolateScope();
+                    V8HandleScope v8HandleScope(v8Isolate);
+                    auto v8LocalContext = GetV8LocalContext();
+                    auto v8ContextScope = GetV8ContextScope(v8LocalContext);
+                    errorCode = node::SpinEventLoop(nodeCommonSetup->env()).FromMaybe(1);
+                }
+                if (errorCode == 0) {
+                    node::Stop(nodeCommonSetup->env());
+                }
             }
-            std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
-            auto internalV8Locker = GetUniqueV8Locker();
-            auto v8IsolateScope = GetV8IsolateScope();
-            LOG_DEBUG("nodeEnvironment.reset() begin");
-            nodeEnvironment.reset();
-            LOG_DEBUG("nodeEnvironment.reset() end");
         }
-#else
-        v8GlobalContext.Reset();
+        else if (nodeEnvironment) {
+            int errorCode = 0;
+            if (!IsStopping()) {
+                auto internalV8Locker = GetUniqueV8Locker();
+                auto v8IsolateScope = GetV8IsolateScope();
+                V8HandleScope v8HandleScope(v8Isolate);
+                auto v8LocalContext = GetV8LocalContext();
+                auto v8ContextScope = GetV8ContextScope(v8LocalContext);
+                errorCode = node::SpinEventLoop(nodeEnvironment.get()).FromMaybe(1);
+            }
+            if (errorCode != 0) {
+                LOG_ERROR("node::EmitProcessExit() returns " << errorCode << ".");
+            }
+            else {
+                // node::Stop is thread-safe.
+                errorCode = node::Stop(nodeEnvironment.get());
+                if (errorCode != 0) {
+                    LOG_ERROR("node::Stop() returns " << errorCode << ".");
+                }
+                std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
+                auto internalV8Locker = GetUniqueV8Locker();
+                auto v8IsolateScope = GetV8IsolateScope();
+                LOG_DEBUG("nodeEnvironment.reset() begin");
+                nodeEnvironment.reset();
+                LOG_DEBUG("nodeEnvironment.reset() end");
+            }
+        }
 #endif
+        v8GlobalContext.Reset();
     }
 
     void V8Runtime::CloseV8Isolate() noexcept {
@@ -201,57 +219,89 @@ namespace Javet {
         v8GlobalContext.Reset();
         v8Locker.reset();
 #ifdef ENABLE_NODE
-        // node::FreeIsolateData is thread-safe.
-        nodeIsolateData.reset();
-#endif
+        if (nodeCommonSetup) {
+            // CommonEnvironmentSetup owns the isolate, environment, isolate data,
+            // and event loop. Its destructor handles all cleanup in the right order.
+            nodeCommonSetup.reset();
+            nodeSnapshotData.reset();
+            v8StartupData.reset();
+            v8Isolate = nullptr;
+        }
+        else {
+            // node::FreeIsolateData is thread-safe.
+            nodeIsolateData.reset();
+            // Isolate must be the last one to be disposed.
+            if (v8Isolate != nullptr) {
+                bool isIsolateFinished = false;
+                // AddIsolateFinishedCallback is thread-safe.
+                v8PlatformPointer->AddIsolateFinishedCallback(v8Isolate, [](void* data) {
+                    *static_cast<bool*>(data) = true;
+                    }, &isIsolateFinished);
+                // UnregisterIsolate is thread-safe.
+                v8PlatformPointer->DisposeIsolate(v8Isolate);
+                if (v8SnapshotCreator) {
+                    v8SnapshotCreator.reset();
+                }
+                while (!isIsolateFinished) {
+                    uv_run(&uvLoop, UV_RUN_ONCE);
+                }
+                int errorCode = uv_loop_close(&uvLoop);
+                if (errorCode != 0) {
+                    LOG_ERROR("Failed to close uv loop. Reason: " << uv_err_name(errorCode));
+                }
+                v8Isolate = nullptr;
+            }
+            // Free snapshot data after isolate is disposed because the
+            // isolate may reference the V8 blob inside SnapshotData.
+            nodeSnapshotData.reset();
+            v8StartupData.reset();
+        }
+#else
         // Isolate must be the last one to be disposed.
         if (v8Isolate != nullptr) {
-#ifdef ENABLE_NODE
-            bool isIsolateFinished = false;
-            // AddIsolateFinishedCallback is thread-safe.
-            v8PlatformPointer->AddIsolateFinishedCallback(v8Isolate, [](void* data) {
-                *static_cast<bool*>(data) = true;
-                }, &isIsolateFinished);
-            // UnregisterIsolate is thread-safe.
-            v8PlatformPointer->DisposeIsolate(v8Isolate);
-#endif
             if (v8SnapshotCreator) {
                 v8SnapshotCreator.reset();
             }
             else {
-#ifndef ENABLE_NODE
                 v8Isolate->Dispose();
-#endif
             }
             v8StartupData.reset();
-#ifdef ENABLE_NODE
-            while (!isIsolateFinished) {
-                uv_run(&uvLoop, UV_RUN_ONCE);
-            }
-            int errorCode = uv_loop_close(&uvLoop);
-            if (errorCode != 0) {
-                LOG_ERROR("Failed to close uv loop. Reason: " << uv_err_name(errorCode));
-            }
-#endif
             v8Isolate = nullptr;
         }
+#endif
     }
 
     jbyteArray V8Runtime::CreateSnapshot(JNIEnv* jniEnv) noexcept {
         jbyteArray jbytes = nullptr;
+#ifdef ENABLE_NODE
+        if (nodeCommonSetup && nodeCommonSetup->snapshot_creator()) {
+            // Node.js snapshot via CommonEnvironmentSetup::CreateSnapshot().
+            // This properly serializes IsolateData (eternal handles, private symbols),
+            // Environment state, and all contexts with the correct callbacks.
+            // Reset Javet's global handles BEFORE CreateSnapshot. The SnapshotCreator
+            // iterates all v8::Global handles during CreateBlob() and crashes on any
+            // handle it doesn't know about (like our JSGlobalProxy).
+            v8GlobalContext.Reset();
+            v8GlobalObject.Reset();
+            // Drain the event loop before creating the snapshot.
+            node::SpinEventLoop(nodeCommonSetup->env());
+            auto snapshot = nodeCommonSetup->CreateSnapshot();
+            if (snapshot) {
+                auto blobVec = snapshot->ToBlob();
+                jbytes = jniEnv->NewByteArray(static_cast<jsize>(blobVec.size()));
+                jboolean isCopy;
+                void* data = jniEnv->GetPrimitiveArrayCritical(jbytes, &isCopy);
+                memcpy(data, blobVec.data(), blobVec.size());
+                jniEnv->ReleasePrimitiveArrayCritical(jbytes, data, JNI_ABORT);
+            }
+        }
+#else
         if (v8SnapshotCreator) {
-            // Backup context and global object (Begin)
+            // V8 mode snapshot.
             auto v8LocalContext = GetV8LocalContext();
             v8GlobalContext.Reset();
             v8GlobalObject.Reset();
-            // Backup context and global object (End)
-#ifdef ENABLE_NODE
-            nodeIsolateData->Serialize(v8SnapshotCreator.get());
-            nodeEnvironment->Serialize(v8SnapshotCreator.get());
-            v8SnapshotCreator->SetDefaultContext(v8LocalContext, { node::SerializeNodeContextInternalFields, nodeEnvironment.get() });
-#else
             v8SnapshotCreator->SetDefaultContext(v8LocalContext);
-#endif
             v8::StartupData newV8StartupData = v8SnapshotCreator->CreateBlob(v8::SnapshotCreator::FunctionCodeHandling::kKeep);
             if (newV8StartupData.IsValid()) {
                 jbytes = jniEnv->NewByteArray(newV8StartupData.raw_size);
@@ -261,11 +311,11 @@ namespace Javet {
                 jniEnv->ReleasePrimitiveArrayCritical(jbytes, data, JNI_ABORT);
                 delete[] newV8StartupData.data;
             }
-            // Restore context and global object (Begin)
+            // Restore context and global object.
             v8GlobalContext.Reset(v8Isolate, v8LocalContext);
             v8GlobalObject.Reset(v8Isolate, v8LocalContext->Global()->ToObject(v8LocalContext).ToLocalChecked());
-            // Restore context and global object (End)
         }
+#endif
         return jbytes;
     }
 
@@ -274,11 +324,64 @@ namespace Javet {
         auto v8IsolateScope = GetV8IsolateScope();
         V8HandleScope v8HandleScope(v8Isolate);
 #ifdef ENABLE_NODE
-        // node::NewContext is thread-safe.
-        auto v8LocalContext = node::NewContext(v8Isolate);
+        v8::Local<v8::Context> v8LocalContext;
+        if (nodeCommonSetup) {
+            // Snapshot creation: context already created by CommonEnvironmentSetup.
+            v8LocalContext = nodeCommonSetup->context();
+        }
+        else if (nodeSnapshotData && !nodeIsolateData) {
+            // Snapshot restoration: CreateIsolateData and CreateEnvironment must happen
+            // in the same Locker/HandleScope, matching CommonEnvironmentSetup's constructor.
+            nodeIsolateData.reset(node::CreateIsolateData(
+                v8Isolate, &uvLoop, v8PlatformPointer,
+                nodeArrayBufferAllocator.get(), nodeSnapshotData.get()));
+            node::crypto::InitCryptoOnce(v8Isolate);
+            std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
+            std::vector<std::string> execArgs;
+            if (mRuntimeOptions != nullptr) {
+                jobjectArray mConsoleArguments = (jobjectArray)jniEnv->CallObjectMethod(mRuntimeOptions, jmethodNodeRuntimeOptionsGetConsoleArguments);
+                if (mConsoleArguments != nullptr) {
+                    int consoleArgumentCount = jniEnv->GetArrayLength(mConsoleArguments);
+                    for (int i = 0; i < consoleArgumentCount; ++i) {
+                        jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
+                        auto consoleArgumentPointer = Javet::Converter::ToStdString(jniEnv, mConsoleArgument);
+                        args.push_back(*consoleArgumentPointer.get());
+                    }
+                }
+            }
+            // node::CreateEnvironment is not thread-safe.
+            std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
+            auto flags = static_cast<node::EnvironmentFlags::Flags>(
+                node::EnvironmentFlags::kOwnsProcessState
+                | node::EnvironmentFlags::kNoCreateInspector);
+            // Pass an empty context to trigger snapshot restoration path.
+            // Node.js detects snapshot_data() on IsolateData and calls
+            // Context::FromSnapshot with the proper deserialization callbacks.
+            nodeEnvironment.reset(node::CreateEnvironment(
+                nodeIsolateData.get(),
+                v8::Local<v8::Context>(),
+                args,
+                execArgs,
+                flags));
+            if (nodeEnvironment) {
+                v8LocalContext = nodeEnvironment->context();
+            }
+        }
+        else {
+            // Normal path: create context via node::NewContext.
+            v8LocalContext = node::NewContext(v8Isolate);
+        }
         auto v8ContextScope = GetV8ContextScope(v8LocalContext);
-        // Create and load the environment only once per isolate.
-        if (!nodeEnvironment) {
+        if (nodeCommonSetup) {
+            // Snapshot creation: bootstrap the environment.
+            node::LoadEnvironment(nodeCommonSetup->env(), INIT_SCRIPT_WITH_SNAPSHOT);
+        }
+        else if (nodeSnapshotData && nodeEnvironment) {
+            // Snapshot restoration: load with empty callback (state restored from snapshot).
+            node::LoadEnvironment(nodeEnvironment.get(), node::StartExecutionCallback{});
+        }
+        else if (!nodeEnvironment) {
+            // Normal path: create and load the environment.
             std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
             std::vector<std::string> execArgs;
             if (mRuntimeOptions != nullptr) {
@@ -312,7 +415,7 @@ namespace Javet {
             V8MaybeLocalValue v8MaybeLocalValue;
             v8MaybeLocalValue = node::LoadEnvironment(
                 nodeEnvironment.get(),
-                v8SnapshotCreator ? INIT_SCRIPT_WITH_SNAPSHOT : INIT_SCRIPT_WITHOUT_SNAPSHOT
+                INIT_SCRIPT_WITHOUT_SNAPSHOT
             );
         }
 #else
@@ -355,32 +458,74 @@ namespace Javet {
             }
         }
 #ifdef ENABLE_NODE
-        int errorCode = uv_loop_init(&uvLoop);
-        if (errorCode != 0) {
-            LOG_ERROR("Failed to init uv loop. Reason: " << uv_err_name(errorCode));
-        }
         if (createSnapshotEnabled) {
-            const std::vector<intptr_t>& externalReferences = node::SnapshotBuilder::CollectExternalReferences();
-            v8Isolate = v8::Isolate::Allocate();
-            v8PlatformPointer->RegisterIsolate(v8Isolate, &uvLoop);
-            v8SnapshotCreator.reset(new v8::SnapshotCreator(v8Isolate, externalReferences.data(), v8StartupData.get()));
-            v8Isolate->SetCaptureStackTraceForUncaughtExceptions(true, 10, v8::StackTrace::StackTraceOptions::kDetailed);
-            v8Isolate->SetMicrotasksPolicy(v8::MicrotasksPolicy::kExplicit);
+            // Snapshot creation: use CommonEnvironmentSetup::CreateForSnapshotting.
+            // This is the official Node.js embedder API that properly handles
+            // SnapshotCreator setup, IsolateData serialization (eternal handles),
+            // and the is_building_snapshot() flag for code cache guards.
+            std::vector<std::string> errors;
+            std::vector<std::string> args{ DEFAULT_SCRIPT_NAME, node::GetAnonymousMainPath() };
+            std::vector<std::string> execArgs;
+            if (mRuntimeOptions != nullptr) {
+                jobjectArray mConsoleArguments = (jobjectArray)jniEnv->CallObjectMethod(mRuntimeOptions, jmethodNodeRuntimeOptionsGetConsoleArguments);
+                if (mConsoleArguments != nullptr) {
+                    int consoleArgumentCount = jniEnv->GetArrayLength(mConsoleArguments);
+                    for (int i = 0; i < consoleArgumentCount; ++i) {
+                        jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
+                        auto consoleArgumentPointer = Javet::Converter::ToStdString(jniEnv, mConsoleArgument);
+                        args.push_back(*consoleArgumentPointer.get());
+                    }
+                }
+            }
+            nodeCommonSetup = node::CommonEnvironmentSetup::CreateForSnapshotting(
+                v8PlatformPointer, &errors, args, execArgs);
+            if (nodeCommonSetup) {
+                v8Isolate = nodeCommonSetup->isolate();
+            }
+            else {
+                LOG_ERROR("CreateForSnapshotting failed with " << errors.size() << " error(s).");
+            }
+        }
+        else if (v8StartupData) {
+            // Snapshot restoration: bypass CommonEnvironmentSetup::CreateFromSnapshot
+            // because node::NewIsolate has a static variable that forces all isolates
+            // to use the first-ever snapshot blob (CanUseCustomSnapshotPerIsolate() == false).
+            // We create the isolate manually with the correct snapshot blob.
+            // Note: CreateIsolateData and CreateEnvironment are deferred to CreateV8Context
+            // so they execute in a single Locker/HandleScope, matching the
+            // CommonEnvironmentSetup constructor pattern.
+            std::vector<char> blobVec(v8StartupData->data, v8StartupData->data + v8StartupData->raw_size);
+            nodeSnapshotData = node::EmbedderSnapshotData::FromBlob(blobVec);
+            if (nodeSnapshotData) {
+                int errorCode = uv_loop_init(&uvLoop);
+                if (errorCode != 0) {
+                    LOG_ERROR("Failed to init uv loop. Reason: " << uv_err_name(errorCode));
+                }
+                v8Isolate = Javet::NewIsolateForSnapshotRestore(
+                    v8PlatformPointer, &uvLoop, nodeSnapshotData.get(), nodeArrayBufferAllocator);
+                v8Isolate->SetModifyCodeGenerationFromStringsCallback(nullptr);
+            }
+            else {
+                LOG_ERROR("Failed to parse EmbedderSnapshotData from blob.");
+            }
         }
         else {
+            int errorCode = uv_loop_init(&uvLoop);
+            if (errorCode != 0) {
+                LOG_ERROR("Failed to init uv loop. Reason: " << uv_err_name(errorCode));
+            }
             // node::NewIsolate is thread-safe.
             v8Isolate = node::NewIsolate(nodeArrayBufferAllocator, &uvLoop, v8PlatformPointer);
+            {
+                auto internalV8Locker = GetUniqueV8Locker();
+                auto v8IsolateScope = GetV8IsolateScope();
+                V8HandleScope v8HandleScope(v8Isolate);
+                // node::CreateIsolateData is thread-safe.
+                nodeIsolateData.reset(node::CreateIsolateData(v8Isolate, &uvLoop, v8PlatformPointer, nodeArrayBufferAllocator.get()));
+                node::crypto::InitCryptoOnce(v8Isolate);
+            }
+            v8Isolate->SetModifyCodeGenerationFromStringsCallback(nullptr);
         }
-        {
-            auto internalV8Locker = GetUniqueV8Locker();
-            auto v8IsolateScope = GetV8IsolateScope();
-            V8HandleScope v8HandleScope(v8Isolate);
-            // node::CreateIsolateData is thread-safe.
-            nodeIsolateData.reset(node::CreateIsolateData(v8Isolate, &uvLoop, v8PlatformPointer, nodeArrayBufferAllocator.get()));
-            // nodeIsolateData->set_is_building_snapshot(createSnapshotEnabled);
-            node::crypto::InitCryptoOnce(v8Isolate);
-        }
-        v8Isolate->SetModifyCodeGenerationFromStringsCallback(nullptr);
 #else
         if (createSnapshotEnabled) {
             v8Isolate = v8::Isolate::Allocate();
