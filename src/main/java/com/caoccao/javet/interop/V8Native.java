@@ -97,7 +97,7 @@ class V8Native implements IV8Native {
     public native boolean contextSetLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int length);
 
     @Override
-    public native void createV8Inspector(long v8RuntimeHandle, Object v8Inspector);
+    public native int createV8Inspector(long v8RuntimeHandle, Object v8Inspector, String name, boolean waitForDebugger);
 
     @Override
     public native long createV8Runtime(Object runtimeOptions);
@@ -688,5 +688,26 @@ class V8Native implements IV8Native {
     public native void unregisterNearHeapLimitCallback(long v8RuntimeHandle, long heapLimit);
 
     @Override
-    public native void v8InspectorSend(long v8RuntimeHandle, String message);
+    public native void v8InspectorBreakProgram(long v8RuntimeHandle, int sessionId, String breakReason, String breakDetails);
+
+    @Override
+    public native void v8InspectorCancelPauseOnNextStatement(long v8RuntimeHandle, int sessionId);
+
+    @Override
+    public native void v8InspectorCloseSession(long v8RuntimeHandle, int sessionId);
+
+    @Override
+    public native Object v8InspectorEvaluate(long v8RuntimeHandle, int sessionId, String expression, boolean includeCommandLineAPI);
+
+    @Override
+    public native void v8InspectorSchedulePauseOnNextStatement(long v8RuntimeHandle, int sessionId, String breakReason, String breakDetails);
+
+    @Override
+    public native void v8InspectorSend(long v8RuntimeHandle, int sessionId, String message);
+
+    @Override
+    public native void v8InspectorSetSkipAllPauses(long v8RuntimeHandle, int sessionId, boolean skip);
+
+    @Override
+    public native void v8InspectorWaitForDebugger(long v8RuntimeHandle);
 }

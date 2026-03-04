@@ -18,6 +18,7 @@ package com.caoccao.javet.tutorial.cdt;
 
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.IV8InspectorListener;
+import com.caoccao.javet.interop.V8Inspector;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import org.eclipse.jetty.websocket.api.Session;
@@ -25,11 +26,13 @@ import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 
 public class CDTWebSocketAdapter extends WebSocketAdapter implements IV8InspectorListener {
     protected IJavetLogger logger;
+    protected V8Inspector v8Inspector;
     protected V8Runtime v8Runtime;
 
     public CDTWebSocketAdapter(V8Runtime v8Runtime) {
         this.logger = new JavetDefaultLogger(getClass().getName());
         this.v8Runtime = v8Runtime;
+        this.v8Inspector = v8Runtime.createV8Inspector("CDT");
         logger.logInfo("CDTWebSocketAdapter()");
     }
 
@@ -44,7 +47,12 @@ public class CDTWebSocketAdapter extends WebSocketAdapter implements IV8Inspecto
     @Override
     public void onWebSocketClose(int statusCode, String reason) {
         logger.logInfo("onWebSocketClose(): {0} {1}", Integer.toString(statusCode), reason);
-        v8Runtime.getV8Inspector().removeListeners(this);
+        v8Inspector.removeListeners(this);
+        try {
+            v8Inspector.close();
+        } catch (Exception e) {
+            logger.logError(e, e.getMessage());
+        }
         super.onWebSocketClose(statusCode, reason);
     }
 
@@ -52,7 +60,7 @@ public class CDTWebSocketAdapter extends WebSocketAdapter implements IV8Inspecto
     public void onWebSocketConnect(Session session) {
         super.onWebSocketConnect(session);
         logger.logInfo("onWebSocketConnect(): {0}", session.getRemoteAddress().toString());
-        v8Runtime.getV8Inspector().addListeners(this);
+        v8Inspector.addListeners(this);
     }
 
     @Override
@@ -64,7 +72,7 @@ public class CDTWebSocketAdapter extends WebSocketAdapter implements IV8Inspecto
     public void onWebSocketText(String message) {
         logger.logInfo("onWebSocketText(): {0}", message);
         try {
-            v8Runtime.getV8Inspector().sendRequest(message);
+            v8Inspector.sendRequest(message);
         } catch (Exception e) {
             logger.logError(e, e.getMessage());
         }

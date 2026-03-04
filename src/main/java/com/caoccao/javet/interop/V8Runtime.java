@@ -127,12 +127,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     static final IJavetConverter DEFAULT_CONVERTER = new JavetObjectConverter();
     /**
-     * The Default message format javet inspector.
-     *
-     * @since 0.7.3
-     */
-    static final String DEFAULT_MESSAGE_FORMAT_JAVET_INSPECTOR = "Javet Inspector {0}";
-    /**
      * The Invalid handle.
      *
      * @since 0.7.0
@@ -330,12 +324,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     IJavetPromiseRejectCallback promiseRejectCallback;
     /**
-     * The V8 inspector.
-     *
-     * @since 0.7.3
-     */
-    V8Inspector v8Inspector;
-    /**
      * The V8 module resolver.
      *
      * @since 0.9.3
@@ -383,7 +371,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         referenceLock = new Object();
         referenceMap = new HashMap<>();
         this.v8Host = Objects.requireNonNull(v8Host);
-        v8Inspector = null;
         this.v8Native = Objects.requireNonNull(v8Native);
         this.jsRuntimeType = Objects.requireNonNull(jsRuntimeType);
         v8ModuleLock = new Object();
@@ -647,6 +634,48 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Creates a V8 inspector session.
+     * <p>
+     * Each call creates a new session with its own CDP channel. Multiple sessions
+     * can coexist on the same runtime, allowing multiple DevTools clients to connect
+     * simultaneously. Each session receives its own responses and notifications
+     * independently.
+     * <p>
+     * The returned {@link V8Inspector} implements {@link IJavetClosable}. Call
+     * {@link V8Inspector#close()} when the session is no longer needed. Sessions
+     * are also cleaned up automatically when the V8 runtime is closed.
+     *
+     * @param name the session name
+     * @return the V8 inspector, or null if the runtime is closed
+     * @since 5.0.5
+     */
+    public V8Inspector createV8Inspector(String name) {
+        return createV8Inspector(name, false);
+    }
+
+    /**
+     * Creates a V8 inspector session, optionally waiting for a debugger to attach.
+     * <p>
+     * When {@code waitForDebugger} is {@code true}, the inspector session is
+     * connected with {@code kWaitingForDebugger}. V8 will call the
+     * {@link IV8InspectorListener#runIfWaitingForDebugger(int)} callback once
+     * all sessions have sent {@code Runtime.runIfWaitingForDebugger}. Use
+     * {@link V8Inspector#waitForDebugger()} to block execution until that signal.
+     *
+     * @param name            the session name
+     * @param waitForDebugger whether the session should wait for the debugger
+     * @return the V8 inspector, or null if the runtime is closed
+     * @since 5.0.5
+     * @see #createV8Inspector(String)
+     */
+    public V8Inspector createV8Inspector(String name, boolean waitForDebugger) {
+        if (!isClosed()) {
+            return new V8Inspector(this, name, v8Native, waitForDebugger);
+        }
+        return null;
+    }
+
+    /**
      * Compile a V8 module and add that V8 module to the internal V8 module map.
      *
      * @param scriptString   the script string
@@ -805,6 +834,15 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     /**
      * Create snapshot in byte array.
+     * <p>
+     * In V8 mode, the runtime remains usable after the snapshot is created.
+     * In Node.js mode, the snapshot creation is a destructive operation that
+     * consumes the environment and context. The runtime must be closed after
+     * the snapshot is created and must not be used for further script execution.
+     * <p>
+     * In V8 mode, a snapshot can be created from a runtime that was itself
+     * restored from a snapshot (chained snapshots). In Node.js mode, this is
+     * not supported: a runtime restored from a snapshot cannot create a new snapshot.
      *
      * @return the byte array
      * @throws JavetException the javet exception
@@ -1770,33 +1808,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     V8Host getV8Host() {
         return v8Host;
-    }
-
-    /**
-     * Gets V8 inspector.
-     *
-     * @return the V8 inspector
-     * @since 0.7.3
-     */
-    public V8Inspector getV8Inspector() {
-        return getV8Inspector(MessageFormat.format(DEFAULT_MESSAGE_FORMAT_JAVET_INSPECTOR, Long.toString(handle)));
-    }
-
-    /**
-     * Gets V8 inspector by name.
-     *
-     * @param name the name
-     * @return the V8 inspector
-     * @since 0.7.3
-     */
-    public V8Inspector getV8Inspector(String name) {
-        if (!isClosed()) {
-            if (v8Inspector == null) {
-                v8Inspector = new V8Inspector(this, name, v8Native);
-            }
-            return v8Inspector;
-        }
-        return null;
     }
 
     /**
@@ -3434,7 +3445,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         removeReferences();
         removeCallbackContexts();
         removeV8Modules();
-        v8Inspector = null;
     }
 
     /**

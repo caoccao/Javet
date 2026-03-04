@@ -25,6 +25,25 @@
 
 namespace Javet {
     namespace Inspector {
+        static inline std::unique_ptr<std::string> ConvertFromStringViewToStdStringPointer(
+            v8::Isolate* v8Isolate,
+            const v8_inspector::StringView& stringView) {
+            int length = static_cast<int>(stringView.length());
+            V8LocalString v8StringMessage;
+            if (length > 0) {
+                if (stringView.is8Bit()) {
+                    v8StringMessage = v8::String::NewFromOneByte(v8Isolate, reinterpret_cast<const uint8_t*>(
+                        stringView.characters8()), v8::NewStringType::kNormal, length).ToLocalChecked();
+                }
+                else {
+                    v8StringMessage = v8::String::NewFromTwoByte(v8Isolate, reinterpret_cast<const uint16_t*>(
+                        stringView.characters16()), v8::NewStringType::kNormal, length).ToLocalChecked();
+                }
+            }
+            V8StringUtf8Value v8Utf8Value(v8Isolate, v8StringMessage);
+            return std::make_unique<std::string>(*v8Utf8Value);
+        }
+
         static inline std::unique_ptr<v8_inspector::StringView> ConvertFromStdStringToStringViewPointer(
             const std::string& stdString) {
             return std::make_unique<v8_inspector::StringView>(
@@ -54,90 +73,535 @@ namespace Javet {
 
         void Initialize(JNIEnv* jniEnv) noexcept {
             jclassV8Inspector = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/V8Inspector");
+            jmethodIDV8InspectorConsoleAPIMessage = jniEnv->GetMethodID(jclassV8Inspector, "consoleAPIMessage", "(IILjava/lang/String;Ljava/lang/String;II)V");
             jmethodIDV8InspectorFlushProtocolNotifications = jniEnv->GetMethodID(jclassV8Inspector, "flushProtocolNotifications", "()V");
-            jmethodIDV8InspectorGetName = jniEnv->GetMethodID(jclassV8Inspector, "getName", "()Ljava/lang/String;");
+            jmethodIDV8InspectorInstallAdditionalCommandLineAPI = jniEnv->GetMethodID(jclassV8Inspector, "installAdditionalCommandLineAPI", "(Lcom/caoccao/javet/values/reference/IV8ValueObject;)V");
             jmethodIDV8InspectorReceiveNotification = jniEnv->GetMethodID(jclassV8Inspector, "receiveNotification", "(Ljava/lang/String;)V");
             jmethodIDV8InspectorReceiveResponse = jniEnv->GetMethodID(jclassV8Inspector, "receiveResponse", "(Ljava/lang/String;)V");
             jmethodIDV8InspectorRunIfWaitingForDebugger = jniEnv->GetMethodID(jclassV8Inspector, "runIfWaitingForDebugger", "(I)V");
         }
 
-        JavetInspector::JavetInspector(V8Runtime* v8Runtime, const jobject mV8Inspector) noexcept {
-            FETCH_JNI_ENV(GlobalJavaVM);
-            this->mV8Inspector = jniEnv->NewGlobalRef(mV8Inspector);
-            INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
+        JavetInspector::JavetInspector(V8Runtime* v8Runtime, const std::string& name) noexcept {
             this->v8Runtime = v8Runtime;
-            jstring mName = (jstring)jniEnv->CallObjectMethod(this->mV8Inspector, jmethodIDV8InspectorGetName);
-            char const* umName = jniEnv->GetStringUTFChars(mName, nullptr);
-            std::string name(umName, jniEnv->GetStringUTFLength(mName));
-            client.reset(new JavetInspectorClient(v8Runtime, name, this->mV8Inspector));
-            jniEnv->ReleaseStringUTFChars(mName, umName);
+            client.reset(new JavetInspectorClient(v8Runtime, name));
         }
 
-        void JavetInspector::send(const std::string& message) noexcept {
-            LOG_DEBUG("Sending request: " << message);
-            auto stringViewMessagePointer = ConvertFromStdStringToStringViewPointer(message);
-            client->dispatchProtocolMessage(*stringViewMessagePointer.get());
+        int JavetInspector::addSession(const jobject mV8Inspector, bool waitForDebugger) noexcept {
+            return client->addSession(mV8Inspector, waitForDebugger);
+        }
+
+        void JavetInspector::breakProgram(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept {
+            client->breakProgram(sessionId, breakReason, breakDetails);
+        }
+
+        void JavetInspector::cancelPauseOnNextStatement(int sessionId) noexcept {
+            client->cancelPauseOnNextStatement(sessionId);
+        }
+
+        jobject JavetInspector::evaluate(JNIEnv* jniEnv, int sessionId, const std::string& expression, bool includeCommandLineAPI) noexcept {
+            return client->evaluate(jniEnv, sessionId, expression, includeCommandLineAPI);
+        }
+
+        void JavetInspector::contextCreated() noexcept {
+            auto v8Context = v8Runtime->GetV8LocalContext();
+            client->contextCreated(v8Context);
+        }
+
+        void JavetInspector::contextDestroyed() noexcept {
+            auto v8Context = v8Runtime->GetV8LocalContext();
+            client->contextDestroyed(v8Context);
+        }
+
+        void JavetInspector::drainQueue() noexcept {
+            client->drainQueue();
+            // Pump microtasks so that promise-based responses
+            // (e.g., Runtime.evaluate with replMode/awaitPromise) are delivered immediately.
+            v8Runtime->v8Isolate->PerformMicrotaskCheckpoint();
+        }
+
+        void JavetInspector::idleFinished() noexcept {
+            client->idleFinished();
+        }
+
+        void JavetInspector::idleStarted() noexcept {
+            client->idleStarted();
+        }
+
+        bool JavetInspector::isMessageLoopActive() const noexcept {
+            return client->isRunningMessageLoop() || client->isWaitingForDebugger();
+        }
+
+        bool JavetInspector::isWaitingForDebugger() const noexcept {
+            return client->isWaitingForDebugger();
+        }
+
+        bool JavetInspector::isPaused() const noexcept {
+            return client->isRunningMessageLoop();
+        }
+
+        void JavetInspector::postMessage(int sessionId, const std::string& message) noexcept {
+            LOG_DEBUG("Queueing request for session " << sessionId << ": " << message);
+            client->postMessage(sessionId, message);
+        }
+
+        void JavetInspector::removeSession(int sessionId) noexcept {
+            client->removeSession(sessionId);
+        }
+
+        void JavetInspector::schedulePauseOnNextStatement(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept {
+            client->schedulePauseOnNextStatement(sessionId, breakReason, breakDetails);
+        }
+
+        void JavetInspector::setSkipAllPauses(int sessionId, bool skip) noexcept {
+            client->setSkipAllPauses(sessionId, skip);
+        }
+
+        void JavetInspector::waitForDebugger() noexcept {
+            client->waitForDebuggerLoop();
         }
 
         JavetInspector::~JavetInspector() {
+            // Client destructor cleans up all sessions.
+        }
+
+        JavetInspectorClient::JavetInspectorClient(
+            V8Runtime* v8Runtime,
+            const std::string& name) noexcept
+            : v8Inspector(nullptr) {
+            activateMessageLoop = false;
+            runningMessageLoop.store(false);
+            waitingForDebugger.store(false);
+            nextSessionId = 1;
+            this->v8Runtime = v8Runtime;
+            this->name = name;
+            auto v8Context = v8Runtime->GetV8LocalContext();
+            v8Inspector.reset(v8_inspector::V8Inspector::create(v8Runtime->v8Isolate, this).release());
+            v8Context->SetAlignedPointerInEmbedderData(EMBEDDER_DATA_INDEX, this);
+            auto humanReadableNamePointer = ConvertFromStdStringToStringViewPointer(name);
+            v8_inspector::V8ContextInfo contextInfo(v8Context, CONTEXT_GROUP_ID, *humanReadableNamePointer.get());
+            contextInfo.origin = *humanReadableNamePointer.get();
+            static const std::string auxDataStr = "{\"isDefault\":true}";
+            auto auxDataPointer = ConvertFromStdStringToStringViewPointer(auxDataStr);
+            contextInfo.auxData = *auxDataPointer.get();
+            v8Inspector->contextCreated(contextInfo);
+        }
+
+        int JavetInspectorClient::addSession(const jobject mV8Inspector, bool waitForDebugger) noexcept {
+            int sessionId = nextSessionId++;
+            auto session = std::make_unique<JavetInspectorSession>(
+                sessionId, v8Runtime, mV8Inspector, v8Inspector.get(),
+                waitForDebugger, messageMutex);
+            std::lock_guard<std::mutex> lock(messageMutex);
+            sessionMap[sessionId] = std::move(session);
+            return sessionId;
+        }
+
+        void JavetInspectorClient::breakProgram(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept {
+            // Look up the session under the lock, then release it before
+            // calling breakProgram().  V8's breakProgram() may enter
+            // runMessageLoopOnPause() which also acquires messageMutex,
+            // so holding it here would deadlock.
+            JavetInspectorSession* sessionPtr = nullptr;
+            {
+                std::lock_guard<std::mutex> lock(messageMutex);
+                auto it = sessionMap.find(sessionId);
+                if (it != sessionMap.end()) {
+                    sessionPtr = it->second.get();
+                }
+            }
+            if (sessionPtr) {
+                sessionPtr->breakProgram(breakReason, breakDetails);
+            }
+        }
+
+        void JavetInspectorClient::cancelPauseOnNextStatement(int sessionId) noexcept {
+            JavetInspectorSession* sessionPtr = nullptr;
+            {
+                std::lock_guard<std::mutex> lock(messageMutex);
+                auto it = sessionMap.find(sessionId);
+                if (it != sessionMap.end()) {
+                    sessionPtr = it->second.get();
+                }
+            }
+            if (sessionPtr) {
+                sessionPtr->cancelPauseOnNextStatement();
+            }
+        }
+
+        void JavetInspectorClient::contextCreated(const V8LocalContext& v8Context) noexcept {
+            v8Context->SetAlignedPointerInEmbedderData(EMBEDDER_DATA_INDEX, this);
+            auto humanReadableNamePointer = ConvertFromStdStringToStringViewPointer(name);
+            v8_inspector::V8ContextInfo contextInfo(v8Context, CONTEXT_GROUP_ID, *humanReadableNamePointer.get());
+            contextInfo.origin = *humanReadableNamePointer.get();
+            static const std::string auxDataStr = "{\"isDefault\":true}";
+            auto auxDataPointer = ConvertFromStdStringToStringViewPointer(auxDataStr);
+            contextInfo.auxData = *auxDataPointer.get();
+            v8Inspector->contextCreated(contextInfo);
+        }
+
+        void JavetInspectorClient::contextDestroyed(const V8LocalContext& v8Context) noexcept {
+            v8Inspector->contextDestroyed(v8Context);
+        }
+
+        void JavetInspectorClient::consoleAPIMessage(
+                int contextGroupId,
+                v8::Isolate::MessageErrorLevel level,
+                const v8_inspector::StringView& message,
+                const v8_inspector::StringView& url,
+                unsigned lineNumber,
+                unsigned columnNumber,
+                v8_inspector::V8StackTrace*) {
+            V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
+            auto stdMessage = ConvertFromStringViewToStdStringPointer(v8Runtime->v8Isolate, message);
+            auto stdUrl = ConvertFromStringViewToStdStringPointer(v8Runtime->v8Isolate, url);
+            // Notify all sessions' Java objects.
+            std::vector<jobject> javaObjects;
+            {
+                std::lock_guard<std::mutex> lock(messageMutex);
+                for (auto& [id, session] : sessionMap) {
+                    javaObjects.push_back(session->getJavaObject());
+                }
+            }
+            FETCH_JNI_ENV(GlobalJavaVM);
+            jstring jMessage = Javet::Converter::ToJavaString(jniEnv, stdMessage->c_str());
+            jstring jUrl = Javet::Converter::ToJavaString(jniEnv, stdUrl->c_str());
+            for (jobject jobj : javaObjects) {
+                jniEnv->CallVoidMethod(jobj, jmethodIDV8InspectorConsoleAPIMessage,
+                    contextGroupId, static_cast<jint>(level), jMessage, jUrl,
+                    static_cast<jint>(lineNumber), static_cast<jint>(columnNumber));
+            }
+            jniEnv->DeleteLocalRef(jMessage);
+            jniEnv->DeleteLocalRef(jUrl);
+        }
+
+        void JavetInspectorClient::drainQueue() noexcept {
+            // Collect session pointers under the lock. During the pause loop
+            // the V8 lock is held, so no session can be removed concurrently.
+            std::vector<JavetInspectorSession*> sessionPtrs;
+            {
+                std::lock_guard<std::mutex> lock(messageMutex);
+                for (auto& [id, session] : sessionMap) {
+                    sessionPtrs.push_back(session.get());
+                }
+            }
+            for (auto* session : sessionPtrs) {
+                session->drainQueue();
+            }
+        }
+
+        V8LocalContext JavetInspectorClient::ensureDefaultContextInGroup(int contextGroupId) {
+            return v8Runtime->GetV8LocalContext();
+        }
+
+        jobject JavetInspectorClient::evaluate(JNIEnv* jniEnv, int sessionId, const std::string& expression, bool includeCommandLineAPI) noexcept {
+            JavetInspectorSession* sessionPtr = nullptr;
+            {
+                std::lock_guard<std::mutex> lock(messageMutex);
+                auto it = sessionMap.find(sessionId);
+                if (it != sessionMap.end()) {
+                    sessionPtr = it->second.get();
+                }
+            }
+            if (sessionPtr) {
+                return sessionPtr->evaluate(jniEnv, expression, includeCommandLineAPI);
+            }
+            return nullptr;
+        }
+
+        void JavetInspectorClient::idleFinished() noexcept {
+            v8Inspector->idleFinished();
+        }
+
+        void JavetInspectorClient::idleStarted() noexcept {
+            v8Inspector->idleStarted();
+        }
+
+        void JavetInspectorClient::installAdditionalCommandLineAPI(
+                v8::Local<v8::Context> v8Context, v8::Local<v8::Object> commandLineAPI) {
+            // Wrap the command-line API object via the converter so Java
+            // listeners can install custom properties on it.
+            // The Java side is responsible for closing the object.
+            FETCH_JNI_ENV(GlobalJavaVM);
+            jobject jCommandLineAPI = Javet::Converter::ToExternalV8Value(
+                jniEnv, v8Runtime, v8Context, commandLineAPI);
+            if (jCommandLineAPI != nullptr) {
+                std::vector<jobject> javaObjects;
+                {
+                    std::lock_guard<std::mutex> lock(messageMutex);
+                    for (auto& [id, session] : sessionMap) {
+                        javaObjects.push_back(session->getJavaObject());
+                    }
+                }
+                for (jobject jobj : javaObjects) {
+                    jniEnv->CallVoidMethod(jobj, jmethodIDV8InspectorInstallAdditionalCommandLineAPI, jCommandLineAPI);
+                }
+            }
+        }
+
+        bool JavetInspectorClient::isRunningMessageLoop() const noexcept {
+            return runningMessageLoop.load();
+        }
+
+        bool JavetInspectorClient::isWaitingForDebugger() const noexcept {
+            return waitingForDebugger.load();
+        }
+
+        void JavetInspectorClient::postMessage(int sessionId, const std::string& message) noexcept {
+            JavetInspectorSession* sessionPtr = nullptr;
+            {
+                std::lock_guard<std::mutex> lock(messageMutex);
+                auto it = sessionMap.find(sessionId);
+                if (it != sessionMap.end()) {
+                    sessionPtr = it->second.get();
+                }
+            }
+            if (sessionPtr) {
+                sessionPtr->postMessage(message);
+            }
+            messageCondition.notify_one();
+        }
+
+        void JavetInspectorClient::quitMessageLoopOnPause() {
+            activateMessageLoop = false;
+            messageCondition.notify_one();
+        }
+
+        void JavetInspectorClient::removeSession(int sessionId) noexcept {
+            std::lock_guard<std::mutex> lock(messageMutex);
+            sessionMap.erase(sessionId);
+        }
+
+        std::unique_ptr<v8_inspector::StringBuffer> JavetInspectorClient::resourceNameToUrl(
+                const v8_inspector::StringView& resourceName) {
+            // Pass the resource name through as a URL so DevTools shows clickable source links.
+            return v8_inspector::StringBuffer::create(resourceName);
+        }
+
+        void JavetInspectorClient::runIfWaitingForDebugger(int contextGroupId) {
+            waitingForDebugger.store(false);
+            messageCondition.notify_one();
+            // Notify all sessions' Java objects.
+            std::vector<jobject> javaObjects;
+            {
+                std::lock_guard<std::mutex> lock(messageMutex);
+                for (auto& [id, session] : sessionMap) {
+                    javaObjects.push_back(session->getJavaObject());
+                }
+            }
+            FETCH_JNI_ENV(GlobalJavaVM);
+            for (jobject jobj : javaObjects) {
+                jniEnv->CallVoidMethod(jobj, jmethodIDV8InspectorRunIfWaitingForDebugger, contextGroupId);
+            }
+        }
+
+        void JavetInspectorClient::runMessageLoopOnPause(int contextGroupId) {
+            if (!runningMessageLoop) {
+                activateMessageLoop = true;
+                runningMessageLoop.store(true);
+                while (activateMessageLoop) {
+                    // Drain any queued protocol messages from the DevTools frontend.
+                    drainQueue();
+                    // Pump V8 platform tasks.
+                    while (v8::platform::PumpMessageLoop(v8Runtime->v8PlatformPointer, v8Runtime->v8Isolate)) {
+                    }
+                    // Wait for new messages instead of busy-spinning.
+                    {
+                        std::unique_lock<std::mutex> lock(messageMutex);
+                        bool anyQueued = false;
+                        for (auto& [id, session] : sessionMap) {
+                            if (session->hasQueuedMessages()) {
+                                anyQueued = true;
+                                break;
+                            }
+                        }
+                        if (activateMessageLoop && !anyQueued) {
+                            messageCondition.wait_for(lock, std::chrono::milliseconds(10));
+                        }
+                    }
+                }
+                runningMessageLoop.store(false);
+            }
+        }
+
+        void JavetInspectorClient::schedulePauseOnNextStatement(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept {
+            JavetInspectorSession* sessionPtr = nullptr;
+            {
+                std::lock_guard<std::mutex> lock(messageMutex);
+                auto it = sessionMap.find(sessionId);
+                if (it != sessionMap.end()) {
+                    sessionPtr = it->second.get();
+                }
+            }
+            if (sessionPtr) {
+                sessionPtr->schedulePauseOnNextStatement(breakReason, breakDetails);
+            }
+        }
+
+        void JavetInspectorClient::setSkipAllPauses(int sessionId, bool skip) noexcept {
+            JavetInspectorSession* sessionPtr = nullptr;
+            {
+                std::lock_guard<std::mutex> lock(messageMutex);
+                auto it = sessionMap.find(sessionId);
+                if (it != sessionMap.end()) {
+                    sessionPtr = it->second.get();
+                }
+            }
+            if (sessionPtr) {
+                sessionPtr->setSkipAllPauses(skip);
+            }
+        }
+
+        void JavetInspectorClient::waitForDebuggerLoop() noexcept {
+            waitingForDebugger.store(true);
+            while (waitingForDebugger.load()) {
+                // Drain any queued protocol messages from the DevTools frontend.
+                drainQueue();
+                // Pump V8 platform tasks.
+                while (v8::platform::PumpMessageLoop(v8Runtime->v8PlatformPointer, v8Runtime->v8Isolate)) {
+                }
+                // Wait for new messages instead of busy-spinning.
+                {
+                    std::unique_lock<std::mutex> lock(messageMutex);
+                    bool anyQueued = false;
+                    for (auto& [id, session] : sessionMap) {
+                        if (session->hasQueuedMessages()) {
+                            anyQueued = true;
+                            break;
+                        }
+                    }
+                    if (waitingForDebugger.load() && !anyQueued) {
+                        messageCondition.wait_for(lock, std::chrono::milliseconds(10));
+                    }
+                }
+            }
+        }
+
+        JavetInspectorSession::JavetInspectorSession(
+            int sessionId,
+            V8Runtime* v8Runtime,
+            const jobject mV8Inspector,
+            v8_inspector::V8Inspector* v8Inspector,
+            bool waitForDebugger,
+            std::mutex& sharedMutex) noexcept
+            : sharedMutex(sharedMutex) {
+            this->sessionId = sessionId;
+            this->v8Runtime = v8Runtime;
+            FETCH_JNI_ENV(GlobalJavaVM);
+            this->mV8Inspector = jniEnv->NewGlobalRef(mV8Inspector);
+            INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
+            channel.reset(new JavetInspectorChannel(v8Runtime, this->mV8Inspector));
+            auto pauseState = waitForDebugger
+                ? v8_inspector::V8Inspector::kWaitingForDebugger
+                : v8_inspector::V8Inspector::kNotWaitingForDebugger;
+#ifdef ENABLE_NODE
+            v8InspectorSession.reset(v8Inspector->connect(
+                CONTEXT_GROUP_ID,
+                channel.get(),
+                v8_inspector::StringView(),
+                v8_inspector::V8Inspector::kFullyTrusted,
+                pauseState).release());
+#else
+            v8InspectorSession = v8Inspector->connectShared(
+                CONTEXT_GROUP_ID,
+                channel.get(),
+                v8_inspector::StringView(),
+                v8_inspector::V8Inspector::kFullyTrusted,
+                pauseState);
+#endif
+        }
+
+        int JavetInspectorSession::getSessionId() const noexcept {
+            return sessionId;
+        }
+
+        jobject JavetInspectorSession::getJavaObject() const noexcept {
+            return mV8Inspector;
+        }
+
+        void JavetInspectorSession::drainQueue() noexcept {
+            std::unique_lock<std::mutex> lock(sharedMutex);
+            while (!messageQueue.empty()) {
+                std::string message = std::move(messageQueue.front());
+                messageQueue.pop();
+                lock.unlock();
+                auto sv = ConvertFromStdStringToStringViewPointer(message);
+                v8InspectorSession->dispatchProtocolMessage(*sv);
+                lock.lock();
+            }
+        }
+
+        void JavetInspectorSession::postMessage(const std::string& message) noexcept {
+            std::lock_guard<std::mutex> lock(sharedMutex);
+            messageQueue.push(message);
+        }
+
+        bool JavetInspectorSession::hasQueuedMessages() const noexcept {
+            // Caller must hold sharedMutex.
+            return !messageQueue.empty();
+        }
+
+        void JavetInspectorSession::stop() noexcept {
+            if (v8InspectorSession) {
+                v8InspectorSession->stop();
+            }
+        }
+
+        void JavetInspectorSession::breakProgram(const std::string& breakReason, const std::string& breakDetails) noexcept {
+            if (v8InspectorSession) {
+                auto reasonSV = ConvertFromStdStringToStringViewPointer(breakReason);
+                auto detailsSV = ConvertFromStdStringToStringViewPointer(breakDetails);
+                v8InspectorSession->breakProgram(*reasonSV, *detailsSV);
+            }
+        }
+
+        void JavetInspectorSession::cancelPauseOnNextStatement() noexcept {
+            if (v8InspectorSession) {
+                v8InspectorSession->cancelPauseOnNextStatement();
+            }
+        }
+
+        jobject JavetInspectorSession::evaluate(JNIEnv* jniEnv, const std::string& expression, bool includeCommandLineAPI) noexcept {
+            if (v8InspectorSession) {
+                auto v8Context = v8Runtime->GetV8LocalContext();
+                auto expressionSV = ConvertFromStdStringToStringViewPointer(expression);
+                auto result = v8InspectorSession->evaluate(v8Context, *expressionSV, includeCommandLineAPI);
+                if (result.type == v8_inspector::V8InspectorSession::EvaluateResult::ResultType::kSuccess
+                    || result.type == v8_inspector::V8InspectorSession::EvaluateResult::ResultType::kException) {
+                    if (!result.value.IsEmpty()) {
+                        return Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, result.value);
+                    }
+                }
+            }
+            return nullptr;
+        }
+
+        void JavetInspectorSession::schedulePauseOnNextStatement(const std::string& breakReason, const std::string& breakDetails) noexcept {
+            if (v8InspectorSession) {
+                auto reasonSV = ConvertFromStdStringToStringViewPointer(breakReason);
+                auto detailsSV = ConvertFromStdStringToStringViewPointer(breakDetails);
+                v8InspectorSession->schedulePauseOnNextStatement(*reasonSV, *detailsSV);
+            }
+        }
+
+        void JavetInspectorSession::setSkipAllPauses(bool skip) noexcept {
+            if (v8InspectorSession) {
+                v8InspectorSession->setSkipAllPauses(skip);
+            }
+        }
+
+        JavetInspectorSession::~JavetInspectorSession() {
+            // Gracefully stop the session to disable debugger pausing
+            // and prevent callbacks during teardown.
+            stop();
+            // Disconnect the session (may reference the channel).
+            v8InspectorSession.reset();
+            channel.reset();
             if (mV8Inspector != nullptr) {
                 FETCH_JNI_ENV(GlobalJavaVM);
                 jniEnv->DeleteGlobalRef(mV8Inspector);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
                 mV8Inspector = nullptr;
             }
-        }
-
-        JavetInspectorClient::JavetInspectorClient(
-            V8Runtime* v8Runtime,
-            const std::string& name,
-            const jobject mV8Inspector) noexcept
-            : javetInspectorChannel(nullptr), v8Inspector(nullptr), v8InspectorSession(nullptr) {
-            activateMessageLoop = false;
-            runningMessageLoop = false;
-            this->mV8Inspector = mV8Inspector;
-            this->v8Runtime = v8Runtime;
-            auto v8Context = v8Runtime->GetV8LocalContext();
-            javetInspectorChannel.reset(new JavetInspectorChannel(v8Runtime, mV8Inspector));
-            v8Inspector.reset(v8_inspector::V8Inspector::create(v8Runtime->v8Isolate, this).release());
-            v8InspectorSession.reset(v8Inspector->connect(
-                CONTEXT_GROUP_ID,
-                javetInspectorChannel.get(),
-                v8_inspector::StringView(),
-                v8_inspector::V8Inspector::kFullyTrusted).release());
-            v8Context->SetAlignedPointerInEmbedderData(EMBEDDER_DATA_INDEX, this);
-            auto humanReadableNamePointer = ConvertFromStdStringToStringViewPointer(name);
-            v8Inspector->contextCreated(v8_inspector::V8ContextInfo(v8Context, CONTEXT_GROUP_ID, *humanReadableNamePointer.get()));
-        }
-
-        void JavetInspectorClient::dispatchProtocolMessage(const v8_inspector::StringView& message) noexcept {
-            v8InspectorSession->dispatchProtocolMessage(message);
-        }
-
-        void JavetInspectorClient::quitMessageLoopOnPause() {
-            activateMessageLoop = false;
-        }
-
-        void JavetInspectorClient::runIfWaitingForDebugger(int contextGroupId) {
-            FETCH_JNI_ENV(GlobalJavaVM);
-            jniEnv->CallVoidMethod(mV8Inspector, jmethodIDV8InspectorRunIfWaitingForDebugger, contextGroupId);
-        }
-
-        void JavetInspectorClient::runMessageLoopOnPause(int contextGroupId) {
-            if (!runningMessageLoop) {
-                activateMessageLoop = true;
-                runningMessageLoop = true;
-                while (activateMessageLoop) {
-                    while (v8::platform::PumpMessageLoop(v8Runtime->v8PlatformPointer, v8Runtime->v8Isolate)) {
-                    }
-                }
-                runningMessageLoop = false;
-                activateMessageLoop = false;
-            }
-        }
-
-        V8LocalContext JavetInspectorClient::ensureDefaultContextInGroup(int contextGroupId) {
-            return v8Runtime->GetV8LocalContext();
         }
 
         JavetInspectorChannel::JavetInspectorChannel(V8Runtime* v8Runtime, const jobject mV8Inspector) noexcept {

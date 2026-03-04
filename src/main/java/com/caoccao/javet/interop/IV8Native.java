@@ -67,7 +67,7 @@ public interface IV8Native {
 
     boolean contextSetLength(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int length);
 
-    void createV8Inspector(long v8RuntimeHandle, Object v8Inspector);
+    int createV8Inspector(long v8RuntimeHandle, Object v8Inspector, String name, boolean waitForDebugger);
 
     long createV8Runtime(Object runtimeOptions);
 
@@ -454,5 +454,19 @@ public interface IV8Native {
 
     void unregisterNearHeapLimitCallback(long v8RuntimeHandle, long heapLimit);
 
-    void v8InspectorSend(long v8RuntimeHandle, String message);
+    void v8InspectorBreakProgram(long v8RuntimeHandle, int sessionId, String breakReason, String breakDetails);
+
+    void v8InspectorCancelPauseOnNextStatement(long v8RuntimeHandle, int sessionId);
+
+    void v8InspectorCloseSession(long v8RuntimeHandle, int sessionId);
+
+    Object v8InspectorEvaluate(long v8RuntimeHandle, int sessionId, String expression, boolean includeCommandLineAPI);
+
+    void v8InspectorSchedulePauseOnNextStatement(long v8RuntimeHandle, int sessionId, String breakReason, String breakDetails);
+
+    void v8InspectorSend(long v8RuntimeHandle, int sessionId, String message);
+
+    void v8InspectorSetSkipAllPauses(long v8RuntimeHandle, int sessionId, boolean skip);
+
+    void v8InspectorWaitForDebugger(long v8RuntimeHandle);
 }

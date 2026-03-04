@@ -99,10 +99,16 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
     INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteV8Runtime);
 }
 
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Inspector
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mV8Inspector) {
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Inspector
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mV8Inspector, jstring mName, jboolean waitForDebugger) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
-    v8Runtime->v8Inspector.reset(new Javet::Inspector::JavetInspector(v8Runtime, mV8Inspector));
+    if (!v8Runtime->v8Inspector) {
+        char const* umName = jniEnv->GetStringUTFChars(mName, nullptr);
+        std::string name(umName, jniEnv->GetStringUTFLength(mName));
+        jniEnv->ReleaseStringUTFChars(mName, umName);
+        v8Runtime->v8Inspector.reset(new Javet::Inspector::JavetInspector(v8Runtime, name));
+    }
+    return v8Runtime->v8Inspector->addSession(mV8Inspector, waitForDebugger);
 }
 
 /*
@@ -311,6 +317,9 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_lockV8Runtime
         return false;
     }
     v8Runtime->Lock();
+    if (v8Runtime->v8Inspector) {
+        v8Runtime->v8Inspector->idleFinished();
+    }
     return true;
 }
 
@@ -483,6 +492,9 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runti
     if (!v8Runtime->IsLocked()) {
         return false;
     }
+    if (v8Runtime->v8Inspector) {
+        v8Runtime->v8Inspector->idleStarted();
+    }
     v8Runtime->Unlock();
     return true;
 }
@@ -507,10 +519,100 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterNearHea
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jstring mMessage) {
-    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE_WITH_UNIQUE_LOCKER(v8RuntimeHandle);
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId, jstring mMessage) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     char const* umMessage = jniEnv->GetStringUTFChars(mMessage, nullptr);
     std::string message(umMessage, jniEnv->GetStringUTFLength(mMessage));
-    v8Runtime->v8Inspector->send(message);
     jniEnv->ReleaseStringUTFChars(mMessage, umMessage);
+    if (v8Runtime->v8Inspector) {
+        // Always enqueue first (lock-free). If a message loop is active
+        // (paused at breakpoint or waiting for debugger), the loop on the
+        // execution thread dispatches the message from the queue — no lock
+        // needed.  If no loop is active, acquire the V8 lock to drain the
+        // queue and pump microtasks ourselves.
+        // V8's Locker is reentrant, so the lock-acquire path is also safe
+        // when called from a thread that already holds the lock (e.g.
+        // during a JS→Java callback).
+        v8Runtime->v8Inspector->postMessage(sessionId, message);
+        if (!v8Runtime->v8Inspector->isMessageLoopActive()) {
+            auto v8Locker = v8Runtime->GetUniqueV8Locker();
+            auto v8IsolateScope = v8Runtime->GetV8IsolateScope();
+            V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
+            auto v8Context = v8Runtime->GetV8LocalContext();
+            auto v8ContextScope = v8Runtime->GetV8ContextScope(v8Context);
+            v8Runtime->v8Inspector->drainQueue();
+        }
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorBreakProgram
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId, jstring mBreakReason, jstring mBreakDetails) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    if (v8Runtime->v8Inspector) {
+        char const* umBreakReason = jniEnv->GetStringUTFChars(mBreakReason, nullptr);
+        std::string breakReason(umBreakReason, jniEnv->GetStringUTFLength(mBreakReason));
+        jniEnv->ReleaseStringUTFChars(mBreakReason, umBreakReason);
+        char const* umBreakDetails = jniEnv->GetStringUTFChars(mBreakDetails, nullptr);
+        std::string breakDetails(umBreakDetails, jniEnv->GetStringUTFLength(mBreakDetails));
+        jniEnv->ReleaseStringUTFChars(mBreakDetails, umBreakDetails);
+        v8Runtime->v8Inspector->breakProgram(sessionId, breakReason, breakDetails);
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorCancelPauseOnNextStatement
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    if (v8Runtime->v8Inspector) {
+        v8Runtime->v8Inspector->cancelPauseOnNextStatement(sessionId);
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorCloseSession
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    if (v8Runtime->v8Inspector) {
+        v8Runtime->v8Inspector->removeSession(sessionId);
+    }
+}
+
+JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorEvaluate
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId, jstring mExpression, jboolean includeCommandLineAPI) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    if (v8Runtime->v8Inspector) {
+        char const* umExpression = jniEnv->GetStringUTFChars(mExpression, nullptr);
+        std::string expression(umExpression, jniEnv->GetStringUTFLength(mExpression));
+        jniEnv->ReleaseStringUTFChars(mExpression, umExpression);
+        return v8Runtime->v8Inspector->evaluate(jniEnv, sessionId, expression, includeCommandLineAPI);
+    }
+    return nullptr;
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSchedulePauseOnNextStatement
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId, jstring mBreakReason, jstring mBreakDetails) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    if (v8Runtime->v8Inspector) {
+        char const* umBreakReason = jniEnv->GetStringUTFChars(mBreakReason, nullptr);
+        std::string breakReason(umBreakReason, jniEnv->GetStringUTFLength(mBreakReason));
+        jniEnv->ReleaseStringUTFChars(mBreakReason, umBreakReason);
+        char const* umBreakDetails = jniEnv->GetStringUTFChars(mBreakDetails, nullptr);
+        std::string breakDetails(umBreakDetails, jniEnv->GetStringUTFLength(mBreakDetails));
+        jniEnv->ReleaseStringUTFChars(mBreakDetails, umBreakDetails);
+        v8Runtime->v8Inspector->schedulePauseOnNextStatement(sessionId, breakReason, breakDetails);
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSetSkipAllPauses
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId, jboolean skip) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    if (v8Runtime->v8Inspector) {
+        v8Runtime->v8Inspector->setSkipAllPauses(sessionId, skip);
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorWaitForDebugger
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    if (v8Runtime->v8Inspector) {
+        v8Runtime->v8Inspector->waitForDebugger();
+    }
 }
