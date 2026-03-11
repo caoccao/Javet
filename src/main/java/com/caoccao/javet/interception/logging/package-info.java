@@ -17,7 +17,6 @@
 /**
  * Console interceptors that redirect JavaScript {@code console.log()}, {@code console.warn()},
  * {@code console.error()}, etc. to Java output streams.
- * <p>
  * <ul>
  *   <li>{@link com.caoccao.javet.interception.logging.BaseJavetConsoleInterceptor} - Abstract base providing
  *       console.log, debug, error, info, warn, and trace methods.</li>

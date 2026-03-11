@@ -22,10 +22,24 @@ import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.util.Objects;
 
+/**
+ * The type Base node module.
+ *
+ * @since 0.8.0
+ */
 public abstract class BaseNodeModule implements INodeModule {
+    /** The module object. */
     protected V8ValueObject moduleObject;
+    /** The module name. */
     protected String name;
 
+    /**
+     * Instantiates a new Base node module.
+     *
+     * @param moduleObject the module object
+     * @param name         the module name
+     * @since 0.8.0
+     */
     public BaseNodeModule(V8ValueObject moduleObject, String name) {
         this.moduleObject = Objects.requireNonNull(moduleObject);
         this.name = name;

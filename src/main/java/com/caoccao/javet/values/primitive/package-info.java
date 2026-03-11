@@ -16,7 +16,6 @@
 
 /**
  * V8 primitive value types that do not hold native handles and are safe to use without closing.
- * <p>
  * <ul>
  *   <li>{@link com.caoccao.javet.values.primitive.V8ValueString} - JavaScript string.</li>
  *   <li>{@link com.caoccao.javet.values.primitive.V8ValueInteger} - 32-bit integer.</li>

@@ -45,142 +45,508 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
      * @since 3.0.4
      */
     public static final String NAME = Object.class.getName();
+    /**
+     * The JavaScript expression {@code BigInt.prototype.toLocaleString}.
+     */
     protected static final String BIG_INT_PROTOTYPE_TO_LOCALE_STRING = "BigInt.prototype.toLocaleString";
+    /**
+     * The JavaScript string method name {@code charAt}.
+     */
     protected static final String CHAR_AT = "charAt";
+    /**
+     * The JavaScript string method name {@code codePointAt}.
+     */
     protected static final String CODE_POINT_AT = "codePointAt";
+    /**
+     * The JavaScript expression {@code Date.prototype.getDate}.
+     */
     protected static final String DATE_PROTOTYPE_GET_DATE = "Date.prototype.getDate";
+    /**
+     * The JavaScript expression {@code Date.prototype.getDay}.
+     */
     protected static final String DATE_PROTOTYPE_GET_DAY = "Date.prototype.getDay";
+    /**
+     * The JavaScript expression {@code Date.prototype.getFullYear}.
+     */
     protected static final String DATE_PROTOTYPE_GET_FULL_YEAR = "Date.prototype.getFullYear";
+    /**
+     * The JavaScript expression {@code Date.prototype.getHours}.
+     */
     protected static final String DATE_PROTOTYPE_GET_HOURS = "Date.prototype.getHours";
+    /**
+     * The JavaScript expression {@code Date.prototype.getMilliseconds}.
+     */
     protected static final String DATE_PROTOTYPE_GET_MILLISECONDS = "Date.prototype.getMilliseconds";
+    /**
+     * The JavaScript expression {@code Date.prototype.getMinutes}.
+     */
     protected static final String DATE_PROTOTYPE_GET_MINUTES = "Date.prototype.getMinutes";
+    /**
+     * The JavaScript expression {@code Date.prototype.getMonth}.
+     */
     protected static final String DATE_PROTOTYPE_GET_MONTH = "Date.prototype.getMonth";
+    /**
+     * The JavaScript expression {@code Date.prototype.getSeconds}.
+     */
     protected static final String DATE_PROTOTYPE_GET_SECONDS = "Date.prototype.getSeconds";
+    /**
+     * The JavaScript expression {@code Date.prototype.getTime}.
+     */
     protected static final String DATE_PROTOTYPE_GET_TIME = "Date.prototype.getTime";
+    /**
+     * The JavaScript expression {@code Date.prototype.getTimezoneOffset}.
+     */
     protected static final String DATE_PROTOTYPE_GET_TIMEZONE_OFFSET = "Date.prototype.getTimezoneOffset";
+    /**
+     * The JavaScript expression {@code Date.prototype.getUTCDate}.
+     */
     protected static final String DATE_PROTOTYPE_GET_UTC_DATE = "Date.prototype.getUTCDate";
+    /**
+     * The JavaScript expression {@code Date.prototype.getUTCDay}.
+     */
     protected static final String DATE_PROTOTYPE_GET_UTC_DAY = "Date.prototype.getUTCDay";
+    /**
+     * The JavaScript expression {@code Date.prototype.getUTCFullYear}.
+     */
     protected static final String DATE_PROTOTYPE_GET_UTC_FULL_YEAR = "Date.prototype.getUTCFullYear";
+    /**
+     * The JavaScript expression {@code Date.prototype.getUTCHours}.
+     */
     protected static final String DATE_PROTOTYPE_GET_UTC_HOURS = "Date.prototype.getUTCHours";
+    /**
+     * The JavaScript expression {@code Date.prototype.getUTCMilliseconds}.
+     */
     protected static final String DATE_PROTOTYPE_GET_UTC_MILLISECONDS = "Date.prototype.getUTCMilliseconds";
+    /**
+     * The JavaScript expression {@code Date.prototype.getUTCMinutes}.
+     */
     protected static final String DATE_PROTOTYPE_GET_UTC_MINUTES = "Date.prototype.getUTCMinutes";
+    /**
+     * The JavaScript expression {@code Date.prototype.getUTCMonth}.
+     */
     protected static final String DATE_PROTOTYPE_GET_UTC_MONTH = "Date.prototype.getUTCMonth";
+    /**
+     * The JavaScript expression {@code Date.prototype.getUTCSeconds}.
+     */
     protected static final String DATE_PROTOTYPE_GET_UTC_SECONDS = "Date.prototype.getUTCSeconds";
+    /**
+     * The JavaScript expression {@code Date.prototype.getYear}.
+     */
     protected static final String DATE_PROTOTYPE_GET_YEAR = "Date.prototype.getYear";
+    /**
+     * The JavaScript expression {@code Date.prototype.setDate}.
+     */
     protected static final String DATE_PROTOTYPE_SET_DATE = "Date.prototype.setDate";
+    /**
+     * The JavaScript expression {@code Date.prototype.setFullYear}.
+     */
     protected static final String DATE_PROTOTYPE_SET_FULL_YEAR = "Date.prototype.setFullYear";
+    /**
+     * The JavaScript expression {@code Date.prototype.setHours}.
+     */
     protected static final String DATE_PROTOTYPE_SET_HOURS = "Date.prototype.setHours";
+    /**
+     * The JavaScript expression {@code Date.prototype.setMilliseconds}.
+     */
     protected static final String DATE_PROTOTYPE_SET_MILLISECONDS = "Date.prototype.setMilliseconds";
+    /**
+     * The JavaScript expression {@code Date.prototype.setMinutes}.
+     */
     protected static final String DATE_PROTOTYPE_SET_MINUTES = "Date.prototype.setMinutes";
+    /**
+     * The JavaScript expression {@code Date.prototype.setMonth}.
+     */
     protected static final String DATE_PROTOTYPE_SET_MONTH = "Date.prototype.setMonth";
+    /**
+     * The JavaScript expression {@code Date.prototype.setSeconds}.
+     */
     protected static final String DATE_PROTOTYPE_SET_SECONDS = "Date.prototype.setSeconds";
+    /**
+     * The JavaScript expression {@code Date.prototype.setTime}.
+     */
     protected static final String DATE_PROTOTYPE_SET_TIME = "Date.prototype.setTime";
+    /**
+     * The JavaScript expression {@code Date.prototype.setUTCDate}.
+     */
     protected static final String DATE_PROTOTYPE_SET_UTC_DATE = "Date.prototype.setUTCDate";
+    /**
+     * The JavaScript expression {@code Date.prototype.setUTCFullYear}.
+     */
     protected static final String DATE_PROTOTYPE_SET_UTC_FULL_YEAR = "Date.prototype.setUTCFullYear";
+    /**
+     * The JavaScript expression {@code Date.prototype.setUTCHours}.
+     */
     protected static final String DATE_PROTOTYPE_SET_UTC_HOURS = "Date.prototype.setUTCHours";
+    /**
+     * The JavaScript expression {@code Date.prototype.setUTCMilliseconds}.
+     */
     protected static final String DATE_PROTOTYPE_SET_UTC_MILLISECONDS = "Date.prototype.setUTCMilliseconds";
+    /**
+     * The JavaScript expression {@code Date.prototype.setUTCMinutes}.
+     */
     protected static final String DATE_PROTOTYPE_SET_UTC_MINUTES = "Date.prototype.setUTCMinutes";
+    /**
+     * The JavaScript expression {@code Date.prototype.setUTCMonth}.
+     */
     protected static final String DATE_PROTOTYPE_SET_UTC_MONTH = "Date.prototype.setUTCMonth";
+    /**
+     * The JavaScript expression {@code Date.prototype.setUTCSeconds}.
+     */
     protected static final String DATE_PROTOTYPE_SET_UTC_SECONDS = "Date.prototype.setUTCSeconds";
+    /**
+     * The JavaScript expression {@code Date.prototype.setYear}.
+     */
     protected static final String DATE_PROTOTYPE_SET_YEAR = "Date.prototype.setYear";
+    /**
+     * The JavaScript expression {@code Date.prototype[Symbol.toPrimitive]}.
+     */
     protected static final String DATE_PROTOTYPE_SYMBOL_TO_PRIMITIVE = "Date.prototype[Symbol.toPrimitive]";
+    /**
+     * The JavaScript expression {@code Date.prototype.toDateString}.
+     */
     protected static final String DATE_PROTOTYPE_TO_DATE_STRING = "Date.prototype.toDateString";
+    /**
+     * The JavaScript expression {@code Date.prototype.toISOString}.
+     */
     protected static final String DATE_PROTOTYPE_TO_ISOSTRING = "Date.prototype.toISOString";
+    /**
+     * The JavaScript expression {@code Date.prototype.toJSON}.
+     */
     protected static final String DATE_PROTOTYPE_TO_JSON = "Date.prototype.toJSON";
+    /**
+     * The JavaScript expression {@code Date.prototype.toLocaleDateString}.
+     */
     protected static final String DATE_PROTOTYPE_TO_LOCALE_DATE_STRING = "Date.prototype.toLocaleDateString";
+    /**
+     * The JavaScript expression {@code Date.prototype.toLocaleString}.
+     */
     protected static final String DATE_PROTOTYPE_TO_LOCALE_STRING = "Date.prototype.toLocaleString";
+    /**
+     * The JavaScript expression {@code Date.prototype.toLocaleTimeString}.
+     */
     protected static final String DATE_PROTOTYPE_TO_LOCALE_TIME_STRING = "Date.prototype.toLocaleTimeString";
+    /**
+     * The JavaScript expression {@code Date.prototype.toString}.
+     */
     protected static final String DATE_PROTOTYPE_TO_STRING = "Date.prototype.toString";
+    /**
+     * The JavaScript expression {@code Date.prototype.toTimeString}.
+     */
     protected static final String DATE_PROTOTYPE_TO_TIME_STRING = "Date.prototype.toTimeString";
+    /**
+     * The JavaScript expression {@code Date.prototype.toUTCString}.
+     */
     protected static final String DATE_PROTOTYPE_TO_UTC_STRING = "Date.prototype.toUTCString";
+    /**
+     * The JavaScript expression {@code Date.prototype.valueOf}.
+     */
     protected static final String DATE_PROTOTYPE_VALUE_OF = "Date.prototype.valueOf";
+    /**
+     * The JavaScript string method name {@code endsWith}.
+     */
     protected static final String ENDS_WITH = "endsWith";
+    /**
+     * The error message indicating the target object must be an instance of BigInteger.
+     */
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_BIG_INTEGER =
             "Target object must be an instance of BigInteger.";
+    /**
+     * The error message indicating the target object must be an instance of Boolean.
+     */
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_BOOLEAN =
             "Target object must be an instance of Boolean.";
+    /**
+     * The error message indicating the target object must be an instance of Byte.
+     */
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_BYTE =
             "Target object must be an instance of Byte.";
+    /**
+     * The error message indicating the target object must be an instance of Character.
+     */
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_CHARACTER =
             "Target object must be an instance of Character.";
+    /**
+     * The error message indicating the target object must be an instance of Double.
+     */
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_DOUBLE =
             "Target object must be an instance of Double.";
+    /**
+     * The error message indicating the target object must be an instance of Float.
+     */
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_FLOAT =
             "Target object must be an instance of Float.";
+    /**
+     * The error message indicating the target object must be an instance of Integer.
+     */
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_INTEGER =
             "Target object must be an instance of Integer.";
+    /**
+     * The error message indicating the target object must be an instance of Long.
+     */
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LONG =
             "Target object must be an instance of Long.";
+    /**
+     * The error message indicating the target object must be an instance of Short.
+     */
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SHORT =
             "Target object must be an instance of Short.";
+    /**
+     * The error message indicating the target object must be an instance of String.
+     */
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_STRING =
             "Target object must be an instance of String.";
+    /**
+     * The error message indicating the target object must be an instance of ZonedDateTime.
+     */
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_ZONED_DATE_TIME =
             "Target object must be an instance of ZonedDateTime.";
+    /**
+     * The JavaScript Date method name {@code getDate}.
+     */
     protected static final String GET_DATE = "getDate";
+    /**
+     * The JavaScript Date method name {@code getDay}.
+     */
     protected static final String GET_DAY = "getDay";
+    /**
+     * The JavaScript Date method name {@code getFullYear}.
+     */
     protected static final String GET_FULL_YEAR = "getFullYear";
+    /**
+     * The JavaScript Date method name {@code getHours}.
+     */
     protected static final String GET_HOURS = "getHours";
+    /**
+     * The JavaScript Date method name {@code getMilliseconds}.
+     */
     protected static final String GET_MILLISECONDS = "getMilliseconds";
+    /**
+     * The JavaScript Date method name {@code getMinutes}.
+     */
     protected static final String GET_MINUTES = "getMinutes";
+    /**
+     * The JavaScript Date method name {@code getMonth}.
+     */
     protected static final String GET_MONTH = "getMonth";
+    /**
+     * The JavaScript Date method name {@code getSeconds}.
+     */
     protected static final String GET_SECONDS = "getSeconds";
+    /**
+     * The JavaScript Date method name {@code getTime}.
+     */
     protected static final String GET_TIME = "getTime";
+    /**
+     * The JavaScript Date method name {@code getTimezoneOffset}.
+     */
     protected static final String GET_TIMEZONE_OFFSET = "getTimezoneOffset";
+    /**
+     * The JavaScript Date method name {@code getUTCDate}.
+     */
     protected static final String GET_UTC_DATE = "getUTCDate";
+    /**
+     * The JavaScript Date method name {@code getUTCDay}.
+     */
     protected static final String GET_UTC_DAY = "getUTCDay";
+    /**
+     * The JavaScript Date method name {@code getUTCFullYear}.
+     */
     protected static final String GET_UTC_FULL_YEAR = "getUTCFullYear";
+    /**
+     * The JavaScript Date method name {@code getUTCHours}.
+     */
     protected static final String GET_UTC_HOURS = "getUTCHours";
+    /**
+     * The JavaScript Date method name {@code getUTCMilliseconds}.
+     */
     protected static final String GET_UTC_MILLISECONDS = "getUTCMilliseconds";
+    /**
+     * The JavaScript Date method name {@code getUTCMinutes}.
+     */
     protected static final String GET_UTC_MINUTES = "getUTCMinutes";
+    /**
+     * The JavaScript Date method name {@code getUTCMonth}.
+     */
     protected static final String GET_UTC_MONTH = "getUTCMonth";
+    /**
+     * The JavaScript Date method name {@code getUTCSeconds}.
+     */
     protected static final String GET_UTC_SECONDS = "getUTCSeconds";
+    /**
+     * The JavaScript Date method name {@code getYear}.
+     */
     protected static final String GET_YEAR = "getYear";
+    /**
+     * The JavaScript string method name {@code indexOf}.
+     */
     protected static final String INDEX_OF = "indexOf";
+    /**
+     * The JavaScript string method name {@code lastIndexOf}.
+     */
     protected static final String LAST_INDEX_OF = "lastIndexOf";
+    /**
+     * The JavaScript string property name {@code length}.
+     */
     protected static final String LENGTH = "length";
+    /**
+     * The JavaScript expression {@code Number.prototype.toExponential}.
+     */
     protected static final String NUMBER_PROTOTYPE_TO_EXPONENTIAL = "Number.prototype.toExponential";
+    /**
+     * The JavaScript expression {@code Number.prototype.toFixed}.
+     */
     protected static final String NUMBER_PROTOTYPE_TO_FIXED = "Number.prototype.toFixed";
+    /**
+     * The JavaScript expression {@code Number.prototype.toLocaleString}.
+     */
     protected static final String NUMBER_PROTOTYPE_TO_LOCALE_STRING = "Number.prototype.toLocaleString";
+    /**
+     * The JavaScript expression {@code Number.prototype.toPrecision}.
+     */
     protected static final String NUMBER_PROTOTYPE_TO_PRECISION = "Number.prototype.toPrecision";
+    /**
+     * The JavaScript string method name {@code repeat}.
+     */
     protected static final String REPEAT = "repeat";
+    /**
+     * The JavaScript string method name {@code replace}.
+     */
     protected static final String REPLACE = "replace";
+    /**
+     * The JavaScript string method name {@code replaceAll}.
+     */
     protected static final String REPLACE_ALL = "replaceAll";
+    /**
+     * The JavaScript Date method name {@code setDate}.
+     */
     protected static final String SET_DATE = "setDate";
+    /**
+     * The JavaScript Date method name {@code setFullYear}.
+     */
     protected static final String SET_FULL_YEAR = "setFullYear";
+    /**
+     * The JavaScript Date method name {@code setHours}.
+     */
     protected static final String SET_HOURS = "setHours";
+    /**
+     * The JavaScript Date method name {@code setMilliseconds}.
+     */
     protected static final String SET_MILLISECONDS = "setMilliseconds";
+    /**
+     * The JavaScript Date method name {@code setMinutes}.
+     */
     protected static final String SET_MINUTES = "setMinutes";
+    /**
+     * The JavaScript Date method name {@code setMonth}.
+     */
     protected static final String SET_MONTH = "setMonth";
+    /**
+     * The JavaScript Date method name {@code setSeconds}.
+     */
     protected static final String SET_SECONDS = "setSeconds";
+    /**
+     * The JavaScript Date method name {@code setTime}.
+     */
     protected static final String SET_TIME = "setTime";
+    /**
+     * The JavaScript Date method name {@code setUTCDate}.
+     */
     protected static final String SET_UTC_DATE = "setUTCDate";
+    /**
+     * The JavaScript Date method name {@code setUTCFullYear}.
+     */
     protected static final String SET_UTC_FULL_YEAR = "setUTCFullYear";
+    /**
+     * The JavaScript Date method name {@code setUTCHours}.
+     */
     protected static final String SET_UTC_HOURS = "setUTCHours";
+    /**
+     * The JavaScript Date method name {@code setUTCMilliseconds}.
+     */
     protected static final String SET_UTC_MILLISECONDS = "setUTCMilliseconds";
+    /**
+     * The JavaScript Date method name {@code setUTCMinutes}.
+     */
     protected static final String SET_UTC_MINUTES = "setUTCMinutes";
+    /**
+     * The JavaScript Date method name {@code setUTCMonth}.
+     */
     protected static final String SET_UTC_MONTH = "setUTCMonth";
+    /**
+     * The JavaScript Date method name {@code setUTCSeconds}.
+     */
     protected static final String SET_UTC_SECONDS = "setUTCSeconds";
+    /**
+     * The JavaScript Date method name {@code setYear}.
+     */
     protected static final String SET_YEAR = "setYear";
+    /**
+     * The JavaScript string method name {@code split}.
+     */
     protected static final String SPLIT = "split";
+    /**
+     * The JavaScript string method name {@code startsWith}.
+     */
     protected static final String STARTS_WITH = "startsWith";
+    /**
+     * The JavaScript string method name {@code substring}.
+     */
     protected static final String SUBSTRING = "substring";
+    /**
+     * The set of Java classes supported by this default proxy plugin.
+     */
     protected static final Set<Class<?>> SUPPORTED_CLASSES = SimpleSet.of(
             BigInteger.class, Boolean.class, Byte.class, Character.class, Double.class,
             Float.class, Integer.class, Long.class, Short.class, String.class, ZonedDateTime.class);
+    /**
+     * The JavaScript Date method name {@code toDateString}.
+     */
     protected static final String TO_DATE_STRING = "toDateString";
+    /**
+     * The JavaScript Number method name {@code toExponential}.
+     */
     protected static final String TO_EXPONENTIAL = "toExponential";
+    /**
+     * The JavaScript Number method name {@code toFixed}.
+     */
     protected static final String TO_FIXED = "toFixed";
+    /**
+     * The JavaScript Date method name {@code toISOString}.
+     */
     protected static final String TO_ISO_STRING = "toISOString";
+    /**
+     * The JavaScript Date method name {@code toLocaleDateString}.
+     */
     protected static final String TO_LOCALE_DATE_STRING = "toLocaleDateString";
+    /**
+     * The JavaScript method name {@code toLocaleString}.
+     */
     protected static final String TO_LOCALE_STRING = "toLocaleString";
+    /**
+     * The JavaScript Date method name {@code toLocaleTimeString}.
+     */
     protected static final String TO_LOCALE_TIME_STRING = "toLocaleTimeString";
+    /**
+     * The JavaScript Number method name {@code toPrecision}.
+     */
     protected static final String TO_PRECISION = "toPrecision";
+    /**
+     * The JavaScript Date method name {@code toTimeString}.
+     */
     protected static final String TO_TIME_STRING = "toTimeString";
+    /**
+     * The JavaScript Date method name {@code toUTCString}.
+     */
     protected static final String TO_UTC_STRING = "toUTCString";
+    /**
+     * The JavaScript string method name {@code trim}.
+     */
     protected static final String TRIM = "trim";
     private static final JavetProxyPluginDefault instance = new JavetProxyPluginDefault();
 
+    /**
+     * Instantiates a new Javet proxy plugin default.
+     */
     public JavetProxyPluginDefault() {
         super();
         {

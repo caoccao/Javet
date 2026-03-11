@@ -30,6 +30,7 @@ import com.caoccao.javet.values.reference.V8ValueDoubleObject;
 public final class V8ValueDouble
         extends V8ValueNumber<Double>
         implements IV8ValuePrimitiveValue<V8ValueDoubleObject> {
+    /** The string representation of positive infinity. */
     public static final String INFINITY = "Infinity";
 
     /**

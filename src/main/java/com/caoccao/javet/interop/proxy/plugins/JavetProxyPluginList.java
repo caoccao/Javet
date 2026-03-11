@@ -51,37 +51,68 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
      * @since 3.0.4
      */
     public static final String NAME = List.class.getName();
+    /** The JavaScript method name 'at'. */
     protected static final String AT = "at";
+    /** The JavaScript method name 'concat'. */
     protected static final String CONCAT = "concat";
+    /** The JavaScript method name 'copyWithin'. */
     protected static final String COPY_WITHIN = "copyWithin";
+    /** The JavaScript method name 'entries'. */
     protected static final String ENTRIES = "entries";
+    /** The error message for invalid target object. */
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST =
             "Target object must be an instance of List.";
+    /** The JavaScript method name 'every'. */
     protected static final String EVERY = "every";
+    /** The JavaScript method name 'fill'. */
     protected static final String FILL = "fill";
+    /** The JavaScript method name 'filter'. */
     protected static final String FILTER = "filter";
+    /** The JavaScript method name 'find'. */
     protected static final String FIND = "find";
+    /** The JavaScript method name 'findIndex'. */
     protected static final String FIND_INDEX = "findIndex";
+    /** The JavaScript method name 'findLast'. */
     protected static final String FIND_LAST = "findLast";
+    /** The JavaScript method name 'findLastIndex'. */
     protected static final String FIND_LAST_INDEX = "findLastIndex";
+    /** The JavaScript method name 'flat'. */
     protected static final String FLAT = "flat";
+    /** The JavaScript method name 'flatMap'. */
     protected static final String FLAT_MAP = "flatMap";
+    /** The JavaScript method name 'forEach'. */
     protected static final String FOR_EACH = "forEach";
+    /** The JavaScript method name 'includes'. */
     protected static final String INCLUDES = "includes";
+    /** The JavaScript method name 'indexOf'. */
     protected static final String INDEX_OF = "indexOf";
+    /** The JavaScript method name 'join'. */
     protected static final String JOIN = "join";
+    /** The JavaScript method name 'keys'. */
     protected static final String KEYS = "keys";
+    /** The JavaScript method name 'lastIndexOf'. */
     protected static final String LAST_INDEX_OF = "lastIndexOf";
+    /** The JavaScript property name 'length'. */
     protected static final String LENGTH = "length";
+    /** The JavaScript method name 'map'. */
     protected static final String MAP = "map";
+    /** The JavaScript method name 'pop'. */
     protected static final String POP = "pop";
+    /** The JavaScript method name 'push'. */
     protected static final String PUSH = "push";
+    /** The JavaScript method name 'reduce'. */
     protected static final String REDUCE = "reduce";
+    /** The JavaScript method name 'reduceRight'. */
     protected static final String REDUCE_RIGHT = "reduceRight";
+    /** The JavaScript method name 'reverse'. */
     protected static final String REVERSE = "reverse";
+    /** The JavaScript method name 'shift'. */
     protected static final String SHIFT = "shift";
+    /** The JavaScript method name 'slice'. */
     protected static final String SLICE = "slice";
+    /** The JavaScript method name 'some'. */
     protected static final String SOME = "some";
+    /** The JavaScript method name 'sort'. */
     protected static final String SORT = "sort";
     /**
      * The constant DEFAULT_PROXYABLE_METHODS.
@@ -90,12 +121,19 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
      */
     protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
             FOR_EACH, INDEX_OF, LAST_INDEX_OF, SORT, TO_STRING};
+    /** The JavaScript method name 'splice'. */
     protected static final String SPLICE = "splice";
+    /** The JavaScript method name 'toReversed'. */
     protected static final String TO_REVERSED = "toReversed";
+    /** The JavaScript method name 'toSorted'. */
     protected static final String TO_SORTED = "toSorted";
+    /** The JavaScript method name 'toSpliced'. */
     protected static final String TO_SPLICED = "toSpliced";
+    /** The JavaScript method name 'unshift'. */
     protected static final String UNSHIFT = "unshift";
+    /** The JavaScript method name 'values'. */
     protected static final String VALUES = "values";
+    /** The JavaScript method name 'with'. */
     protected static final String WITH = "with";
     private static final JavetProxyPluginList instance = new JavetProxyPluginList();
     /**
@@ -105,6 +143,9 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
      */
     protected final Set<String> proxyableMethods;
 
+    /**
+     * Instantiates a new Javet proxy plugin for {@link java.util.List} with default proxyable methods.
+     */
     public JavetProxyPluginList() {
         super();
         proxyableMethods = SimpleSet.of(DEFAULT_PROXYABLE_METHODS);

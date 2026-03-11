@@ -19,8 +19,25 @@ package com.caoccao.javet.node.modules;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
+/**
+ * The interface Node module.
+ *
+ * @since 0.8.0
+ */
 public interface INodeModule extends IJavetClosable {
+    /**
+     * Gets the module object.
+     *
+     * @return the module object
+     * @since 0.8.0
+     */
     V8ValueObject getModuleObject();
 
+    /**
+     * Gets the module name.
+     *
+     * @return the module name
+     * @since 0.8.0
+     */
     String getName();
 }

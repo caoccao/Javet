@@ -25,12 +25,21 @@ import com.caoccao.javet.utils.SimpleMap;
 
 import java.util.Objects;
 
+/**
+ * The type V8 value WeakSet, representing a JavaScript WeakSet object.
+ */
 @SuppressWarnings("unchecked")
 public class V8ValueWeakSet extends V8ValueObject {
     V8ValueWeakSet(V8Runtime v8Runtime, long handle) throws JavetException {
         super(v8Runtime, handle);
     }
 
+    /**
+     * Adds an object to this WeakSet.
+     *
+     * @param key the object to add
+     * @throws JavetException the javet exception
+     */
     public void add(IV8ValueObject key) throws JavetException {
         Objects.requireNonNull(key);
         invokeVoid(FUNCTION_ADD, key);

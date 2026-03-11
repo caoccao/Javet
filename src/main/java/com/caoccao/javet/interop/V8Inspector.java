@@ -66,6 +66,11 @@ public final class V8Inspector implements IJavetClosable {
         this.sessionId = v8Native.createV8Inspector(v8Runtime.getHandle(), this, this.name, waitForDebugger);
     }
 
+    /**
+     * Adds one or more inspector listeners to receive CDP notifications and responses.
+     *
+     * @param listeners the listeners to add
+     */
     public void addListeners(IV8InspectorListener... listeners) {
         Collections.addAll(this.listeners, Objects.requireNonNull(listeners));
     }
@@ -122,6 +127,16 @@ public final class V8Inspector implements IJavetClosable {
         }
     }
 
+    /**
+     * Called by V8 when a console API message is produced. Dispatches to all registered listeners.
+     *
+     * @param contextGroupId the context group ID
+     * @param level          the message severity level
+     * @param message        the console message text
+     * @param url            the source URL
+     * @param lineNumber     the source line number
+     * @param columnNumber   the source column number
+     */
     public void consoleAPIMessage(
             int contextGroupId, int level, String message,
             String url, int lineNumber, int columnNumber) {
@@ -159,6 +174,9 @@ public final class V8Inspector implements IJavetClosable {
         return null;
     }
 
+    /**
+     * Called by V8 to flush any queued protocol notifications. Dispatches to all registered listeners.
+     */
     public void flushProtocolNotifications() {
         logger.logDebug("Receiving flushProtocolNotifications");
         for (IV8InspectorListener listener : listeners) {
@@ -170,6 +188,11 @@ public final class V8Inspector implements IJavetClosable {
         }
     }
 
+    /**
+     * Called by V8 to install additional command-line API objects. Dispatches to all registered listeners.
+     *
+     * @param commandLineAPI the command-line API object provided by V8
+     */
     public void installAdditionalCommandLineAPI(IV8ValueObject commandLineAPI) {
         logger.logDebug("Receiving installAdditionalCommandLineAPI");
         try (IV8ValueObject api = commandLineAPI) {
@@ -185,10 +208,20 @@ public final class V8Inspector implements IJavetClosable {
         }
     }
 
+    /**
+     * Gets the logger used by this inspector session.
+     *
+     * @return the logger
+     */
     public IJavetLogger getLogger() {
         return logger;
     }
 
+    /**
+     * Gets the name of this inspector session.
+     *
+     * @return the session name
+     */
     public String getName() {
         return name;
     }
@@ -213,6 +246,11 @@ public final class V8Inspector implements IJavetClosable {
         return closed;
     }
 
+    /**
+     * Called by V8 when a CDP notification is received. Dispatches to all registered listeners.
+     *
+     * @param message the CDP notification JSON message
+     */
     public void receiveNotification(String message) {
         logger.logDebug("Receiving notification: {0}", message);
         for (IV8InspectorListener listener : listeners) {
@@ -224,6 +262,11 @@ public final class V8Inspector implements IJavetClosable {
         }
     }
 
+    /**
+     * Called by V8 when a CDP response is received. Dispatches to all registered listeners.
+     *
+     * @param message the CDP response JSON message
+     */
     public void receiveResponse(String message) {
         logger.logDebug("Receiving response: {0}", message);
         for (IV8InspectorListener listener : listeners) {
@@ -235,10 +278,20 @@ public final class V8Inspector implements IJavetClosable {
         }
     }
 
+    /**
+     * Removes one or more previously added inspector listeners.
+     *
+     * @param listeners the listeners to remove
+     */
     public void removeListeners(IV8InspectorListener... listeners) {
         this.listeners.removeAll(SimpleList.of(listeners));
     }
 
+    /**
+     * Called by V8 when the runtime is waiting for a debugger connection. Dispatches to all registered listeners.
+     *
+     * @param contextGroupId the context group ID
+     */
     public void runIfWaitingForDebugger(int contextGroupId) {
         logger.logDebug("Receiving runIfWaitingForDebugger(): {0}", Integer.toString(contextGroupId));
         for (IV8InspectorListener listener : listeners) {
@@ -273,6 +326,12 @@ public final class V8Inspector implements IJavetClosable {
         }
     }
 
+    /**
+     * Sends a CDP request message to the V8 inspector. Notifies listeners and dispatches the message.
+     *
+     * @param message the CDP request JSON message
+     * @throws JavetException the javet exception
+     */
     @SuppressWarnings("RedundantThrows")
     public void sendRequest(String message) throws JavetException {
         if (!closed && !v8Runtime.isClosed()) {
@@ -288,6 +347,11 @@ public final class V8Inspector implements IJavetClosable {
         }
     }
 
+    /**
+     * Sets the logger used by this inspector session.
+     *
+     * @param logger the logger
+     */
     public void setLogger(IJavetLogger logger) {
         Objects.requireNonNull(logger);
         this.logger = logger;

@@ -16,7 +16,6 @@
 
 /**
  * Configuration options for creating V8 and Node.js runtimes.
- * <p>
  * <ul>
  *   <li>{@link com.caoccao.javet.interop.options.NodeRuntimeOptions} - Node.js runtime configuration: console arguments, built-in module resolution, and snapshot support.</li>
  *   <li>{@link com.caoccao.javet.interop.options.V8RuntimeOptions} - V8 runtime configuration: global name and snapshot support.</li>

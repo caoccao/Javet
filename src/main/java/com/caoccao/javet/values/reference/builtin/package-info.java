@@ -16,7 +16,6 @@
 
 /**
  * Typed wrappers for JavaScript built-in global objects, providing direct Java access to their methods.
- * <p>
  * <ul>
  *   <li>{@link com.caoccao.javet.values.reference.builtin.V8ValueBuiltInObject} - {@code Object.assign()}, {@code Object.keys()}, {@code Object.freeze()}, etc.</li>
  *   <li>{@link com.caoccao.javet.values.reference.builtin.V8ValueBuiltInJson} - {@code JSON.stringify()} and {@code JSON.parse()}.</li>

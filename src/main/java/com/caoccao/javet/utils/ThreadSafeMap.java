@@ -25,6 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * The type Thread safe map.
  *
+ * @param <TKey> the key type
+ * @param <TValue> the value type
  * @since 1.1.7
  */
 public final class ThreadSafeMap<TKey, TValue> {
@@ -51,6 +53,9 @@ public final class ThreadSafeMap<TKey, TValue> {
         setType(type);
     }
 
+    /**
+     * Removes all entries from this map.
+     */
     public void clear() {
         map.clear();
     }

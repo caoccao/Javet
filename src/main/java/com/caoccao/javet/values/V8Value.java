@@ -21,11 +21,22 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.converters.JavetObjectConverter;
 
+/**
+ * Base class for all V8 values. Each V8 value is associated with a {@link V8Runtime}.
+ */
 public abstract class V8Value extends V8Data implements IV8Value {
+    /** Shared object converter for default type conversions. */
     protected static final JavetObjectConverter OBJECT_CONVERTER = new JavetObjectConverter();
 
+    /** The V8 runtime that owns this value. */
     protected V8Runtime v8Runtime;
 
+    /**
+     * Instantiates a new V8 value associated with the given runtime.
+     *
+     * @param v8Runtime the V8 runtime
+     * @throws JavetException if the runtime is null
+     */
     protected V8Value(V8Runtime v8Runtime) throws JavetException {
         if (v8Runtime == null) {
             throw new JavetException(JavetError.RuntimeNotRegistered);
@@ -33,6 +44,12 @@ public abstract class V8Value extends V8Data implements IV8Value {
         this.v8Runtime = v8Runtime;
     }
 
+    /**
+     * Checks that the V8 runtime is registered and returns it.
+     *
+     * @return the V8 runtime
+     * @throws JavetException if the runtime is not registered
+     */
     protected V8Runtime checkV8Runtime() throws JavetException {
         if (v8Runtime == null) {
             throw new JavetException(JavetError.RuntimeNotRegistered);
@@ -46,6 +63,11 @@ public abstract class V8Value extends V8Data implements IV8Value {
     @Override
     public abstract boolean equals(V8Value v8Value) throws JavetException;
 
+    /**
+     * Gets the V8 runtime that owns this value.
+     *
+     * @return the V8 runtime
+     */
     public V8Runtime getV8Runtime() {
         return v8Runtime;
     }

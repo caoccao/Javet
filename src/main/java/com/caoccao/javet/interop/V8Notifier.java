@@ -24,12 +24,21 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryNotificationInfo;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Listens for JVM memory notifications and schedules GC on V8 runtimes
+ * when memory thresholds are exceeded.
+ */
 public final class V8Notifier
         /* if not defined ANDROID */
         implements NotificationListener
         /* end if */ {
     private final ConcurrentHashMap<Long, V8Runtime> v8RuntimeMap;
 
+    /**
+     * Instantiates a new V8 notifier with the given runtime map.
+     *
+     * @param v8RuntimeMap the map of V8 runtime handles to runtime instances
+     */
     public V8Notifier(ConcurrentHashMap<Long, V8Runtime> v8RuntimeMap) {
         this.v8RuntimeMap = v8RuntimeMap;
     }
@@ -48,6 +57,9 @@ public final class V8Notifier
     }
     /* end if */
 
+    /**
+     * Registers this notifier as a JVM memory notification listener.
+     */
     public void registerListeners() {
         /* if not defined ANDROID */
         NotificationEmitter notificationEmitter = (NotificationEmitter) ManagementFactory.getMemoryMXBean();
@@ -59,6 +71,9 @@ public final class V8Notifier
         /* end if */
     }
 
+    /**
+     * Unregisters this notifier from JVM memory notifications.
+     */
     public void unregisterListener() {
         /* if not defined ANDROID */
         try {

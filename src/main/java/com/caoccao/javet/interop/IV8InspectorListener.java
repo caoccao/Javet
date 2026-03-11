@@ -18,6 +18,11 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.values.reference.IV8ValueObject;
 
+/**
+ * The interface V8 inspector listener.
+ *
+ * @since 0.7.2
+ */
 public interface IV8InspectorListener {
 
     /**
@@ -37,6 +42,7 @@ public interface IV8InspectorListener {
             String url, int lineNumber, int columnNumber) {
     }
 
+    /** Flush pending protocol notifications to the client. */
     void flushProtocolNotifications();
 
     /**
@@ -59,11 +65,31 @@ public interface IV8InspectorListener {
     default void installAdditionalCommandLineAPI(IV8ValueObject commandLineAPI) {
     }
 
+    /**
+     * Receive a notification message from the V8 inspector.
+     *
+     * @param message the notification message
+     */
     void receiveNotification(String message);
 
+    /**
+     * Receive a response message from the V8 inspector.
+     *
+     * @param message the response message
+     */
     void receiveResponse(String message);
 
+    /**
+     * Called when the runtime should resume if it was waiting for a debugger to attach.
+     *
+     * @param contextGroupId the context group ID
+     */
     void runIfWaitingForDebugger(int contextGroupId);
 
+    /**
+     * Send a CDP (Chrome DevTools Protocol) request message to the V8 inspector.
+     *
+     * @param message the CDP request message
+     */
     void sendRequest(String message);
 }

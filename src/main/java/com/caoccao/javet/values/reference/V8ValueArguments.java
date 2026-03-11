@@ -20,6 +20,9 @@ import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 
+/**
+ * The type V8 value arguments, representing a JavaScript function arguments object.
+ */
 public class V8ValueArguments extends V8ValueArray {
     V8ValueArguments(V8Runtime v8Runtime, long handle) throws JavetException {
         super(v8Runtime, handle);

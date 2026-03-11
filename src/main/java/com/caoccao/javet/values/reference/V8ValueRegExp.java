@@ -20,6 +20,9 @@ import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 
+/**
+ * The type V8 value RegExp, representing a JavaScript RegExp object.
+ */
 public class V8ValueRegExp extends V8ValueObject {
 
     V8ValueRegExp(V8Runtime v8Runtime, long handle) throws JavetException {

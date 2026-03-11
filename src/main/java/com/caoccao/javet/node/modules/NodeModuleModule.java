@@ -23,15 +23,32 @@ import com.caoccao.javet.values.reference.V8ValueObject;
 import java.io.File;
 import java.util.Objects;
 
+/**
+ * Represents the Node.js {@code module} module, providing access to {@code createRequire}.
+ */
 @NodeModule(name = "module")
 public class NodeModuleModule extends BaseNodeModule {
+    /** The function name for {@code Module.createRequire()}. */
     public static final String FUNCTION_CREATE_REQUIRE = "createRequire";
+    /** The property name for the global {@code require} function. */
     public static final String PROPERTY_REQUIRE = "require";
 
+    /**
+     * Instantiates a new Node module module.
+     *
+     * @param moduleObject the underlying V8 object representing the module
+     * @param name         the module name
+     */
     public NodeModuleModule(V8ValueObject moduleObject, String name) {
         super(moduleObject, name);
     }
 
+    /**
+     * Sets the root directory for the global {@code require} function using {@code Module.createRequire()}.
+     *
+     * @param requireRootDirectory the root directory path
+     * @throws JavetException the javet exception
+     */
     public void setRequireRootDirectory(String requireRootDirectory) throws JavetException {
         try (V8ValueObject v8ValueObject = moduleObject.invoke(
                 FUNCTION_CREATE_REQUIRE,
@@ -40,6 +57,12 @@ public class NodeModuleModule extends BaseNodeModule {
         }
     }
 
+    /**
+     * Sets the root directory for the global {@code require} function using {@code Module.createRequire()}.
+     *
+     * @param requireRootDirectory the root directory as a {@link File}
+     * @throws JavetException the javet exception
+     */
     public void setRequireRootDirectory(File requireRootDirectory) throws JavetException {
         setRequireRootDirectory(requireRootDirectory.getAbsolutePath() + File.separator);
     }

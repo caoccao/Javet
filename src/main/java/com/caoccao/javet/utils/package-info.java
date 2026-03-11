@@ -16,7 +16,6 @@
 
 /**
  * Utility classes for common operations across the Javet API.
- * <p>
  * <ul>
  *   <li>{@link com.caoccao.javet.utils.JavetResourceUtils} - Safe resource cleanup for V8 values and closables.</li>
  *   <li>{@link com.caoccao.javet.utils.JavetOSUtils} - OS and architecture detection (platform, working directory).</li>

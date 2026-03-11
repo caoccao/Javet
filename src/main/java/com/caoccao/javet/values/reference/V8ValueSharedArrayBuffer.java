@@ -22,6 +22,9 @@ import com.caoccao.javet.interop.V8Runtime;
 
 import java.nio.ByteBuffer;
 
+/**
+ * The type V8 value SharedArrayBuffer, representing a JavaScript SharedArrayBuffer object.
+ */
 public class V8ValueSharedArrayBuffer extends V8ValueArrayBuffer {
     V8ValueSharedArrayBuffer(V8Runtime v8Runtime, long handle, ByteBuffer byteBuffer) throws JavetException {
         super(v8Runtime, handle, byteBuffer);

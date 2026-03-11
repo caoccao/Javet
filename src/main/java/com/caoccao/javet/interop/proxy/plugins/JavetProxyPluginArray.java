@@ -53,27 +53,90 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
      * @since 3.0.4
      */
     public static final String NAME = Object[].class.getName();
+    /**
+     * The JavaScript array method name {@code at}.
+     */
     protected static final String AT = "at";
+    /**
+     * The JavaScript array method name {@code concat}.
+     */
     protected static final String CONCAT = "concat";
+    /**
+     * The JavaScript array method name {@code copyWithin}.
+     */
     protected static final String COPY_WITHIN = "copyWithin";
+    /**
+     * The JavaScript array method name {@code entries}.
+     */
     protected static final String ENTRIES = "entries";
+    /**
+     * The error message indicating the target object must be an array.
+     */
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_ARRAY =
             "Target object must be an array.";
+    /**
+     * The JavaScript array method name {@code every}.
+     */
     protected static final String EVERY = "every";
+    /**
+     * The JavaScript array method name {@code fill}.
+     */
     protected static final String FILL = "fill";
+    /**
+     * The JavaScript array method name {@code filter}.
+     */
     protected static final String FILTER = "filter";
+    /**
+     * The JavaScript array method name {@code find}.
+     */
     protected static final String FIND = "find";
+    /**
+     * The JavaScript array method name {@code findIndex}.
+     */
     protected static final String FIND_INDEX = "findIndex";
+    /**
+     * The JavaScript array method name {@code findLast}.
+     */
     protected static final String FIND_LAST = "findLast";
+    /**
+     * The JavaScript array method name {@code findLastIndex}.
+     */
     protected static final String FIND_LAST_INDEX = "findLastIndex";
+    /**
+     * The JavaScript array method name {@code flat}.
+     */
     protected static final String FLAT = "flat";
+    /**
+     * The JavaScript array method name {@code flatMap}.
+     */
     protected static final String FLAT_MAP = "flatMap";
+    /**
+     * The JavaScript array method name {@code forEach}.
+     */
     protected static final String FOR_EACH = "forEach";
+    /**
+     * The JavaScript array method name {@code includes}.
+     */
     protected static final String INCLUDES = "includes";
+    /**
+     * The JavaScript array method name {@code indexOf}.
+     */
     protected static final String INDEX_OF = "indexOf";
+    /**
+     * The JavaScript array method name {@code join}.
+     */
     protected static final String JOIN = "join";
+    /**
+     * The JavaScript array method name {@code keys}.
+     */
     protected static final String KEYS = "keys";
+    /**
+     * The JavaScript array method name {@code lastIndexOf}.
+     */
     protected static final String LAST_INDEX_OF = "lastIndexOf";
+    /**
+     * The JavaScript array property name {@code length}.
+     */
     protected static final String LENGTH = "length";
     /**
      * The constant DEFAULT_PROXYABLE_METHODS.
@@ -82,22 +145,73 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
      */
     protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
             LENGTH, TO_STRING};
+    /**
+     * The JavaScript array method name {@code map}.
+     */
     protected static final String MAP = "map";
+    /**
+     * The JavaScript array method name {@code pop}.
+     */
     protected static final String POP = "pop";
+    /**
+     * The JavaScript array method name {@code push}.
+     */
     protected static final String PUSH = "push";
+    /**
+     * The JavaScript array method name {@code reduce}.
+     */
     protected static final String REDUCE = "reduce";
+    /**
+     * The JavaScript array method name {@code reduceRight}.
+     */
     protected static final String REDUCE_RIGHT = "reduceRight";
+    /**
+     * The JavaScript array method name {@code reverse}.
+     */
     protected static final String REVERSE = "reverse";
+    /**
+     * The JavaScript array method name {@code shift}.
+     */
     protected static final String SHIFT = "shift";
+    /**
+     * The JavaScript array method name {@code slice}.
+     */
     protected static final String SLICE = "slice";
+    /**
+     * The JavaScript array method name {@code some}.
+     */
     protected static final String SOME = "some";
+    /**
+     * The JavaScript array method name {@code sort}.
+     */
     protected static final String SORT = "sort";
+    /**
+     * The JavaScript array method name {@code splice}.
+     */
     protected static final String SPLICE = "splice";
+    /**
+     * The JavaScript array method name {@code toReversed}.
+     */
     protected static final String TO_REVERSED = "toReversed";
+    /**
+     * The JavaScript array method name {@code toSorted}.
+     */
     protected static final String TO_SORTED = "toSorted";
+    /**
+     * The JavaScript array method name {@code toSpliced}.
+     */
     protected static final String TO_SPLICED = "toSpliced";
+    /**
+     * The JavaScript array method name {@code unshift}.
+     */
     protected static final String UNSHIFT = "unshift";
+    /**
+     * The JavaScript array method name {@code values}.
+     */
     protected static final String VALUES = "values";
+    /**
+     * The JavaScript array method name {@code with}.
+     */
     protected static final String WITH = "with";
     private static final JavetProxyPluginArray instance = new JavetProxyPluginArray();
     /**
@@ -107,6 +221,9 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
      */
     protected final Set<String> proxyableMethods;
 
+    /**
+     * Instantiates a new Javet proxy plugin array.
+     */
     public JavetProxyPluginArray() {
         super();
         proxyableMethods = SimpleSet.of(DEFAULT_PROXYABLE_METHODS);

@@ -30,6 +30,12 @@ import java.util.stream.Stream;
  */
 public final class JavetTypeUtils {
     /**
+     * Instantiates a new Javet type utils.
+     */
+    private JavetTypeUtils() {
+    }
+
+    /**
      * To approximate primitive object.
      *
      * @param expectedClass the expected class

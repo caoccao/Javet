@@ -51,16 +51,26 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
      * @since 3.0.4
      */
     public static final String NAME = Set.class.getName();
+    /** The JavaScript method name 'add'. */
     protected static final String ADD = "add";
+    /** The JavaScript method name 'clear'. */
     protected static final String CLEAR = "clear";
+    /** The JavaScript method name 'delete'. */
     protected static final String DELETE = "delete";
+    /** The JavaScript method name 'entries'. */
     protected static final String ENTRIES = "entries";
+    /** The error message for invalid target object. */
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SET =
             "Target object must be an instance of Set.";
+    /** The JavaScript method name 'forEach'. */
     protected static final String FOR_EACH = "forEach";
+    /** The JavaScript method name 'has'. */
     protected static final String HAS = "has";
+    /** The JavaScript method name 'keys'. */
     protected static final String KEYS = "keys";
+    /** The string representation '[object Set]'. */
     protected static final String OBJECT_SET = "[object Set]";
+    /** The JavaScript property name 'size'. */
     protected static final String SIZE = "size";
     /**
      * The constant DEFAULT_PROXYABLE_METHODS.
@@ -69,6 +79,7 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
      */
     protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
             ADD, CLEAR, FOR_EACH, SIZE, TO_STRING};
+    /** The JavaScript method name 'values'. */
     protected static final String VALUES = "values";
     private static final JavetProxyPluginSet instance = new JavetProxyPluginSet();
     /**
@@ -78,6 +89,9 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
      */
     protected final Set<String> proxyableMethods;
 
+    /**
+     * Instantiates a new Javet proxy plugin for {@link java.util.Set} with default proxyable methods.
+     */
     public JavetProxyPluginSet() {
         super();
         proxyableMethods = SimpleSet.of(DEFAULT_PROXYABLE_METHODS);

@@ -16,7 +16,6 @@
 
 /**
  * JVM interceptor that exposes the entire Java runtime to JavaScript as the {@code javet} global object.
- * <p>
  * <ul>
  *   <li>{@link com.caoccao.javet.interception.jvm.JavetJVMInterceptor} - Registers a {@code javet} object in V8
  *       that provides access to Java packages, classes, and a {@code javet.v8.gc()} helper.

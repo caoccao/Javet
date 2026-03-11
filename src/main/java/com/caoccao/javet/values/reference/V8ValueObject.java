@@ -51,8 +51,17 @@ import java.util.*;
  */
 @SuppressWarnings("unchecked")
 public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
+    /**
+     * The method prefix for getter methods.
+     */
     public static final String METHOD_PREFIX_GET = "get";
+    /**
+     * The method prefix for boolean getter methods.
+     */
     public static final String METHOD_PREFIX_IS = "is";
+    /**
+     * The method prefix for setter methods.
+     */
     public static final String METHOD_PREFIX_SET = "set";
     /**
      * The constant ERROR_THE_KEY_VALUE_PAIR_MUST_MATCH.
@@ -60,11 +69,29 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
      * @since 2.2.0
      */
     protected static final String ERROR_THE_KEY_VALUE_PAIR_MUST_MATCH = "The key value pair must match.";
+    /**
+     * The constant FUNCTION_ADD.
+     */
     protected static final String FUNCTION_ADD = "add";
+    /**
+     * The constant FUNCTION_DELETE.
+     */
     protected static final String FUNCTION_DELETE = "delete";
+    /**
+     * The constant FUNCTION_GET.
+     */
     protected static final String FUNCTION_GET = "get";
+    /**
+     * The constant FUNCTION_HAS.
+     */
     protected static final String FUNCTION_HAS = "has";
+    /**
+     * The constant FUNCTION_SET.
+     */
     protected static final String FUNCTION_SET = "set";
+    /**
+     * The constant PROPERTY_PROTOTYPE.
+     */
     protected static final String PROPERTY_PROTOTYPE = "prototype";
 
     /**
@@ -872,6 +899,14 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
         return unbindCount;
     }
 
+    /**
+     * Unbinds a function by name and symbol type.
+     *
+     * @param functionName the function name
+     * @param symbolType   the symbol type
+     * @return true if the function was successfully unbound
+     * @throws JavetException the javet exception
+     */
     protected boolean unbindFunction(String functionName, V8ValueSymbolType symbolType) throws JavetException {
         Objects.requireNonNull(functionName);
         switch (Objects.requireNonNull(symbolType)) {
@@ -901,6 +936,14 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
                 javetCallbackContext.getSymbolType());
     }
 
+    /**
+     * Unbinds a property by name and symbol type.
+     *
+     * @param propertyName the property name
+     * @param symbolType   the symbol type
+     * @return true if the property was successfully unbound
+     * @throws JavetException the javet exception
+     */
     protected boolean unbindProperty(String propertyName, V8ValueSymbolType symbolType) throws JavetException {
         Objects.requireNonNull(propertyName);
         switch (Objects.requireNonNull(symbolType)) {

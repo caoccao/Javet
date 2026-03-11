@@ -20,9 +20,24 @@ import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.V8Value;
 
+/**
+ * Interface for V8 objects that contain keyed entries, such as Map and Set.
+ */
 public interface IV8ValueKeyContainer extends IV8ValueObject {
+    /**
+     * Returns an iterator over the keys in this container.
+     *
+     * @return an iterator of V8 value keys
+     * @throws JavetException the javet exception
+     */
     @CheckReturnValue
     IV8ValueIterator<? extends V8Value> getKeys() throws JavetException;
 
+    /**
+     * Returns the number of entries in this container.
+     *
+     * @return the size of this container
+     * @throws JavetException the javet exception
+     */
     int getSize() throws JavetException;
 }

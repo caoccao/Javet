@@ -26,6 +26,9 @@ import com.caoccao.javet.values.V8Value;
 
 import java.util.Objects;
 
+/**
+ * The type V8 value WeakMap, representing a JavaScript WeakMap object.
+ */
 @SuppressWarnings("unchecked")
 public class V8ValueWeakMap extends V8ValueObject {
     V8ValueWeakMap(V8Runtime v8Runtime, long handle) throws JavetException {
@@ -42,6 +45,14 @@ public class V8ValueWeakMap extends V8ValueObject {
         return true;
     }
 
+    /**
+     * Gets a value by string key from this WeakMap.
+     *
+     * @param <T> the V8 value type
+     * @param key the string key
+     * @return the value associated with the key
+     * @throws JavetException the javet exception
+     */
     @CheckReturnValue
     public <T extends V8Value> T get(String key) throws JavetException {
         return checkV8Runtime().getV8Internal().objectGet(this, v8Runtime.createV8ValueString(key));

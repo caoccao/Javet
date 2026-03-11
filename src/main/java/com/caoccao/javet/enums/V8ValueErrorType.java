@@ -26,18 +26,30 @@ import java.util.stream.Stream;
  * @since 3.0.4
  */
 public enum V8ValueErrorType {
+    /** The V8 Error type. */
     Error(0, "Error"),
+    /** The V8 RangeError type. */
     RangeError(1, "RangeError"),
+    /** The V8 ReferenceError type. */
     ReferenceError(2, "ReferenceError"),
+    /** The V8 SyntaxError type. */
     SyntaxError(3, "SyntaxError"),
+    /** The V8 TypeError type. */
     TypeError(4, "TypeError"),
+    /** The V8 WasmCompileError type. */
     WasmCompileError(5, "CompileError"),
+    /** The V8 WasmLinkError type. */
     WasmLinkError(6, "LinkError"),
+    /** The V8 WasmRuntimeError type. */
     WasmRuntimeError(7, "RuntimeError"),
+    /** The V8 UnknownError type. */
     UnknownError(8, "UnknownError");
 
+    /** The total number of error types. */
     private static final int LENGTH = values().length;
+    /** The map of error types indexed by name. */
     private static final Map<String, V8ValueErrorType> NAME_MAP = new HashMap<>();
+    /** The array of error types indexed by ID. */
     private static final V8ValueErrorType[] TYPES = new V8ValueErrorType[LENGTH];
 
     static {
@@ -47,7 +59,9 @@ public enum V8ValueErrorType {
         });
     }
 
+    /** The type ID. */
     private final int id;
+    /** The type name. */
     private final String name;
 
     V8ValueErrorType(int id, String name) {

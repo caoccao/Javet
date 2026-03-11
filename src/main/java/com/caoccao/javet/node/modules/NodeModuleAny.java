@@ -18,7 +18,16 @@ package com.caoccao.javet.node.modules;
 
 import com.caoccao.javet.values.reference.V8ValueObject;
 
+/**
+ * The type Node module any, representing a generic Node.js module.
+ */
 public class NodeModuleAny extends BaseNodeModule {
+    /**
+     * Instantiates a new Node module any.
+     *
+     * @param moduleObject the module object
+     * @param name         the name
+     */
     public NodeModuleAny(V8ValueObject moduleObject, String name) {
         super(moduleObject, name);
     }

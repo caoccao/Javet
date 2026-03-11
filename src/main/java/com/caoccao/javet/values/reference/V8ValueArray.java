@@ -37,9 +37,21 @@ import java.util.Objects;
  */
 @SuppressWarnings("unchecked")
 public class V8ValueArray extends V8ValueObject implements IV8ValueArray {
+    /**
+     * The constant FUNCTION_KEYS.
+     */
     protected static final String FUNCTION_KEYS = "keys";
+    /**
+     * The constant FUNCTION_NEXT.
+     */
     protected static final String FUNCTION_NEXT = "next";
+    /**
+     * The constant PROPERTY_DONE.
+     */
     protected static final String PROPERTY_DONE = "done";
+    /**
+     * The constant PROPERTY_VALUE.
+     */
     protected static final String PROPERTY_VALUE = "value";
 
     V8ValueArray(V8Runtime v8Runtime, long handle) throws JavetException {

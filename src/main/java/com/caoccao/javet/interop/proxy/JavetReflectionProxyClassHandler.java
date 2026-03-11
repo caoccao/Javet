@@ -38,6 +38,7 @@ import com.caoccao.javet.values.reference.V8ValueObject;
  * The type Javet reflection proxy class handler.
  *
  * @param <T> the type parameter
+ * @param <E> the custom exception
  * @since 1.1.7
  */
 public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exception>

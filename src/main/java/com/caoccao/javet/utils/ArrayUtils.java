@@ -25,6 +25,9 @@ import java.util.Objects;
  * @since 3.0.3
  */
 public final class ArrayUtils {
+    private ArrayUtils() {
+    }
+
     /**
      * Get a copy of the array object.
      *

@@ -40,6 +40,8 @@ import java.util.stream.Stream;
  * @since 0.8.3
  */
 public final class V8FunctionCallback {
+    private V8FunctionCallback() {
+    }
 
     private static final String NULL = "null";
 

@@ -22,9 +22,23 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
+/**
+ * The type V8 value iterator, representing a JavaScript iterator object.
+ *
+ * @param <T> the V8 value type of the iterator elements
+ */
 public class V8ValueIterator<T extends V8Value> extends V8ValueObject implements IV8ValueIterator<T> {
+    /**
+     * The constant FUNCTION_NEXT.
+     */
     protected static final String FUNCTION_NEXT = "next";
+    /**
+     * The constant PROPERTY_DONE.
+     */
     protected static final String PROPERTY_DONE = "done";
+    /**
+     * The constant PROPERTY_VALUE.
+     */
     protected static final String PROPERTY_VALUE = "value";
 
     V8ValueIterator(V8Runtime v8Runtime, long handle) throws JavetException {

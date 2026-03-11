@@ -46,7 +46,8 @@ package com.caoccao.javet.utils;
  * possible values. The <em>precision</em> column indicates the step size between two
  * consecutive numbers in a specific part of the range.</p>
  *
- * <table summary="Precision of fp16 across the range">
+ * <table>
+ * <caption>Precision of fp16 across the range</caption>
  *     <tr><th>Range start</th><th>Precision</th></tr>
  *     <tr><td>0</td><td>1 &frasl; 16,777,216</td></tr>
  *     <tr><td>1 &frasl; 16,384</td><td>1 &frasl; 16,777,216</td></tr>

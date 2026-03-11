@@ -16,5 +16,13 @@
 
 package com.caoccao.javet.values;
 
+/**
+ * Abstract base class for all V8 data types. This is the root of the V8 value hierarchy.
+ */
 public abstract class V8Data {
+    /**
+     * Instantiates a new V8 data.
+     */
+    protected V8Data() {
+    }
 }

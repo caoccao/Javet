@@ -16,7 +16,6 @@
 
 /**
  * Virtual value wrappers for managing V8 value lifetimes and iterator proxying.
- * <p>
  * <ul>
  *   <li>{@link com.caoccao.javet.values.virtual.V8VirtualValue} - Wraps a V8 value with conversion state tracking for automatic cleanup.</li>
  *   <li>{@link com.caoccao.javet.values.virtual.V8VirtualValueList} - List of V8 values with batch lifecycle management.</li>

@@ -25,25 +25,48 @@ import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Default logger implementation that delegates to {@link java.util.logging.Logger}.
+ */
 public class JavetDefaultLogger implements IJavetLogger {
+    /**
+     * The underlying Java logger instance.
+     */
     protected Logger logger;
+    /**
+     * The name of this logger.
+     */
     protected String name;
 
+    /**
+     * Constructs a new default logger with the given name.
+     *
+     * @param name the logger name
+     */
     public JavetDefaultLogger(String name) {
         logger = Logger.getLogger(name);
         this.name = name;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void debug(String message) {
         logger.log(Level.FINE, message);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void error(String message) {
         logger.log(Level.SEVERE, message);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void error(String message, Throwable cause) {
         logger.severe(message);
@@ -56,19 +79,35 @@ public class JavetDefaultLogger implements IJavetLogger {
         }
     }
 
+    /**
+     * Returns the underlying Java logger.
+     *
+     * @return the {@link Logger} instance
+     */
     public Logger getLogger() {
         return logger;
     }
 
+    /**
+     * Returns the name of this logger.
+     *
+     * @return the logger name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void info(String message) {
         logger.info(message);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void warn(String message) {
         logger.warning(message);

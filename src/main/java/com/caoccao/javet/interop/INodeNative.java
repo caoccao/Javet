@@ -22,7 +22,19 @@ package com.caoccao.javet.interop;
  * @since 0.8.0
  */
 public interface INodeNative extends IV8Native {
+    /**
+     * Check if the Node.js runtime is stopping.
+     *
+     * @param nodeRuntimeHandle the Node.js runtime handle
+     * @return true if the runtime is stopping
+     */
     boolean isStopping(long nodeRuntimeHandle);
 
+    /**
+     * Set the stopping state of the Node.js runtime.
+     *
+     * @param nodeRuntimeHandle the Node.js runtime handle
+     * @param stopping          the stopping state
+     */
     void setStopping(long nodeRuntimeHandle, boolean stopping);
 }

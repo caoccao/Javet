@@ -30,6 +30,11 @@ import com.caoccao.javet.values.reference.V8ValueObject;
  * @since 3.0.1
  */
 public class JavetBuiltInModuleResolver implements IV8ModuleResolver {
+    /**
+     * Constructs a new Javet built-in module resolver with default settings.
+     */
+    public JavetBuiltInModuleResolver() {
+    }
 
     /**
      * The constant PREFIX_NODE.

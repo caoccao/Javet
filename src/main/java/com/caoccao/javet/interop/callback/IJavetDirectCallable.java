@@ -59,6 +59,7 @@ public interface IJavetDirectCallable {
      * The interface GetterAndNoThis gets the property value by a property key
      * without this object passed in.
      *
+     * @param <E> the custom exception
      * @since 2.2.0
      */
     interface GetterAndNoThis<E extends Exception> extends DirectCall {
@@ -78,6 +79,7 @@ public interface IJavetDirectCallable {
      * The interface GetterAndThis gets the property value by a property key
      * with this object passed in.
      *
+     * @param <E> the custom exception
      * @since 2.2.0
      */
     interface GetterAndThis<E extends Exception> extends DirectCall {
@@ -97,6 +99,7 @@ public interface IJavetDirectCallable {
     /**
      * The interface NoThisAndResult does not return the result and accept this object passed in.
      *
+     * @param <E> the custom exception
      * @since 2.2.0
      */
     interface NoThisAndNoResult<E extends Exception> extends DirectCall {
@@ -115,6 +118,7 @@ public interface IJavetDirectCallable {
      * The interface NoThisAndResult returns the result
      * without this object passed in.
      *
+     * @param <E> the custom exception
      * @since 2.2.0
      */
     interface NoThisAndResult<E extends Exception> extends DirectCall {
@@ -134,6 +138,7 @@ public interface IJavetDirectCallable {
      * The interface SetterAndNoThis gets the property value by a property key
      * without this object passed in.
      *
+     * @param <E> the custom exception
      * @since 2.2.0
      */
     interface SetterAndNoThis<E extends Exception> extends DirectCall {
@@ -154,6 +159,7 @@ public interface IJavetDirectCallable {
      * The interface SetterAndThis gets the property value by a property key
      * with this object passed in.
      *
+     * @param <E> the custom exception
      * @since 2.2.0
      */
     interface SetterAndThis<E extends Exception> extends DirectCall {
@@ -174,6 +180,7 @@ public interface IJavetDirectCallable {
     /**
      * The interface ThisAndNoResult does not return the result, but accepts this object.
      *
+     * @param <E> the custom exception
      * @since 2.2.0
      */
     interface ThisAndNoResult<E extends Exception> extends DirectCall {

@@ -28,6 +28,7 @@ import java.util.Optional;
 /**
  * The type Base javet proxy plugin for single class.
  *
+ * @param <T> the target Java type this plugin handles
  * @since 3.0.4
  */
 @SuppressWarnings("unchecked")

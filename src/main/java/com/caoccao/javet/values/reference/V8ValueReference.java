@@ -23,9 +23,21 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
 
+/**
+ * The abstract base type for V8 value references, representing JavaScript objects held by native handle.
+ */
 public abstract class V8ValueReference extends V8Value implements IV8ValueReference {
+    /**
+     * The constant representing an invalid native handle.
+     */
     public static final long INVALID_HANDLE = 0L;
+    /**
+     * The native handle to the V8 value.
+     */
     protected long handle;
+    /**
+     * Whether this reference is held as a weak reference.
+     */
     protected boolean weak;
 
     V8ValueReference(V8Runtime v8Runtime, long handle) throws JavetException {
@@ -35,6 +47,11 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
         addReference();
     }
 
+    /**
+     * Adds a reference to this V8 value in the V8 runtime.
+     *
+     * @throws JavetException the javet exception
+     */
     protected void addReference() throws JavetException {
         checkV8Runtime().getV8Internal().addReference(this);
     }
@@ -112,6 +129,11 @@ public abstract class V8ValueReference extends V8Value implements IV8ValueRefere
         return weak;
     }
 
+    /**
+     * Removes the reference to this V8 value from the V8 runtime.
+     *
+     * @throws JavetException the javet exception
+     */
     protected void removeReference() throws JavetException {
         checkV8Runtime().getV8Internal().removeReference(this);
     }
