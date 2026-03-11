@@ -141,7 +141,13 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleExecute
     }
     else if (!v8MaybeLocalCompiledModule.IsEmpty()) {
         auto compliedModule = v8MaybeLocalCompiledModule.ToLocalChecked();
-        auto v8MaybeBool = compliedModule->InstantiateModule(v8Context, Javet::Callback::JavetModuleResolveCallback);
+        v8::Module::ResolveModuleCallback moduleResolveCallback = Javet::Callback::JavetModuleResolveCallback;
+#ifdef ENABLE_NODE
+        if (v8Runtime->IsBuiltInModuleResolution(jniEnv)) {
+            moduleResolveCallback = node::loader::ModuleWrap::ResolveModuleCallback;
+        }
+#endif
+        auto v8MaybeBool = compliedModule->InstantiateModule(v8Context, moduleResolveCallback);
         if (v8TryCatch.HasCaught()) {
             return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
         }
@@ -246,7 +252,13 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_moduleInstant
     RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (v8LocalModule->GetStatus() == v8::Module::Status::kUninstantiated) {
         V8TryCatch v8TryCatch(v8Isolate);
-        auto v8MaybeBool = v8LocalModule->InstantiateModule(v8Context, Javet::Callback::JavetModuleResolveCallback);
+        v8::Module::ResolveModuleCallback moduleResolveCallback = Javet::Callback::JavetModuleResolveCallback;
+#ifdef ENABLE_NODE
+        if (v8Runtime->IsBuiltInModuleResolution(jniEnv)) {
+            moduleResolveCallback = node::loader::ModuleWrap::ResolveModuleCallback;
+        }
+#endif
+        auto v8MaybeBool = v8LocalModule->InstantiateModule(v8Context, moduleResolveCallback);
         if (v8TryCatch.HasCaught()) {
             Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
         }

@@ -2,6 +2,11 @@
 Release Notes 5.0.x
 ===================
 
+5.0.6
+-----
+
+* Added ``builtInModuleResolution`` flag to ``NodeRuntimeOptions`` to switch between Javet's module resolver and Node.js's built-in module resolver for static ``import`` statements
+
 5.0.5
 -----
 

@@ -39,6 +39,7 @@ public final class NodeRuntimeOptions extends RuntimeOptions<NodeRuntimeOptions>
      * @since 1.1.7
      */
     public static final V8Flags V8_FLAGS = new V8Flags();
+    private boolean builtInModuleResolution;
     private String[] consoleArguments;
 
     /**
@@ -48,6 +49,7 @@ public final class NodeRuntimeOptions extends RuntimeOptions<NodeRuntimeOptions>
      */
     public NodeRuntimeOptions() {
         super();
+        builtInModuleResolution = false;
         consoleArguments = null;
     }
 
@@ -59,6 +61,28 @@ public final class NodeRuntimeOptions extends RuntimeOptions<NodeRuntimeOptions>
      */
     public String[] getConsoleArguments() {
         return consoleArguments;
+    }
+
+    /**
+     * Is built-in module resolution enabled.
+     *
+     * @return true if built-in module resolution is enabled
+     * @since 5.0.6
+     */
+    public boolean isBuiltInModuleResolution() {
+        return builtInModuleResolution;
+    }
+
+    /**
+     * Sets built-in module resolution.
+     *
+     * @param builtInModuleResolution the built-in module resolution flag
+     * @return the self
+     * @since 5.0.6
+     */
+    public NodeRuntimeOptions setBuiltInModuleResolution(boolean builtInModuleResolution) {
+        this.builtInModuleResolution = builtInModuleResolution;
+        return this;
     }
 
     /**

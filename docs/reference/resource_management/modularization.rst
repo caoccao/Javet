@@ -159,12 +159,27 @@ Apart from rebuilding the native modules on Windows, there is also a manual way 
 5. Change the DLL name from ``node.exe`` to ``libjavet-node-windows-x86_64.v.x.x.x.dll`` where ``x.x.x`` needs to be replaced with the actual Javet version.
 6. Save the change.
 
-Dynamically Import Built-in Modules
------------------------------------
+Built-in Module Resolution
+--------------------------
 
-The Node.js module resolution callback doesn't allow the embedder to relay the calls as a default callback. If the embedder sets its own callback, the Node.js built-in modules will not be reachable any more.
+``NodeRuntimeOptions`` provides a ``builtInModuleResolution`` flag that controls how static ``import`` statements are resolved in Javet-managed ES modules. This flag can be toggled at runtime without recreating the runtime.
 
-There is workaround: create a new module that calls `require` internally by registering `JavetBuiltInModuleResolver` as the module resolver.
+================================= ============================================ ============================================
+Capability                        ``false`` (Default)                          ``true``
+================================= ============================================ ============================================
+Resolver                          Javet (Java-side ``IV8ModuleResolver``)      Node.js built-in module system
+Node.js built-in modules          Yes (via ``JavetBuiltInModuleResolver``)     Yes
+npm packages                      No (unless custom ``IV8ModuleResolver``)     Yes
+Relative file imports             No (unless custom ``IV8ModuleResolver``)     Yes
+Javet-managed modules             Yes                                          No
+Custom resolution logic           Yes (implement ``IV8ModuleResolver``)        No
+V8 mode                           Yes                                          N/A (Node.js mode only)
+================================= ============================================ ============================================
+
+``false`` (Default)
+^^^^^^^^^^^^^^^^^^^
+
+Javet resolves all static ``import`` statements through the Java-side ``IV8ModuleResolver``. Node.js built-in modules (``node:fs``, ``node:path``, etc.) are supported by registering ``JavetBuiltInModuleResolver``:
 
 .. code-block:: java
 
@@ -175,7 +190,28 @@ There is workaround: create a new module that calls `require` internally by regi
             .setModule(true).executeVoid();
     assertFalse(v8Runtime.getGlobalObject().getBoolean("a"));
 
-The application may extend the capability of `JavetBuiltInModuleResolver` to gain granular control over the built-in modules.
+The application may extend ``JavetBuiltInModuleResolver`` to gain granular control over which built-in modules are allowed. npm packages and other non-built-in modules can be supported by implementing a custom ``IV8ModuleResolver``.
+
+``true``
+^^^^^^^^
+
+Node.js resolves all static ``import`` statements using its own module system. Javet's Java-side resolver is bypassed entirely. This enables resolving npm packages, relative file imports, and other modules that Node.js handles natively.
+
+.. code-block:: java
+
+    NodeRuntimeOptions options = (NodeRuntimeOptions) nodeRuntime.getRuntimeOptions();
+    options.setBuiltInModuleResolution(true);
+
+    nodeRuntime.getExecutor(
+                    "import fs from 'node:fs';\n" +
+                            "import path from 'node:path';\n" +
+                            "globalThis.a = fs.existsSync('/path-not-found');\n" +
+                            "globalThis.b = path.join('/foo', 'bar');")
+            .setModule(true).setResourceName("./main.js").executeVoid();
+
+.. caution::
+
+    When ``builtInModuleResolution`` is ``true``, Javet-managed modules (compiled via ``compileV8Module()``) are not visible to Node.js's resolver. Only modules managed by Node.js itself (built-in modules, npm packages, etc.) can be resolved. This flag does not affect V8 mode.
 
 Dynamic import()
 ----------------

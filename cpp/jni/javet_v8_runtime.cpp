@@ -26,10 +26,13 @@
 
 namespace Javet {
     jclass jclassRuntimeOptions;
+    jclass jclassV8Runtime;
     jmethodID jmethodRuntimeOptionsIsCreateSnapshotEnabled;
     jmethodID jmethodRuntimeOptionsGetSnapshotBlob;
 #ifdef ENABLE_NODE
     jmethodID jmethodNodeRuntimeOptionsGetConsoleArguments;
+    jmethodID jmethodNodeRuntimeOptionsIsBuiltInModuleResolution;
+    jmethodID jmethodV8RuntimeGetRuntimeOptions;
     std::mutex mutexForNodeResetEnvrironment;
     auto oneMillisecond = std::chrono::milliseconds(1);
 #else
@@ -40,6 +43,9 @@ namespace Javet {
 #ifdef ENABLE_NODE
         jclassRuntimeOptions = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/options/NodeRuntimeOptions");
         jmethodNodeRuntimeOptionsGetConsoleArguments = jniEnv->GetMethodID(jclassRuntimeOptions, "getConsoleArguments", "()[Ljava/lang/String;");
+        jmethodNodeRuntimeOptionsIsBuiltInModuleResolution = jniEnv->GetMethodID(jclassRuntimeOptions, "isBuiltInModuleResolution", "()Z");
+        jclassV8Runtime = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/V8Runtime");
+        jmethodV8RuntimeGetRuntimeOptions = jniEnv->GetMethodID(jclassV8Runtime, "getRuntimeOptions", "()Lcom/caoccao/javet/interop/options/RuntimeOptions;");
 #else
         jclassRuntimeOptions = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/options/V8RuntimeOptions");
         jmethodV8RuntimeOptionsGetGlobalName = jniEnv->GetMethodID(jclassRuntimeOptions, "getGlobalName", "()Ljava/lang/String;");
@@ -569,6 +575,20 @@ namespace Javet {
         }
         return externalV8Value;
     }
+
+#ifdef ENABLE_NODE
+    bool V8Runtime::IsBuiltInModuleResolution(JNIEnv* jniEnv) const noexcept {
+        bool result = false;
+        jobject mRuntimeOptions = jniEnv->CallObjectMethod(
+            externalV8Runtime, jmethodV8RuntimeGetRuntimeOptions);
+        if (mRuntimeOptions != nullptr) {
+            result = jniEnv->CallBooleanMethod(
+                mRuntimeOptions, jmethodNodeRuntimeOptionsIsBuiltInModuleResolution);
+            DELETE_LOCAL_REF(jniEnv, mRuntimeOptions);
+        }
+        return result;
+    }
+#endif
 
     V8Runtime::~V8Runtime() {
         CloseV8Context();

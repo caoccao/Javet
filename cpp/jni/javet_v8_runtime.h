@@ -136,6 +136,8 @@ namespace Javet {
         }
 
 #ifdef ENABLE_NODE
+        bool IsBuiltInModuleResolution(JNIEnv* jniEnv) const noexcept;
+
         inline bool IsStopping() const noexcept {
             return nodeStopping.load();
         }

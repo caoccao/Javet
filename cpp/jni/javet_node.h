@@ -34,6 +34,12 @@
 #include <env-inl.h>
 #include <crypto/crypto_util.h>
 #include <node_snapshot_builder.h>
+// Bypass private access to use ModuleWrap::ResolveModuleCallback directly.
+// This avoids modifying Node.js source code while allowing Javet to pass
+// Node.js's own module resolver callback to InstantiateModule().
+#define private public
+#include <module_wrap.h>
+#undef private
  // Hack Begins (The hack is for resolving the conflicts between Node.js and V8)
 #define BASE_TRACE_EVENT_COMMON_TRACE_EVENT_COMMON_H_
 #define V8_TRACING_TRACE_EVENT_H_
