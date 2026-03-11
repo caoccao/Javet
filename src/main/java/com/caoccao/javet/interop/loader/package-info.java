@@ -15,7 +15,15 @@
  */
 
 /**
- * JNI library loader and listeners.
+ * Native library loading for platform-specific JNI binaries.
+ * <p>
+ * Javet ships separate native libraries per OS and architecture (Linux x86_64/arm64, macOS x86_64/arm64, Windows x86_64, Android).
+ * This package handles locating and loading the correct binary:
+ * <ul>
+ *   <li>{@link com.caoccao.javet.interop.loader.JavetLibLoader} - Loads the platform-specific native library at startup.</li>
+ *   <li>{@link com.caoccao.javet.interop.loader.IJavetLibLoadingListener} - Customize library loading behavior (e.g., load from a custom path).</li>
+ *   <li>{@link com.caoccao.javet.interop.loader.JavetLibLoadingListener} - Default listener that locates libraries from the classpath resources.</li>
+ * </ul>
  *
  * @since 1.0.1
  * @author Sam Cao

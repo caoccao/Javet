@@ -15,7 +15,18 @@
  */
 
 /**
- * Reference classes for Node.js built-in modules.
+ * Java wrappers for Node.js built-in modules (Node.js mode only).
+ * <p>
+ * These classes provide typed Java access to Node.js module objects:
+ * <ul>
+ *   <li>{@link com.caoccao.javet.node.modules.NodeModuleModule} - The {@code module} module, providing
+ *       {@code createRequire()} for setting the require root directory.</li>
+ *   <li>{@link com.caoccao.javet.node.modules.NodeModuleProcess} - The {@code process} module, providing
+ *       access to the process object, environment, and methods.</li>
+ *   <li>{@link com.caoccao.javet.node.modules.NodeModuleAny} - Generic wrapper for any Node.js module not covered by a specialized class.</li>
+ * </ul>
+ * <p>
+ * Obtain a module via {@code nodeRuntime.getNodeModule(NodeModuleModule.class)}.
  *
  * @since 0.7.0
  * @author Sam Cao

@@ -15,7 +15,19 @@
  */
 
 /**
- * Classes for V8 values.
+ * Root package for all V8 value types.
+ * <p>
+ * All V8 values implement {@link com.caoccao.javet.values.IV8Value} and extend {@link com.caoccao.javet.values.V8Value}.
+ * The type hierarchy is:
+ * <ul>
+ *   <li>{@link com.caoccao.javet.values.primitive} - Primitives: string, number, boolean, null, undefined, bigint, symbol.</li>
+ *   <li>{@link com.caoccao.javet.values.reference} - Reference types: object, array, function, promise, map, set, module, etc.</li>
+ *   <li>{@link com.caoccao.javet.values.reference.builtin} - Built-in objects: JSON, Object, Promise, Reflect, Symbol.</li>
+ *   <li>{@link com.caoccao.javet.values.virtual} - Virtual values for iterator proxying and value list management.</li>
+ * </ul>
+ * <p>
+ * <b>Important:</b> Reference values hold native V8 handles and must be closed after use
+ * (via try-with-resources or {@link com.caoccao.javet.utils.JavetResourceUtils#safeClose}) to prevent memory leaks.
  *
  * @since 0.7.0
  * @author Sam Cao

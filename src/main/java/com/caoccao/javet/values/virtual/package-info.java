@@ -15,7 +15,13 @@
  */
 
 /**
- * Classes for V8 virtual reference values.
+ * Virtual value wrappers for managing V8 value lifetimes and iterator proxying.
+ * <p>
+ * <ul>
+ *   <li>{@link com.caoccao.javet.values.virtual.V8VirtualValue} - Wraps a V8 value with conversion state tracking for automatic cleanup.</li>
+ *   <li>{@link com.caoccao.javet.values.virtual.V8VirtualValueList} - List of V8 values with batch lifecycle management.</li>
+ *   <li>{@link com.caoccao.javet.values.virtual.V8VirtualIterator} - Virtual iterator proxy handler implementing the JavaScript iterator protocol over Java collections.</li>
+ * </ul>
  *
  * @since 0.7.0
  * @author Sam Cao

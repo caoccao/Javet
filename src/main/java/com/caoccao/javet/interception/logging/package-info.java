@@ -15,7 +15,23 @@
  */
 
 /**
- * Built-in interceptors for JS logging function <code>console.log(), etc...</code>
+ * Console interceptors that redirect JavaScript {@code console.log()}, {@code console.warn()},
+ * {@code console.error()}, etc. to Java output streams.
+ * <p>
+ * <ul>
+ *   <li>{@link com.caoccao.javet.interception.logging.BaseJavetConsoleInterceptor} - Abstract base providing
+ *       console.log, debug, error, info, warn, and trace methods.</li>
+ *   <li>{@link com.caoccao.javet.interception.logging.JavetStandardConsoleInterceptor} - Routes console output to
+ *       configurable {@code PrintStream} instances ({@code System.out}/{@code System.err} by default).</li>
+ * </ul>
+ * <p>
+ * Usage:
+ * <pre>{@code
+ * JavetStandardConsoleInterceptor interceptor = new JavetStandardConsoleInterceptor(v8Runtime);
+ * interceptor.register(v8Runtime.getGlobalObject());
+ * // ... run JavaScript that uses console.log() ...
+ * interceptor.unregister(v8Runtime.getGlobalObject());
+ * }</pre>
  *
  * @since 0.7.0
  * @author Sam Cao

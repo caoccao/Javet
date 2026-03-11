@@ -15,7 +15,18 @@
  */
 
 /**
- * Built-in entities for default object conversion.
+ * Java entity classes that mirror JavaScript value types for converter round-trips.
+ * <p>
+ * These plain Java objects carry JavaScript data across the JNI boundary and are used
+ * by the built-in converters ({@link com.caoccao.javet.interop.converters.JavetObjectConverter}, etc.)
+ * when converting between V8 values and Java objects:
+ * <ul>
+ *   <li>{@link com.caoccao.javet.entities.JavetEntityError} - V8 error with type, message, and stack trace.</li>
+ *   <li>{@link com.caoccao.javet.entities.JavetEntityFunction} - JavaScript function with type and source code.</li>
+ *   <li>{@link com.caoccao.javet.entities.JavetEntityMap} - HashMap-based container for JavaScript Map objects.</li>
+ *   <li>{@link com.caoccao.javet.entities.JavetEntitySymbol} - JavaScript Symbol with description.</li>
+ *   <li>{@link com.caoccao.javet.entities.JavetEntityPropertyDescriptor} - JavaScript property descriptor (configurable, enumerable, writable, value).</li>
+ * </ul>
  *
  * @since 0.7.0
  * @author Sam Cao

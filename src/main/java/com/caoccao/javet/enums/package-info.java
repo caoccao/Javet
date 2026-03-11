@@ -15,7 +15,21 @@
  */
 
 /**
- * Enums for various API.
+ * Enumerations covering JavaScript runtime types, V8 value types, and engine configuration constants.
+ * <p>
+ * Key enums:
+ * <ul>
+ *   <li>{@link com.caoccao.javet.enums.JSRuntimeType} - Choose between Node.js and V8 runtime modes.</li>
+ *   <li>{@link com.caoccao.javet.enums.V8ValueReferenceType} - V8 reference types (Object, Function, Array, Promise, etc.).</li>
+ *   <li>{@link com.caoccao.javet.enums.V8ValueInternalType} - Comprehensive V8 internal value type enumeration.</li>
+ *   <li>{@link com.caoccao.javet.enums.V8ConversionMode} - Converter strategies: Transparent, AllowOnly, BlockOnly.</li>
+ *   <li>{@link com.caoccao.javet.enums.V8ProxyMode} - Proxy handler modes: Class, Function, Object.</li>
+ *   <li>{@link com.caoccao.javet.enums.V8AwaitMode} - Event loop execution modes: RunNoWait, RunOnce, RunTillNoMoreTasks.</li>
+ *   <li>{@link com.caoccao.javet.enums.V8GCType} / {@link com.caoccao.javet.enums.V8GCCallbackFlags} - Garbage collection event types and flags.</li>
+ *   <li>{@link com.caoccao.javet.enums.V8ValueErrorType} - V8 error types: Error, RangeError, TypeError, SyntaxError, etc.</li>
+ *   <li>{@link com.caoccao.javet.enums.JavetErrorType} - Javet error categories: System, Compilation, Execution, Converter, etc.</li>
+ *   <li>{@link com.caoccao.javet.enums.JSFunctionType} - Function types: Native, API, UserDefined.</li>
+ * </ul>
  *
  * @since 0.7.0
  * @author Sam Cao

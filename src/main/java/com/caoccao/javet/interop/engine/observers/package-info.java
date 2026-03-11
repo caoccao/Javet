@@ -15,7 +15,17 @@
  */
 
 /**
- * Observers for V8 runtime.
+ * Observers for monitoring V8 runtime health and resource usage within an engine pool.
+ * <p>
+ * Each observer implements {@link com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver}
+ * and computes aggregate metrics across pooled runtimes:
+ * <ul>
+ *   <li>{@link com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageV8HeapStatistics} - Average heap memory usage.</li>
+ *   <li>{@link com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageV8HeapSpaceStatistics} - Average per-space heap statistics.</li>
+ *   <li>{@link com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageReferenceCount} - Average live V8 reference count.</li>
+ *   <li>{@link com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageCallbackContextCount} - Average active callback context count.</li>
+ *   <li>{@link com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageV8ModuleCount} - Average loaded ES module count.</li>
+ * </ul>
  *
  * @author Sam Cao
  * @since 1.0.5

@@ -15,7 +15,16 @@
  */
 
 /**
- * Callback data structure for binding context and method descriptor.
+ * Binding infrastructure for mapping Java classes and methods to JavaScript.
+ * <p>
+ * This package manages the metadata that drives proxy-based Java-to-JavaScript interop:
+ * <ul>
+ *   <li>{@link com.caoccao.javet.interop.binding.ClassDescriptor} - Comprehensive descriptor of a Java class for reflection-based proxying, including methods, fields, and annotations.</li>
+ *   <li>{@link com.caoccao.javet.interop.binding.ClassDescriptorStore} - Centralized cache of class descriptors.</li>
+ *   <li>{@link com.caoccao.javet.interop.binding.MethodDescriptor} - Describes a single method binding with its name, symbol, and invocation metadata.</li>
+ *   <li>{@link com.caoccao.javet.interop.binding.BindingContext} / {@link com.caoccao.javet.interop.binding.BindingContextStore} - Stores and retrieves active method bindings per V8 value object.</li>
+ *   <li>{@link com.caoccao.javet.interop.binding.IClassProxyPlugin} - Interface for customizing proxy behavior of Java classes.</li>
+ * </ul>
  *
  * @since 0.7.0
  * @author Sam Cao

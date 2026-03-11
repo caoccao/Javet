@@ -15,7 +15,20 @@
  */
 
 /**
- * Built-in utilities.
+ * Utility classes for common operations across the Javet API.
+ * <p>
+ * <ul>
+ *   <li>{@link com.caoccao.javet.utils.JavetResourceUtils} - Safe resource cleanup for V8 values and closables.</li>
+ *   <li>{@link com.caoccao.javet.utils.JavetOSUtils} - OS and architecture detection (platform, working directory).</li>
+ *   <li>{@link com.caoccao.javet.utils.JavetDateTimeUtils} - Date/time conversion between V8 timestamps and {@code ZonedDateTime}.</li>
+ *   <li>{@link com.caoccao.javet.utils.V8ValueUtils} - V8 value array and type manipulation helpers.</li>
+ *   <li>{@link com.caoccao.javet.utils.JavetDefaultLogger} - Default logging implementation via {@code java.util.logging}.</li>
+ *   <li>{@link com.caoccao.javet.utils.StringUtils}, {@link com.caoccao.javet.utils.ArrayUtils},
+ *       {@link com.caoccao.javet.utils.ListUtils} - Common string, array, and list operations.</li>
+ *   <li>{@link com.caoccao.javet.utils.SimpleMap}, {@link com.caoccao.javet.utils.SimpleList},
+ *       {@link com.caoccao.javet.utils.SimpleSet} - JDK 8 polyfills for {@code Map.of()}, {@code List.of()}, {@code Set.of()}.</li>
+ *   <li>{@link com.caoccao.javet.utils.ThreadSafeMap} - Thread-safe map with permanent and weak reference support.</li>
+ * </ul>
  *
  * @since 0.7.0
  * @author Sam Cao

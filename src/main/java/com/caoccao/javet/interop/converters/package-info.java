@@ -15,7 +15,19 @@
  */
 
 /**
- * Built-in converters, interface and config.
+ * Type converters for automatic conversion between Java objects and V8 values.
+ * <p>
+ * Javet provides a converter hierarchy with increasing capability:
+ * <ul>
+ *   <li>{@link com.caoccao.javet.interop.converters.JavetPrimitiveConverter} - Converts primitives only (numbers, strings, booleans). Lightweight and fast.</li>
+ *   <li>{@link com.caoccao.javet.interop.converters.JavetObjectConverter} - Default converter. Handles primitives plus objects, arrays, maps, sets, and entity types.</li>
+ *   <li>{@link com.caoccao.javet.interop.converters.JavetProxyConverter} - Creates JavaScript proxy objects backed by live Java objects (bidirectional access).</li>
+ *   <li>{@link com.caoccao.javet.interop.converters.JavetBridgeConverter} - Full bridge converting all Java objects with automatic type mapping.</li>
+ * </ul>
+ * <p>
+ * Implement {@link com.caoccao.javet.interop.converters.IJavetConverter} or extend
+ * {@link com.caoccao.javet.interop.converters.BaseJavetConverter} to create custom converters.
+ * Use {@link com.caoccao.javet.interop.converters.JavetConverterConfig} to configure converter plugins.
  *
  * @since 0.7.0
  * @author Sam Cao

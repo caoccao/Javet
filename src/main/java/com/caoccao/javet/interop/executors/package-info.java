@@ -15,7 +15,17 @@
  */
 
 /**
- * Executors and interface.
+ * Script executors for compiling and running JavaScript code from various sources.
+ * <p>
+ * Obtain an executor via {@code v8Runtime.getExecutor(...)}:
+ * <ul>
+ *   <li>{@link com.caoccao.javet.interop.executors.V8StringExecutor} - Execute JavaScript from a {@code String}.</li>
+ *   <li>{@link com.caoccao.javet.interop.executors.V8FileExecutor} - Execute JavaScript from a {@code File}.</li>
+ *   <li>{@link com.caoccao.javet.interop.executors.V8PathExecutor} - Execute JavaScript from a {@code Path}.</li>
+ * </ul>
+ * <p>
+ * All executors implement {@link com.caoccao.javet.interop.executors.IV8Executor} which provides
+ * methods for script execution, module compilation, resource naming, and cached data support.
  *
  * @since 0.7.0
  * @author Sam Cao

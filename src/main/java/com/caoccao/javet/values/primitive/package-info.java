@@ -15,7 +15,19 @@
  */
 
 /**
- * Classes for V8 primitive values.
+ * V8 primitive value types that do not hold native handles and are safe to use without closing.
+ * <p>
+ * <ul>
+ *   <li>{@link com.caoccao.javet.values.primitive.V8ValueString} - JavaScript string.</li>
+ *   <li>{@link com.caoccao.javet.values.primitive.V8ValueInteger} - 32-bit integer.</li>
+ *   <li>{@link com.caoccao.javet.values.primitive.V8ValueLong} - 64-bit long (BigInt).</li>
+ *   <li>{@link com.caoccao.javet.values.primitive.V8ValueDouble} - Double-precision float.</li>
+ *   <li>{@link com.caoccao.javet.values.primitive.V8ValueBoolean} - Boolean true/false.</li>
+ *   <li>{@link com.caoccao.javet.values.primitive.V8ValueBigInteger} - Arbitrary-precision BigInteger.</li>
+ *   <li>{@link com.caoccao.javet.values.primitive.V8ValueNull} - JavaScript {@code null}.</li>
+ *   <li>{@link com.caoccao.javet.values.primitive.V8ValueUndefined} - JavaScript {@code undefined}.</li>
+ *   <li>{@link com.caoccao.javet.values.primitive.V8ValueZonedDateTime} - JavaScript Date as {@code ZonedDateTime}.</li>
+ * </ul>
  *
  * @since 0.7.0
  * @author Sam Cao

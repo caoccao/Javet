@@ -15,7 +15,14 @@
  */
 
 /**
- * Built-in callback receivers.
+ * Callback receiver base classes for handling JavaScript-to-Java function calls.
+ * <p>
+ * When JavaScript calls a Java-backed function, the receiver object is the target of the invocation.
+ * <ul>
+ *   <li>{@link com.caoccao.javet.utils.receivers.IJavetCallbackReceiver} - Interface for callback receivers.</li>
+ *   <li>{@link com.caoccao.javet.utils.receivers.JavetCallbackReceiver} - Base class holding a V8 runtime reference,
+ *       providing common ground for custom callback implementations.</li>
+ * </ul>
  *
  * @since 0.7.0
  * @author Sam Cao

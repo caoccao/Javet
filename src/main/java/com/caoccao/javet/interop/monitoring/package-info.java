@@ -15,7 +15,15 @@
  */
 
 /**
- * Package monitoring exposes some useful internal statistics.
+ * V8 runtime monitoring and memory statistics.
+ * <p>
+ * Use these classes to inspect V8 heap usage and diagnose memory issues:
+ * <ul>
+ *   <li>{@link com.caoccao.javet.interop.monitoring.V8HeapStatistics} - Overall V8 heap memory usage (total size, used size, heap limit, etc.).</li>
+ *   <li>{@link com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics} - Per-space heap statistics (old space, new space, code space, etc.).</li>
+ *   <li>{@link com.caoccao.javet.interop.monitoring.V8SharedMemoryStatistics} - Shared per-process V8 memory statistics.</li>
+ *   <li>{@link com.caoccao.javet.interop.monitoring.V8StatisticsFuture} - Asynchronous future for collecting statistics from the engine pool daemon.</li>
+ * </ul>
  *
  * @since 1.0.0
  * @author Sam Cao

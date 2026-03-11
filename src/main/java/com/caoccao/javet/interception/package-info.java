@@ -15,7 +15,17 @@
  */
 
 /**
- * Built-in interceptors.
+ * Interceptors for injecting Java functionality into the JavaScript global scope.
+ * <p>
+ * Interceptors register and unregister themselves on V8 value objects (typically the global object)
+ * to expose Java capabilities to JavaScript code:
+ * <ul>
+ *   <li>{@link com.caoccao.javet.interception.BaseJavetInterceptor} - Abstract base implementing register/unregister lifecycle.</li>
+ *   <li>{@link com.caoccao.javet.interception.JavetJVMInterceptor} - Exposes the JVM as a {@code javet} object in JavaScript,
+ *       allowing access to Java packages, classes, and the V8 garbage collector.</li>
+ * </ul>
+ * <p>
+ * See the {@link com.caoccao.javet.interception.logging} sub-package for console interceptors.
  *
  * @since 0.7.0
  * @author Sam Cao

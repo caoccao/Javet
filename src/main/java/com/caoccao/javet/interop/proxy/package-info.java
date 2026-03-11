@@ -15,7 +15,22 @@
  */
 
 /**
- * Reflection and direct proxy handlers for polyfilling Java interfaces with JS functions or objects.
+ * Proxy handlers that expose Java objects as JavaScript objects with full property and method access.
+ * <p>
+ * Javet provides two proxy strategies:
+ * <ul>
+ *   <li><b>Reflection-based</b> - Uses Java reflection to dynamically dispatch property access, method calls,
+ *       and iteration to the underlying Java object. Flexible but has reflection overhead.
+ *       See {@link com.caoccao.javet.interop.proxy.JavetReflectionProxyObjectHandler},
+ *       {@link com.caoccao.javet.interop.proxy.JavetReflectionProxyClassHandler},
+ *       {@link com.caoccao.javet.interop.proxy.JavetReflectionProxyFunctionHandler}.</li>
+ *   <li><b>Direct</b> - Implements proxy handlers without reflection for maximum performance.
+ *       See {@link com.caoccao.javet.interop.proxy.JavetDirectProxyObjectHandler},
+ *       {@link com.caoccao.javet.interop.proxy.JavetDirectProxyFunctionHandler}.</li>
+ * </ul>
+ * <p>
+ * {@link com.caoccao.javet.interop.proxy.IJavetNonProxy} is a marker interface for types that should
+ * not be automatically proxied by the converter.
  *
  * @since 0.7.0
  * @author Sam Cao
