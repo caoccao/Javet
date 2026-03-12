@@ -102,6 +102,38 @@ Binding via Proxy
 .. image:: ../../resources/images/javet_converter_binding_via_proxy.png
     :alt: Javet Converter - Binding via Proxy
 
+Converter Hierarchy
+-------------------
+
+The converters form an inheritance chain, where each level adds more conversion capabilities:
+
+.. code-block:: text
+
+    IJavetConverter (interface)
+    └── BaseJavetConverter (abstract, depth tracking)
+        └── JavetPrimitiveConverter (primitives, Optional)
+            └── JavetObjectConverter (collections, arrays, streams, custom objects)
+                └── JavetProxyConverter (Java objects as JS proxies)
+                    └── JavetBridgeConverter (proxies for ALL types)
+
+The ``toObject()`` and ``toV8Value()`` public methods are ``final`` in ``BaseJavetConverter``. They delegate to ``protected abstract`` variants with a ``depth`` parameter for circular structure detection. **Always override the depth variant** when subclassing.
+
+Auto-Close Convenience
+----------------------
+
+``IJavetConverter`` provides a default method ``toObject(V8Value v8Value, boolean autoClose)`` that automatically closes the V8 value after conversion when ``autoClose`` is ``true``. This eliminates manual try-finally:
+
+.. code-block:: java
+
+    // Without autoClose: must manage lifecycle manually
+    try (V8Value v8Value = v8Runtime.getExecutor("({a:1})").execute()) {
+        Map<String, Object> map = converter.toObject(v8Value);
+    }
+
+    // With autoClose: V8Value is closed automatically
+    Map<String, Object> map = converter.toObject(
+            v8Runtime.getExecutor("({a:1})").execute(), true);
+
 Null Safety
 -----------
 

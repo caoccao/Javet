@@ -21,7 +21,12 @@ JavetProxyPluginArray     ``boolean[]``, ``byte[]``, ``char[]``, ``double[]``, `
 JavetProxyPluginList      ``List<?>``
 JavetProxyPluginMap       ``Map<?, ?>``
 JavetProxyPluginSet       ``Set<?>``
+JavetProxyPluginClass     ``Class<?>`` (static method access and ``new`` construction)
 ========================= ================================================================================================================================================
+
+.. note::
+
+    ``JavetProxyPluginDefault`` is a catch-all plugin that matches any non-null class. It **must** be placed last in the plugin list. ``JavetBridgeConverter`` automatically registers all 6 plugins in the correct order.
 
 JavetProxyPluginDefault
 -----------------------
@@ -57,7 +62,7 @@ Java Type           JS Type
 JavetProxyPluginArray
 ---------------------
 
-The array plugin maps all primitive arrays and object arrays to the JS ``array``.
+The array plugin maps all primitive arrays and object arrays to the JS ``array``. Proxied Java arrays support the full JavaScript Array prototype API.
 
 .. code-block:: java
 
@@ -79,10 +84,12 @@ The array plugin maps all primitive arrays and object arrays to the JS ``array``
     assertEquals(2, v8Runtime.getExecutor("intArray.length").executeInteger());
     v8Runtime.getGlobalObject().delete("intArray");
 
+Supported Array methods: ``at()`` (with negative indices), ``concat()``, ``copyWithin()``, ``entries()``, ``every()``, ``fill()``, ``filter()``, ``find()``, ``findIndex()``, ``findLast()``, ``findLastIndex()``, ``flat()``, ``flatMap()``, ``forEach()``, ``includes()``, ``indexOf()``, ``join()``, ``keys()``, ``lastIndexOf()``, ``map()``, ``reduce()``, ``reduceRight()``, ``reverse()``, ``slice()``, ``some()``, ``sort()``, ``toReversed()``, ``toSorted()``, ``toSpliced()``, ``toString()``, ``values()``, ``with()``, ``Symbol.iterator``, and spread syntax (``[...arr]``).
+
 JavetProxyPluginList
 --------------------
 
-The list plugin maps ``List<?>`` to the JS ``array``.
+The list plugin maps ``List<?>`` to the JS ``array``. Both JavaScript Array methods and Java List methods are available.
 
 .. code-block:: java
 
@@ -102,10 +109,12 @@ The list plugin maps ``List<?>`` to the JS ``array``.
             v8Runtime.getExecutor("JSON.stringify(list)").executeString());
     v8Runtime.getGlobalObject().delete("list");
 
+Additional JS Array methods on lists: ``push()``, ``pop()``, ``shift()``, ``unshift()``, ``splice()``, ``includes()``, ``indexOf()``, ``lastIndexOf()``, ``delete list[i]`` (removes element), ``length`` property, ``Symbol.iterator``, and all the same methods as ``JavetProxyPluginArray``. Java ``List`` methods (``add()``, ``get()``, ``size()``, ``clear()``, ``contains()``, etc.) remain accessible.
+
 JavetProxyPluginMap
 -------------------
 
-The map plugin maps ``Map<?, ?>`` to the JS ``object``.
+The map plugin maps ``Map<?, ?>`` to the JS ``object``. It polyfills the JS Map API so that Java Maps behave like both JS objects (property access) and JS Maps (method calls).
 
 .. code-block:: java
 
@@ -127,10 +136,12 @@ The map plugin maps ``Map<?, ?>`` to the JS ``object``.
             v8Runtime.getExecutor("JSON.stringify([...map.entries()].sort((a,b)=>a[0]-b[0]));").executeString());
     v8Runtime.getGlobalObject().delete("map");
 
+Polyfilled Map methods: ``get(key)``, ``set(key, value)`` (fluent, returns the map), ``has(key)``, ``delete(key)``, ``clear()``, ``size`` (property), ``entries()``, ``keys()``, ``values()``, ``forEach(fn)``, ``Symbol.iterator``, ``toJSON()`` (produces a plain object), ``toString()`` (returns ``"[object Map]"``), and ``valueOf()``. Java ``Map`` methods (``containsKey()``, ``get()``, ``size()``, etc.) are also accessible.
+
 JavetProxyPluginSet
 -------------------
 
-The set plugin maps ``Set<?>`` to the JS ``Set``.
+The set plugin maps ``Set<?>`` to the JS ``Set``. It polyfills the JS Set API.
 
 .. code-block:: java
 
@@ -148,6 +159,8 @@ The set plugin maps ``Set<?>`` to the JS ``Set``.
             v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(set).sort());").executeString());
     v8Runtime.getGlobalObject().delete("set");
 
+Polyfilled Set methods: ``add(value)``, ``has(value)``, ``delete(value)``, ``clear()``, ``size`` (property), ``entries()`` (returns ``[value, value]`` pairs), ``keys()``, ``values()``, ``forEach(fn)``, ``Symbol.iterator``, ``toJSON()``, ``toString()`` (returns ``"[object Set]"``), and ``valueOf()``. Java ``Set`` methods (``contains()``, ``add()``, ``size()``, etc.) remain accessible.
+
 Add or Remove Proxy Plugins
 ===========================
 
@@ -160,12 +173,42 @@ The proxy plugins are stored in the ``JavetConverterConfig``.
     // Remove a proxy plugin
     converter.getConfig().getProxyPlugins().removeIf(p -> p instanceof JavetProxyPluginList);
 
+JavetProxyPluginClass
+---------------------
+
+The class plugin handles ``Class<?>`` objects. When a Java ``Class`` is injected into JavaScript, its static methods become callable and ``new`` can be used to construct instances.
+
+.. code-block:: java
+
+    v8Runtime.getGlobalObject().set("StringBuilder", StringBuilder.class);
+    assertEquals("abc def", v8Runtime.getExecutor(
+            "new StringBuilder().append('abc').append(' ').append('def').toString()").executeString());
+    v8Runtime.getGlobalObject().delete("StringBuilder");
+
+    v8Runtime.getGlobalObject().set("Pattern", Pattern.class);
+    assertTrue(v8Runtime.getExecutor(
+            "Pattern.compile('^\\\\d+$').matcher('123').matches()").executeBoolean());
+    v8Runtime.getGlobalObject().delete("Pattern");
+
+Enum classes are also supported. Enum constants are accessible as properties but are not writable (assigning to them throws an error).
+
 Create a New Proxy Plugin
 =========================
 
 There are typically two ways to create a new proxy plugin.
 
 * Implement ``IClassProxyPlugin`` from scratch.
-* Subclass an existing proxy plugin.
+* Subclass an existing proxy plugin (``BaseJavetProxyPluginSingle<T>`` for a single type, or ``BaseJavetProxyPluginMultiple`` for multiple types).
+
+Key interface methods to implement:
+
+* ``isProxyable(Class<?>)`` — return ``true`` for classes this plugin handles.
+* ``getProxyGetByString(Class<?>, String)`` — return a handler function for a JS property access by string name.
+* ``getProxyGetBySymbol(Class<?>, String)`` — return a handler for Symbol-keyed property access.
+* ``getTargetObjectConstructor(Class<?>)`` — return a function that creates the JS proxy target.
+* ``isIndexSupported(Class<?>)`` — enable bracket indexing (``obj[0]``).
+* ``isDeleteSupported(Class<?>)`` — enable the ``delete`` operator.
+* ``isHasSupported(Class<?>)`` — enable the ``in`` operator.
+* ``isOwnKeysSupported(Class<?>)`` — enable ``Object.keys()`` and ``Object.getOwnPropertyNames()``.
 
 It's recommended to review the source code of the built-in proxy plugins to learn how to create your own proxy plugin.

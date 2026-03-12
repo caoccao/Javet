@@ -432,21 +432,25 @@ Features
 * Any Java objects generated inside V8 are automatically handled by the converter.
 * Getters and setters (``get``, ``is``, ``set`` and ``put``) are smartly handled.
 * Overloaded methods and varargs methods are identified well.
-* Primitive types, Set, Map, List, Array are not handled. Map is special because it can be enabled.
+* Primitive types, Set, Map, List, Array are not handled by default. They can be enabled via proxy plugins.
 * Java interfaces can be implemented by anonymous functions in JavaScript.
 * Annotations can be applied to classes or methods to alter the default behaviors.
+* Classes implementing ``IJavetNonProxy`` are never proxied — they return ``undefined`` instead.
 
-============= ============================= =====================================================================
-Annotation    Type                          Description
-============= ============================= =====================================================================
-@V8Convert    Class                         It tells the converter which mode to be applied to the annotated class.
-@V8Allow      Constructor / Field / Method  It tells the converter to bind the constructor / field / method.
-@V8Block      Constructor / Field / Method  It tells the converter to ignore the constructor / field / method.
-@V8Property   Field                         It tells the converter to bind the field.
-@V8Function   Method                        It tells the converter to bind the method.
-@V8Getter     Method                        It tells the converter to bind the method as getter.
-@V8Setter     Method                        It tells the converter to bind the method as setter.
-============= ============================= =====================================================================
+========================= ============================= ===============================================================================
+Annotation                Type                          Description
+========================= ============================= ===============================================================================
+``@V8Convert``            Class                         Sets the conversion mode and proxy mode for the annotated class.
+``@V8Allow``              Constructor / Field / Method  Marks the member as visible in ``AllowOnly`` mode.
+``@V8Block``              Constructor / Field / Method  Marks the member as blocked in ``BlockOnly`` mode.
+``@V8Property``           Field / Method                Binds the field or method as a JS property with optional alias name.
+``@V8Function``           Method                        Binds the method as a JS function with optional alias name.
+``@V8Getter``             Method                        Binds the method as a generic getter (receives the property key).
+``@V8Setter``             Method                        Binds the method as a generic setter (receives key and value).
+``@V8BindingEnabler``     Method                        Dynamic control: the method returns a boolean to enable/disable bindings.
+``@V8RuntimeSetter``      Method                        Dependency injection: Javet calls this method to inject the ``V8Runtime``.
+``@V8ProxyFunctionApply`` Method                        Marks the apply handler for ``V8ProxyMode.Function`` proxies.
+========================= ============================= ===============================================================================
 
 @V8Convert::mode
 ----------------
@@ -466,6 +470,124 @@ It tells the converter to bind the property to an alias name.
 -----------------
 
 It tells the converter to bind the function to an alias name.
+
+@V8Function::thisObjectRequired
+-------------------------------
+
+When set to ``true``, the JavaScript ``this`` object is passed as the first argument to the Java method. This is useful for methods that need to modify or inspect the calling JS object.
+
+.. code-block:: java
+
+    @V8Function(thisObjectRequired = true)
+    public V8Value self(V8ValueObject thisObject) {
+        return thisObject;
+    }
+
+@V8Property::symbolType
+-----------------------
+
+Binds a property to a JavaScript ``Symbol`` instead of a string key. For example, ``@V8Property(name = "toPrimitive", symbolType = V8ValueSymbolType.BuiltIn)`` binds to ``Symbol.toPrimitive``.
+
+@V8BindingEnabler
+-----------------
+
+A method annotated with ``@V8BindingEnabler`` receives a method name (``String``) and returns a ``boolean`` indicating whether that binding should be active. This allows dynamic enabling/disabling of functions at runtime.
+
+.. code-block:: java
+
+    private final Set<String> disabledFunctionSet = new HashSet<>();
+
+    @V8BindingEnabler
+    public boolean isV8BindingEnabled(String methodName) {
+        return !disabledFunctionSet.contains(methodName);
+    }
+
+@V8RuntimeSetter
+----------------
+
+A method annotated with ``@V8RuntimeSetter`` is called by Javet to inject the ``V8Runtime`` into the callback receiver object. This is useful when the Java object needs to create V8 values.
+
+.. code-block:: java
+
+    private V8Runtime v8Runtime;
+
+    @V8RuntimeSetter
+    public void setV8Runtime(V8Runtime v8Runtime) {
+        this.v8Runtime = v8Runtime;
+    }
+
+@V8ProxyFunctionApply
+---------------------
+
+Marks a method as the ``apply`` trap handler for proxies in ``V8ProxyMode.Function`` mode. A class can have multiple ``@V8ProxyFunctionApply`` methods with different parameter signatures for overload resolution.
+
+.. code-block:: java
+
+    @V8Convert(proxyMode = V8ProxyMode.Function)
+    public class Calculator {
+        @V8ProxyFunctionApply
+        public int apply(int a, int b) { return a + b; }
+
+        @V8ProxyFunctionApply
+        public String apply(String a, String b) { return a + b; }
+    }
+
+    // In JavaScript: calculator(1, 2) → 3, calculator('a', 'b') → 'ab'
+
+@V8Getter and @V8Setter with V8Value Parameters
+------------------------------------------------
+
+``@V8Getter`` and ``@V8Setter`` methods can receive raw ``V8Value`` subtypes instead of Java types. This allows inspecting the property key as a V8 value.
+
+.. code-block:: java
+
+    @V8Getter
+    public V8Value getter(V8ValueString v8ValueKey) throws JavetException {
+        return v8ValueKey.getV8Runtime().createV8ValueString("value for " + v8ValueKey.getValue());
+    }
+
+    @V8Setter
+    public void setter(V8ValueString v8ValueKey, V8ValueString v8ValueValue) {
+        // Handle raw V8 values directly
+    }
+
+IJavetDirectProxyHandler
+========================
+
+For maximum control over proxy behavior, implement ``IJavetDirectProxyHandler<E>``. This interface provides direct access to all JavaScript Proxy handler traps without reflection overhead.
+
+.. code-block:: java
+
+    public class MyHandler implements IJavetDirectProxyHandler<RuntimeException> {
+        private V8Runtime v8Runtime;
+        private Map<String, Object> data = new HashMap<>();
+
+        @Override
+        public V8Runtime getV8Runtime() { return v8Runtime; }
+
+        @Override
+        public V8Value proxyGet(V8Value target, V8Value property, V8Value receiver)
+                throws JavetException {
+            String key = property.asString();
+            if (data.containsKey(key)) {
+                return v8Runtime.createV8ValueString(data.get(key).toString());
+            }
+            return IJavetDirectProxyHandler.super.proxyGet(target, property, receiver);
+        }
+    }
+
+The interface provides getter/setter maps for efficient property interception:
+
+* ``proxyGetStringGetterMap()`` — returns ``Map<String, Function>`` for string property getters
+* ``proxyGetStringSetterMap()`` — returns ``Map<String, BiFunction>`` for string property setters
+* ``proxyGetSymbolGetterMap()`` — returns symbol property getters
+
+Helper methods ``registerStringGetter()``, ``registerStringGetterFunction()``, and ``registerStringSetter()`` simplify registration.
+
+IJavetNonProxy
+==============
+
+Classes implementing ``IJavetNonProxy`` are excluded from all proxy conversion. When the converter encounters such an object, it returns ``V8ValueUndefined`` instead of creating a proxy.
 
 How does JavetProxyConverter Work?
 ==================================

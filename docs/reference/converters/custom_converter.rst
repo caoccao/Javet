@@ -4,10 +4,20 @@ Custom Converter
 
 Sometimes the converters provided by Javet are not powerful enough. No problem. Javet allows defining custom converters. Here is a simple example about how to create a custom converter.
 
+Key Design Rules
+================
+
+When creating a custom converter by subclassing ``JavetObjectConverter`` (or any other converter):
+
+* **Always override the methods with the ``depth`` parameter** — not the public methods. The public ``toObject()`` and ``toV8Value()`` are ``final`` and delegate to the depth-tracking variants.
+* **Always increment the depth** in recursive calls to prevent infinite recursion on circular structures.
+* **Call ``super.toV8Value()`` first** and return early if it returns a non-undefined value. Only handle types that the parent converter does not recognize.
+* **Call ``validateDepth(depth)``** if you want to enforce the maximum depth. It throws ``JavetConverterException`` when ``depth >= maxDepth``.
+
 Design a POJO Converter
 =======================
 
-A POJO converter usually is designed for the Java objects that are now owned by the application. So, it has to deal with reflection heavily. The following sample code runs in JDK 11. It's easy to tweak few API for JDK 8.
+A POJO converter usually is designed for the Java objects that are not owned by the application. So, it has to deal with reflection heavily. The following sample code runs in JDK 11. It's easy to tweak few API for JDK 8.
 
 Define POJO Object
 ------------------
@@ -139,3 +149,11 @@ The console output is:
     [ { name: 'Tom', value: 'CEO' }, { name: 'Jerry', value: 'CFO' } ]
 
 This process is transparent and fully automated once the converter is set to ``V8Runtime``.
+
+Tips for Custom Converters
+==========================
+
+* The ``batchSize`` config (default 100, minimum 10) controls how many elements are pushed to V8 arrays at once. Increase it for large collections.
+* Use ``config.getMaxDepth()`` (default 20) to control recursion depth. Avoid unrealistically high values — ``StackOverflowError`` can cause memory leaks since ``finally`` blocks may not execute.
+* For custom objects that need to round-trip (Java → JS → Java), use ``JavetObjectConverter``'s custom object registration or private properties to embed type metadata in the JavaScript object.
+* If you need to combine multiple converters (e.g., ``JavetObjectConverter`` for some objects and ``JavetProxyConverter`` for others), manually call the appropriate converter's ``toV8Value()`` and pass the resulting ``V8Value`` to Javet API. The built-in converter is bypassed when Javet receives a ``V8Value`` directly.

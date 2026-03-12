@@ -2,37 +2,47 @@
 Object Converter
 ================
 
-Javet has a built-in ``JavetObjectConverter`` with the following features.
+Javet has a built-in ``JavetObjectConverter`` which extends ``JavetPrimitiveConverter`` with the following features.
 
-* It covers primitive types + Set + Map + Array.
+* It covers primitive types + Set + Map + Array + TypedArray + Stream.
 * It is completely open to subclass.
-* It minimizes the performance overhead.
+* It minimizes the performance overhead via configurable batch processing.
 * It allows registering custom objects.
 
 From Java to JavaScript
 =======================
 
-===================== ===============
-Java                  JavaScript
-===================== ===============
-boolean[]             Array
-byte[]                Int8Array
-char[]                Array
-double[]              Float64Array
-float[]               Float32Array
-int[]                 Int32Array
-long[]                Int64Array
-short[]               Int16Array
-Object[]              Array
-Map                   object or Proxy
-Set                   Set or Proxy
-Collection            Array
-Stream                Array
-IJavetEntityFunction  Function
-IJavetEntityMap       Map
-JavetEntitySymbol     Symbol
-IJavetMappable        Any
-===================== ===============
+======================== ===============
+Java                     JavaScript
+======================== ===============
+boolean[]                Array
+byte[]                   Int8Array
+char[]                   Array
+double[]                 Float64Array
+float[]                  Float32Array
+int[]                    Int32Array
+long[]                   BigInt64Array
+short[]                  Int16Array
+Object[]                 Array
+Map                      object
+Set                      Set
+Collection               Array
+Stream                   Array
+IntStream                Array
+DoubleStream             Array
+LongStream               Array
+IJavetEntityFunction     Function
+IJavetEntityMap          Map
+IJavetEntityError        Error
+JavetEntitySymbol        Symbol
+IJavetMappable           Any
+======================== ===============
+
+.. note::
+
+    * ``Map`` converts to a plain JS ``object``, whereas ``IJavetEntityMap`` (a ``LinkedHashMap`` subclass) converts to a JS ``Map``. Use ``JavetEntityMap`` when you need a JavaScript ``Map`` instead of a plain object.
+    * All ``BaseStream`` types (``Stream``, ``IntStream``, ``DoubleStream``, ``LongStream``) are supported. The stream is consumed (terminated) during conversion.
+    * Large collections use batch processing (configurable via ``config.setBatchSize()``, default 100, minimum 10) for performance.
 
 From JavaScript to Java
 =======================
@@ -60,7 +70,54 @@ Proxy                 Any
 Object                HashMap<Object, Object> or Any
 ===================== ===============================
 
+.. note::
+
+    * ``IJavetEntityError`` round-trips JavaScript errors with their type, message, stack trace, and any extra enumerable properties (accessible via ``getContext()``).
+    * A ``V8ValueProxy`` is automatically unwrapped back to its original Java object if it was created by ``JavetProxyConverter``.
+
 So, Javet doesn't natively support converting POJO objects because a POJO converter has to deal with reflection which is so slow that Javet leaves that to applications. However, if the POJO objects are owned by the application, it is possible to register custom objects with the built-in ``JavetObjectConverter``. Otherwise, designing a POJO converter is the alternative solution.
+
+Configuration Options
+=====================
+
+``JavetObjectConverter`` inherits ``JavetConverterConfig`` which provides the following options:
+
+============================== =========== ========== ==========================================================
+Option                         Type        Default    Description
+============================== =========== ========== ==========================================================
+``maxDepth``                   int         20         Maximum recursion depth for circular structure detection.
+``batchSize``                  int         100        Batch size for pushing elements to arrays (minimum 10).
+``skipFunctionInObject``       boolean     true       Skip function-valued properties during object conversion.
+``extractFunctionSourceCode``  boolean     false      Extract function source code into ``JavetEntityFunction``.
+``sealedEnabled``              boolean     false      Convert sealed JS arrays to ``Object[]`` instead of ``List``.
+============================== =========== ========== ==========================================================
+
+.. code-block:: java
+
+    JavetObjectConverter converter = new JavetObjectConverter();
+
+    // Include function properties in object conversion
+    converter.getConfig().setSkipFunctionInObject(false);
+
+    // Extract function source code for round-trip fidelity
+    converter.getConfig().setExtractFunctionSourceCode(true);
+
+    // Convert sealed arrays to Object[] instead of ArrayList
+    converter.getConfig().setSealedEnabled(true);
+
+    // Increase batch size for large array conversion
+    converter.getConfig().setBatchSize(500);
+
+Null Safety
+-----------
+
+What if the object converter meets ``null`` or ``undefined`` when the target type is a primitive? Javet is null safe by injecting default primitive values into ``JavetConverterConfig``. These defaults can be overridden:
+
+.. code-block:: java
+
+    converter.getConfig().setDefaultInt(-1);       // Default: 0
+    converter.getConfig().setDefaultBoolean(true);  // Default: false
+    converter.getConfig().setDefaultDouble(0.0);    // Default: 0D
 
 Register Custom Objects
 =======================
