@@ -42,6 +42,54 @@ if(DEFINED NODE_DIR)
     endforeach(importLibrary)
     set_target_properties(libnode PROPERTIES LINK_FLAGS "/WHOLEARCHIVE:libnode.lib")
     add_library(Javet SHARED ${sourceFiles} "jni/javet_resource_node.rc")
+    # On Windows/MSVC ABI, private/public static class members use different
+    # mangled names. `#define private public` changes the reference to `SA`
+    # while Node defines a non-public variant in module_wrap.obj.
+    # Discover the actual symbol at configure time, then alias SA -> actual.
+    set(JAVET_NODE_MODULE_WRAP_OBJ "${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/libnode/src/module_wrap.obj")
+    set(JAVET_NODE_MODULE_WRAP_RESOLVE_MODULE_CALLBACK_PRIVATE "")
+    if(EXISTS "${JAVET_NODE_MODULE_WRAP_OBJ}")
+        set(JAVET_NM_TOOL "${CMAKE_NM}")
+        if(NOT JAVET_NM_TOOL)
+            find_program(JAVET_NM_TOOL NAMES llvm-nm nm)
+        endif()
+        if(JAVET_NM_TOOL)
+            execute_process(
+                COMMAND "${JAVET_NM_TOOL}" "--defined-only" "--format=just-symbols" "${JAVET_NODE_MODULE_WRAP_OBJ}"
+                OUTPUT_VARIABLE JAVET_NODE_MODULE_WRAP_SYMBOLS
+                RESULT_VARIABLE JAVET_NM_RESULT
+                ERROR_QUIET)
+            if(JAVET_NM_RESULT EQUAL 0)
+                string(REPLACE "\r\n" "\n" JAVET_NODE_MODULE_WRAP_SYMBOLS_NL "${JAVET_NODE_MODULE_WRAP_SYMBOLS}")
+                string(REPLACE "\n" ";" JAVET_NODE_MODULE_WRAP_SYMBOL_LINES "${JAVET_NODE_MODULE_WRAP_SYMBOLS_NL}")
+                foreach(JAVET_NODE_MODULE_WRAP_SYMBOL_LINE IN LISTS JAVET_NODE_MODULE_WRAP_SYMBOL_LINES)
+                    if(JAVET_NODE_MODULE_WRAP_SYMBOL_LINE MATCHES "^\\?ResolveModuleCallback@ModuleWrap@loader@node@@C[A-Z].*")
+                        string(STRIP "${JAVET_NODE_MODULE_WRAP_SYMBOL_LINE}" JAVET_NODE_MODULE_WRAP_RESOLVE_MODULE_CALLBACK_PRIVATE)
+                        break()
+                    endif()
+                endforeach()
+            endif()
+        endif()
+    endif()
+    if(JAVET_NODE_MODULE_WRAP_RESOLVE_MODULE_CALLBACK_PRIVATE)
+        string(
+            REGEX REPLACE
+            "@@C([A-Z])"
+            "@@S\\1"
+            JAVET_NODE_MODULE_WRAP_RESOLVE_MODULE_CALLBACK_PUBLIC
+            "${JAVET_NODE_MODULE_WRAP_RESOLVE_MODULE_CALLBACK_PRIVATE}")
+        # Put alternatename in a response file to avoid XML/MSBuild escaping
+        # of '$' in decorated symbols.
+        set(JAVET_NODE_MODULE_WRAP_ALIAS_RSP "${CMAKE_BINARY_DIR}/javet_module_wrap_alternatename.rsp")
+        file(WRITE
+            "${JAVET_NODE_MODULE_WRAP_ALIAS_RSP}"
+            "/alternatename:${JAVET_NODE_MODULE_WRAP_RESOLVE_MODULE_CALLBACK_PUBLIC}=${JAVET_NODE_MODULE_WRAP_RESOLVE_MODULE_CALLBACK_PRIVATE}\n")
+        set_property(
+            TARGET Javet
+            APPEND_STRING
+            PROPERTY LINK_FLAGS
+            " @\"${JAVET_NODE_MODULE_WRAP_ALIAS_RSP}\"")
+    endif()
 endif()
 set_property(TARGET Javet APPEND_STRING PROPERTY LINK_FLAGS_RELEASE "")
 set_property(TARGET Javet PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
