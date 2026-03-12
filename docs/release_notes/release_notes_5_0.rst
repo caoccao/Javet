@@ -14,6 +14,9 @@ Release Notes 5.0.x
 * Added ``toLocaleString()`` to ``JavetProxyPluginArray`` and ``JavetProxyPluginList``, delegating to the native ``Array.prototype.toLocaleString`` with support for optional locale and options arguments
 * Added ``return()`` and ``throw()`` methods to ``V8VirtualIterator`` implementing the optional iterator protocol methods for early termination and error signaling
 * Added ``Symbol.toStringTag`` support to ``V8VirtualIterator`` returning ``"Iterator"``
+* Fixed ``fill()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` to distinguish between an omitted ``end`` parameter (fills to the end) and an explicit ``end`` of ``0`` (fills nothing)
+* Fixed ``splice()`` in ``JavetProxyPluginList`` to remove all elements from ``start`` to the end when ``deleteCount`` is omitted (e.g. ``list.splice(0)`` removes everything), matching the JavaScript spec (previously removed nothing)
+* Fixed ``toSpliced()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` to remove all elements from ``start`` to the end when ``deleteCount`` is omitted, matching the JavaScript spec
 
 5.0.5
 -----

@@ -51,68 +51,130 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
      * @since 3.0.4
      */
     public static final String NAME = List.class.getName();
-    /** The JavaScript method name 'at'. */
+    /**
+     * The JavaScript method name 'at'.
+     */
     protected static final String AT = "at";
-    /** The JavaScript method name 'concat'. */
+    /**
+     * The JavaScript method name 'concat'.
+     */
     protected static final String CONCAT = "concat";
-    /** The JavaScript method name 'copyWithin'. */
+    /**
+     * The JavaScript method name 'copyWithin'.
+     */
     protected static final String COPY_WITHIN = "copyWithin";
-    /** The JavaScript method name 'entries'. */
+    /**
+     * The JavaScript method name 'entries'.
+     */
     protected static final String ENTRIES = "entries";
-    /** The error message for invalid target object. */
+    /**
+     * The error message for invalid target object.
+     */
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_LIST =
             "Target object must be an instance of List.";
-    /** The JavaScript method name 'every'. */
+    /**
+     * The JavaScript method name 'every'.
+     */
     protected static final String EVERY = "every";
-    /** The JavaScript method name 'fill'. */
+    /**
+     * The JavaScript method name 'fill'.
+     */
     protected static final String FILL = "fill";
-    /** The JavaScript method name 'filter'. */
+    /**
+     * The JavaScript method name 'filter'.
+     */
     protected static final String FILTER = "filter";
-    /** The JavaScript method name 'find'. */
+    /**
+     * The JavaScript method name 'find'.
+     */
     protected static final String FIND = "find";
-    /** The JavaScript method name 'findIndex'. */
+    /**
+     * The JavaScript method name 'findIndex'.
+     */
     protected static final String FIND_INDEX = "findIndex";
-    /** The JavaScript method name 'findLast'. */
+    /**
+     * The JavaScript method name 'findLast'.
+     */
     protected static final String FIND_LAST = "findLast";
-    /** The JavaScript method name 'findLastIndex'. */
+    /**
+     * The JavaScript method name 'findLastIndex'.
+     */
     protected static final String FIND_LAST_INDEX = "findLastIndex";
-    /** The JavaScript method name 'flat'. */
+    /**
+     * The JavaScript method name 'flat'.
+     */
     protected static final String FLAT = "flat";
-    /** The JavaScript method name 'flatMap'. */
+    /**
+     * The JavaScript method name 'flatMap'.
+     */
     protected static final String FLAT_MAP = "flatMap";
-    /** The JavaScript method name 'forEach'. */
+    /**
+     * The JavaScript method name 'forEach'.
+     */
     protected static final String FOR_EACH = "forEach";
-    /** The JavaScript method name 'includes'. */
+    /**
+     * The JavaScript method name 'includes'.
+     */
     protected static final String INCLUDES = "includes";
-    /** The JavaScript method name 'indexOf'. */
+    /**
+     * The JavaScript method name 'indexOf'.
+     */
     protected static final String INDEX_OF = "indexOf";
-    /** The JavaScript method name 'join'. */
+    /**
+     * The JavaScript method name 'join'.
+     */
     protected static final String JOIN = "join";
-    /** The JavaScript method name 'keys'. */
+    /**
+     * The JavaScript method name 'keys'.
+     */
     protected static final String KEYS = "keys";
-    /** The JavaScript method name 'lastIndexOf'. */
+    /**
+     * The JavaScript method name 'lastIndexOf'.
+     */
     protected static final String LAST_INDEX_OF = "lastIndexOf";
-    /** The JavaScript property name 'length'. */
+    /**
+     * The JavaScript property name 'length'.
+     */
     protected static final String LENGTH = "length";
-    /** The JavaScript method name 'map'. */
+    /**
+     * The JavaScript method name 'map'.
+     */
     protected static final String MAP = "map";
-    /** The JavaScript method name 'pop'. */
+    /**
+     * The JavaScript method name 'pop'.
+     */
     protected static final String POP = "pop";
-    /** The JavaScript method name 'push'. */
+    /**
+     * The JavaScript method name 'push'.
+     */
     protected static final String PUSH = "push";
-    /** The JavaScript method name 'reduce'. */
+    /**
+     * The JavaScript method name 'reduce'.
+     */
     protected static final String REDUCE = "reduce";
-    /** The JavaScript method name 'reduceRight'. */
+    /**
+     * The JavaScript method name 'reduceRight'.
+     */
     protected static final String REDUCE_RIGHT = "reduceRight";
-    /** The JavaScript method name 'reverse'. */
+    /**
+     * The JavaScript method name 'reverse'.
+     */
     protected static final String REVERSE = "reverse";
-    /** The JavaScript method name 'shift'. */
+    /**
+     * The JavaScript method name 'shift'.
+     */
     protected static final String SHIFT = "shift";
-    /** The JavaScript method name 'slice'. */
+    /**
+     * The JavaScript method name 'slice'.
+     */
     protected static final String SLICE = "slice";
-    /** The JavaScript method name 'some'. */
+    /**
+     * The JavaScript method name 'some'.
+     */
     protected static final String SOME = "some";
-    /** The JavaScript method name 'sort'. */
+    /**
+     * The JavaScript method name 'sort'.
+     */
     protected static final String SORT = "sort";
     /**
      * The constant DEFAULT_PROXYABLE_METHODS.
@@ -121,21 +183,37 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
      */
     protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
             FOR_EACH, INDEX_OF, LAST_INDEX_OF, SORT, TO_STRING};
-    /** The JavaScript method name 'splice'. */
+    /**
+     * The JavaScript method name 'splice'.
+     */
     protected static final String SPLICE = "splice";
-    /** The JavaScript method name 'toLocaleString'. */
+    /**
+     * The JavaScript method name 'toLocaleString'.
+     */
     protected static final String TO_LOCALE_STRING = "toLocaleString";
-    /** The JavaScript method name 'toReversed'. */
+    /**
+     * The JavaScript method name 'toReversed'.
+     */
     protected static final String TO_REVERSED = "toReversed";
-    /** The JavaScript method name 'toSorted'. */
+    /**
+     * The JavaScript method name 'toSorted'.
+     */
     protected static final String TO_SORTED = "toSorted";
-    /** The JavaScript method name 'toSpliced'. */
+    /**
+     * The JavaScript method name 'toSpliced'.
+     */
     protected static final String TO_SPLICED = "toSpliced";
-    /** The JavaScript method name 'unshift'. */
+    /**
+     * The JavaScript method name 'unshift'.
+     */
     protected static final String UNSHIFT = "unshift";
-    /** The JavaScript method name 'values'. */
+    /**
+     * The JavaScript method name 'values'.
+     */
     protected static final String VALUES = "values";
-    /** The JavaScript method name 'with'. */
+    /**
+     * The JavaScript method name 'with'.
+     */
     protected static final String WITH = "with";
     private static final JavetProxyPluginList instance = new JavetProxyPluginList();
     /**
@@ -456,15 +534,21 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                                 startIndex = 0;
                             }
                         }
-                        int endIndex = V8ValueUtils.asInt(v8Values, 2);
-                        if (endIndex < 0) {
-                            endIndex += length;
-                            if (endIndex < 0) {
-                                endIndex = 0;
-                            }
-                        }
-                        if (endIndex == 0) {
+                        int endIndex;
+                        if (v8Values.length < 3 || v8Values[2] == null
+                                || v8Values[2].isUndefined()) {
                             endIndex = length;
+                        } else {
+                            endIndex = V8ValueUtils.asInt(v8Values, 2);
+                            if (endIndex < 0) {
+                                endIndex += length;
+                                if (endIndex < 0) {
+                                    endIndex = 0;
+                                }
+                            }
+                            if (endIndex > length) {
+                                endIndex = length;
+                            }
                         }
                         if (startIndex < length && endIndex > startIndex) {
                             for (int i = startIndex; i < endIndex; ++i) {
@@ -1497,7 +1581,13 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                                     V8ValueErrorType.RangeError,
                                     V8ErrorTemplate.rangeErrorStartIsOutOfRange(startIndex));
                         } else {
-                            int deleteCount = V8ValueUtils.asInt(v8Values, 1);
+                            int deleteCount;
+                            if (v8Values.length < 2 || v8Values[1] == null
+                                    || v8Values[1].isUndefined()) {
+                                deleteCount = length - startIndex;
+                            } else {
+                                deleteCount = V8ValueUtils.asInt(v8Values, 1);
+                            }
                             deleteCount = Math.min(deleteCount, length - startIndex);
                             if (deleteCount > 0) {
                                 List<?> subList = list.subList(startIndex, startIndex + deleteCount);
@@ -1532,6 +1622,35 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                 TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
                         V8ValueUtils.createV8ValueArray(v8Runtime, list.toArray())));
+    }
+
+    /**
+     * Polyfill Array.prototype.toLocaleString().
+     * The toLocaleString() method of Array instances returns a localized string representing
+     * the specified array and its elements.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 5.0.6
+     */
+    public V8Value toLocaleString(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        final List<Object> list = validateTargetObject(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                TO_LOCALE_STRING, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    try (V8ValueArray v8ValueArray =
+                                 V8ValueUtils.createV8ValueArray(v8Runtime, list.toArray())) {
+                        String localeString;
+                        if (v8Values != null && v8Values.length > 0) {
+                            localeString = v8ValueArray.invokeString(TO_LOCALE_STRING, (Object[]) v8Values);
+                        } else {
+                            localeString = v8ValueArray.invokeString(TO_LOCALE_STRING);
+                        }
+                        return v8Runtime.createV8ValueString(localeString);
+                    }
+                }));
     }
 
     /**
@@ -1628,7 +1747,13 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                                     V8ValueErrorType.RangeError,
                                     V8ErrorTemplate.rangeErrorStartIsOutOfRange(startIndex));
                         } else {
-                            int deleteCount = V8ValueUtils.asInt(v8Values, 1);
+                            int deleteCount;
+                            if (v8Values.length < 2 || v8Values[1] == null
+                                    || v8Values[1].isUndefined()) {
+                                deleteCount = length - startIndex;
+                            } else {
+                                deleteCount = V8ValueUtils.asInt(v8Values, 1);
+                            }
                             deleteCount = Math.min(deleteCount, length - startIndex);
                             if (deleteCount > 0) {
                                 results.subList(startIndex, startIndex + deleteCount).clear();
@@ -1643,35 +1768,6 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                         }
                     }
                     return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
-                }));
-    }
-
-    /**
-     * Polyfill Array.prototype.toLocaleString().
-     * The toLocaleString() method of Array instances returns a localized string representing
-     * the specified array and its elements.
-     *
-     * @param v8Runtime    the V8 runtime
-     * @param targetObject the target object
-     * @return the V8 value
-     * @throws JavetException the javet exception
-     * @since 5.0.6
-     */
-    public V8Value toLocaleString(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        final List<Object> list = validateTargetObject(targetObject);
-        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
-                TO_LOCALE_STRING, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
-                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    try (V8ValueArray v8ValueArray =
-                                 V8ValueUtils.createV8ValueArray(v8Runtime, list.toArray())) {
-                        String localeString;
-                        if (v8Values != null && v8Values.length > 0) {
-                            localeString = v8ValueArray.invokeString(TO_LOCALE_STRING, (Object[]) v8Values);
-                        } else {
-                            localeString = v8ValueArray.invokeString(TO_LOCALE_STRING);
-                        }
-                        return v8Runtime.createV8ValueString(localeString);
-                    }
                 }));
     }
 

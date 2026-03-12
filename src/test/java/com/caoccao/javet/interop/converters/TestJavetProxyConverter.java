@@ -418,6 +418,10 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"x\",\"y\"]",
                     v8Runtime.getExecutor("JSON.stringify(stringArray.fill('x').fill('y', 1))").executeString());
+            // fill() with explicit end=0 should fill nothing
+            assertEquals(
+                    "[1,2]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.fill(9, 0, 0))").executeString());
             // filter()
             assertEquals(
                     "[1]",
@@ -616,6 +620,13 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"x\",\"x\",\"y\"][\"x\",\"y\"]",
                     v8Runtime.getExecutor("JSON.stringify(stringArray.toSpliced(1,1,'x','y'))+JSON.stringify(stringArray)").executeString());
+            // toSpliced() with missing deleteCount should remove all from start
+            assertEquals(
+                    "[][1,2]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.toSpliced(0))+JSON.stringify(intArray)").executeString());
+            assertEquals(
+                    "[1][1,2]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.toSpliced(1))+JSON.stringify(intArray)").executeString());
             // Symbol.iterator
             assertEquals(
                     "[1,2]",
@@ -1331,6 +1342,10 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",
                     v8Runtime.getExecutor("JSON.stringify(list.fill('x').fill('y', 1, 2).fill('z', 2))").executeString());
+            // fill() with explicit end=0 should fill nothing
+            assertEquals(
+                    "[\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.fill('9', 0, 0))").executeString());
             // filter()
             assertEquals(
                     "[\"x\",\"z\"]",
@@ -1447,6 +1462,16 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"z\"][\"x\",\"x\",\"y\"]",
                     v8Runtime.getExecutor("JSON.stringify(list.splice(1,1,'x','y'))+JSON.stringify(list)").executeString());
+            // splice() with missing deleteCount should remove all from start
+            v8Runtime.getExecutor("list.clear(); list.push('a', 'b', 'c')").executeVoid();
+            assertEquals(
+                    "[\"a\",\"b\",\"c\"][]",
+                    v8Runtime.getExecutor("JSON.stringify(list.splice(0))+JSON.stringify(list)").executeString());
+            v8Runtime.getExecutor("list.push('a', 'b', 'c')").executeVoid();
+            assertEquals(
+                    "[\"b\",\"c\"][\"a\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.splice(1))+JSON.stringify(list)").executeString());
+            v8Runtime.getExecutor("list.clear(); list.push('x', 'y', 'z')").executeVoid();
             // sort()
             assertEquals("[]", v8Runtime.getExecutor("list.clear(); JSON.stringify(list.sort())").executeString());
             assertEquals("[1]", v8Runtime.getExecutor("list.push(1); JSON.stringify(list.sort())").executeString());
@@ -1476,6 +1501,13 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"x\",\"x\",\"y\",\"z\"][\"x\",\"y\",\"z\"]",
                     v8Runtime.getExecutor("JSON.stringify(list.toSpliced(1,1,'x','y'))+JSON.stringify(list)").executeString());
+            // toSpliced() with missing deleteCount should remove all from start
+            assertEquals(
+                    "[][\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.toSpliced(0))+JSON.stringify(list)").executeString());
+            assertEquals(
+                    "[\"x\"][\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.toSpliced(1))+JSON.stringify(list)").executeString());
             // Symbol.iterator
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",

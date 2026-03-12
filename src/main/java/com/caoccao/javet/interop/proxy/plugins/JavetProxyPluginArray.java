@@ -540,15 +540,21 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
                                 startIndex = 0;
                             }
                         }
-                        int endIndex = V8ValueUtils.asInt(v8Values, 2);
-                        if (endIndex < 0) {
-                            endIndex += length;
-                            if (endIndex < 0) {
-                                endIndex = 0;
-                            }
-                        }
-                        if (endIndex == 0) {
+                        int endIndex;
+                        if (v8Values.length < 3 || v8Values[2] == null
+                                || v8Values[2].isUndefined()) {
                             endIndex = length;
+                        } else {
+                            endIndex = V8ValueUtils.asInt(v8Values, 2);
+                            if (endIndex < 0) {
+                                endIndex += length;
+                                if (endIndex < 0) {
+                                    endIndex = 0;
+                                }
+                            }
+                            if (endIndex > length) {
+                                endIndex = length;
+                            }
                         }
                         if (startIndex < length && endIndex > startIndex) {
                             for (int i = startIndex; i < endIndex; ++i) {
@@ -1598,6 +1604,36 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
     }
 
     /**
+     * Polyfill Array.prototype.toLocaleString().
+     * The toLocaleString() method of Array instances returns a localized string representing
+     * the specified array and its elements. The elements are converted to strings using their
+     * toLocaleString methods and these strings are separated by a locale-specific string (such as a comma ",").
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 5.0.6
+     */
+    public V8Value toLocaleString(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        validateTargetObject(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                TO_LOCALE_STRING, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    try (V8ValueArray v8ValueArray =
+                                 V8ValueUtils.createV8ValueArray(v8Runtime, ArrayUtils.copyOf(targetObject))) {
+                        String localeString;
+                        if (v8Values != null && v8Values.length > 0) {
+                            localeString = v8ValueArray.invokeString(TO_LOCALE_STRING, (Object[]) v8Values);
+                        } else {
+                            localeString = v8ValueArray.invokeString(TO_LOCALE_STRING);
+                        }
+                        return v8Runtime.createV8ValueString(localeString);
+                    }
+                }));
+    }
+
+    /**
      * Polyfill Array.prototype.toReversed().
      * The toReversed() method of Array instances is the copying counterpart of the reverse() method.
      * It returns a new array with the elements in reversed order.
@@ -1695,7 +1731,13 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
                                     V8ValueErrorType.RangeError,
                                     V8ErrorTemplate.rangeErrorStartIsOutOfRange(startIndex));
                         } else {
-                            int deleteCount = V8ValueUtils.asInt(v8Values, 1);
+                            int deleteCount;
+                            if (v8Values.length < 2 || v8Values[1] == null
+                                    || v8Values[1].isUndefined()) {
+                                deleteCount = length - startIndex;
+                            } else {
+                                deleteCount = V8ValueUtils.asInt(v8Values, 1);
+                            }
                             deleteCount = Math.min(deleteCount, length - startIndex);
                             if (deleteCount > 0) {
                                 results.subList(startIndex, startIndex + deleteCount).clear();
@@ -1710,36 +1752,6 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
                         }
                     }
                     return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
-                }));
-    }
-
-    /**
-     * Polyfill Array.prototype.toLocaleString().
-     * The toLocaleString() method of Array instances returns a localized string representing
-     * the specified array and its elements. The elements are converted to strings using their
-     * toLocaleString methods and these strings are separated by a locale-specific string (such as a comma ",").
-     *
-     * @param v8Runtime    the V8 runtime
-     * @param targetObject the target object
-     * @return the V8 value
-     * @throws JavetException the javet exception
-     * @since 5.0.6
-     */
-    public V8Value toLocaleString(V8Runtime v8Runtime, Object targetObject) throws JavetException {
-        validateTargetObject(targetObject);
-        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
-                TO_LOCALE_STRING, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
-                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    try (V8ValueArray v8ValueArray =
-                                 V8ValueUtils.createV8ValueArray(v8Runtime, ArrayUtils.copyOf(targetObject))) {
-                        String localeString;
-                        if (v8Values != null && v8Values.length > 0) {
-                            localeString = v8ValueArray.invokeString(TO_LOCALE_STRING, (Object[]) v8Values);
-                        } else {
-                            localeString = v8ValueArray.invokeString(TO_LOCALE_STRING);
-                        }
-                        return v8Runtime.createV8ValueString(localeString);
-                    }
                 }));
     }
 
