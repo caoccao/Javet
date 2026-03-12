@@ -1866,6 +1866,75 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"xxtrue\",\"yytrue\",\"zztrue\"]",
                     v8Runtime.getExecutor("const f = []; set.forEach((v,k,s)=>f.push(k+v+(s===set))); JSON.stringify(f.sort())").executeString());
+            // ES2025 Set methods
+            Set<String> set2 = SimpleSet.of("y", "z", "w");
+            v8Runtime.getGlobalObject().set("set2", set2);
+            // difference()
+            assertEquals(
+                    "[\"x\"]",
+                    v8Runtime.getExecutor(
+                            "JSON.stringify([...set.difference(set2)].sort())").executeString());
+            // difference() — other has no overlap
+            assertEquals(
+                    "[\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor(
+                            "(() => { const s = new Set(['q']); return JSON.stringify([...set.difference(s)].sort()); })()").executeString());
+            // difference() — empty result
+            assertEquals(
+                    "[]",
+                    v8Runtime.getExecutor(
+                            "JSON.stringify([...set.difference(set)])").executeString());
+            // intersection()
+            assertEquals(
+                    "[\"y\",\"z\"]",
+                    v8Runtime.getExecutor(
+                            "JSON.stringify([...set.intersection(set2)].sort())").executeString());
+            // intersection() — no overlap
+            assertEquals(
+                    "[]",
+                    v8Runtime.getExecutor(
+                            "(() => { const s = new Set(['q']); return JSON.stringify([...set.intersection(s)]); })()").executeString());
+            // union()
+            assertEquals(
+                    "[\"w\",\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor(
+                            "JSON.stringify([...set.union(set2)].sort())").executeString());
+            // union() — with empty set
+            assertEquals(
+                    "[\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor(
+                            "(() => { const s = new Set(); return JSON.stringify([...set.union(s)].sort()); })()").executeString());
+            // symmetricDifference()
+            assertEquals(
+                    "[\"w\",\"x\"]",
+                    v8Runtime.getExecutor(
+                            "JSON.stringify([...set.symmetricDifference(set2)].sort())").executeString());
+            // symmetricDifference() — identical sets
+            assertEquals(
+                    "[]",
+                    v8Runtime.getExecutor(
+                            "JSON.stringify([...set.symmetricDifference(set)])").executeString());
+            // isSubsetOf()
+            assertFalse(v8Runtime.getExecutor("set.isSubsetOf(set2)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("set.isSubsetOf(set)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor(
+                    "(() => { const s = new Set(['x','y','z','w']); return set.isSubsetOf(s); })()").executeBoolean());
+            // isSupersetOf()
+            assertFalse(v8Runtime.getExecutor("set.isSupersetOf(set2)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("set.isSupersetOf(set)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor(
+                    "(() => { const s = new Set(['x']); return set.isSupersetOf(s); })()").executeBoolean());
+            // isDisjointFrom()
+            assertFalse(v8Runtime.getExecutor("set.isDisjointFrom(set2)").executeBoolean());
+            assertTrue(v8Runtime.getExecutor(
+                    "(() => { const s = new Set(['q']); return set.isDisjointFrom(s); })()").executeBoolean());
+            // isDisjointFrom() — empty set is disjoint from any set
+            assertTrue(v8Runtime.getExecutor(
+                    "(() => { const s = new Set(); return set.isDisjointFrom(s); })()").executeBoolean());
+            // original sets not mutated
+            assertEquals(3, v8Runtime.getExecutor("set.size").executeInteger());
+            assertEquals(3, v8Runtime.getExecutor("set2.size").executeInteger());
+            v8Runtime.getGlobalObject().delete("set2");
             // delete()
             assertTrue(v8Runtime.getExecutor("set.delete('z')").executeBoolean());
             assertFalse(v8Runtime.getExecutor("set.delete('z')").executeBoolean());

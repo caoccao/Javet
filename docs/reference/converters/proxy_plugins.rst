@@ -163,7 +163,7 @@ The set plugin maps ``Set<?>`` to the JS ``Set``. It polyfills the JS Set API.
             v8Runtime.getExecutor("JSON.stringify(Object.getOwnPropertyNames(set).sort());").executeString());
     v8Runtime.getGlobalObject().delete("set");
 
-Polyfilled Set methods: ``add(value)``, ``has(value)``, ``delete(value)``, ``clear()``, ``size`` (property), ``entries()`` (returns ``[value, value]`` pairs), ``keys()``, ``values()``, ``forEach(fn)``, ``Symbol.iterator``, ``toJSON()``, ``toString()`` (returns ``"[object Set]"``), and ``valueOf()``. Java ``Set`` methods (``contains()``, ``add()``, ``size()``, etc.) remain accessible.
+Polyfilled Set methods: ``add(value)``, ``has(value)``, ``delete(value)``, ``clear()``, ``size`` (property), ``entries()`` (returns ``[value, value]`` pairs), ``keys()``, ``values()``, ``forEach(fn)``, ``difference(other)``, ``intersection(other)``, ``union(other)``, ``symmetricDifference(other)``, ``isSubsetOf(other)``, ``isSupersetOf(other)``, ``isDisjointFrom(other)``, ``Symbol.iterator``, ``toJSON()``, ``toString()`` (returns ``"[object Set]"``), and ``valueOf()``. Java ``Set`` methods (``contains()``, ``add()``, ``size()``, etc.) remain accessible.
 
 Add or Remove Proxy Plugins
 ===========================

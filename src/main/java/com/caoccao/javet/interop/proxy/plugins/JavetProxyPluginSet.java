@@ -17,6 +17,7 @@
 package com.caoccao.javet.interop.proxy.plugins;
 
 import com.caoccao.javet.entities.JavetEntityPropertyDescriptor;
+import com.caoccao.javet.enums.V8ValueErrorType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetEntityPropertyDescriptor;
 import com.caoccao.javet.interop.V8Runtime;
@@ -33,9 +34,7 @@ import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 import com.caoccao.javet.values.virtual.V8VirtualIterator;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -51,26 +50,66 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
      * @since 3.0.4
      */
     public static final String NAME = Set.class.getName();
-    /** The JavaScript method name 'add'. */
+    /**
+     * The JavaScript method name 'add'.
+     */
     protected static final String ADD = "add";
-    /** The JavaScript method name 'clear'. */
+    /**
+     * The JavaScript method name 'clear'.
+     */
     protected static final String CLEAR = "clear";
-    /** The JavaScript method name 'delete'. */
+    /**
+     * The JavaScript method name 'delete'.
+     */
     protected static final String DELETE = "delete";
-    /** The JavaScript method name 'entries'. */
+    /**
+     * The JavaScript method name 'difference'.
+     */
+    protected static final String DIFFERENCE = "difference";
+    /**
+     * The JavaScript method name 'entries'.
+     */
     protected static final String ENTRIES = "entries";
-    /** The error message for invalid target object. */
+    /**
+     * The error message for invalid target object.
+     */
     protected static final String ERROR_TARGET_OBJECT_MUST_BE_AN_INSTANCE_OF_SET =
             "Target object must be an instance of Set.";
-    /** The JavaScript method name 'forEach'. */
+    /**
+     * The JavaScript method name 'forEach'.
+     */
     protected static final String FOR_EACH = "forEach";
-    /** The JavaScript method name 'has'. */
+    /**
+     * The JavaScript method name 'has'.
+     */
     protected static final String HAS = "has";
-    /** The JavaScript method name 'keys'. */
+    /**
+     * The JavaScript method name 'intersection'.
+     */
+    protected static final String INTERSECTION = "intersection";
+    /**
+     * The JavaScript method name 'isDisjointFrom'.
+     */
+    protected static final String IS_DISJOINT_FROM = "isDisjointFrom";
+    /**
+     * The JavaScript method name 'isSubsetOf'.
+     */
+    protected static final String IS_SUBSET_OF = "isSubsetOf";
+    /**
+     * The JavaScript method name 'isSupersetOf'.
+     */
+    protected static final String IS_SUPERSET_OF = "isSupersetOf";
+    /**
+     * The JavaScript method name 'keys'.
+     */
     protected static final String KEYS = "keys";
-    /** The string representation '[object Set]'. */
+    /**
+     * The string representation '[object Set]'.
+     */
     protected static final String OBJECT_SET = "[object Set]";
-    /** The JavaScript property name 'size'. */
+    /**
+     * The JavaScript property name 'size'.
+     */
     protected static final String SIZE = "size";
     /**
      * The constant DEFAULT_PROXYABLE_METHODS.
@@ -79,7 +118,17 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
      */
     protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
             ADD, CLEAR, FOR_EACH, SIZE, TO_STRING};
-    /** The JavaScript method name 'values'. */
+    /**
+     * The JavaScript method name 'symmetricDifference'.
+     */
+    protected static final String SYMMETRIC_DIFFERENCE = "symmetricDifference";
+    /**
+     * The JavaScript method name 'union'.
+     */
+    protected static final String UNION = "union";
+    /**
+     * The JavaScript method name 'values'.
+     */
     protected static final String VALUES = "values";
     private static final JavetProxyPluginSet instance = new JavetProxyPluginSet();
     /**
@@ -98,13 +147,20 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
         proxyGetByStringMap.put(ADD, this::add);
         proxyGetByStringMap.put(CLEAR, this::clear);
         proxyGetByStringMap.put(DELETE, this::delete);
+        proxyGetByStringMap.put(DIFFERENCE, this::difference);
         proxyGetByStringMap.put(ENTRIES, this::entries);
         proxyGetByStringMap.put(FOR_EACH, this::forEach);
         proxyGetByStringMap.put(HAS, this::has);
+        proxyGetByStringMap.put(INTERSECTION, this::intersection);
+        proxyGetByStringMap.put(IS_DISJOINT_FROM, this::isDisjointFrom);
+        proxyGetByStringMap.put(IS_SUBSET_OF, this::isSubsetOf);
+        proxyGetByStringMap.put(IS_SUPERSET_OF, this::isSupersetOf);
         proxyGetByStringMap.put(KEYS, this::values);
         proxyGetByStringMap.put(SIZE, this::size);
+        proxyGetByStringMap.put(SYMMETRIC_DIFFERENCE, this::symmetricDifference);
         proxyGetByStringMap.put(TO_JSON, this::toJSON);
         proxyGetByStringMap.put(TO_STRING, this::toString);
+        proxyGetByStringMap.put(UNION, this::union);
         proxyGetByStringMap.put(VALUE_OF, this::valueOf);
         proxyGetByStringMap.put(VALUES, this::values);
         proxyGetBySymbolMap.put(V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR, this::values);
@@ -193,6 +249,32 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
     }
 
     /**
+     * Polyfill Set.prototype.difference().
+     * The difference() method of Set instances takes a set and returns a new set containing
+     * elements in this set but not in the given set.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 5.0.6
+     */
+    public V8Value difference(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        final Set<Object> set = validateTargetObject(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                DIFFERENCE, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    Set<Object> other = toOtherSet(v8Runtime, v8Values);
+                    if (other == null) {
+                        return v8Runtime.createV8ValueUndefined();
+                    }
+                    Set<Object> result = new LinkedHashSet<>(set);
+                    result.removeAll(other);
+                    return V8ValueUtils.createV8ValueSet(v8Runtime, result.toArray());
+                }));
+    }
+
+    /**
      * Polyfill Set.prototype.entries().
      * The entries() method of Set instances returns a new set iterator object that contains an array of
      * [value, value] for each element in this set, in insertion order.
@@ -207,11 +289,13 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
      */
     public V8Value entries(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         final Set<Object> set = validateTargetObject(targetObject);
-        final List<List<?>> entries = set.stream().map(o -> SimpleList.of(o, o)).collect(Collectors.toList());
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 ENTRIES, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
-                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
-                        PROXY_CONVERTER.toV8Value(v8Runtime, new V8VirtualIterator<>(entries.iterator()))));
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    List<List<?>> entries = set.stream()
+                            .map(o -> SimpleList.of(o, o)).collect(Collectors.toList());
+                    return PROXY_CONVERTER.toV8Value(v8Runtime, new V8VirtualIterator<>(entries.iterator()));
+                }));
     }
 
     /**
@@ -288,6 +372,56 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
         return set.contains(propertyKey);
     }
 
+    /**
+     * Polyfill Set.prototype.intersection().
+     * The intersection() method of Set instances takes a set and returns a new set containing
+     * elements which are in both this set and the given set.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 5.0.6
+     */
+    public V8Value intersection(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        final Set<Object> set = validateTargetObject(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                INTERSECTION, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    Set<Object> other = toOtherSet(v8Runtime, v8Values);
+                    if (other == null) {
+                        return v8Runtime.createV8ValueUndefined();
+                    }
+                    Set<Object> result = new LinkedHashSet<>(set);
+                    result.retainAll(other);
+                    return V8ValueUtils.createV8ValueSet(v8Runtime, result.toArray());
+                }));
+    }
+
+    /**
+     * Polyfill Set.prototype.isDisjointFrom().
+     * The isDisjointFrom() method of Set instances takes a set and returns a boolean indicating
+     * if this set has no elements in common with the given set.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 5.0.6
+     */
+    public V8Value isDisjointFrom(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        final Set<Object> set = validateTargetObject(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                IS_DISJOINT_FROM, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    Set<Object> other = toOtherSet(v8Runtime, v8Values);
+                    if (other == null) {
+                        return v8Runtime.createV8ValueUndefined();
+                    }
+                    return v8Runtime.createV8ValueBoolean(Collections.disjoint(set, other));
+                }));
+    }
+
     @Override
     public boolean isHasSupported(Class<?> targetClass) {
         return true;
@@ -306,6 +440,54 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
     @Override
     public boolean isProxyable(Class<?> targetClass) {
         return targetClass != null && Set.class.isAssignableFrom(targetClass);
+    }
+
+    /**
+     * Polyfill Set.prototype.isSubsetOf().
+     * The isSubsetOf() method of Set instances takes a set and returns a boolean indicating
+     * if all elements of this set are in the given set.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 5.0.6
+     */
+    public V8Value isSubsetOf(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        final Set<Object> set = validateTargetObject(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                IS_SUBSET_OF, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    Set<Object> other = toOtherSet(v8Runtime, v8Values);
+                    if (other == null) {
+                        return v8Runtime.createV8ValueUndefined();
+                    }
+                    return v8Runtime.createV8ValueBoolean(other.containsAll(set));
+                }));
+    }
+
+    /**
+     * Polyfill Set.prototype.isSupersetOf().
+     * The isSupersetOf() method of Set instances takes a set and returns a boolean indicating
+     * if all elements of the given set are in this set.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 5.0.6
+     */
+    public V8Value isSupersetOf(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        final Set<Object> set = validateTargetObject(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                IS_SUPERSET_OF, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    Set<Object> other = toOtherSet(v8Runtime, v8Values);
+                    if (other == null) {
+                        return v8Runtime.createV8ValueUndefined();
+                    }
+                    return v8Runtime.createV8ValueBoolean(set.containsAll(other));
+                }));
     }
 
     @Override
@@ -338,6 +520,35 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
     }
 
     /**
+     * Polyfill Set.prototype.symmetricDifference().
+     * The symmetricDifference() method of Set instances takes a set and returns a new set containing
+     * elements which are in either this set or the given set, but not in both.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 5.0.6
+     */
+    public V8Value symmetricDifference(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        final Set<Object> set = validateTargetObject(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                SYMMETRIC_DIFFERENCE, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    Set<Object> other = toOtherSet(v8Runtime, v8Values);
+                    if (other == null) {
+                        return v8Runtime.createV8ValueUndefined();
+                    }
+                    Set<Object> result = new LinkedHashSet<>(set);
+                    result.addAll(other);
+                    Set<Object> intersection = new LinkedHashSet<>(set);
+                    intersection.retainAll(other);
+                    result.removeAll(intersection);
+                    return V8ValueUtils.createV8ValueSet(v8Runtime, result.toArray());
+                }));
+    }
+
+    /**
      * Polyfill Set.toJSON().
      *
      * @param v8Runtime    the V8 runtime
@@ -351,6 +562,28 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 TO_JSON, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> v8Runtime.createV8ValueObject()));
+    }
+
+    /**
+     * Converts the first argument to a Java Set. Returns null and throws a V8 TypeError
+     * if the argument is missing or not a Set-like object.
+     *
+     * @param v8Runtime the V8 runtime
+     * @param v8Values  the V8 values
+     * @return the other set, or null if invalid
+     * @throws JavetException the javet exception
+     * @since 5.0.6
+     */
+    protected Set<Object> toOtherSet(V8Runtime v8Runtime, V8Value[] v8Values) throws JavetException {
+        if (ArrayUtils.isNotEmpty(v8Values) && v8Values[0] != null && !v8Values[0].isUndefined()) {
+            Object object = v8Runtime.toObject(v8Values[0]);
+            if (object instanceof Set) {
+                return (Set<Object>) object;
+            }
+        }
+        v8Runtime.throwError(V8ValueErrorType.TypeError,
+                "The \"other\" argument must be a Set.");
+        return null;
     }
 
     /**
@@ -369,6 +602,32 @@ public class JavetProxyPluginSet extends BaseJavetProxyPluginSingle<Set<Object>>
                 TO_STRING, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
                         v8Runtime.createV8ValueString(OBJECT_SET)));
+    }
+
+    /**
+     * Polyfill Set.prototype.union().
+     * The union() method of Set instances takes a set and returns a new set containing
+     * elements which are in either or both of this set and the given set.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 5.0.6
+     */
+    public V8Value union(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        final Set<Object> set = validateTargetObject(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                UNION, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    Set<Object> other = toOtherSet(v8Runtime, v8Values);
+                    if (other == null) {
+                        return v8Runtime.createV8ValueUndefined();
+                    }
+                    Set<Object> result = new LinkedHashSet<>(set);
+                    result.addAll(other);
+                    return V8ValueUtils.createV8ValueSet(v8Runtime, result.toArray());
+                }));
     }
 
     @Override

@@ -17,6 +17,8 @@ Release Notes 5.0.x
 * Fixed ``fill()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` to distinguish between an omitted ``end`` parameter (fills to the end) and an explicit ``end`` of ``0`` (fills nothing)
 * Fixed ``splice()`` in ``JavetProxyPluginList`` to remove all elements from ``start`` to the end when ``deleteCount`` is omitted (e.g. ``list.splice(0)`` removes everything), matching the JavaScript spec (previously removed nothing)
 * Fixed ``toSpliced()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` to remove all elements from ``start`` to the end when ``deleteCount`` is omitted, matching the JavaScript spec
+* Added ES2025 Set methods to ``JavetProxyPluginSet``: ``difference()``, ``intersection()``, ``union()``, ``symmetricDifference()``, ``isSubsetOf()``, ``isSupersetOf()``, ``isDisjointFrom()``
+* Fixed ``entries()`` in ``JavetProxyPluginSet`` to capture the snapshot at call time instead of at property access time, consistent with ``values()``
 
 5.0.5
 -----
