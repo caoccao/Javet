@@ -1644,6 +1644,8 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             // has()
             assertTrue(v8Runtime.getExecutor("map.has('x')").executeBoolean());
             assertFalse(v8Runtime.getExecutor("map.has('1')").executeBoolean());
+            // has() with no arguments
+            assertFalse(v8Runtime.getExecutor("map.has()").executeBoolean());
             // entries()
             assertEquals(
                     "[[\"x\",1],[\"y\",\"2\"],[\"z\",\"4\"]]",
@@ -1660,12 +1662,26 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"1xtrue\",\"2ytrue\",\"4ztrue\"]",
                     v8Runtime.getExecutor("const f = []; map.forEach((v,k,m)=>f.push(v+k+(m===map))); JSON.stringify(f);").executeString());
+            // forEach() with thisArg
+            assertEquals(
+                    "[\"1x_ctx\",\"2y_ctx\",\"4z_ctx\"]",
+                    v8Runtime.getExecutor("const f2 = []; const ctx = {s:'_ctx'}; map.forEach(function(v,k) { f2.push(v+k+this.s); }, ctx); JSON.stringify(f2);").executeString());
+            // forEach() with no callback — should not throw
+            v8Runtime.getExecutor("try { map.forEach(); } catch(e) {}").executeVoid();
             // delete
             assertTrue(v8Runtime.getExecutor("delete map['x']").executeBoolean());
             assertFalse(map.containsKey("x"));
             // delete()
             assertTrue(v8Runtime.getExecutor("map.delete('y')").executeBoolean());
             assertFalse(map.containsKey("y"));
+            // delete() non-existent key
+            assertFalse(v8Runtime.getExecutor("map.delete('nonexistent')").executeBoolean());
+            // delete() with no arguments
+            assertFalse(v8Runtime.getExecutor("map.delete()").executeBoolean());
+            // get() on remaining single-entry map
+            assertEquals("4", v8Runtime.getExecutor("map.get('z')").executeString());
+            // get() with no arguments
+            assertTrue(v8Runtime.getExecutor("map.get() === undefined").executeBoolean());
             // toString()
             assertEquals("[object Map]", v8Runtime.getExecutor("map.toString()").executeString());
             // toJSON()
@@ -1683,6 +1699,31 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             // clear()
             v8Runtime.getExecutor("map.clear()").executeVoid();
             assertEquals(0, v8Runtime.getExecutor("map.size").executeInteger());
+            // Operations on empty map after clear
+            assertTrue(v8Runtime.getExecutor("map.get('z') === undefined").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("map.has('z')").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("map.delete('z')").executeBoolean());
+            assertEquals("[]", v8Runtime.getExecutor("JSON.stringify([...map.entries()])").executeString());
+            assertEquals("[]", v8Runtime.getExecutor("JSON.stringify([...map.keys()])").executeString());
+            assertEquals("[]", v8Runtime.getExecutor("JSON.stringify([...map.values()])").executeString());
+            assertEquals("[]", v8Runtime.getExecutor("JSON.stringify([...map[Symbol.iterator]()])").executeString());
+            assertEquals("[object Map]", v8Runtime.getExecutor("map.toString()").executeString());
+            assertEquals("{}", v8Runtime.getExecutor("JSON.stringify(map)").executeString());
+            // forEach on empty map — callback should never be called
+            assertEquals("[]", v8Runtime.getExecutor("const f3 = []; map.forEach((v,k)=>f3.push(k)); JSON.stringify(f3);").executeString());
+            // set() on empty map re-populates it
+            assertTrue(v8Runtime.getExecutor("map.set('a', 1) === map").executeBoolean());
+            assertEquals(1, v8Runtime.getExecutor("map.size").executeInteger());
+            assertEquals(1, v8Runtime.getExecutor("map.get('a')").executeInteger());
+            // set() with null value
+            assertTrue(v8Runtime.getExecutor("map.set('b', null) === map").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("map.get('b') === null").executeBoolean());
+            // set() overwrite existing key
+            assertTrue(v8Runtime.getExecutor("map.set('a', 99) === map").executeBoolean());
+            assertEquals(99, v8Runtime.getExecutor("map.get('a')").executeInteger());
+            // Chained set() calls
+            assertTrue(v8Runtime.getExecutor("map.set('c', 3).set('d', 4) === map").executeBoolean());
+            assertEquals(4, v8Runtime.getExecutor("map.size").executeInteger());
             v8Runtime.getGlobalObject().delete("map");
         } finally {
             javetProxyConverter.getConfig().setProxyMapEnabled(false);

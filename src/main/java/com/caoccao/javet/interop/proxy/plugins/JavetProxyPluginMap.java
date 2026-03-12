@@ -464,7 +464,7 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle<Map<Object, 
     public V8Value valueOf(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         final Map<Object, Object> map = validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
-                VALUES, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                VALUE_OF, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) ->
                         V8ValueUtils.createV8ValueMap(v8Runtime, map)));
     }
