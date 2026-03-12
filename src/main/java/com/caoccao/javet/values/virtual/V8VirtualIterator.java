@@ -49,6 +49,18 @@ public class V8VirtualIterator<T, E extends Exception>
      */
     protected static final String FUNCTION_NEXT = "next";
     /**
+     * The constant FUNCTION_RETURN.
+     *
+     * @since 5.0.6
+     */
+    protected static final String FUNCTION_RETURN = "return";
+    /**
+     * The constant FUNCTION_THROW.
+     *
+     * @since 5.0.6
+     */
+    protected static final String FUNCTION_THROW = "throw";
+    /**
      * The constant PROPERTY_DONE.
      *
      * @since 2.2.1
@@ -60,6 +72,12 @@ public class V8VirtualIterator<T, E extends Exception>
      * @since 2.2.1
      */
     protected static final String PROPERTY_VALUE = "value";
+    /**
+     * The constant STRING_TAG.
+     *
+     * @since 5.0.6
+     */
+    protected static final String STRING_TAG = "Iterator";
     /**
      * The Iterable.
      *
@@ -126,6 +144,18 @@ public class V8VirtualIterator<T, E extends Exception>
                                 FUNCTION_NEXT, this, JavetCallbackType.DirectCallThisAndResult,
                                 (IJavetDirectCallable.ThisAndResult<?>) this::next));
             }
+            if (FUNCTION_RETURN.equals(propertyName)) {
+                return v8Runtime.createV8ValueFunction(
+                        new JavetCallbackContext(
+                                FUNCTION_RETURN, this, JavetCallbackType.DirectCallThisAndResult,
+                                (IJavetDirectCallable.ThisAndResult<?>) this::returnValue));
+            }
+            if (FUNCTION_THROW.equals(propertyName)) {
+                return v8Runtime.createV8ValueFunction(
+                        new JavetCallbackContext(
+                                FUNCTION_THROW, this, JavetCallbackType.DirectCallThisAndResult,
+                                (IJavetDirectCallable.ThisAndResult<?>) this::throwValue));
+            }
             if (PROPERTY_DONE.equals(propertyName)) {
                 return v8Runtime.createV8ValueBoolean(iterator == null);
             }
@@ -144,6 +174,9 @@ public class V8VirtualIterator<T, E extends Exception>
                         FUNCTION_NEXT, this, JavetCallbackType.DirectCallThisAndResult,
                         (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> thisObject));
             }
+            if (V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_STRING_TAG.equals(description)) {
+                return v8Runtime.createV8ValueString(STRING_TAG);
+            }
         }
         return IJavetDirectProxyHandler.super.proxyGet(target, property, receiver);
     }
@@ -154,6 +187,22 @@ public class V8VirtualIterator<T, E extends Exception>
                 v8Runtime,
                 v8Runtime.createV8ValueString(PROPERTY_DONE),
                 v8Runtime.createV8ValueString(PROPERTY_VALUE));
+    }
+
+    /**
+     * Return. Implements the optional return() method of the iterator protocol.
+     * Signals early termination of iteration. Marks the iterator as done
+     * and returns the proxy with value set from the argument.
+     *
+     * @param thisObject the this object
+     * @param v8Values   the V8 values
+     * @return the V8 value
+     * @since 5.0.6
+     */
+    protected V8Value returnValue(V8Value thisObject, V8Value... v8Values) {
+        iterator = null;
+        value = null;
+        return thisObject;
     }
 
     @Override
@@ -167,5 +216,20 @@ public class V8VirtualIterator<T, E extends Exception>
                 Optional.ofNullable(iterator)
                         .map(Object::toString)
                         .orElse(String.valueOf((Object) null)));
+    }
+
+    /**
+     * Throw. Implements the optional throw() method of the iterator protocol.
+     * Signals an error condition to the iterator. Marks the iterator as done.
+     *
+     * @param thisObject the this object
+     * @param v8Values   the V8 values
+     * @return the V8 value
+     * @since 5.0.6
+     */
+    protected V8Value throwValue(V8Value thisObject, V8Value... v8Values) {
+        iterator = null;
+        value = null;
+        return thisObject;
     }
 }

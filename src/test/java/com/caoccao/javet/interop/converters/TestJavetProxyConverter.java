@@ -1911,6 +1911,155 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testV8VirtualIterator() throws JavetException {
+        try {
+            javetProxyConverter.getConfig().setProxyArrayEnabled(true);
+            javetProxyConverter.getConfig().setProxyListEnabled(true);
+            // Basic iteration with for...of
+            int[] intArray = new int[]{10, 20, 30};
+            v8Runtime.getGlobalObject().set("arr", intArray);
+            assertEquals(
+                    "[10,20,30]",
+                    v8Runtime.getExecutor("JSON.stringify([...arr])").executeString());
+            // keys() iterator: for...of
+            assertEquals(
+                    "[0,1,2]",
+                    v8Runtime.getExecutor("JSON.stringify([...arr.keys()])").executeString());
+            // entries() iterator: for...of
+            assertEquals(
+                    "[[0,10],[1,20],[2,30]]",
+                    v8Runtime.getExecutor("JSON.stringify([...arr.entries()])").executeString());
+            // values() iterator: for...of
+            assertEquals(
+                    "[10,20,30]",
+                    v8Runtime.getExecutor("JSON.stringify([...arr.values()])").executeString());
+            // Iterator protocol: next() returns {value, done}
+            assertEquals(
+                    10,
+                    v8Runtime.getExecutor("arr.values().next().value").executeInteger());
+            assertFalse(
+                    v8Runtime.getExecutor("arr.values().next().done").executeBoolean());
+            // Chained next() calls
+            assertEquals(
+                    20,
+                    v8Runtime.getExecutor("arr.values().next().next().value").executeInteger());
+            assertFalse(
+                    v8Runtime.getExecutor("arr.values().next().next().done").executeBoolean());
+            assertEquals(
+                    30,
+                    v8Runtime.getExecutor("arr.values().next().next().next().value").executeInteger());
+            assertFalse(
+                    v8Runtime.getExecutor("arr.values().next().next().next().done").executeBoolean());
+            // Exhausted iterator
+            assertTrue(
+                    v8Runtime.getExecutor("arr.values().next().next().next().next().done").executeBoolean());
+            assertTrue(
+                    v8Runtime.getExecutor("arr.values().next().next().next().next().value").execute().isUndefined());
+            // Calling next() after exhaustion still returns done=true
+            assertTrue(
+                    v8Runtime.getExecutor("arr.values().next().next().next().next().next().done").executeBoolean());
+            // Empty array iterator
+            v8Runtime.getGlobalObject().set("empty", new int[0]);
+            assertTrue(
+                    v8Runtime.getExecutor("empty.values().next().done").executeBoolean());
+            assertTrue(
+                    v8Runtime.getExecutor("empty.values().next().value").execute().isUndefined());
+            assertEquals(
+                    "[]",
+                    v8Runtime.getExecutor("JSON.stringify([...empty])").executeString());
+            v8Runtime.getGlobalObject().delete("empty");
+            // Symbol.iterator returns the iterator itself (iterable protocol)
+            assertEquals(
+                    "[10,20,30]",
+                    v8Runtime.getExecutor("JSON.stringify([...arr[Symbol.iterator]()])").executeString());
+            // Iterator is iterable: Symbol.iterator on the iterator returns itself
+            assertEquals(
+                    "[10,20,30]",
+                    v8Runtime.getExecutor(
+                            "(() => { const it = arr.values(); return JSON.stringify([...it[Symbol.iterator]()]); })()").executeString());
+            // return() method: signals early termination
+            assertTrue(
+                    v8Runtime.getExecutor(
+                            "(() => { const it = arr.values(); it.next(); " +
+                                    "return typeof it.return === 'function'; })()").executeBoolean());
+            assertTrue(
+                    v8Runtime.getExecutor(
+                            "(() => { const it = arr.values(); it.next(); " +
+                                    "it.return(); return it.done; })()").executeBoolean());
+            // throw() method exists
+            assertTrue(
+                    v8Runtime.getExecutor(
+                            "(() => { const it = arr.values(); return typeof it.throw === 'function'; })()").executeBoolean());
+            assertTrue(
+                    v8Runtime.getExecutor(
+                            "(() => { const it = arr.values(); it.next(); " +
+                                    "it.throw(); return it.done; })()").executeBoolean());
+            // for...of with break triggers return()
+            assertEquals(
+                    "[10]",
+                    v8Runtime.getExecutor(
+                            "(() => { const result = []; for (const v of arr) { result.push(v); break; } " +
+                                    "return JSON.stringify(result); })()").executeString());
+            // Symbol.toStringTag
+            assertEquals(
+                    "Iterator",
+                    v8Runtime.getExecutor("arr.values()[Symbol.toStringTag]").executeString());
+            // entries() iterator toStringTag
+            assertEquals(
+                    "Iterator",
+                    v8Runtime.getExecutor("arr.entries()[Symbol.toStringTag]").executeString());
+            // keys() iterator toStringTag
+            assertEquals(
+                    "Iterator",
+                    v8Runtime.getExecutor("arr.keys()[Symbol.toStringTag]").executeString());
+            // List iterator
+            List<Object> list = new ArrayList<>(Arrays.asList("a", "b", "c"));
+            v8Runtime.getGlobalObject().set("list", list);
+            assertEquals(
+                    "[\"a\",\"b\",\"c\"]",
+                    v8Runtime.getExecutor("JSON.stringify([...list.values()])").executeString());
+            assertEquals(
+                    "[0,1,2]",
+                    v8Runtime.getExecutor("JSON.stringify([...list.keys()])").executeString());
+            assertEquals(
+                    "[[0,\"a\"],[1,\"b\"],[2,\"c\"]]",
+                    v8Runtime.getExecutor("JSON.stringify([...list.entries()])").executeString());
+            // List iterator next() protocol
+            assertEquals(
+                    "a",
+                    v8Runtime.getExecutor("list.values().next().value").executeString());
+            assertFalse(
+                    v8Runtime.getExecutor("list.values().next().done").executeBoolean());
+            // List iterator return() and throw()
+            assertTrue(
+                    v8Runtime.getExecutor(
+                            "(() => { const it = list.values(); return typeof it.return === 'function'; })()").executeBoolean());
+            assertTrue(
+                    v8Runtime.getExecutor(
+                            "(() => { const it = list.values(); return typeof it.throw === 'function'; })()").executeBoolean());
+            // Single element iterator
+            v8Runtime.getGlobalObject().set("single", new int[]{42});
+            assertEquals(
+                    42,
+                    v8Runtime.getExecutor("single.values().next().value").executeInteger());
+            assertFalse(
+                    v8Runtime.getExecutor("single.values().next().done").executeBoolean());
+            assertTrue(
+                    v8Runtime.getExecutor("single.values().next().next().done").executeBoolean());
+            assertEquals(
+                    "[42]",
+                    v8Runtime.getExecutor("JSON.stringify([...single])").executeString());
+            v8Runtime.getGlobalObject().delete("single");
+            v8Runtime.getGlobalObject().delete("list");
+            v8Runtime.getGlobalObject().delete("arr");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+            javetProxyConverter.getConfig().setProxyArrayEnabled(false);
+            javetProxyConverter.getConfig().setProxyListEnabled(false);
+        }
+    }
+
+    @Test
     public void testZonedDateTime() throws JavetException {
         v8Runtime.getGlobalObject().set("a", anonymous);
         String codeString = "a.expectZonedDateTime(new Date(253402300799000), new Date(-2208988800000));";

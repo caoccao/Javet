@@ -12,6 +12,8 @@ Release Notes 5.0.x
 * Fixed ``keys()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` to return an Array Iterator (``V8VirtualIterator``) instead of a plain array, consistent with ``entries()`` and ``values()``
 * Fixed ``reduceRight()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` to register the callback context with the correct name ``"reduceRight"`` instead of ``"reduce"``
 * Added ``toLocaleString()`` to ``JavetProxyPluginArray`` and ``JavetProxyPluginList``, delegating to the native ``Array.prototype.toLocaleString`` with support for optional locale and options arguments
+* Added ``return()`` and ``throw()`` methods to ``V8VirtualIterator`` implementing the optional iterator protocol methods for early termination and error signaling
+* Added ``Symbol.toStringTag`` support to ``V8VirtualIterator`` returning ``"Iterator"``
 
 5.0.5
 -----
