@@ -6,6 +6,12 @@ Release Notes 5.0.x
 -----
 
 * Added ``builtInModuleResolution`` flag to ``NodeRuntimeOptions`` to switch between Javet's module resolver and Node.js's built-in module resolver for static ``import`` statements
+* Fixed ``join()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` to default to ``","`` separator when called with no arguments, matching the JavaScript spec (previously defaulted to ``""``)
+* Fixed ``with()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` to support negative indices (e.g. ``arr.with(-1, value)`` replaces the last element), matching the JavaScript spec
+* Fixed ``copyWithin()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` to distinguish between an omitted ``end`` parameter (copies to the end of the array) and an explicit ``end`` of ``0`` (copies nothing)
+* Fixed ``keys()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` to return an Array Iterator (``V8VirtualIterator``) instead of a plain array, consistent with ``entries()`` and ``values()``
+* Fixed ``reduceRight()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` to register the callback context with the correct name ``"reduceRight"`` instead of ``"reduce"``
+* Added ``toLocaleString()`` to ``JavetProxyPluginArray`` and ``JavetProxyPluginList``, delegating to the native ``Array.prototype.toLocaleString`` with support for optional locale and options arguments
 
 5.0.5
 -----

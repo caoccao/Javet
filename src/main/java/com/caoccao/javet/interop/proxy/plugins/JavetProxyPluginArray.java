@@ -190,6 +190,10 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
      */
     protected static final String SPLICE = "splice";
     /**
+     * The JavaScript array method name {@code toLocaleString}.
+     */
+    protected static final String TO_LOCALE_STRING = "toLocaleString";
+    /**
      * The JavaScript array method name {@code toReversed}.
      */
     protected static final String TO_REVERSED = "toReversed";
@@ -259,6 +263,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
         proxyGetByStringMap.put(SORT, this::sort);
         proxyGetByStringMap.put(SPLICE, this::splice);
         proxyGetByStringMap.put(TO_JSON, this::toJSON);
+        proxyGetByStringMap.put(TO_LOCALE_STRING, this::toLocaleString);
         proxyGetByStringMap.put(TO_REVERSED, this::toReversed);
         proxyGetByStringMap.put(TO_SORTED, this::toSorted);
         proxyGetByStringMap.put(TO_SPLICED, this::toSpliced);
@@ -394,18 +399,21 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
                                 startIndex = 0;
                             }
                         }
-                        int endIndex = V8ValueUtils.asInt(v8Values, 2);
-                        if (endIndex < 0) {
-                            endIndex += length;
+                        int endIndex;
+                        if (v8Values == null || v8Values.length < 3 || v8Values[2] == null
+                                || v8Values[2].isUndefined()) {
+                            endIndex = length;
+                        } else {
+                            endIndex = V8ValueUtils.asInt(v8Values, 2);
                             if (endIndex < 0) {
-                                endIndex = 0;
+                                endIndex += length;
+                                if (endIndex < 0) {
+                                    endIndex = 0;
+                                }
                             }
-                        }
-                        if (endIndex > length) {
-                            endIndex = length;
-                        }
-                        if (endIndex == 0) {
-                            endIndex = length;
+                            if (endIndex > length) {
+                                endIndex = length;
+                            }
                         }
                         if (targetIndex < length && startIndex < length && endIndex > startIndex) {
                             if (targetIndex + endIndex - startIndex > length) {
@@ -1023,7 +1031,10 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
                 JOIN, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
-                    String delimiter = V8ValueUtils.asString(v8Values, 0, StringUtils.EMPTY);
+                    String delimiter = v8Values != null && v8Values.length > 0 && v8Values[0] != null
+                            && !v8Values[0].isUndefined()
+                            ? v8Values[0].toString()
+                            : ",";
                     String result = Stream.of(ArrayUtils.copyOf(targetObject))
                             .map(Object::toString)
                             .collect(Collectors.joining(delimiter));
@@ -1048,11 +1059,11 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
                 KEYS, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     final int length = Array.getLength(targetObject);
-                    Object[] indexes = new Object[length];
+                    List<Object> keys = new ArrayList<>(length);
                     for (int i = 0; i < length; ++i) {
-                        indexes[i] = v8Runtime.createV8ValueInteger(i);
+                        keys.add(i);
                     }
-                    return V8ValueUtils.createV8ValueArray(v8Runtime, indexes);
+                    return PROXY_CONVERTER.toV8Value(v8Runtime, new V8VirtualIterator<>(keys.iterator()));
                 }));
     }
 
@@ -1289,7 +1300,7 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
     public V8Value reduceRight(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
-                REDUCE, targetObject, JavetCallbackType.DirectCallThisAndResult,
+                REDUCE_RIGHT, targetObject, JavetCallbackType.DirectCallThisAndResult,
                 (IJavetDirectCallable.ThisAndResult<Exception>) (thisObject, v8Values) -> {
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
@@ -1703,6 +1714,36 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
     }
 
     /**
+     * Polyfill Array.prototype.toLocaleString().
+     * The toLocaleString() method of Array instances returns a localized string representing
+     * the specified array and its elements. The elements are converted to strings using their
+     * toLocaleString methods and these strings are separated by a locale-specific string (such as a comma ",").
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 5.0.6
+     */
+    public V8Value toLocaleString(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        validateTargetObject(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                TO_LOCALE_STRING, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    try (V8ValueArray v8ValueArray =
+                                 V8ValueUtils.createV8ValueArray(v8Runtime, ArrayUtils.copyOf(targetObject))) {
+                        String localeString;
+                        if (v8Values != null && v8Values.length > 0) {
+                            localeString = v8ValueArray.invokeString(TO_LOCALE_STRING, (Object[]) v8Values);
+                        } else {
+                            localeString = v8ValueArray.invokeString(TO_LOCALE_STRING);
+                        }
+                        return v8Runtime.createV8ValueString(localeString);
+                    }
+                }));
+    }
+
+    /**
      * Polyfill Array.prototype.toString()
      * The toString() method of Array instances returns a string representing the specified array and its elements.
      *
@@ -1813,6 +1854,9 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     Object[] objects = ArrayUtils.copyOf(targetObject);
                     int index = V8ValueUtils.asInt(v8Values, 0);
+                    if (index < 0) {
+                        index += objects.length;
+                    }
                     if (index >= 0 && index < objects.length) {
                         objects[index] = v8Values.length > 1
                                 ? v8Values[1]

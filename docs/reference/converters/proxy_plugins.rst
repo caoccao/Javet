@@ -84,7 +84,11 @@ The array plugin maps all primitive arrays and object arrays to the JS ``array``
     assertEquals(2, v8Runtime.getExecutor("intArray.length").executeInteger());
     v8Runtime.getGlobalObject().delete("intArray");
 
-Supported Array methods: ``at()`` (with negative indices), ``concat()``, ``copyWithin()``, ``entries()``, ``every()``, ``fill()``, ``filter()``, ``find()``, ``findIndex()``, ``findLast()``, ``findLastIndex()``, ``flat()``, ``flatMap()``, ``forEach()``, ``includes()``, ``indexOf()``, ``join()``, ``keys()``, ``lastIndexOf()``, ``map()``, ``reduce()``, ``reduceRight()``, ``reverse()``, ``slice()``, ``some()``, ``sort()``, ``toReversed()``, ``toSorted()``, ``toSpliced()``, ``toString()``, ``values()``, ``with()``, ``Symbol.iterator``, and spread syntax (``[...arr]``).
+Supported Array methods: ``at()`` (with negative indices), ``concat()``, ``copyWithin()``, ``entries()``, ``every()``, ``fill()``, ``filter()``, ``find()``, ``findIndex()``, ``findLast()``, ``findLastIndex()``, ``flat()``, ``flatMap()``, ``forEach()``, ``includes()``, ``indexOf()``, ``join()``, ``keys()``, ``lastIndexOf()``, ``map()``, ``reduce()``, ``reduceRight()``, ``reverse()``, ``slice()``, ``some()``, ``sort()``, ``toLocaleString()``, ``toReversed()``, ``toSorted()``, ``toSpliced()``, ``toString()``, ``values()``, ``with()`` (with negative indices), ``Symbol.iterator``, and spread syntax (``[...arr]``).
+
+.. note::
+
+    ``join()`` defaults to ``","`` as separator when called with no arguments, matching the JavaScript spec. ``keys()`` returns an Array Iterator (usable with ``for...of`` and spread syntax). ``with()`` supports negative indices (e.g., ``arr.with(-1, value)`` replaces the last element). ``copyWithin()`` correctly distinguishes between an omitted ``end`` parameter (copies to the end) and an explicit ``end`` of ``0`` (copies nothing).
 
 JavetProxyPluginList
 --------------------
@@ -109,7 +113,7 @@ The list plugin maps ``List<?>`` to the JS ``array``. Both JavaScript Array meth
             v8Runtime.getExecutor("JSON.stringify(list)").executeString());
     v8Runtime.getGlobalObject().delete("list");
 
-Additional JS Array methods on lists: ``push()``, ``pop()``, ``shift()``, ``unshift()``, ``splice()``, ``includes()``, ``indexOf()``, ``lastIndexOf()``, ``delete list[i]`` (removes element), ``length`` property, ``Symbol.iterator``, and all the same methods as ``JavetProxyPluginArray``. Java ``List`` methods (``add()``, ``get()``, ``size()``, ``clear()``, ``contains()``, etc.) remain accessible.
+Additional JS Array methods on lists: ``push()``, ``pop()``, ``shift()``, ``unshift()``, ``splice()``, ``includes()``, ``indexOf()``, ``lastIndexOf()``, ``delete list[i]`` (removes element), ``length`` property, ``Symbol.iterator``, ``toLocaleString()``, and all the same methods as ``JavetProxyPluginArray``. Java ``List`` methods (``add()``, ``get()``, ``size()``, ``clear()``, ``contains()``, etc.) remain accessible.
 
 JavetProxyPluginMap
 -------------------
