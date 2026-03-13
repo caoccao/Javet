@@ -30,7 +30,10 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -94,6 +97,11 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
                         " typeof value === 'bigint'?value.toString():value)").executeString());
         // toString()
         assertEquals("36893488147419103232", v8Runtime.getExecutor("l.toString()").executeString());
+        // toString(radix)
+        assertEquals("100000000000000000000000000000000000000000000000000000000000000000",
+                v8Runtime.getExecutor("l.toString(2)").executeString());
+        assertEquals("4000000000000000000000", v8Runtime.getExecutor("l.toString(8)").executeString());
+        assertEquals("20000000000000000", v8Runtime.getExecutor("l.toString(16)").executeString());
         v8Runtime.getGlobalObject().delete("l");
         v8Runtime.getGlobalObject().delete("list");
     }
@@ -121,6 +129,52 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         v8Runtime.getGlobalObject().delete("bTrue");
         v8Runtime.getGlobalObject().delete("bFalse");
         v8Runtime.getGlobalObject().delete("list");
+    }
+
+    @Test
+    public void testByte() throws JavetException {
+        v8Runtime.getGlobalObject().set("b", (byte) 123);
+        assertEquals(Byte.valueOf((byte) 123), v8Runtime.getExecutor("b").executeObject());
+        // valueOf()
+        assertEquals(123, v8Runtime.getExecutor("b.valueOf()").executeInteger());
+        // toExponential()
+        assertEquals("1.23e+2", v8Runtime.getExecutor("b.toExponential()").executeString());
+        // toFixed()
+        assertEquals("123.00", v8Runtime.getExecutor("b.toFixed(2)").executeString());
+        // toLocaleString()
+        assertEquals("123", v8Runtime.getExecutor("b.toLocaleString('en-US')").executeString());
+        // toPrecision()
+        assertEquals("123", v8Runtime.getExecutor("b.toPrecision(3)").executeString());
+        // Symbol.toPrimitive
+        assertEquals(123, v8Runtime.getExecutor("b[Symbol.toPrimitive]()").executeInteger());
+        // +
+        assertEquals(124, v8Runtime.getExecutor("1 + b").executeInteger());
+        // toJSON()
+        assertEquals("123", v8Runtime.getExecutor("JSON.stringify(b)").executeString());
+        // toString()
+        assertEquals("123", v8Runtime.getExecutor("b.toString()").executeString());
+        // toString(radix)
+        assertEquals("1111011", v8Runtime.getExecutor("b.toString(2)").executeString());
+        assertEquals("173", v8Runtime.getExecutor("b.toString(8)").executeString());
+        assertEquals("7b", v8Runtime.getExecutor("b.toString(16)").executeString());
+        v8Runtime.getGlobalObject().delete("b");
+    }
+
+    @Test
+    public void testCharacter() throws JavetException {
+        v8Runtime.getGlobalObject().set("c", 'A');
+        assertEquals(Character.valueOf('A'), v8Runtime.getExecutor("c").executeObject());
+        // valueOf()
+        assertEquals("A", v8Runtime.getExecutor("c.valueOf()").executeString());
+        // toString()
+        assertEquals("A", v8Runtime.getExecutor("c.toString()").executeString());
+        // Symbol.toPrimitive
+        assertEquals("A", v8Runtime.getExecutor("c[Symbol.toPrimitive]()").executeString());
+        // toJSON()
+        assertEquals("\"A\"", v8Runtime.getExecutor("JSON.stringify(c)").executeString());
+        // + (string concatenation)
+        assertEquals("A!", v8Runtime.getExecutor("c + '!'").executeString());
+        v8Runtime.getGlobalObject().delete("c");
     }
 
     @Test
@@ -153,7 +207,38 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals("1.23", v8Runtime.getExecutor("JSON.stringify(d)").executeString());
         // toString()
         assertEquals("1.23", v8Runtime.getExecutor("d.toString()").executeString());
+        // toString(radix)
+        assertNotNull(v8Runtime.getExecutor("d.toString(2)").executeString());
+        assertEquals("1.3ae147ae147ae", v8Runtime.getExecutor("d.toString(16)").executeString());
         v8Runtime.getGlobalObject().delete("d");
+    }
+
+    @Test
+    public void testFloat() throws JavetException {
+        v8Runtime.getGlobalObject().set("f", 1.5f);
+        assertEquals(1.5F, (Float) v8Runtime.getExecutor("f").executeObject(), DELTA);
+        // valueOf()
+        assertEquals(1.5D, v8Runtime.getExecutor("f.valueOf()").executeDouble(), DELTA);
+        // toExponential()
+        assertEquals("1.5e+0", v8Runtime.getExecutor("f.toExponential()").executeString());
+        // toFixed()
+        assertEquals("1.50", v8Runtime.getExecutor("f.toFixed(2)").executeString());
+        // toLocaleString()
+        assertEquals("1.5", v8Runtime.getExecutor("f.toLocaleString('en-US')").executeString());
+        // toPrecision()
+        assertEquals("1.50", v8Runtime.getExecutor("f.toPrecision(3)").executeString());
+        // Symbol.toPrimitive
+        assertEquals(1.5D, v8Runtime.getExecutor("f[Symbol.toPrimitive]()").executeDouble(), DELTA);
+        // +
+        assertEquals(2.5D, v8Runtime.getExecutor("1 + f").executeDouble(), DELTA);
+        // toJSON()
+        assertEquals("1.5", v8Runtime.getExecutor("JSON.stringify(f)").executeString());
+        // toString()
+        assertEquals("1.5", v8Runtime.getExecutor("f.toString()").executeString());
+        // toString(radix)
+        assertNotNull(v8Runtime.getExecutor("f.toString(2)").executeString());
+        assertEquals("1.8", v8Runtime.getExecutor("f.toString(16)").executeString());
+        v8Runtime.getGlobalObject().delete("f");
     }
 
     @Test
@@ -209,6 +294,10 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals("[1,-1]", v8Runtime.getExecutor("JSON.stringify(list)").executeString());
         // toString()
         assertEquals("12345", v8Runtime.getExecutor("i.toString()").executeString());
+        // toString(radix)
+        assertEquals("11000000111001", v8Runtime.getExecutor("i.toString(2)").executeString());
+        assertEquals("30071", v8Runtime.getExecutor("i.toString(8)").executeString());
+        assertEquals("3039", v8Runtime.getExecutor("i.toString(16)").executeString());
         v8Runtime.getGlobalObject().delete("i");
         v8Runtime.getGlobalObject().delete("list");
     }
@@ -280,13 +369,17 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
                 " typeof value === 'bigint'?value.toString():value)").executeString());
         // toString()
         assertEquals("12345", v8Runtime.getExecutor("l.toString()").executeString());
+        // toString(radix)
+        assertEquals("11000000111001", v8Runtime.getExecutor("l.toString(2)").executeString());
+        assertEquals("30071", v8Runtime.getExecutor("l.toString(8)").executeString());
+        assertEquals("3039", v8Runtime.getExecutor("l.toString(16)").executeString());
         v8Runtime.getGlobalObject().delete("l");
         v8Runtime.getGlobalObject().delete("list");
     }
 
     @Test
     public void testLongList() throws JavetException {
-        List<Long> longList = Collections.unmodifiableList(SimpleList.of(1L, 2L));
+        List<Long> longList = new ArrayList<>(SimpleList.of(1L, 2L));
         v8Runtime.getGlobalObject().set("a", longList);
         assertEquals(2, (Integer) v8Runtime.getExecutor("a.size()").executeObject());
         assertEquals(1L, (Long) v8Runtime.getExecutor("a[0]").executeObject());
@@ -338,6 +431,39 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
                 "[\"x\",\"y\",\"z\"]",
                 v8Runtime.getExecutor("JSON.stringify([...set]);").executeString());
         v8Runtime.getGlobalObject().delete("set");
+    }
+
+    @Test
+    public void testShort() throws JavetException {
+        v8Runtime.getGlobalObject().set("sh", (short) 1234);
+        assertEquals(Short.valueOf((short) 1234), v8Runtime.getExecutor("sh").executeObject());
+        // valueOf()
+        assertEquals(1234, v8Runtime.getExecutor("sh.valueOf()").executeInteger());
+        // toExponential()
+        assertEquals("1.234e+3", v8Runtime.getExecutor("sh.toExponential()").executeString());
+        // toFixed()
+        assertEquals("1234.00", v8Runtime.getExecutor("sh.toFixed(2)").executeString());
+        // toLocaleString()
+        if (isI18nEnabled()) {
+            assertEquals("1,234", v8Runtime.getExecutor("sh.toLocaleString('en-US')").executeString());
+        } else {
+            assertEquals("1234", v8Runtime.getExecutor("sh.toLocaleString('en-US')").executeString());
+        }
+        // toPrecision()
+        assertEquals("1234", v8Runtime.getExecutor("sh.toPrecision(4)").executeString());
+        // Symbol.toPrimitive
+        assertEquals(1234, v8Runtime.getExecutor("sh[Symbol.toPrimitive]()").executeInteger());
+        // +
+        assertEquals(1235, v8Runtime.getExecutor("1 + sh").executeInteger());
+        // toJSON()
+        assertEquals("1234", v8Runtime.getExecutor("JSON.stringify(sh)").executeString());
+        // toString()
+        assertEquals("1234", v8Runtime.getExecutor("sh.toString()").executeString());
+        // toString(radix)
+        assertEquals("10011010010", v8Runtime.getExecutor("sh.toString(2)").executeString());
+        assertEquals("2322", v8Runtime.getExecutor("sh.toString(8)").executeString());
+        assertEquals("4d2", v8Runtime.getExecutor("sh.toString(16)").executeString());
+        v8Runtime.getGlobalObject().delete("sh");
     }
 
     @Test

@@ -239,6 +239,12 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
                             if (targetObject instanceof Short) {
                                 return v8Runtime.createV8ValueInteger(((Short) targetObject).intValue());
                             }
+                            if (targetObject instanceof Byte) {
+                                return v8Runtime.createV8ValueInteger(((Byte) targetObject).intValue());
+                            }
+                            if (targetObject instanceof Character) {
+                                return v8Runtime.createV8ValueString(String.valueOf(targetObject));
+                            }
                             if (targetObject instanceof Boolean) {
                                 return v8Runtime.createV8ValueInteger(((Boolean) targetObject) ? 1 : 0);
                             }
@@ -271,6 +277,9 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
                             if (targetObject instanceof Short) {
                                 return v8Runtime.createV8ValueBoolean(((Short) targetObject) != 0);
                             }
+                            if (targetObject instanceof Byte) {
+                                return v8Runtime.createV8ValueBoolean(((Byte) targetObject) != 0);
+                            }
                             if (targetObject instanceof String) {
                                 return v8Runtime.createV8ValueBoolean(StringUtils.isNotEmpty((String) targetObject));
                             }
@@ -296,6 +305,12 @@ public abstract class BaseJavetProxyPlugin implements IClassProxyPlugin {
                             }
                             if (targetObject instanceof Short) {
                                 return v8Runtime.createV8ValueInteger(((Short) targetObject).intValue());
+                            }
+                            if (targetObject instanceof Byte) {
+                                return v8Runtime.createV8ValueInteger(((Byte) targetObject).intValue());
+                            }
+                            if (targetObject instanceof Character) {
+                                return v8Runtime.createV8ValueString(String.valueOf(targetObject));
                             }
                             if (targetObject instanceof Boolean) {
                                 return v8Runtime.createV8ValueBoolean((Boolean) targetObject);
