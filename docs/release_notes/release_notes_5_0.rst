@@ -5,6 +5,7 @@ Release Notes 5.0.x
 5.0.6
 -----
 
+* Upgraded Node.js to ``v24.14.1`` `(2026-03-24) <https://nodejs.org/en/blog/release/v24.14.1>`_
 * Added ``builtInModuleResolution`` flag to ``NodeRuntimeOptions`` to switch between Javet's module resolver and Node.js's built-in module resolver for static ``import`` statements
 * Fixed ``join()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` to default to ``","`` separator when called with no arguments, matching the JavaScript spec (previously defaulted to ``""``)
 * Fixed ``with()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` to support negative indices (e.g. ``arr.with(-1, value)`` replaces the last element), matching the JavaScript spec
