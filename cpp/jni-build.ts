@@ -454,7 +454,7 @@ async function buildWindows(config: BuildConfig): Promise<boolean> {
     const cmakeCmd = [
       "cmake",
       SCRIPT_DIR,
-      "-G", "Visual Studio 17 2022",
+      "-G", "Visual Studio 18 2026",
       "-A", "x64",
       `-DJAVET_VERSION=${JAVET_VERSION}`,
       "-T", "ClangCL",

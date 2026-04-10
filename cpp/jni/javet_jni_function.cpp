@@ -216,7 +216,11 @@ JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_functionG
             auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Isolate);
             auto v8InternalScript = v8::internal::Cast<V8InternalScript>(v8InternalShared->script());
             auto wrappedArguments = v8InternalScript->wrapped_arguments();
+#ifdef ENABLE_NODE
             auto length = wrappedArguments->length();
+#else
+            auto length = static_cast<int>(wrappedArguments->length().value());
+#endif
             if (length > 0) {
                 jobjectArray arguments = jniEnv->NewObjectArray(length, Javet::Converter::jclassString, nullptr);
                 for (int i = 0; i < length; ++i) {

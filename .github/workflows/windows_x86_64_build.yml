@@ -8,7 +8,7 @@ on:
 
 env:
   JAVET_NODE_VERSION: 24.14.1
-  JAVET_V8_VERSION: 14.6.202.8
+  JAVET_V8_VERSION: 14.7.173.18
   JAVET_VERSION: 5.0.6
   TEMPORAL_VERSION: 0.1.2
   ROOT: D:\a\Javet
@@ -77,6 +77,7 @@ jobs:
         cd v8
         # The fix is to change gc_retry to use a template parameter instead of std::function, so it can accept any callable type and pass it directly to RetryCustomAllocate without the intermediate std::function conversion.
         sed -i 's|  auto gc_retry = \[&\](const std::function<bool()>& fn)|  auto gc_retry = [\&](auto\&\& fn)|' src/objects/backing-store.cc
+        sed -i '/struct HashEqualityThenKeyMatcher {/a\  HashEqualityThenKeyMatcher() : match_() {}' src/base/hashmap.h
         mkdir -p out.gn.windows.${{ matrix.name }}/x64.release
         cp ../../Javet/scripts/v8/gn/windows-x86_64-${{ matrix.name }}-args.gn out.gn.windows.${{ matrix.name }}/x64.release/args.gn
         ../depot_tools/gn.bat gen out.gn.windows.${{ matrix.name }}/x64.release
