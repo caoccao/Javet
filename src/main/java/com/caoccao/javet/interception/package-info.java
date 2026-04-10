@@ -25,7 +25,7 @@
  *       allowing access to Java packages, classes, and the V8 garbage collector.</li>
  * </ul>
  * <p>
- * See the {@link com.caoccao.javet.interception.logging} sub-package for console interceptors.
+ * See the {@code com.caoccao.javet.interception.logging} sub-package for console interceptors.
  *
  * @since 0.7.0
  * @author Sam Cao
