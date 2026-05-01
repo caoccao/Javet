@@ -338,10 +338,17 @@ namespace Javet {
             return *v8::internal::Cast<V8InternalJSObject>(*v8::Utils::OpenHandle(*v8LocalValue));
         }
 
+#ifdef ENABLE_NODE
         static inline V8InternalModule ToV8InternalModule(
             const V8LocalModule& v8LocalModule) noexcept {
             return *v8::internal::Cast<V8InternalModule>(*v8::Utils::OpenHandle(*v8LocalModule));
         }
+#else
+        static inline v8::internal::Tagged<V8InternalModule> ToV8InternalModule(
+            const V8LocalModule& v8LocalModule) noexcept {
+            return v8::internal::Cast<V8InternalModule>(*v8::Utils::OpenHandle(*v8LocalModule));
+        }
+#endif
 
         static inline V8InternalScript ToV8InternalScript(
             const V8LocalScript& v8LocalScript) noexcept {

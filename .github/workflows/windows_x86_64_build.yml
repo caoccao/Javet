@@ -8,9 +8,9 @@ on:
 
 env:
   JAVET_NODE_VERSION: 24.14.1
-  JAVET_V8_VERSION: 14.7.173.18
+  JAVET_V8_VERSION: 14.8.178.16
   JAVET_VERSION: 5.0.7
-  TEMPORAL_VERSION: 0.1.2
+  TEMPORAL_VERSION: 0.2.3
   ROOT: D:\a\Javet
 
 jobs:
@@ -26,7 +26,7 @@ jobs:
             v8_flag: v8_enable_i18n_support=false
 
     name: Build Javet V8 ${{ matrix.name }}
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
 
     steps:
 
@@ -78,6 +78,7 @@ jobs:
         # The fix is to change gc_retry to use a template parameter instead of std::function, so it can accept any callable type and pass it directly to RetryCustomAllocate without the intermediate std::function conversion.
         sed -i 's|  auto gc_retry = \[&\](const std::function<bool()>& fn)|  auto gc_retry = [\&](auto\&\& fn)|' src/objects/backing-store.cc
         sed -i '/struct HashEqualityThenKeyMatcher {/a\  HashEqualityThenKeyMatcher() : match_() {}' src/base/hashmap.h
+        sed -i 's/static std::atomic_flag printed_warning{false};/static std::atomic_flag printed_warning = ATOMIC_FLAG_INIT;/' src/runtime/runtime-test.cc
         mkdir -p out.gn.windows.${{ matrix.name }}/x64.release
         cp ../../Javet/scripts/v8/gn/windows-x86_64-${{ matrix.name }}-args.gn out.gn.windows.${{ matrix.name }}/x64.release/args.gn
         ../depot_tools/gn.bat gen out.gn.windows.${{ matrix.name }}/x64.release
