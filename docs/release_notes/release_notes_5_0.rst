@@ -5,6 +5,7 @@ Release Notes 5.0.x
 5.0.7
 -----
 
+* Upgraded Node.js to ``v24.15.0`` `(2026-04-15) <https://nodejs.org/en/blog/release/v24.15.0>`_
 * Upgraded V8 to ``v14.8.178.16`` (2026-04-30)
 * Upgraded Visual Studio 2022 to `v17.14.31 <https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes#17.14.31>`_
 * Upgraded Visual Studio 2026 to `v18.5.2 <https://learn.microsoft.com/en-us/visualstudio/releases/2026/release-notes#18.5.2>`_
