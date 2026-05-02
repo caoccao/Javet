@@ -128,6 +128,7 @@ jobs:
         # Replace the NDK because the NDK from V8 is broken.
         mv third_party/android_toolchain/ndk third_party/android_toolchain/ndk.bak
         ln -s ${{ steps.setup-ndk.outputs.ndk-path }} third_party/android_toolchain/ndk
+        sed -i 's/max\.value_or({})/max.value_or(uint8_t{})/' src/compiler/turboshaft/wasm-shuffle-reducer.cc
         mkdir -p out.gn.android.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
         cp ../../Javet/scripts/v8/gn/android-${{ matrix.android_arch }}-${{ matrix.i18n_name }}-args.gn out.gn.android.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release/args.gn
         gn gen out.gn.android.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
