@@ -72,6 +72,7 @@ jobs:
         cd ..
         gclient sync -D
         cd v8
+        sed -i '' 's/max\.value_or({})/max.value_or(uint8_t{})/' src/compiler/turboshaft/wasm-shuffle-reducer.cc
         mkdir -p out.gn.macos.${{ matrix.name }}/arm64.release
         cp ../../Javet/scripts/v8/gn/macos-arm64-${{ matrix.name }}-args.gn out.gn.macos.${{ matrix.name }}/arm64.release/args.gn
         gn gen out.gn.macos.${{ matrix.name }}/arm64.release
