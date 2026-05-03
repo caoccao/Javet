@@ -11,6 +11,7 @@ Release Notes 5.0.x
 * Upgraded Visual Studio 2026 to `v18.5.2 <https://learn.microsoft.com/en-us/visualstudio/releases/2026/release-notes#18.5.2>`_
 * Switched to LLVM for Node.js mode on Linux
 * Upgraded temporal to ``v0.2.3``
+* Renamed ``--no-experimental-require-module`` to ``--no-require-module`` in ``NodeFlags`` to match Node.js v24.15.0 stabilization of ``require(esm)``
 
 5.0.6
 -----

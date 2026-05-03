@@ -29,7 +29,7 @@ public class TestNodeFlags {
     protected static final List<GetterAndSetter> SWITCHES = SimpleList.of(
             new GetterAndSetter(NodeFlags::isExperimentalSqlite, NodeFlags::setExperimentalSqlite),
             new GetterAndSetter(NodeFlags::isJsFloat16Array, NodeFlags::setJsFloat16Array),
-            new GetterAndSetter(NodeFlags::isNoExperimentalRequireModule, NodeFlags::setNoExperimentalRequireModule),
+            new GetterAndSetter(NodeFlags::isNoRequireModule, NodeFlags::setNoRequireModule),
             new GetterAndSetter(NodeFlags::isNoWarnings, NodeFlags::setNoWarnings)
     );
 
@@ -81,9 +81,9 @@ public class TestNodeFlags {
         assertEquals("--no-warnings", nodeFlags.setNoWarnings(true).toString());
         nodeFlags.setNoWarnings(false);
         assertEquals(
-                "--no-experimental-require-module",
-                nodeFlags.setNoExperimentalRequireModule(true).toString());
-        nodeFlags.setNoExperimentalRequireModule(false);
+                "--no-require-module",
+                nodeFlags.setNoRequireModule(true).toString());
+        nodeFlags.setNoRequireModule(false);
         assertEquals("--icu-data-dir=abc", nodeFlags.setIcuDataDir("abc").toString());
         nodeFlags.setIcuDataDir(null);
         assertEquals(
