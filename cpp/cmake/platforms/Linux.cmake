@@ -64,22 +64,26 @@ if(DEFINED V8_DIR)
         debug "-lrt" -static-libgcc -stdlib=libc++ optimized "-lrt" "${libgcc}")
 endif()
 if(DEFINED NODE_DIR)
-    # We use gcc for Node.js mode on Linux.
+    # We use clang/LLVM for Node.js mode on Linux. Set CC/CXX to clang/clang++
+    # before invoking cmake. V8 14.8 headers (instance-type.h Torque-generated
+    # macros) no longer compile under GCC.
     list(APPEND includeDirs
         ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/gen/generate-bytecode-output-root
         ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/gen/inspector-generated-output-root
         ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/gen)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpermissive -w ")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -w ")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w ")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w ")
     foreach(importLibrary ${importLibraries})
         set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/lib${importLibrary}.a)
     endforeach(importLibrary)
     list(REMOVE_ITEM importLibraries v8_init)
     target_link_libraries(Javet PUBLIC
+        -Wl,-Bstatic -latomic -Wl,-Bdynamic
         -Wl,--compress-sections=.text=none
         -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
         v8_init debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
     target_link_libraries(JavetStatic PUBLIC
+        -Wl,-Bstatic -latomic -Wl,-Bdynamic
         -Wl,--compress-sections=.text=none
         -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
         v8_init debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")

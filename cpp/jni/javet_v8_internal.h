@@ -32,6 +32,13 @@
 #pragma warning(disable: 4819)
 #pragma warning(disable: 4996)
 
+// Linux <sys/mman.h> defines MAP_TYPE as 0x0f, which collides with the
+// MAP_TYPE enum identifier in V8's Torque-generated instance-types.h.
+// V8 itself does the same #undef in src/base/platform/platform-linux.cc etc.
+#ifdef MAP_TYPE
+#undef MAP_TYPE
+#endif
+
 #include <src/objects/objects.h>
 #include <src/objects/objects-inl.h>
 #include <src/api/api-inl.h>

@@ -38,6 +38,14 @@ class PatchNodeBuild {
   private commonOldKey = '_type=="static_library" and OS=="solaris"';
   private commonNewKey = '_type=="static_library"';
 
+  // Patch ./configure.py to disable v8_enable_gdbjit on Linux.
+  // Node.js v24.15.0 (PR #61010 / commit e0220f0c35c) auto-enables gdbjit
+  // on Linux x64/ia32/ppc64. The resulting deps/v8/src/diagnostics/gdb-jit.cc
+  // does not compile under GCC with V8 14.8, only under clang.
+  private configureFile = "configure.py";
+  private configureOldKey = "1 if is_gdbjit_supported_arch and is_linux else 0";
+  private configureNewKey = "0";
+
   // Patch make files to generate position independent code.
   private makeKeys = [
     "CFLAGS_Release :=",
@@ -75,6 +83,43 @@ class PatchNodeBuild {
         let updatedLine = line;
         if (line.includes(this.commonOldKey)) {
           updatedLine = line.replace(this.commonOldKey, this.commonNewKey);
+        }
+        lines.push(updatedLine);
+      }
+
+      const encoder = new TextEncoder();
+      const newBuffer = encoder.encode(lines.join(this.lineSeparator));
+
+      if (this.buffersEqual(originalBuffer, newBuffer)) {
+        console.warn(`WARN: Skipped ${filePath}.`);
+      } else {
+        Deno.writeFileSync(filePath, newBuffer);
+        console.log(`INFO: Patched ${filePath}.`);
+      }
+    } catch (_error) {
+      console.error(`ERROR: Failed to locate ${filePath}.`);
+    }
+  }
+
+  private patchConfigure(): void {
+    const filePath = path.resolve(this.nodeRepoPath, this.configureFile);
+
+    try {
+      const stat = Deno.statSync(filePath);
+      if (!stat.isFile) {
+        console.error(`ERROR: Failed to locate ${filePath}.`);
+        return;
+      }
+
+      const originalBuffer = Deno.readFileSync(filePath);
+      const decoder = new TextDecoder("utf-8");
+      const content = decoder.decode(originalBuffer);
+
+      const lines: string[] = [];
+      for (const line of content.split(this.lineSeparator)) {
+        let updatedLine = line;
+        if (line.includes(this.configureOldKey)) {
+          updatedLine = line.replace(this.configureOldKey, this.configureNewKey);
         }
         lines.push(updatedLine);
       }
@@ -177,6 +222,7 @@ class PatchNodeBuild {
 
   async patch(): Promise<number> {
     this.patchCommon();
+    this.patchConfigure();
     await this.patchMakeFiles();
     return 0;
   }

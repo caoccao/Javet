@@ -108,7 +108,7 @@ jobs:
     - name: Build Javet JNI
       env:
         CC: ${{ env.ROOT }}/google/v8/third_party/llvm-build/Release+Asserts/bin/clang
-        CXX: ${{ env.ROOT }}/google/v8/third_party/llvm-build/Release+Asserts/bin/clang
+        CXX: ${{ env.ROOT }}/google/v8/third_party/llvm-build/Release+Asserts/bin/clang++
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
         deno run build --os macos --arch x86_64 --v8-dir ${{ env.ROOT }}/google/v8 --cpu-count 2 ${{ matrix.i18n_flag }}
