@@ -19,9 +19,9 @@ In Node.js the CLI options consists of the following:
 Options
 =======
 
-Options are often used to turn on some Node.js specific features. Let's take module ``node:sqlite`` for instance.
+Options are often used to turn on some Node.js specific features. Let's take Temporal for instance.
 
-Starting from Node.js v22, sqlite has been a built-in module. However, it is not enabled by default. Let's see how to enable it in Javet.
+Temporal is a stage-3 TC39 proposal exposed in Node.js behind ``--harmony-temporal``. Let's see how to enable it in Javet.
 
 Step 1: Set Options
 -------------------
@@ -30,7 +30,7 @@ Step 1: Set Options
 
 .. code-block:: java
 
-    NodeRuntimeOptions.NODE_FLAGS.setExperimentalSqlite(true);
+    NodeRuntimeOptions.NODE_FLAGS.setHarmonyTemporal(true);
 
 Step 2: Let's Go
 ----------------
@@ -39,32 +39,13 @@ Step 2: Let's Go
 
 .. code-block:: js
 
-    const sqlite = require("node:sqlite");
-
-    const db = new sqlite.DatabaseSync(":memory:");
-    db.exec(`
-    CREATE TABLE data(
-        key INTEGER PRIMARY KEY,
-        value TEXT
-    ) STRICT
-    `);
-    const insert = db.prepare("INSERT INTO data (key, value) VALUES (?, ?)");
-    insert.run(1, "a");
-    insert.run(2, "b");
-    const query = db.prepare("SELECT * FROM data ORDER BY key");
-    console.log(query.all());
-    db.close();
+    console.log(Temporal.Now.instant().toString());
 
 * It works!
 
 .. code-block:: js
 
-    [
-        [Object: null prototype] { key: 1, value: 'a' },
-        [Object: null prototype] { key: 2, value: 'b' }
-    ]
-    (node:18204) ExperimentalWarning: SQLite is an experimental feature and might change at any time
-    (Use `node --trace-warnings ...` to show where the warning was created)
+    2026-05-03T12:34:56.789Z
 
 .. note::
 

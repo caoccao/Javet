@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestNodeFlags {
     protected static final List<GetterAndSetter> SWITCHES = SimpleList.of(
-            new GetterAndSetter(NodeFlags::isExperimentalSqlite, NodeFlags::setExperimentalSqlite),
             new GetterAndSetter(NodeFlags::isJsFloat16Array, NodeFlags::setJsFloat16Array),
             new GetterAndSetter(NodeFlags::isNoRequireModule, NodeFlags::setNoRequireModule),
             new GetterAndSetter(NodeFlags::isNoWarnings, NodeFlags::setNoWarnings)
@@ -68,12 +67,9 @@ public class TestNodeFlags {
     public void testToString() {
         NodeFlags nodeFlags = new NodeFlags();
         assertEquals(
-                "--experimental-sqlite",
-                nodeFlags.setExperimentalSqlite(true).toString());
-        assertEquals(
-                "--allow-fs-read=/a --allow-fs-read=/b --experimental-sqlite --permission",
+                "--allow-fs-read=/a --allow-fs-read=/b --permission",
                 nodeFlags.setAllowFsRead(new String[]{"/a", "/b"}).toString());
-        nodeFlags.setAllowFsRead(null).setExperimentalSqlite(false);
+        nodeFlags.setAllowFsRead(null);
         assertEquals(
                 "--allow-fs-write=/a --allow-fs-write=/b --permission",
                 nodeFlags.setAllowFsWrite(new String[]{"/a", "/b"}).toString());

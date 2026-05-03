@@ -44,12 +44,6 @@ public final class NodeFlags {
      */
     public static final String ALLOW_FS_WRITE = "--allow-fs-write";
     /**
-     * The constant EXPERIMENTAL_SQLITE.
-     *
-     * @since 4.0.0
-     */
-    public static final String EXPERIMENTAL_SQLITE = "--experimental-sqlite";
-    /**
      * The constant HARMONY_TEMPORAL.
      *
      * @since 5.0.3
@@ -90,7 +84,6 @@ public final class NodeFlags {
     private String[] allowFsRead;
     private String[] allowFsWrite;
     private String[] customFlags;
-    private boolean experimentalSqlite;
     private boolean harmonyTemporal;
     private String icuDataDir;
     private boolean jsFloat16Array;
@@ -108,7 +101,6 @@ public final class NodeFlags {
         allowFsRead = null;
         allowFsWrite = null;
         customFlags = null;
-        experimentalSqlite = false;
         jsFloat16Array = false;
         noRequireModule = false;
         noWarnings = false;
@@ -166,16 +158,6 @@ public final class NodeFlags {
      */
     public String getIcuDataDir() {
         return icuDataDir;
-    }
-
-    /**
-     * Is the experimental node:sqlite module enabled.
-     *
-     * @return true : yes, false: no
-     * @since 4.0.0
-     */
-    public boolean isExperimentalSqlite() {
-        return experimentalSqlite;
     }
 
     /**
@@ -319,20 +301,6 @@ public final class NodeFlags {
     }
 
     /**
-     * Sets experimental sqlite.
-     *
-     * @param experimentalSqlite the experimental sqlite
-     * @return the self
-     * @since 4.0.0
-     */
-    public NodeFlags setExperimentalSqlite(boolean experimentalSqlite) {
-        if (!sealed) {
-            this.experimentalSqlite = experimentalSqlite;
-        }
-        return this;
-    }
-
-    /**
      * Sets if temporal is supported.
      *
      * @param harmonyTemporal the temporal supported
@@ -432,9 +400,6 @@ public final class NodeFlags {
                     .filter(StringUtils::isNotBlank)
                     .map(path -> ALLOW_FS_WRITE + EQUAL + path.trim())
                     .forEach(tokens::add);
-        }
-        if (experimentalSqlite) {
-            tokens.add(EXPERIMENTAL_SQLITE);
         }
         if (harmonyTemporal) {
             tokens.add(HARMONY_TEMPORAL);

@@ -12,6 +12,7 @@ Release Notes 5.0.x
 * Switched to LLVM for Node.js mode on Linux
 * Upgraded temporal to ``v0.2.3``
 * Renamed ``--no-experimental-require-module`` to ``--no-require-module`` in ``NodeFlags`` to match Node.js v24.15.0 stabilization of ``require(esm)``
+* Removed ``--experimental-sqlite`` from ``NodeFlags`` since ``node:sqlite`` is enabled by default in Node.js (unflagged since v22.13.0/v23.4.0)
 
 5.0.6
 -----

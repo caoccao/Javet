@@ -39,7 +39,6 @@ public class TestNodeRuntimeOptions {
         if (!NodeRuntimeOptions.NODE_FLAGS.isSealed()) {
             NodeRuntimeOptions.NODE_FLAGS
                     .setAllowFsRead(new String[]{"/a", "/b"})
-                    .setExperimentalSqlite(true)
                     .seal();
             testEnabled = true;
         }
@@ -54,7 +53,7 @@ public class TestNodeRuntimeOptions {
     }
 
     @Test
-    public void testExperimentalSqlite() throws JavetException {
+    public void testSqlite() throws JavetException {
         if (testEnabled) {
             try (NodeRuntime nodeRuntime = V8Host.getNodeInstance().createV8Runtime()) {
                 File scriptFile = getScriptFile("test-node-module-sqlite-sync.js");
