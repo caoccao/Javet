@@ -204,9 +204,11 @@ jobs:
         cmake-version: '3.23.x'
 
     - name: Build Javet JNI
+      env:
+        CC: /usr/lib/llvm-22/bin/clang
+        CXX: /usr/lib/llvm-22/bin/clang++
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
-        export PATH="/usr/lib/llvm-22/bin:$PATH"
         deno run build --os linux --arch x86_64 --node-dir ${{ env.ROOT }}/node ${{ matrix.i18n_flag }}
 
     - name: Upload the Artifact
