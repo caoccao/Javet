@@ -55,13 +55,13 @@ if(DEFINED V8_DIR)
         -Wl,--compress-sections=.text=none
         -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
         ${LIBCXX_STATIC} ${LIBCXXABI_STATIC}
-        debug "-lrt" -static-libgcc -stdlib=libc++ optimized "-lrt" "${libgcc}")
+        debug "-lrt" -static-libgcc -nostdlib++ optimized "-lrt" "${libgcc}")
     target_link_libraries(JavetStatic PUBLIC
         -Wl,-Bstatic -latomic -Wl,-Bdynamic
         -Wl,--compress-sections=.text=none
         -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
         ${LIBCXX_STATIC} ${LIBCXXABI_STATIC}
-        debug "-lrt" -static-libgcc -stdlib=libc++ optimized "-lrt" "${libgcc}")
+        debug "-lrt" -static-libgcc -nostdlib++ optimized "-lrt" "${libgcc}")
 endif()
 if(DEFINED NODE_DIR)
     # We use clang/LLVM for Node.js mode on Linux. Set CC/CXX to clang/clang++
