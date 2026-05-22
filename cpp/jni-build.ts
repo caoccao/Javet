@@ -381,6 +381,46 @@ async function buildLinux(config: BuildConfig): Promise<boolean> {
       console.warn(yellow("Warning: strip command failed, continuing anyway..."));
     }
 
+    // Verify shared library dependencies
+    const lddCmd = ["ldd", libraryPath];
+    console.log(`Running: ${lddCmd.join(" ")}`);
+    const lddProcess = new Deno.Command(lddCmd[0], {
+      args: lddCmd.slice(1),
+      stdout: "piped",
+      stderr: "inherit",
+    });
+    const lddResult = await lddProcess.output();
+    if (lddResult.code !== 0) {
+      console.error(red("Error: ldd command failed"));
+      return false;
+    }
+    const lddOutput = new TextDecoder().decode(lddResult.stdout);
+    const permittedDeps = [
+      "linux-vdso.so",
+      "librt.so",
+      "libm.so",
+      "libc.so",
+      "ld-linux-aarch64.so",
+      "libpthread.so",
+    ];
+    const unexpectedDeps: string[] = [];
+    for (const line of lddOutput.split("\n")) {
+      const trimmed = line.trim();
+      if (!trimmed) {
+        continue;
+      }
+      if (!permittedDeps.some((dep) => trimmed.includes(dep))) {
+        unexpectedDeps.push(trimmed);
+      }
+    }
+    if (unexpectedDeps.length > 0) {
+      console.error(red("Error: Unexpected shared library dependencies found:"));
+      for (const dep of unexpectedDeps) {
+        console.error(red(`  ${dep}`));
+      }
+      return false;
+    }
+
     // Copy .a files
     console.log(`Copying static libraries to ${BUILD_LIBS_DIR}`);
     for await (const entry of Deno.readDir(".")) {
@@ -423,6 +463,55 @@ async function buildMacOS(config: BuildConfig): Promise<boolean> {
     const makeCmd = ["make", "-j", cpuCount.toString()];
     console.log(`Running: ${makeCmd.join(" ")}`);
     if (!await runCommand(makeCmd)) {
+      return false;
+    }
+
+    // Verify dynamic library dependencies
+    const libraryPath = path.join(RESOURCES_DIR, getLibraryFileName(config));
+    const dyldInfoCmd = ["dyld_info", "-dependents", libraryPath];
+    console.log(`Running: ${dyldInfoCmd.join(" ")}`);
+    const dyldInfoProcess = new Deno.Command(dyldInfoCmd[0], {
+      args: dyldInfoCmd.slice(1),
+      stdout: "piped",
+      stderr: "inherit",
+    });
+    const dyldInfoResult = await dyldInfoProcess.output();
+    if (dyldInfoResult.code !== 0) {
+      console.error(red("Error: dyld_info command failed"));
+      return false;
+    }
+    const dyldInfoOutput = new TextDecoder().decode(dyldInfoResult.stdout);
+    const lines = dyldInfoOutput.split("\n");
+    // Skip header lines until after "attributes     load path"
+    const headerIndex = lines.findIndex((line) => line.trim().startsWith("attributes"));
+    if (headerIndex === -1) {
+      console.error(red("Error: Unexpected dyld_info output format"));
+      return false;
+    }
+    const depLines = lines.slice(headerIndex + 1);
+    const permittedDeps = [
+      /^\/usr\/lib\/libc\+\+\.\d+\.dylib$/,
+      /^\/System\/Library\/Frameworks\/CoreFoundation\.framework\/Versions\/\w+\/CoreFoundation$/,
+      /^\/usr\/lib\/libSystem\.\w+\.dylib$/,
+      ...(config.nodeDir
+        ? [/^\/System\/Library\/Frameworks\/Security\.framework\/Versions\/\w+\/Security$/]
+        : []),
+    ];
+    const unexpectedDeps: string[] = [];
+    for (const line of depLines) {
+      const trimmed = line.trim();
+      if (!trimmed) {
+        continue;
+      }
+      if (!permittedDeps.some((regex) => regex.test(trimmed))) {
+        unexpectedDeps.push(trimmed);
+      }
+    }
+    if (unexpectedDeps.length > 0) {
+      console.error(red("Error: Unexpected dynamic library dependencies found:"));
+      for (const dep of unexpectedDeps) {
+        console.error(red(`  ${dep}`));
+      }
       return false;
     }
 
