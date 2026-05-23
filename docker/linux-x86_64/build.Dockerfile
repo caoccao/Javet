@@ -115,10 +115,15 @@ RUN cd ${ROOT}/google/v8 && ./build/install-build-deps.sh --no-prompt --no-chrom
 RUN cd ${ROOT}/google && gclient sync -D
 
 # Apply V8 patches
+# The tls_model strip mirrors the workflow patch: with pointer compression
+# on, Javet inlines V8 accessors that touch g_current_isolate_ via TLS, and
+# initial-exec emits R_X86_64_TPOFF32, which ld.lld rejects when linking
+# Javet.so.
 RUN cd ${ROOT}/google/v8 && \
     sed -i '/#include "src\/libplatform\//a #include <cstdlib>' src/libplatform/default-thread-isolated-allocator.cc && \
     sed -i '/bool KernelHasPkruFix()/a const char* env = std::getenv("JAVET_DISABLE_PKU"); if (env && std::strlen(env) > 0) { return false; }' src/libplatform/default-thread-isolated-allocator.cc && \
-    sed -i '/return other_kind == "islamic-umalqura"/a\    case HijriSimulatedMecca:\n      return other_kind == "islamic-rgsa" || other_kind == "islamic";' src/objects/js-date-time-format.cc
+    sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' src/execution/isolate.h && \
+    sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' src/heap/local-heap.h
 
 # Build V8 non-i18n
 RUN cd ${ROOT}/google/v8 && \

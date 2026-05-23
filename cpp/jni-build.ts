@@ -401,6 +401,7 @@ async function buildLinux(config: BuildConfig): Promise<boolean> {
       "libm.so",
       "libc.so",
       "ld-linux-aarch64.so",
+      "ld-linux-x86-64.so",
       "libpthread.so",
     ];
     const unexpectedDeps: string[] = [];

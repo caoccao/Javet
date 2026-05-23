@@ -17,23 +17,29 @@
 
 #pragma once
 
-// Windows V8 mode is now built with v8_enable_pointer_compression=true and
-// v8_enable_sandbox=true (see scripts/v8/gn/windows-x86_64-*-args.gn). V8's
-// public headers gate ABI-affecting types (HeapObjectSlot et al.) on these
-// macros, so Javet must define them before any <v8.h> include or symbol
-// mangling will diverge from v8_monolith.lib. Limited to Windows V8 mode:
-// Linux/macOS/Android V8 builds keep both flags off, and Node.js's bundled
-// V8 also doesn't enable them (ENABLE_NODE is set by JavetNode.cmake).
-// These are the build-time flags GN emits for our Windows V8 GN args
+// Windows, Linux, and 64-bit Android V8 modes are built with
+// v8_enable_pointer_compression=true and v8_enable_sandbox=true (see
+// scripts/v8/gn/{windows-x86_64,linux-*,android-{arm64,x86_64}}-args.gn).
+// V8's public headers gate ABI-affecting types (HeapObjectSlot et al.) on
+// these macros, so Javet must define them before any <v8.h> include or
+// symbol mangling will diverge from v8_monolith.{lib,a}. Limited to those
+// targets: macOS V8 and 32-bit Android V8 builds keep both flags off
+// (pointer compression requires a 64-bit target), and Node.js's bundled V8
+// also doesn't enable them (ENABLE_NODE is set by JavetNode.cmake). The
+// LP64/_WIN64 guard prevents the macros from leaking into 32-bit Android
+// builds, which also define __ANDROID__.
+// These are the build-time flags GN emits for the matching V8 GN args
 // (pointer compression + sandbox enabled). They must match what V8 was
 // compiled with, otherwise template instantiations and inline functions
 // pull in incompatible type definitions and produce link-time mismatches
 // (e.g. HeapObjectSlot resolving to FullHeapObjectSlot here vs.
-// CompressedHeapObjectSlot in v8_monolith.lib).
+// CompressedHeapObjectSlot in v8_monolith).
 //
 // Values are 1 (not empty) because V8 uses both `#ifdef` and `#if` on these
 // macros; `#if V8_COMPRESS_POINTERS` needs a substitutable value.
-#if defined(_WIN32) && !defined(ENABLE_NODE)
+#if !defined(ENABLE_NODE) && \
+    (defined(_WIN32) || defined(__linux__) || defined(__ANDROID__)) && \
+    (defined(_WIN64) || defined(__LP64__))
 #ifndef V8_COMPRESS_POINTERS
 #define V8_COMPRESS_POINTERS 1
 #endif

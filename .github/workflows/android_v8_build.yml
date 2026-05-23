@@ -129,6 +129,8 @@ jobs:
         mv third_party/android_toolchain/ndk third_party/android_toolchain/ndk.bak
         ln -s ${{ steps.setup-ndk.outputs.ndk-path }} third_party/android_toolchain/ndk
         sed -i 's/max\.value_or({})/max.value_or(uint8_t{})/' src/compiler/turboshaft/wasm-shuffle-reducer.cc
+        sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' src/execution/isolate.h
+        sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' src/heap/local-heap.h
         mkdir -p out.gn.android.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
         cp ../../Javet/scripts/v8/gn/android-${{ matrix.android_arch }}-${{ matrix.i18n_name }}-args.gn out.gn.android.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release/args.gn
         gn gen out.gn.android.${{ matrix.i18n_name }}/${{ matrix.v8_release }}.release
