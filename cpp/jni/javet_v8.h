@@ -17,6 +17,61 @@
 
 #pragma once
 
+// Windows V8 mode is now built with v8_enable_pointer_compression=true and
+// v8_enable_sandbox=true (see scripts/v8/gn/windows-x86_64-*-args.gn). V8's
+// public headers gate ABI-affecting types (HeapObjectSlot et al.) on these
+// macros, so Javet must define them before any <v8.h> include or symbol
+// mangling will diverge from v8_monolith.lib. Limited to Windows V8 mode:
+// Linux/macOS/Android V8 builds keep both flags off, and Node.js's bundled
+// V8 also doesn't enable them (ENABLE_NODE is set by JavetNode.cmake).
+// These are the build-time flags GN emits for our Windows V8 GN args
+// (pointer compression + sandbox enabled). They must match what V8 was
+// compiled with, otherwise template instantiations and inline functions
+// pull in incompatible type definitions and produce link-time mismatches
+// (e.g. HeapObjectSlot resolving to FullHeapObjectSlot here vs.
+// CompressedHeapObjectSlot in v8_monolith.lib).
+//
+// Values are 1 (not empty) because V8 uses both `#ifdef` and `#if` on these
+// macros; `#if V8_COMPRESS_POINTERS` needs a substitutable value.
+#if defined(_WIN32) && !defined(ENABLE_NODE)
+#ifndef V8_COMPRESS_POINTERS
+#define V8_COMPRESS_POINTERS 1
+#endif
+#ifndef V8_COMPRESS_POINTERS_IN_SHARED_CAGE
+#define V8_COMPRESS_POINTERS_IN_SHARED_CAGE 1
+#endif
+#ifndef V8_31BIT_SMIS_ON_64BIT_ARCH
+#define V8_31BIT_SMIS_ON_64BIT_ARCH 1
+#endif
+#ifndef V8_ENABLE_SANDBOX
+#define V8_ENABLE_SANDBOX 1
+#endif
+#ifndef V8_EXTERNAL_CODE_SPACE
+#define V8_EXTERNAL_CODE_SPACE 1
+#endif
+#ifndef V8_SHORT_BUILTIN_CALLS
+#define V8_SHORT_BUILTIN_CALLS 1
+#endif
+#ifndef V8_STATIC_ROOTS
+#define V8_STATIC_ROOTS 1
+#endif
+#ifndef V8_CONTIGUOUS_COMPRESSED_RO_SPACE
+#define V8_CONTIGUOUS_COMPRESSED_RO_SPACE 1
+#endif
+#ifndef V8_CONTIGUOUS_COMPRESSED_RO_SPACE_SIZE_MB
+#define V8_CONTIGUOUS_COMPRESSED_RO_SPACE_SIZE_MB 16
+#endif
+#ifndef V8_ARRAY_BUFFER_INTERNAL_FIELD_COUNT
+#define V8_ARRAY_BUFFER_INTERNAL_FIELD_COUNT 0
+#endif
+#ifndef V8_ARRAY_BUFFER_VIEW_INTERNAL_FIELD_COUNT
+#define V8_ARRAY_BUFFER_VIEW_INTERNAL_FIELD_COUNT 0
+#endif
+#ifndef V8_PROMISE_INTERNAL_FIELD_COUNT
+#define V8_PROMISE_INTERNAL_FIELD_COUNT 0
+#endif
+#endif
+
 #pragma warning(disable: 4018)
 #pragma warning(disable: 4244)
 #include <libplatform/libplatform.h>
@@ -33,6 +88,15 @@
 #pragma comment(lib, "Userenv.lib")
 #pragma comment(lib, "Winmm.lib")
 #pragma comment(lib, "Ws2_32.lib")
+#endif
+
+// V8 mode on Windows uses Chromium's libc++ instead of MSVC's STL. libc++'s
+// std::exception_ptr delegates to MSVC's __ExceptionPtr* family in
+// libcpmt.lib, but libc++'s headers set _LIBCPP_NO_AUTO_LINK so libcpmt
+// isn't pulled in automatically. Request it here. Node mode keeps MSVC's
+// STL, which already auto-links libcpmt via its own pragmas.
+#if defined(_WIN32) && !defined(ENABLE_NODE)
+#pragma comment(lib, "libcpmt.lib")
 #endif
 
  // Scope

@@ -382,7 +382,7 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetJSScop
             case V8InternalScopeType::BLOCK_SCOPE: return Block;
             case V8InternalScopeType::WITH_SCOPE: return With;
             case V8InternalScopeType::SHADOW_REALM_SCOPE: return ShadowRealm;
-            default: return Unknown;
+            default: return Javet::Enums::JSScopeType::Unknown;
             }
         }
     }

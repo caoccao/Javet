@@ -23,7 +23,15 @@ set(JAVET_LIB_PREFIX "")
 set(JAVET_LIB_SYSTEM "")
 set(JAVET_LIB_TYPE "")
 set(OUT_DIR_SUFFIX "")
-set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+if(CMAKE_GENERATOR STREQUAL "Ninja")
+    # V8's bundled LLVM on Windows doesn't ship llvm-lib/llvm-ar, so a
+    # STATIC_LIBRARY try_compile probe fails to find an archiver. Javet's
+    # Windows V8 build only links a SHARED library via lld-link, so probe
+    # with EXECUTABLE — it exercises the linker we actually have.
+    set(CMAKE_TRY_COMPILE_TARGET_TYPE EXECUTABLE)
+else()
+    set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+endif()
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limited configs" FORCE)
 set(CMAKE_FIND_DEBUG_MODE FALSE)
 

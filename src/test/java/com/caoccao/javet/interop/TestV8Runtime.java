@@ -37,6 +37,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -164,7 +165,7 @@ public class TestV8Runtime extends BaseTestJavet {
                 MockNearHeapLimitCallback callback = new MockNearHeapLimitCallback();
                 v8Runtime.setNearHeapLimitCallback(callback);
                 assertEquals(callback, v8Runtime.getNearHeapLimitCallback());
-                v8Runtime.getExecutor("[... new Array(50000000).keys()]").executeVoid();
+                v8Runtime.getExecutor("[[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()]]").executeVoid();
                 v8Runtime.setNearHeapLimitCallback(null);
                 assertTrue(callback.isCallbackCalled());
                 assertTrue(callback.isGetDefaultHeapLimitCalled());
@@ -177,18 +178,21 @@ public class TestV8Runtime extends BaseTestJavet {
     @EnumSource(V8RuntimeTerminationMode.class)
     public void testNearHeapLimitCallbackWithTerminateExecution(V8RuntimeTerminationMode mode) {
         if (isV8()) {
+            AtomicBoolean callbackInvoked = new AtomicBoolean(false);
             try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
                 v8Runtime.setNearHeapLimitCallback((currentHeapLimit, initialHeapLimit) -> {
+                    callbackInvoked.set(true);
                     assertEquals(IJavetNearHeapLimitCallback.INITIAL_HEAP_LIMIT, initialHeapLimit);
                     assertEquals(IJavetNearHeapLimitCallback.INITIAL_HEAP_LIMIT, currentHeapLimit);
                     v8Runtime.terminateExecution(mode);
                     return currentHeapLimit * 2;
                 });
-                v8Runtime.getExecutor("[... new Array(100000000).keys()]").executeVoid();
+                v8Runtime.getExecutor("[[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()]]").executeVoid();
             } catch (JavetException e) {
                 assertEquals(JavetError.ExecutionTerminated.getCode(), e.getError().getCode());
                 assertEquals("Execution is terminated and continuable is false", e.getMessage());
             }
+            assertTrue(callbackInvoked.get(), "NearHeapLimitCallback was not invoked");
         }
     }
 
