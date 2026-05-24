@@ -17,26 +17,25 @@
 
 #pragma once
 
-// V8 mode on Windows, Linux, and 64-bit Android is built with
-// v8_enable_pointer_compression=true. Windows and Linux additionally enable
-// v8_enable_sandbox=true; Android can't (sandbox requires use_safe_libcxx,
-// which requires use_custom_libcxx, and Android.cmake builds Javet against
-// the NDK's libc++ instead of V8's hermetic one). See
-// scripts/v8/gn/{windows-x86_64,linux-*,android-{arm64,x86_64}}-args.gn.
+// V8 mode on Windows, Linux, macOS, and 64-bit Android is built with
+// v8_enable_pointer_compression=true. Windows, Linux, and macOS additionally
+// enable v8_enable_sandbox=true; Android can't (sandbox requires
+// use_safe_libcxx, which requires use_custom_libcxx, and Android.cmake builds
+// Javet against the NDK's libc++ instead of V8's hermetic one). See
+// scripts/v8/gn/{windows-x86_64,linux-*,macos-*,android-{arm64,x86_64}}-args.gn.
 //
 // V8's public headers gate ABI-affecting types (HeapObjectSlot et al.) on
 // these macros, so Javet must define them before any <v8.h> include or
-// symbol mangling will diverge from v8_monolith.{lib,a}. macOS V8 and
-// 32-bit Android V8 keep both flags off (pointer compression requires a
-// 64-bit target); Node.js's bundled V8 also doesn't enable them
-// (ENABLE_NODE is set by JavetNode.cmake). The LP64/_WIN64 guard prevents
-// the macros from leaking into 32-bit Android builds, which also define
-// __ANDROID__.
+// symbol mangling will diverge from v8_monolith.{lib,a}. 32-bit Android V8
+// keeps pointer compression off; Node.js's bundled V8 also doesn't enable
+// these macros (ENABLE_NODE is set by JavetNode.cmake). The LP64/_WIN64 guard
+// prevents the macros from leaking into 32-bit Android builds, which also
+// define __ANDROID__.
 //
 // Values are 1 (not empty) because V8 uses both `#ifdef` and `#if` on these
 // macros; `#if V8_COMPRESS_POINTERS` needs a substitutable value.
 #if !defined(ENABLE_NODE) && \
-    (defined(_WIN32) || defined(__linux__) || defined(__ANDROID__)) && \
+    (defined(_WIN32) || defined(__linux__) || defined(__APPLE__) || defined(__ANDROID__)) && \
     (defined(_WIN64) || defined(__LP64__))
 #ifndef V8_COMPRESS_POINTERS
 #define V8_COMPRESS_POINTERS 1
@@ -71,7 +70,8 @@
 #ifndef V8_PROMISE_INTERNAL_FIELD_COUNT
 #define V8_PROMISE_INTERNAL_FIELD_COUNT 0
 #endif
-// Sandbox is Windows + Linux only. Android keeps it off — see comment above.
+// Sandbox is enabled for desktop 64-bit V8 builds. Android keeps it off - see
+// comment above.
 #if !defined(__ANDROID__)
 #ifndef V8_ENABLE_SANDBOX
 #define V8_ENABLE_SANDBOX 1
@@ -249,4 +249,3 @@ constexpr auto TO_V8_PERSISTENT_VALUE_POINTER(T handle) {
 #define TO_V8_PERSISTENT_SET(handle) *reinterpret_cast<V8PersistentSet*>(handle)
 #define TO_V8_PERSISTENT_SYMBOL(handle) *reinterpret_cast<V8PersistentSymbol*>(handle)
 #define TO_V8_PERSISTENT_SYMBOL_OBJECT(handle) *reinterpret_cast<V8PersistentSymbolObject*>(handle)
-

@@ -49,6 +49,7 @@ interface GnConfig {
   symbol_level: number;
   target_cpu: string;
   target_os?: string;
+  use_allocator_shim?: boolean;
   use_blink: boolean;
   use_clang_modules?: boolean;
   use_custom_libcxx: boolean;
@@ -107,10 +108,10 @@ class GnArgsGenerator {
     windows: {
       architectures: ["x86_64"],
       targetOS: "hidden",
-      clangModules: "hidden",
-      customLibCxx: false,
-      customLibUnwind: "hidden",
-      safeLibStdcxx: "hidden",
+      clangModules: false,
+      customLibCxx: true,
+      customLibUnwind: true,
+      safeLibStdcxx: false,
     },
   };
 
@@ -129,6 +130,31 @@ class GnArgsGenerator {
     return mapping[arch];
   }
 
+  private is64BitArch(arch: Arch): boolean {
+    return arch === "arm64" || arch === "x86_64";
+  }
+
+  private shouldEnablePointerCompression(arch: Arch): boolean {
+    return this.is64BitArch(arch);
+  }
+
+  private shouldEnableSandbox(os: OS, arch: Arch): boolean {
+    return os !== "android" && this.is64BitArch(arch);
+  }
+
+  private getUseAllocatorShim(os: OS, arch: Arch): boolean | undefined {
+    switch (os) {
+      case "android":
+        return this.is64BitArch(arch) ? false : undefined;
+      case "linux":
+        return false;
+      case "windows":
+        return true;
+      default:
+        return undefined;
+    }
+  }
+
   private generateConfig(os: OS, arch: Arch, i18n: boolean): GnConfig {
     const platformConfig = this.platformConfigs[os];
     const targetCpu = this.archToTargetCpu(arch);
@@ -145,8 +171,8 @@ class GnArgsGenerator {
       use_blink: false,
       use_custom_libcxx: platformConfig.customLibCxx === true,
       v8_enable_i18n_support: i18n,
-      v8_enable_pointer_compression: false,
-      v8_enable_sandbox: false,
+      v8_enable_pointer_compression: this.shouldEnablePointerCompression(arch),
+      v8_enable_sandbox: this.shouldEnableSandbox(os, arch),
       v8_enable_temporal_support: true,
       v8_enable_webassembly: true,
       v8_monolithic: true,
@@ -162,6 +188,11 @@ class GnArgsGenerator {
       typeof platformConfig.targetOS === "string"
     ) {
       config.target_os = platformConfig.targetOS;
+    }
+
+    const useAllocatorShim = this.getUseAllocatorShim(os, arch);
+    if (useAllocatorShim !== undefined) {
+      config.use_allocator_shim = useAllocatorShim;
     }
 
     if (platformConfig.clangModules !== "hidden") {
@@ -204,6 +235,7 @@ class GnArgsGenerator {
       "symbol_level",
       "target_cpu",
       "target_os",
+      "use_allocator_shim",
       "use_blink",
       "use_clang_modules",
       "use_custom_libcxx",
@@ -240,7 +272,7 @@ class GnArgsGenerator {
     os: OS,
     arch: Arch,
     i18n: boolean,
-    dryRun: boolean
+    dryRun: boolean,
   ): Promise<void> {
     const fileName = this.getFileName(os, arch, i18n);
     const filePath = path.join(this.outputDir, fileName);
@@ -272,7 +304,7 @@ class GnArgsGenerator {
     console.log(
       `\n${
         dryRun ? "[DRY RUN] Would generate" : "Generated"
-      } ${totalFiles} files total.`
+      } ${totalFiles} files total.`,
     );
   }
 
@@ -280,17 +312,21 @@ class GnArgsGenerator {
     const platformConfig = this.platformConfigs[os];
     if (!platformConfig) {
       throw new Error(
-        `Invalid OS: ${os}. Valid options: ${Object.keys(
-          this.platformConfigs
-        ).join(", ")}`
+        `Invalid OS: ${os}. Valid options: ${
+          Object.keys(
+            this.platformConfigs,
+          ).join(", ")
+        }`,
       );
     }
 
     if (!platformConfig.architectures.includes(arch)) {
       throw new Error(
-        `Invalid architecture ${arch} for OS ${os}. Valid options: ${platformConfig.architectures.join(
-          ", "
-        )}`
+        `Invalid architecture ${arch} for OS ${os}. Valid options: ${
+          platformConfig.architectures.join(
+            ", ",
+          )
+        }`,
       );
     }
   }
@@ -322,7 +358,7 @@ class GnArgsGenerator {
         return 0;
       } catch (error) {
         console.error(
-          `Error: ${error instanceof Error ? error.message : String(error)}`
+          `Error: ${error instanceof Error ? error.message : String(error)}`,
         );
         return 1;
       }
@@ -333,13 +369,13 @@ class GnArgsGenerator {
         return 0;
       } catch (error) {
         console.error(
-          `Error: ${error instanceof Error ? error.message : String(error)}`
+          `Error: ${error instanceof Error ? error.message : String(error)}`,
         );
         return 1;
       }
     } else {
       console.error(
-        "Error: Both --os and --arch must be specified together.\n"
+        "Error: Both --os and --arch must be specified together.\n",
       );
       this.printUsage();
       return 1;
