@@ -139,7 +139,7 @@ class GnArgsGenerator {
   }
 
   private shouldEnableSandbox(os: OS, arch: Arch): boolean {
-    return os !== "android" && this.is64BitArch(arch);
+    return (os === "linux" || os === "windows") && this.is64BitArch(arch);
   }
 
   private getUseAllocatorShim(os: OS, arch: Arch): boolean | undefined {

@@ -18,10 +18,10 @@
 #pragma once
 
 // V8 mode on Windows, Linux, macOS, and 64-bit Android is built with
-// v8_enable_pointer_compression=true. Windows, Linux, and macOS additionally
-// enable v8_enable_sandbox=true; Android can't (sandbox requires
-// use_safe_libcxx, which requires use_custom_libcxx, and Android.cmake builds
-// Javet against the NDK's libc++ instead of V8's hermetic one). See
+// v8_enable_pointer_compression=true. Windows and Linux additionally enable
+// v8_enable_sandbox=true. Android and macOS keep the sandbox off because it
+// requires use_safe_libcxx / libc++ hardening, and those builds do not use
+// V8's hardened libc++ configuration. See
 // scripts/v8/gn/{windows-x86_64,linux-*,macos-*,android-{arm64,x86_64}}-args.gn.
 //
 // V8's public headers gate ABI-affecting types (HeapObjectSlot et al.) on
@@ -70,9 +70,9 @@
 #ifndef V8_PROMISE_INTERNAL_FIELD_COUNT
 #define V8_PROMISE_INTERNAL_FIELD_COUNT 0
 #endif
-// Sandbox is enabled for desktop 64-bit V8 builds. Android keeps it off - see
-// comment above.
-#if !defined(__ANDROID__)
+// Sandbox is enabled for Windows and Linux V8 builds only. Android and macOS
+// keep it off - see comment above.
+#if defined(_WIN32) || defined(__linux__)
 #ifndef V8_ENABLE_SANDBOX
 #define V8_ENABLE_SANDBOX 1
 #endif
