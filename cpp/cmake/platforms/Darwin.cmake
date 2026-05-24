@@ -37,8 +37,8 @@ if(DEFINED V8_DIR)
     # This is a patch build.
     # https://github.com/abseil/abseil-cpp/blob/master/CMake/README.md
     add_subdirectory(${V8_DIR}/third_party/abseil-cpp ${V8_RELEASE_DIR}/third_party/abseil-cpp)
-    target_link_libraries(Javet PUBLIC -lc++ absl::base absl::time)
-    target_link_libraries(JavetStatic PUBLIC -lc++ absl::base absl::time)
+    target_link_libraries(Javet PUBLIC -lc++ absl::base absl::time "-framework Foundation" "-framework Security")
+    target_link_libraries(JavetStatic PUBLIC -lc++ absl::base absl::time "-framework Foundation" "-framework Security")
 endif()
 if(DEFINED NODE_DIR)
     list(APPEND includeDirs

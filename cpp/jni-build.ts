@@ -493,10 +493,9 @@ async function buildMacOS(config: BuildConfig): Promise<boolean> {
     const permittedDeps = [
       /^\/usr\/lib\/libc\+\+\.\d+\.dylib$/,
       /^\/System\/Library\/Frameworks\/CoreFoundation\.framework\/Versions\/\w+\/CoreFoundation$/,
+      /^\/System\/Library\/Frameworks\/Foundation\.framework\/Versions\/\w+\/Foundation$/,
+      /^\/System\/Library\/Frameworks\/Security\.framework\/Versions\/\w+\/Security$/,
       /^\/usr\/lib\/libSystem\.\w+\.dylib$/,
-      ...(config.nodeDir
-        ? [/^\/System\/Library\/Frameworks\/Security\.framework\/Versions\/\w+\/Security$/]
-        : []),
     ];
     const unexpectedDeps: string[] = [];
     for (const line of depLines) {
