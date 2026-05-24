@@ -17,23 +17,21 @@
 
 #pragma once
 
-// Windows, Linux, and 64-bit Android V8 modes are built with
-// v8_enable_pointer_compression=true and v8_enable_sandbox=true (see
-// scripts/v8/gn/{windows-x86_64,linux-*,android-{arm64,x86_64}}-args.gn).
+// V8 mode on Windows, Linux, and 64-bit Android is built with
+// v8_enable_pointer_compression=true. Windows and Linux additionally enable
+// v8_enable_sandbox=true; Android can't (sandbox requires use_safe_libcxx,
+// which requires use_custom_libcxx, and Android.cmake builds Javet against
+// the NDK's libc++ instead of V8's hermetic one). See
+// scripts/v8/gn/{windows-x86_64,linux-*,android-{arm64,x86_64}}-args.gn.
+//
 // V8's public headers gate ABI-affecting types (HeapObjectSlot et al.) on
 // these macros, so Javet must define them before any <v8.h> include or
-// symbol mangling will diverge from v8_monolith.{lib,a}. Limited to those
-// targets: macOS V8 and 32-bit Android V8 builds keep both flags off
-// (pointer compression requires a 64-bit target), and Node.js's bundled V8
-// also doesn't enable them (ENABLE_NODE is set by JavetNode.cmake). The
-// LP64/_WIN64 guard prevents the macros from leaking into 32-bit Android
-// builds, which also define __ANDROID__.
-// These are the build-time flags GN emits for the matching V8 GN args
-// (pointer compression + sandbox enabled). They must match what V8 was
-// compiled with, otherwise template instantiations and inline functions
-// pull in incompatible type definitions and produce link-time mismatches
-// (e.g. HeapObjectSlot resolving to FullHeapObjectSlot here vs.
-// CompressedHeapObjectSlot in v8_monolith).
+// symbol mangling will diverge from v8_monolith.{lib,a}. macOS V8 and
+// 32-bit Android V8 keep both flags off (pointer compression requires a
+// 64-bit target); Node.js's bundled V8 also doesn't enable them
+// (ENABLE_NODE is set by JavetNode.cmake). The LP64/_WIN64 guard prevents
+// the macros from leaking into 32-bit Android builds, which also define
+// __ANDROID__.
 //
 // Values are 1 (not empty) because V8 uses both `#ifdef` and `#if` on these
 // macros; `#if V8_COMPRESS_POINTERS` needs a substitutable value.
@@ -48,9 +46,6 @@
 #endif
 #ifndef V8_31BIT_SMIS_ON_64BIT_ARCH
 #define V8_31BIT_SMIS_ON_64BIT_ARCH 1
-#endif
-#ifndef V8_ENABLE_SANDBOX
-#define V8_ENABLE_SANDBOX 1
 #endif
 #ifndef V8_EXTERNAL_CODE_SPACE
 #define V8_EXTERNAL_CODE_SPACE 1
@@ -75,6 +70,12 @@
 #endif
 #ifndef V8_PROMISE_INTERNAL_FIELD_COUNT
 #define V8_PROMISE_INTERNAL_FIELD_COUNT 0
+#endif
+// Sandbox is Windows + Linux only. Android keeps it off — see comment above.
+#if !defined(__ANDROID__)
+#ifndef V8_ENABLE_SANDBOX
+#define V8_ENABLE_SANDBOX 1
+#endif
 #endif
 #endif
 

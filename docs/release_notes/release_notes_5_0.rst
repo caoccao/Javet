@@ -8,7 +8,8 @@ Release Notes 5.0.x
 * Upgraded Node.js to ``v24.16.0`` `(2026-05-21) <https://nodejs.org/en/blog/release/v24.16.0>`_
 * Upgraded V8 to ``v14.9.207.14`` (2026-05-22)
 * Switched to LLVM for V8 mode on Windows
-* Enabled pointer compression and sandbox for V8 mode on Android (arm64, x86_64), Linux, Windows
+* Enabled pointer compression and sandbox for V8 mode on Linux, Windows
+* Enabled pointer compression for V8 mode on Android (arm64, x86_64)
 
 5.0.7
 -----
