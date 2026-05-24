@@ -147,6 +147,7 @@ class GnArgsGenerator {
       case "android":
         return this.is64BitArch(arch) ? false : undefined;
       case "linux":
+      case "macos":
         return false;
       case "windows":
         return true;

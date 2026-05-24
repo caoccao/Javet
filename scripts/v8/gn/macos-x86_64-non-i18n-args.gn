@@ -6,6 +6,7 @@ is_debug = false
 is_official_build = false
 symbol_level = 0
 target_cpu = "x64"
+use_allocator_shim = false
 use_blink = false
 use_clang_modules = false
 use_custom_libcxx = false
