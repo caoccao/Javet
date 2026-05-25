@@ -492,6 +492,7 @@ async function buildMacOS(config: BuildConfig): Promise<boolean> {
     const depLines = lines.slice(headerIndex + 1);
     const permittedDeps = [
       /^\/usr\/lib\/libc\+\+\.\d+\.dylib$/,
+      /^\/usr\/lib\/libobjc\.\w+\.dylib$/,
       /^\/System\/Library\/Frameworks\/CoreFoundation\.framework\/Versions\/\w+\/CoreFoundation$/,
       /^\/System\/Library\/Frameworks\/Foundation\.framework\/Versions\/\w+\/Foundation$/,
       /^\/System\/Library\/Frameworks\/Security\.framework\/Versions\/\w+\/Security$/,
