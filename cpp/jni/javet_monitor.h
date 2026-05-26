@@ -57,10 +57,20 @@ namespace Javet {
             v8::Isolate* v8Isolate,
             void* data) noexcept;
 
-        jobject GetV8SharedMemoryStatistics(JNIEnv* jniEnv) noexcept;
+        jobject GetV8SharedMemoryStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate) noexcept;
+        void GetV8SharedMemoryStatisticsAsync(v8::Isolate* v8Isolate, void* data) noexcept;
+        void GetV8SharedMemoryStatisticsInternal(
+            JNIEnv* jniEnv,
+            v8::Isolate* v8Isolate,
+            const jobject& completableFuture) noexcept;
+        void GetV8SharedMemoryStatisticsSync(
+            JNIEnv* jniEnv,
+            v8::Isolate* v8Isolate,
+            void* data) noexcept;
 
         void RemoveHeapSpaceStatisticsContext(jlong handle) noexcept;
         void RemoveHeapStatisticsContext(jlong handle) noexcept;
+        void RemoveV8SharedMemoryStatisticsContext(jlong handle) noexcept;
 
 #ifdef ENABLE_MONITOR
         namespace CounterType {

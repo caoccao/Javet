@@ -25,19 +25,27 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestV8SharedMemoryStatistics extends BaseTestJavetRuntime {
+    protected static final int FUTURE_TIMEOUT_MILLIS = 5_000;
 
-    protected void printV8SharedMemoryStatistics(V8Runtime v8Runtime, String prefix) {
-        System.out.printf("%s: %s%n", prefix, v8Runtime.getV8SharedMemoryStatistics().toString());
+    protected void printV8SharedMemoryStatistics(V8Runtime v8Runtime, String prefix)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        V8SharedMemoryStatistics stats = v8Runtime.getV8SharedMemoryStatistics()
+                .get(FUTURE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+        System.out.printf("%s: %s%n", prefix, stats.toString());
     }
 
     @Test
     @Tag("performance")
-    public void testCorrelations() throws JavetException {
+    public void testCorrelations()
+            throws JavetException, InterruptedException, ExecutionException, TimeoutException {
         printV8SharedMemoryStatistics(v8Runtime, "Baseline");
         List<V8Runtime> v8Runtimes = new ArrayList<>();
         for (int i = 0; i < 100; ++i) {
@@ -49,8 +57,10 @@ public class TestV8SharedMemoryStatistics extends BaseTestJavetRuntime {
     }
 
     @Test
-    public void testGetV8SharedMemoryStatistics() {
-        V8SharedMemoryStatistics v8SharedMemoryStatistics = v8Runtime.getV8SharedMemoryStatistics();
+    public void testGetV8SharedMemoryStatistics()
+            throws InterruptedException, ExecutionException, TimeoutException {
+        V8SharedMemoryStatistics v8SharedMemoryStatistics = v8Runtime.getV8SharedMemoryStatistics()
+                .get(FUTURE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
         assertNotNull(v8SharedMemoryStatistics);
         String detailString = v8SharedMemoryStatistics.toString();
         assertNotNull(detailString);

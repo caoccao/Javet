@@ -533,6 +533,26 @@ namespace Javet {
             v8Isolate->SetModifyCodeGenerationFromStringsCallback(nullptr);
         }
 #else
+        // V8 mode + pointer compression in multi-cage mode: allocate a fresh
+        // IsolateGroup so each isolate gets its own 4 GB pointer-compression
+        // cage instead of sharing the process-wide cage. The IsolateGroup is
+        // reference counted; Isolate::Allocate/New acquires a reference, so
+        // the local can drop its reference on scope exit. The cage's virtual
+        // memory mapping is released when the isolate is disposed.
+#if defined(V8_COMPRESS_POINTERS) && defined(V8_COMPRESS_POINTERS_IN_MULTIPLE_CAGES)
+        v8::IsolateGroup v8IsolateGroup = v8::IsolateGroup::Create();
+        if (createSnapshotEnabled) {
+            v8Isolate = v8::Isolate::Allocate(v8IsolateGroup);
+            v8SnapshotCreator.reset(new v8::SnapshotCreator(v8Isolate, nullptr, v8StartupData.get(), true));
+        }
+        else {
+            v8::Isolate::CreateParams createParams;
+            createParams.array_buffer_allocator = v8ArrayBufferAllocator.get();
+            createParams.oom_error_callback = Javet::Callback::OOMErrorCallback;
+            createParams.snapshot_blob = v8StartupData.get();
+            v8Isolate = v8::Isolate::New(v8IsolateGroup, createParams);
+        }
+#else
         if (createSnapshotEnabled) {
             v8Isolate = v8::Isolate::Allocate();
             v8SnapshotCreator.reset(new v8::SnapshotCreator(v8Isolate, nullptr, v8StartupData.get(), true));
@@ -544,6 +564,7 @@ namespace Javet {
             createParams.snapshot_blob = v8StartupData.get();
             v8Isolate = v8::Isolate::New(createParams);
         }
+#endif
         v8Isolate->SetPromiseRejectCallback(Javet::Callback::JavetPromiseRejectCallback);
 #endif
     }

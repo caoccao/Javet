@@ -177,8 +177,9 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getV8HeapStati
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getV8SharedMemoryStatistics
-(JNIEnv* jniEnv, jobject caller) {
-    return Javet::Monitor::GetV8SharedMemoryStatistics(jniEnv);
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    return Javet::Monitor::GetV8SharedMemoryStatistics(jniEnv, v8Runtime->v8Isolate);
 }
 
 JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getVersion
@@ -372,6 +373,9 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeRawPointer
         break;
     case HeapSpaceStatisticsContext:
         Javet::Monitor::RemoveHeapSpaceStatisticsContext(handle);
+        break;
+    case SharedMemoryStatisticsContext:
+        Javet::Monitor::RemoveV8SharedMemoryStatisticsContext(handle);
         break;
     default:
         break;

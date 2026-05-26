@@ -634,48 +634,6 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Creates a V8 inspector session.
-     * <p>
-     * Each call creates a new session with its own CDP channel. Multiple sessions
-     * can coexist on the same runtime, allowing multiple DevTools clients to connect
-     * simultaneously. Each session receives its own responses and notifications
-     * independently.
-     * <p>
-     * The returned {@link V8Inspector} implements {@link IJavetClosable}. Call
-     * {@link V8Inspector#close()} when the session is no longer needed. Sessions
-     * are also cleaned up automatically when the V8 runtime is closed.
-     *
-     * @param name the session name
-     * @return the V8 inspector, or null if the runtime is closed
-     * @since 5.0.5
-     */
-    public V8Inspector createV8Inspector(String name) {
-        return createV8Inspector(name, false);
-    }
-
-    /**
-     * Creates a V8 inspector session, optionally waiting for a debugger to attach.
-     * <p>
-     * When {@code waitForDebugger} is {@code true}, the inspector session is
-     * connected with {@code kWaitingForDebugger}. V8 will call the
-     * {@link IV8InspectorListener#runIfWaitingForDebugger(int)} callback once
-     * all sessions have sent {@code Runtime.runIfWaitingForDebugger}. Use
-     * {@link V8Inspector#waitForDebugger()} to block execution until that signal.
-     *
-     * @param name            the session name
-     * @param waitForDebugger whether the session should wait for the debugger
-     * @return the V8 inspector, or null if the runtime is closed
-     * @since 5.0.5
-     * @see #createV8Inspector(String)
-     */
-    public V8Inspector createV8Inspector(String name, boolean waitForDebugger) {
-        if (!isClosed()) {
-            return new V8Inspector(this, name, v8Native, waitForDebugger);
-        }
-        return null;
-    }
-
-    /**
      * Compile a V8 module and add that V8 module to the internal V8 module map.
      *
      * @param scriptString   the script string
@@ -864,6 +822,48 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                         JavetError.PARAMETER_V8_MODULE_COUNT, v8ModuleCount));
             }
             return v8Native.snapshotCreate(handle);
+        }
+        return null;
+    }
+
+    /**
+     * Creates a V8 inspector session.
+     * <p>
+     * Each call creates a new session with its own CDP channel. Multiple sessions
+     * can coexist on the same runtime, allowing multiple DevTools clients to connect
+     * simultaneously. Each session receives its own responses and notifications
+     * independently.
+     * <p>
+     * The returned {@link V8Inspector} implements {@link IJavetClosable}. Call
+     * {@link V8Inspector#close()} when the session is no longer needed. Sessions
+     * are also cleaned up automatically when the V8 runtime is closed.
+     *
+     * @param name the session name
+     * @return the V8 inspector, or null if the runtime is closed
+     * @since 5.0.5
+     */
+    public V8Inspector createV8Inspector(String name) {
+        return createV8Inspector(name, false);
+    }
+
+    /**
+     * Creates a V8 inspector session, optionally waiting for a debugger to attach.
+     * <p>
+     * When {@code waitForDebugger} is {@code true}, the inspector session is
+     * connected with {@code kWaitingForDebugger}. V8 will call the
+     * {@link IV8InspectorListener#runIfWaitingForDebugger(int)} callback once
+     * all sessions have sent {@code Runtime.runIfWaitingForDebugger}. Use
+     * {@link V8Inspector#waitForDebugger()} to block execution until that signal.
+     *
+     * @param name            the session name
+     * @param waitForDebugger whether the session should wait for the debugger
+     * @return the V8 inspector, or null if the runtime is closed
+     * @see #createV8Inspector(String)
+     * @since 5.0.5
+     */
+    public V8Inspector createV8Inspector(String name, boolean waitForDebugger) {
+        if (!isClosed()) {
+            return new V8Inspector(this, name, v8Native, waitForDebugger);
         }
         return null;
     }
@@ -1898,13 +1898,25 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
-     * Gets V8 shared memory statistics.
+     * Gets V8 shared memory statistics via completable future.
+     * It is an async call that will be completed if there is no race condition.
+     * In multi-cage pointer compression builds these statistics are read from
+     * this runtime's IsolateGroup, so the native call enters the isolate
+     * scope before invoking the underlying V8 API.
      *
-     * @return the V8 shared memory statistics
+     * @return the V8 shared memory statistics in a complete future
      * @since 1.0.0
      */
-    public V8SharedMemoryStatistics getV8SharedMemoryStatistics() {
-        return v8Host.getV8SharedMemoryStatistics();
+    public CompletableFuture<V8SharedMemoryStatistics> getV8SharedMemoryStatistics() {
+        if (!isClosed()) {
+            V8StatisticsFuture<V8SharedMemoryStatistics> v8StatisticsFuture = (V8StatisticsFuture<V8SharedMemoryStatistics>)
+                    v8Native.getV8SharedMemoryStatistics(handle);
+            if (!v8StatisticsFuture.isDone()) {
+                v8Host.offerV8StatisticsFuture(v8StatisticsFuture);
+            }
+            return v8StatisticsFuture;
+        }
+        return CompletableFuture.completedFuture(null);
     }
 
     /**

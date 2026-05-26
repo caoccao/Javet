@@ -20,10 +20,11 @@
  * Each observer implements {@link com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver}
  * and computes aggregate metrics across pooled runtimes:
  * <ul>
- *   <li>{@link com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageV8HeapStatistics} - Average heap memory usage.</li>
- *   <li>{@link com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageV8HeapSpaceStatistics} - Average per-space heap statistics.</li>
- *   <li>{@link com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageReferenceCount} - Average live V8 reference count.</li>
+ *   <li>{@link com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAggregateV8SharedMemoryStatistics} - Aggregate shared memory statistics across pooled runtimes.</li>
  *   <li>{@link com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageCallbackContextCount} - Average active callback context count.</li>
+ *   <li>{@link com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageReferenceCount} - Average live V8 reference count.</li>
+ *   <li>{@link com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageV8HeapSpaceStatistics} - Average per-space heap statistics.</li>
+ *   <li>{@link com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageV8HeapStatistics} - Average heap memory usage.</li>
  *   <li>{@link com.caoccao.javet.interop.engine.observers.V8RuntimeObserverAverageV8ModuleCount} - Average loaded ES module count.</li>
  * </ul>
  *

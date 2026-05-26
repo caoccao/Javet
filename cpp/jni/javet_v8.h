@@ -18,7 +18,9 @@
 #pragma once
 
 // V8 mode on Windows, Linux, macOS, and 64-bit Android is built with
-// v8_enable_pointer_compression=true. Windows and Linux additionally enable
+// v8_enable_pointer_compression=true and
+// v8_enable_pointer_compression_shared_cage=false, so each isolate group gets
+// its own 4 GB cage (multi-cage mode). Windows and Linux additionally enable
 // v8_enable_sandbox=true. Android and macOS keep the sandbox off because it
 // requires use_safe_libcxx / libc++ hardening, and those builds do not use
 // V8's hardened libc++ configuration. See
@@ -32,6 +34,13 @@
 // prevents the macros from leaking into 32-bit Android builds, which also
 // define __ANDROID__.
 //
+// V8_COMPRESS_POINTERS_IN_SHARED_CAGE is intentionally NOT defined: the
+// public headers detect multi-cage mode via
+// `defined(V8_COMPRESS_POINTERS) && !defined(V8_COMPRESS_POINTERS_IN_SHARED_CAGE)`,
+// which gates the IsolateGroup-aware overloads on Isolate and
+// ArrayBuffer::Allocator. The shared-cage-only defines
+// V8_CONTIGUOUS_COMPRESSED_RO_SPACE / _SIZE_MB are likewise omitted.
+//
 // Values are 1 (not empty) because V8 uses both `#ifdef` and `#if` on these
 // macros; `#if V8_COMPRESS_POINTERS` needs a substitutable value.
 #if !defined(ENABLE_NODE) && \
@@ -40,8 +49,8 @@
 #ifndef V8_COMPRESS_POINTERS
 #define V8_COMPRESS_POINTERS 1
 #endif
-#ifndef V8_COMPRESS_POINTERS_IN_SHARED_CAGE
-#define V8_COMPRESS_POINTERS_IN_SHARED_CAGE 1
+#ifndef V8_COMPRESS_POINTERS_IN_MULTIPLE_CAGES
+#define V8_COMPRESS_POINTERS_IN_MULTIPLE_CAGES 1
 #endif
 #ifndef V8_31BIT_SMIS_ON_64BIT_ARCH
 #define V8_31BIT_SMIS_ON_64BIT_ARCH 1
@@ -54,12 +63,6 @@
 #endif
 #ifndef V8_STATIC_ROOTS
 #define V8_STATIC_ROOTS 1
-#endif
-#ifndef V8_CONTIGUOUS_COMPRESSED_RO_SPACE
-#define V8_CONTIGUOUS_COMPRESSED_RO_SPACE 1
-#endif
-#ifndef V8_CONTIGUOUS_COMPRESSED_RO_SPACE_SIZE_MB
-#define V8_CONTIGUOUS_COMPRESSED_RO_SPACE_SIZE_MB 16
 #endif
 #ifndef V8_ARRAY_BUFFER_INTERNAL_FIELD_COUNT
 #define V8_ARRAY_BUFFER_INTERNAL_FIELD_COUNT 0

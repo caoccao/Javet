@@ -49,14 +49,15 @@ interface GnConfig {
   symbol_level: number;
   target_cpu: string;
   target_os?: string;
-  use_allocator_shim?: boolean;
   use_blink: boolean;
   use_clang_modules?: boolean;
   use_custom_libcxx: boolean;
   use_custom_libunwind?: boolean;
   use_safe_libstdcxx?: boolean;
+  v8_enable_external_code_space?: boolean;
   v8_enable_i18n_support: boolean;
   v8_enable_pointer_compression: boolean;
+  v8_enable_pointer_compression_shared_cage?: boolean;
   v8_enable_sandbox: boolean;
   v8_enable_temporal_support: boolean;
   v8_enable_webassembly: boolean;
@@ -142,23 +143,10 @@ class GnArgsGenerator {
     return (os === "linux" || os === "windows") && this.is64BitArch(arch);
   }
 
-  private getUseAllocatorShim(os: OS, arch: Arch): boolean | undefined {
-    switch (os) {
-      case "android":
-        return this.is64BitArch(arch) ? false : undefined;
-      case "linux":
-      case "macos":
-        return false;
-      case "windows":
-        return true;
-      default:
-        return undefined;
-    }
-  }
-
   private generateConfig(os: OS, arch: Arch, i18n: boolean): GnConfig {
     const platformConfig = this.platformConfigs[os];
     const targetCpu = this.archToTargetCpu(arch);
+    const enablePointerCompression = this.shouldEnablePointerCompression(arch);
 
     const config: GnConfig = {
       clang_use_chrome_plugins: false,
@@ -172,7 +160,7 @@ class GnArgsGenerator {
       use_blink: false,
       use_custom_libcxx: platformConfig.customLibCxx === true,
       v8_enable_i18n_support: i18n,
-      v8_enable_pointer_compression: this.shouldEnablePointerCompression(arch),
+      v8_enable_pointer_compression: enablePointerCompression,
       v8_enable_sandbox: this.shouldEnableSandbox(os, arch),
       v8_enable_temporal_support: true,
       v8_enable_webassembly: true,
@@ -183,17 +171,17 @@ class GnArgsGenerator {
       v8_use_external_startup_data: false,
     };
 
+    if (enablePointerCompression) {
+      config.v8_enable_external_code_space = true;
+      config.v8_enable_pointer_compression_shared_cage = false;
+    }
+
     // Add optional fields based on platform
     if (
       platformConfig.targetOS !== "hidden" &&
       typeof platformConfig.targetOS === "string"
     ) {
       config.target_os = platformConfig.targetOS;
-    }
-
-    const useAllocatorShim = this.getUseAllocatorShim(os, arch);
-    if (useAllocatorShim !== undefined) {
-      config.use_allocator_shim = useAllocatorShim;
     }
 
     if (platformConfig.clangModules !== "hidden") {
@@ -236,14 +224,15 @@ class GnArgsGenerator {
       "symbol_level",
       "target_cpu",
       "target_os",
-      "use_allocator_shim",
       "use_blink",
       "use_clang_modules",
       "use_custom_libcxx",
       "use_custom_libunwind",
       "use_safe_libstdcxx",
+      "v8_enable_external_code_space",
       "v8_enable_i18n_support",
       "v8_enable_pointer_compression",
+      "v8_enable_pointer_compression_shared_cage",
       "v8_enable_sandbox",
       "v8_enable_temporal_support",
       "v8_enable_webassembly",

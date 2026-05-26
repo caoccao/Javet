@@ -133,38 +133,38 @@ Pointer Compression
 
 Pointer compression is enabled for V8 mode on all 64-bit platforms and disabled on 32-bit platforms. Node.js mode does not enable pointer compression.
 
-=============== ======== ========
-Platform        V8 Mode  Node Mode
-=============== ======== ========
-Linux x86_64    On       Off
-Linux arm64     On       Off
-Windows x86_64  On       Off
-macOS x86_64    On       Off
-macOS arm64     On       Off
-Android arm64   On       Off
-Android x86_64  On       Off
-Android arm     Off      Off
-Android x86     Off      Off
-=============== ======== ========
+=============== ================= ==============
+Platform        V8 Mode           Node.js Mode
+=============== ================= ==============
+Linux x86_64    On (from v5.0.8)  Off
+Linux arm64     On (from v5.0.8)  Off
+Windows x86_64  On (from v5.0.8)  Off
+macOS x86_64    On (from v5.0.8)  Off
+macOS arm64     On (from v5.0.8)  Off
+Android arm64   On (from v5.0.8)  Off
+Android x86_64  On (from v5.0.8)  Off
+Android arm     Off               Off
+Android x86     Off               Off
+=============== ================= ==============
 
 Sandbox
 -------
 
 V8 sandbox is enabled for V8 mode on Linux and Windows only. macOS and Android do not enable sandbox. Node.js mode does not enable sandbox.
 
-=============== ======== ========
-Platform        V8 Mode  Node Mode
-=============== ======== ========
-Linux x86_64    On       Off
-Linux arm64     On       Off
-Windows x86_64  On       Off
-macOS x86_64    Off      Off
-macOS arm64     Off      Off
-Android arm64   Off      Off
-Android x86_64  Off      Off
-Android arm     Off      Off
-Android x86     Off      Off
-=============== ======== ========
+=============== ================= ==============
+Platform        V8 Mode           Node.js Mode
+=============== ================= ==============
+Linux x86_64    On (from v5.0.8)  Off
+Linux arm64     On (from v5.0.8)  Off
+Windows x86_64  On (from v5.0.8)  Off
+macOS x86_64    Off               Off
+macOS arm64     Off               Off
+Android arm64   Off               Off
+Android x86_64  Off               Off
+Android arm     Off               Off
+Android x86     Off               Off
+=============== ================= ==============
 
 Snapshot
 --------

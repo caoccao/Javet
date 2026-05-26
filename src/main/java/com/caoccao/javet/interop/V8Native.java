@@ -207,7 +207,7 @@ class V8Native implements IV8Native {
     public native Object getV8HeapStatistics(long v8RuntimeHandle);
 
     @Override
-    public native Object getV8SharedMemoryStatistics();
+    public native Object getV8SharedMemoryStatistics(long v8RuntimeHandle);
 
     @Override
     public native String getVersion();

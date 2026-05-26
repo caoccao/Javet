@@ -23,7 +23,6 @@ import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.V8Host;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver;
-import com.caoccao.javet.interop.monitoring.V8SharedMemoryStatistics;
 import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
@@ -269,11 +268,6 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
      */
     protected ZonedDateTime getUTCNow() {
         return JavetDateTimeUtils.getUTCNow();
-    }
-
-    @Override
-    public V8SharedMemoryStatistics getV8SharedMemoryStatistics() {
-        return V8Host.getInstance(config.getJSRuntimeType()).getV8SharedMemoryStatistics();
     }
 
     @Override

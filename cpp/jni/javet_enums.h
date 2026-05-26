@@ -30,6 +30,7 @@ namespace Javet {
             enum RawPointerType {
                 HeapStatisticsContext = 1,
                 HeapSpaceStatisticsContext = 2,
+                SharedMemoryStatisticsContext = 3,
                 Invalid = 0,
             };
         }

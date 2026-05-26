@@ -327,11 +327,11 @@ public interface IV8Native {
     /**
      * Copy scope info from a source Function to a target Function.
      *
-     * @param v8RuntimeHandle      the V8 runtime handle
-     * @param targetV8ValueHandle  the target V8 value handle
-     * @param targetV8ValueType    the target V8 value type
-     * @param sourceV8ValueHandle  the source V8 value handle
-     * @param sourceV8ValueType    the source V8 value type
+     * @param v8RuntimeHandle     the V8 runtime handle
+     * @param targetV8ValueHandle the target V8 value handle
+     * @param targetV8ValueType   the target V8 value type
+     * @param sourceV8ValueHandle the source V8 value handle
+     * @param sourceV8ValueType   the source V8 value type
      * @return true if successful
      */
     boolean functionCopyScopeInfoFrom(
@@ -535,7 +535,7 @@ public interface IV8Native {
     /**
      * Get V8 heap space statistics for the given allocation space.
      *
-     * @param v8RuntimeHandle  the V8 runtime handle
+     * @param v8RuntimeHandle   the V8 runtime handle
      * @param v8AllocationSpace the V8 allocation space
      * @return the result
      */
@@ -550,11 +550,14 @@ public interface IV8Native {
     Object getV8HeapStatistics(long v8RuntimeHandle);
 
     /**
-     * Get V8 shared memory statistics.
+     * Get V8 shared memory statistics. In multi-cage pointer compression builds,
+     * the underlying V8 API reads from the IsolateGroup that owns the caller's
+     * isolate, so a valid runtime handle must be supplied.
      *
+     * @param v8RuntimeHandle the V8 runtime handle whose isolate group to query
      * @return the result
      */
-    Object getV8SharedMemoryStatistics();
+    Object getV8SharedMemoryStatistics(long v8RuntimeHandle);
 
     /**
      * Get the V8 engine version string.
@@ -1474,9 +1477,9 @@ public interface IV8Native {
     /**
      * Register a catch handler on a Promise.
      *
-     * @param v8RuntimeHandle      the V8 runtime handle
-     * @param v8ValueHandle        the V8 value handle
-     * @param v8ValueType          the V8 value type
+     * @param v8RuntimeHandle       the V8 runtime handle
+     * @param v8ValueHandle         the V8 value handle
+     * @param v8ValueType           the V8 value type
      * @param v8ValueFunctionHandle the V8 value function handle
      * @return the result
      */
@@ -1662,7 +1665,7 @@ public interface IV8Native {
     /**
      * Remove a raw pointer of the given type.
      *
-     * @param handle          the handle
+     * @param handle           the handle
      * @param rawPointerTypeId the raw pointer type ID
      */
     void removeRawPointer(long handle, int rawPointerTypeId);
@@ -2062,9 +2065,9 @@ public interface IV8Native {
     /**
      * Evaluate an expression in the V8 inspector session.
      *
-     * @param v8RuntimeHandle     the V8 runtime handle
-     * @param sessionId           the inspector session ID
-     * @param expression          the expression to evaluate
+     * @param v8RuntimeHandle       the V8 runtime handle
+     * @param sessionId             the inspector session ID
+     * @param expression            the expression to evaluate
      * @param includeCommandLineAPI whether to include command line API
      * @return the result
      */

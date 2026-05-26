@@ -418,10 +418,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getV8HeapStati
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getV8SharedMemoryStatistics
- * Signature: ()Ljava/lang/Object;
+ * Signature: (J)Ljava/lang/Object;
  */
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getV8SharedMemoryStatistics
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
