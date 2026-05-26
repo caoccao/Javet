@@ -541,6 +541,15 @@ namespace Javet {
         // memory mapping is released when the isolate is disposed.
 #if defined(V8_COMPRESS_POINTERS) && defined(V8_COMPRESS_POINTERS_IN_MULTIPLE_CAGES)
         v8::IsolateGroup v8IsolateGroup = v8::IsolateGroup::Create();
+        // With V8_ENABLE_SANDBOX the array buffer backing stores must live
+        // inside the IsolateGroup's sandbox address space. The process-wide
+        // GlobalV8ArrayBufferAllocator (NewDefaultAllocator() with no group)
+        // falls back to malloc/free and triggers
+        // "ArrayBuffer backing stores must be allocated inside the sandbox".
+        // Override with the group-aware overload so this runtime's backing
+        // stores land in the right sandbox. The allocator must outlive the
+        // isolate; storing it on the V8Runtime via reset() achieves that.
+        v8ArrayBufferAllocator.reset(V8ArrayBufferAllocator::NewDefaultAllocator(v8IsolateGroup));
         if (createSnapshotEnabled) {
             v8Isolate = v8::Isolate::Allocate(v8IsolateGroup);
             v8SnapshotCreator.reset(new v8::SnapshotCreator(v8Isolate, nullptr, v8StartupData.get(), true));

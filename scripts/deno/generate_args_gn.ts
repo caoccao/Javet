@@ -102,9 +102,9 @@ class GnArgsGenerator {
       architectures: ["arm64", "x86_64"],
       targetOS: "hidden",
       clangModules: false,
-      customLibCxx: false,
+      customLibCxx: true,
       customLibUnwind: "hidden",
-      safeLibStdcxx: "hidden",
+      safeLibStdcxx: false,
     },
     windows: {
       architectures: ["x86_64"],
@@ -140,7 +140,10 @@ class GnArgsGenerator {
   }
 
   private shouldEnableSandbox(os: OS, arch: Arch): boolean {
-    return (os === "linux" || os === "windows") && this.is64BitArch(arch);
+    // Sandbox requires use_safe_libcxx (i.e. use_custom_libcxx && enable_safe_libcxx).
+    // Android keeps the system libc++, so it stays disabled there.
+    return (os === "linux" || os === "windows" || os === "macos") &&
+      this.is64BitArch(arch);
   }
 
   private generateConfig(os: OS, arch: Arch, i18n: boolean): GnConfig {

@@ -8,8 +8,8 @@ Release Notes 5.0.x
 * Upgraded Node.js to ``v24.16.0`` `(2026-05-21) <https://nodejs.org/en/blog/release/v24.16.0>`_
 * Upgraded V8 to ``v14.9.207.14`` (2026-05-22)
 * Switched to LLVM for V8 mode on Windows
-* Enabled pointer compression and sandbox for V8 mode on Linux, Windows
-* Enabled pointer compression for V8 mode on Android (arm64, x86_64), macOS
+* Enabled pointer compression and sandbox for V8 mode on Linux, MacOS, Windows
+* Enabled pointer compression for V8 mode on Android (arm64, x86_64)
 * Switched V8 mode to multi-cage pointer compression (each isolate gets its own 4 GB cage via ``v8::IsolateGroup``)
 * Removed ``getV8SharedMemoryStatistics()`` from ``V8Host`` (the underlying V8 API is now per-``IsolateGroup`` and cannot be queried without an entered isolate scope)
 * ``V8Runtime.getV8SharedMemoryStatistics()`` now returns ``CompletableFuture<V8SharedMemoryStatistics>`` (async, matching ``getV8HeapStatistics()``)

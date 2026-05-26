@@ -150,7 +150,7 @@ Android x86     Off               Off
 Sandbox
 -------
 
-V8 sandbox is enabled for V8 mode on Linux and Windows only. macOS and Android do not enable sandbox. Node.js mode does not enable sandbox.
+V8 sandbox is enabled for V8 mode on Linux, Windows, and macOS. Sandbox requires V8's hermetic libc++ (``use_safe_libcxx = use_custom_libcxx && enable_safe_libcxx``); Android keeps the system libc++ and so the sandbox is off there. Node.js mode does not enable sandbox.
 
 =============== ================= ==============
 Platform        V8 Mode           Node.js Mode
@@ -158,8 +158,8 @@ Platform        V8 Mode           Node.js Mode
 Linux x86_64    On (from v5.0.8)  Off
 Linux arm64     On (from v5.0.8)  Off
 Windows x86_64  On (from v5.0.8)  Off
-macOS x86_64    Off               Off
-macOS arm64     Off               Off
+macOS x86_64    On (from v5.0.8)  Off
+macOS arm64     On (from v5.0.8)  Off
 Android arm64   Off               Off
 Android x86_64  Off               Off
 Android arm     Off               Off
