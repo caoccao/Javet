@@ -17,6 +17,73 @@
 
 #pragma once
 
+// V8 mode on Windows, Linux, macOS, and 64-bit Android is built with
+// v8_enable_pointer_compression=true and
+// v8_enable_pointer_compression_shared_cage=false, so each isolate group gets
+// its own 4 GB cage (multi-cage mode). Windows, Linux, and macOS additionally
+// enable v8_enable_sandbox=true, which requires use_safe_libcxx (i.e.
+// use_custom_libcxx && enable_safe_libcxx). The macOS, Linux, and Windows
+// builds therefore pull in V8's hermetic libc++ (see Darwin.cmake / Linux.cmake
+// / Windows.cmake). Android keeps the system libc++ and so keeps the sandbox
+// off. See
+// scripts/v8/gn/{windows-x86_64,linux-*,macos-*,android-{arm64,x86_64}}-args.gn.
+//
+// V8's public headers gate ABI-affecting types (HeapObjectSlot et al.) on
+// these macros, so Javet must define them before any <v8.h> include or
+// symbol mangling will diverge from v8_monolith.{lib,a}. 32-bit Android V8
+// keeps pointer compression off; Node.js's bundled V8 also doesn't enable
+// these macros (ENABLE_NODE is set by JavetNode.cmake). The LP64/_WIN64 guard
+// prevents the macros from leaking into 32-bit Android builds, which also
+// define __ANDROID__.
+//
+// V8_COMPRESS_POINTERS_IN_SHARED_CAGE is intentionally NOT defined: the
+// public headers detect multi-cage mode via
+// `defined(V8_COMPRESS_POINTERS) && !defined(V8_COMPRESS_POINTERS_IN_SHARED_CAGE)`,
+// which gates the IsolateGroup-aware overloads on Isolate and
+// ArrayBuffer::Allocator. The shared-cage-only defines
+// V8_CONTIGUOUS_COMPRESSED_RO_SPACE / _SIZE_MB are likewise omitted.
+//
+// Values are 1 (not empty) because V8 uses both `#ifdef` and `#if` on these
+// macros; `#if V8_COMPRESS_POINTERS` needs a substitutable value.
+#if !defined(ENABLE_NODE) && \
+    (defined(_WIN32) || defined(__linux__) || defined(__APPLE__) || defined(__ANDROID__)) && \
+    (defined(_WIN64) || defined(__LP64__))
+#ifndef V8_COMPRESS_POINTERS
+#define V8_COMPRESS_POINTERS 1
+#endif
+#ifndef V8_COMPRESS_POINTERS_IN_MULTIPLE_CAGES
+#define V8_COMPRESS_POINTERS_IN_MULTIPLE_CAGES 1
+#endif
+#ifndef V8_31BIT_SMIS_ON_64BIT_ARCH
+#define V8_31BIT_SMIS_ON_64BIT_ARCH 1
+#endif
+#ifndef V8_EXTERNAL_CODE_SPACE
+#define V8_EXTERNAL_CODE_SPACE 1
+#endif
+#ifndef V8_SHORT_BUILTIN_CALLS
+#define V8_SHORT_BUILTIN_CALLS 1
+#endif
+#ifndef V8_STATIC_ROOTS
+#define V8_STATIC_ROOTS 1
+#endif
+#ifndef V8_ARRAY_BUFFER_INTERNAL_FIELD_COUNT
+#define V8_ARRAY_BUFFER_INTERNAL_FIELD_COUNT 0
+#endif
+#ifndef V8_ARRAY_BUFFER_VIEW_INTERNAL_FIELD_COUNT
+#define V8_ARRAY_BUFFER_VIEW_INTERNAL_FIELD_COUNT 0
+#endif
+#ifndef V8_PROMISE_INTERNAL_FIELD_COUNT
+#define V8_PROMISE_INTERNAL_FIELD_COUNT 0
+#endif
+// Sandbox is enabled for Windows, Linux, and macOS V8 builds. Android keeps it
+// off because it doesn't link V8's hermetic libc++ - see comment above.
+#if defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
+#ifndef V8_ENABLE_SANDBOX
+#define V8_ENABLE_SANDBOX 1
+#endif
+#endif
+#endif
+
 #pragma warning(disable: 4018)
 #pragma warning(disable: 4244)
 #include <libplatform/libplatform.h>
@@ -33,6 +100,15 @@
 #pragma comment(lib, "Userenv.lib")
 #pragma comment(lib, "Winmm.lib")
 #pragma comment(lib, "Ws2_32.lib")
+#endif
+
+// V8 mode on Windows uses Chromium's libc++ instead of MSVC's STL. libc++'s
+// std::exception_ptr delegates to MSVC's __ExceptionPtr* family in
+// libcpmt.lib, but libc++'s headers set _LIBCPP_NO_AUTO_LINK so libcpmt
+// isn't pulled in automatically. Request it here. Node mode keeps MSVC's
+// STL, which already auto-links libcpmt via its own pragmas.
+#if defined(_WIN32) && !defined(ENABLE_NODE)
+#pragma comment(lib, "libcpmt.lib")
 #endif
 
  // Scope
@@ -178,4 +254,3 @@ constexpr auto TO_V8_PERSISTENT_VALUE_POINTER(T handle) {
 #define TO_V8_PERSISTENT_SET(handle) *reinterpret_cast<V8PersistentSet*>(handle)
 #define TO_V8_PERSISTENT_SYMBOL(handle) *reinterpret_cast<V8PersistentSymbol*>(handle)
 #define TO_V8_PERSISTENT_SYMBOL_OBJECT(handle) *reinterpret_cast<V8PersistentSymbolObject*>(handle)
-

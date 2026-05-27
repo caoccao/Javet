@@ -42,6 +42,23 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
     int getActiveEngineCount();
 
     /**
+     * Gets aggregated V8 shared memory statistics across the pool. In multi-cage
+     * pointer compression builds each isolate group owns its own read-only space,
+     * so the meaningful pool-wide view is the sum across all live runtimes.
+     *
+     * @return the aggregated V8 shared memory statistics
+     * @since 5.0.8
+     */
+    default V8SharedMemoryStatistics getAggregateV8SharedMemoryStatistics() {
+        V8RuntimeObserverAggregateV8SharedMemoryStatistics observer =
+                new V8RuntimeObserverAggregateV8SharedMemoryStatistics(
+                        getConfig().getPoolMaxSize(),
+                        getConfig().getObserverTimeoutMillis());
+        observe(observer);
+        return observer.getResult();
+    }
+
+    /**
      * Gets average callback context count.
      *
      * @return the average callback context count
@@ -144,12 +161,27 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
     int getReleasedEngineCount();
 
     /**
-     * Gets V8 shared memory statistics.
+     * Gets V8 shared memory statistics for the pool.
+     * <p>
+     * Prior to 5.0.8 this delegated to ``V8Host.getV8SharedMemoryStatistics()``,
+     * which queried V8's process-wide read-only space exactly once. With V8 in
+     * multi-cage pointer compression mode each isolate group has its own
+     * read-only space, so there is no longer a single process-wide value to
+     * return. This method now forwards to
+     * {@link #getAggregateV8SharedMemoryStatistics()}, which sums the per-group
+     * sizes across every live runtime in the pool. The numbers it returns are
+     * therefore comparable to the pre-5.0.8 totals only when the pool holds a
+     * single runtime; for multi-runtime pools the new aggregate is larger.
      *
-     * @return the V8 shared memory statistics
+     * @return the aggregated V8 shared memory statistics
      * @since 1.0.5
+     * @deprecated Use {@link #getAggregateV8SharedMemoryStatistics()} directly.
+     * Kept as a thin wrapper for callers written before the multi-cage switch.
      */
-    V8SharedMemoryStatistics getV8SharedMemoryStatistics();
+    @Deprecated
+    default V8SharedMemoryStatistics getV8SharedMemoryStatistics() {
+        return getAggregateV8SharedMemoryStatistics();
+    }
 
     /**
      * Is active.

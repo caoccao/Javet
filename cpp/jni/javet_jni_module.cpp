@@ -216,9 +216,15 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetResou
     auto v8InternalModule = Javet::Converter::ToV8InternalModule(v8LocalModule);
     V8LocalValue v8LocalObjectName;
     if (v8LocalModule->IsSourceTextModule()) {
+#ifdef ENABLE_NODE
         auto v8InternalSourceTextModule = v8::internal::Cast<V8InternalSourceTextModule>(v8InternalModule);
         auto v8InternalScript = *((*v8InternalSourceTextModule).GetScript());
         auto v8InternalObjectNameOrSourceURL = v8InternalScript.GetNameOrSourceURL();
+#else
+        auto v8InternalSourceTextModule = v8::internal::Cast<V8InternalSourceTextModule>(v8InternalModule);
+        auto v8InternalScript = v8InternalSourceTextModule->GetScript();
+        auto v8InternalObjectNameOrSourceURL = v8InternalScript->GetNameOrSourceURL();
+#endif
         v8LocalObjectName = v8::Utils::ToLocal(v8::internal::handle(v8InternalObjectNameOrSourceURL, v8InternalIsolate));
     }
     else if (v8LocalModule->IsSyntheticModule()) {

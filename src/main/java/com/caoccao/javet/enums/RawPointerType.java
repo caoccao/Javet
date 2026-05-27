@@ -35,6 +35,12 @@ public enum RawPointerType {
      */
     HeapSpaceStatisticsContainer(2),
     /**
+     * Shared memory statistics container javet raw pointer type.
+     *
+     * @since 5.0.8
+     */
+    SharedMemoryStatisticsContainer(3),
+    /**
      * Invalid raw pointer type.
      *
      * @since 3.1.4
@@ -60,6 +66,8 @@ public enum RawPointerType {
                 return HeapStatisticsContainer;
             case 2:
                 return HeapSpaceStatisticsContainer;
+            case 3:
+                return SharedMemoryStatisticsContainer;
             default:
                 return Invalid;
         }

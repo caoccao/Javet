@@ -21,7 +21,6 @@ import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.interop.loader.JavetLibLoader;
-import com.caoccao.javet.interop.monitoring.V8SharedMemoryStatistics;
 import com.caoccao.javet.interop.monitoring.V8StatisticsFuture;
 import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
@@ -443,16 +442,6 @@ public final class V8Host {
      */
     public int getV8RuntimeCount() {
         return v8RuntimeMap.size();
-    }
-
-    /**
-     * Gets V8 shared memory statistics.
-     *
-     * @return the V8 shared memory statistics
-     * @since 1.0.6
-     */
-    public V8SharedMemoryStatistics getV8SharedMemoryStatistics() {
-        return (V8SharedMemoryStatistics) v8Native.getV8SharedMemoryStatistics();
     }
 
     /**

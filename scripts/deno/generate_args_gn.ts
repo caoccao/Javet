@@ -54,8 +54,10 @@ interface GnConfig {
   use_custom_libcxx: boolean;
   use_custom_libunwind?: boolean;
   use_safe_libstdcxx?: boolean;
+  v8_enable_external_code_space?: boolean;
   v8_enable_i18n_support: boolean;
   v8_enable_pointer_compression: boolean;
+  v8_enable_pointer_compression_shared_cage?: boolean;
   v8_enable_sandbox: boolean;
   v8_enable_temporal_support: boolean;
   v8_enable_webassembly: boolean;
@@ -100,17 +102,17 @@ class GnArgsGenerator {
       architectures: ["arm64", "x86_64"],
       targetOS: "hidden",
       clangModules: false,
-      customLibCxx: false,
+      customLibCxx: true,
       customLibUnwind: "hidden",
-      safeLibStdcxx: "hidden",
+      safeLibStdcxx: false,
     },
     windows: {
       architectures: ["x86_64"],
       targetOS: "hidden",
-      clangModules: "hidden",
-      customLibCxx: false,
-      customLibUnwind: "hidden",
-      safeLibStdcxx: "hidden",
+      clangModules: false,
+      customLibCxx: true,
+      customLibUnwind: true,
+      safeLibStdcxx: false,
     },
   };
 
@@ -129,9 +131,25 @@ class GnArgsGenerator {
     return mapping[arch];
   }
 
+  private is64BitArch(arch: Arch): boolean {
+    return arch === "arm64" || arch === "x86_64";
+  }
+
+  private shouldEnablePointerCompression(arch: Arch): boolean {
+    return this.is64BitArch(arch);
+  }
+
+  private shouldEnableSandbox(os: OS, arch: Arch): boolean {
+    // Sandbox requires use_safe_libcxx (i.e. use_custom_libcxx && enable_safe_libcxx).
+    // Android keeps the system libc++, so it stays disabled there.
+    return (os === "linux" || os === "windows" || os === "macos") &&
+      this.is64BitArch(arch);
+  }
+
   private generateConfig(os: OS, arch: Arch, i18n: boolean): GnConfig {
     const platformConfig = this.platformConfigs[os];
     const targetCpu = this.archToTargetCpu(arch);
+    const enablePointerCompression = this.shouldEnablePointerCompression(arch);
 
     const config: GnConfig = {
       clang_use_chrome_plugins: false,
@@ -145,8 +163,8 @@ class GnArgsGenerator {
       use_blink: false,
       use_custom_libcxx: platformConfig.customLibCxx === true,
       v8_enable_i18n_support: i18n,
-      v8_enable_pointer_compression: false,
-      v8_enable_sandbox: false,
+      v8_enable_pointer_compression: enablePointerCompression,
+      v8_enable_sandbox: this.shouldEnableSandbox(os, arch),
       v8_enable_temporal_support: true,
       v8_enable_webassembly: true,
       v8_monolithic: true,
@@ -155,6 +173,11 @@ class GnArgsGenerator {
       v8_target_cpu: targetCpu,
       v8_use_external_startup_data: false,
     };
+
+    if (enablePointerCompression) {
+      config.v8_enable_external_code_space = true;
+      config.v8_enable_pointer_compression_shared_cage = false;
+    }
 
     // Add optional fields based on platform
     if (
@@ -209,8 +232,10 @@ class GnArgsGenerator {
       "use_custom_libcxx",
       "use_custom_libunwind",
       "use_safe_libstdcxx",
+      "v8_enable_external_code_space",
       "v8_enable_i18n_support",
       "v8_enable_pointer_compression",
+      "v8_enable_pointer_compression_shared_cage",
       "v8_enable_sandbox",
       "v8_enable_temporal_support",
       "v8_enable_webassembly",
@@ -240,7 +265,7 @@ class GnArgsGenerator {
     os: OS,
     arch: Arch,
     i18n: boolean,
-    dryRun: boolean
+    dryRun: boolean,
   ): Promise<void> {
     const fileName = this.getFileName(os, arch, i18n);
     const filePath = path.join(this.outputDir, fileName);
@@ -272,7 +297,7 @@ class GnArgsGenerator {
     console.log(
       `\n${
         dryRun ? "[DRY RUN] Would generate" : "Generated"
-      } ${totalFiles} files total.`
+      } ${totalFiles} files total.`,
     );
   }
 
@@ -280,17 +305,21 @@ class GnArgsGenerator {
     const platformConfig = this.platformConfigs[os];
     if (!platformConfig) {
       throw new Error(
-        `Invalid OS: ${os}. Valid options: ${Object.keys(
-          this.platformConfigs
-        ).join(", ")}`
+        `Invalid OS: ${os}. Valid options: ${
+          Object.keys(
+            this.platformConfigs,
+          ).join(", ")
+        }`,
       );
     }
 
     if (!platformConfig.architectures.includes(arch)) {
       throw new Error(
-        `Invalid architecture ${arch} for OS ${os}. Valid options: ${platformConfig.architectures.join(
-          ", "
-        )}`
+        `Invalid architecture ${arch} for OS ${os}. Valid options: ${
+          platformConfig.architectures.join(
+            ", ",
+          )
+        }`,
       );
     }
   }
@@ -322,7 +351,7 @@ class GnArgsGenerator {
         return 0;
       } catch (error) {
         console.error(
-          `Error: ${error instanceof Error ? error.message : String(error)}`
+          `Error: ${error instanceof Error ? error.message : String(error)}`,
         );
         return 1;
       }
@@ -333,13 +362,13 @@ class GnArgsGenerator {
         return 0;
       } catch (error) {
         console.error(
-          `Error: ${error instanceof Error ? error.message : String(error)}`
+          `Error: ${error instanceof Error ? error.message : String(error)}`,
         );
         return 1;
       }
     } else {
       console.error(
-        "Error: Both --os and --arch must be specified together.\n"
+        "Error: Both --os and --arch must be specified together.\n",
       );
       this.printUsage();
       return 1;

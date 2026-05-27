@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 24.15.0
-  JAVET_V8_VERSION: 14.8.178.16
-  JAVET_VERSION: 5.0.7
+  JAVET_NODE_VERSION: 24.16.0
+  JAVET_V8_VERSION: 14.9.207.14
+  JAVET_VERSION: 5.0.8
   TEMPORAL_VERSION: 0.2.3
   ROOT: D:\a\Javet
 
@@ -75,14 +75,9 @@ jobs:
         cd ..
         depot_tools/gclient.bat sync -D
         cd v8
-        # The fix is to change gc_retry to use a template parameter instead of std::function, so it can accept any callable type and pass it directly to RetryCustomAllocate without the intermediate std::function conversion.
-        sed -i 's|  auto gc_retry = \[&\](const std::function<bool()>& fn)|  auto gc_retry = [\&](auto\&\& fn)|' src/objects/backing-store.cc
-        sed -i '/struct HashEqualityThenKeyMatcher {/a\  HashEqualityThenKeyMatcher() : match_() {}' src/base/hashmap.h
-        sed -i 's/static std::atomic_flag printed_warning{false};/static std::atomic_flag printed_warning = ATOMIC_FLAG_INIT;/' src/runtime/runtime-test.cc
         mkdir -p out.gn.windows.${{ matrix.name }}/x64.release
         cp ../../Javet/scripts/v8/gn/windows-x86_64-${{ matrix.name }}-args.gn out.gn.windows.${{ matrix.name }}/x64.release/args.gn
         ../depot_tools/gn.bat gen out.gn.windows.${{ matrix.name }}/x64.release
-        ../depot_tools/ninja.bat -C out.gn.windows.${{ matrix.name }}/x64.release v8_monolith || deno --allow-all ../../Javet/scripts/deno/patch_v8_build.ts -p ./
         ../depot_tools/ninja.bat -C out.gn.windows.${{ matrix.name }}/x64.release v8_monolith
 
     - name: Build Temporal CAPI

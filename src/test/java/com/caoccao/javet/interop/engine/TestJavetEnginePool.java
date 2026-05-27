@@ -73,7 +73,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
 
     protected void assertStatistics() {
         assertNotNull(javetEnginePool.getAverageV8HeapStatistics().toString());
-        assertNotNull(javetEnginePool.getV8SharedMemoryStatistics().toString());
+        assertNotNull(javetEnginePool.getAggregateV8SharedMemoryStatistics().toString());
         for (V8AllocationSpace v8AllocationSpace : V8AllocationSpace.getDistinctValues()) {
             V8HeapSpaceStatistics v8HeapSpaceStatistics =
                     javetEnginePool.getAverageV8HeapSpaceStatistics(v8AllocationSpace);

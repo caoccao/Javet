@@ -13,15 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet-linux-x86_64:5.0.7 -f docker/linux-x86_64/build.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-linux-x86_64:5.0.8 -f docker/linux-x86_64/build.Dockerfile .
 
 # Multi-stage Dockerfile for building Javet on Linux x86_64
 # Based on .github/workflows/linux_x86_64_build.yml
 
 # Build arguments
-ARG JAVET_NODE_VERSION=24.15.0
-ARG JAVET_V8_VERSION=14.8.178.16
-ARG JAVET_VERSION=5.0.7
+ARG JAVET_NODE_VERSION=24.16.0
+ARG JAVET_V8_VERSION=14.9.207.14
+ARG JAVET_VERSION=5.0.8
 ARG TEMPORAL_VERSION=0.1.2
 
 ###########################################
@@ -115,10 +115,15 @@ RUN cd ${ROOT}/google/v8 && ./build/install-build-deps.sh --no-prompt --no-chrom
 RUN cd ${ROOT}/google && gclient sync -D
 
 # Apply V8 patches
+# The tls_model strip mirrors the workflow patch: with pointer compression
+# on, Javet inlines V8 accessors that touch g_current_isolate_ via TLS, and
+# initial-exec emits R_X86_64_TPOFF32, which ld.lld rejects when linking
+# Javet.so.
 RUN cd ${ROOT}/google/v8 && \
     sed -i '/#include "src\/libplatform\//a #include <cstdlib>' src/libplatform/default-thread-isolated-allocator.cc && \
     sed -i '/bool KernelHasPkruFix()/a const char* env = std::getenv("JAVET_DISABLE_PKU"); if (env && std::strlen(env) > 0) { return false; }' src/libplatform/default-thread-isolated-allocator.cc && \
-    sed -i '/return other_kind == "islamic-umalqura"/a\    case HijriSimulatedMecca:\n      return other_kind == "islamic-rgsa" || other_kind == "islamic";' src/objects/js-date-time-format.cc
+    sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' src/execution/isolate.h && \
+    sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' src/heap/local-heap.h
 
 # Build V8 non-i18n
 RUN cd ${ROOT}/google/v8 && \

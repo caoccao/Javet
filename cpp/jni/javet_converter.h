@@ -323,20 +323,41 @@ namespace Javet {
             const V8LocalContext& v8Context,
             const jobjectArray mValues) noexcept;
 
+#ifdef ENABLE_NODE
         static inline V8InternalNativeContext ToV8InternalContext(
             const V8LocalContext& v8LocalContext) noexcept {
             return *v8::internal::Cast<V8InternalNativeContext>(*v8::Utils::OpenHandle(*v8LocalContext));
         }
+#else
+        static inline v8::internal::Tagged<V8InternalNativeContext> ToV8InternalContext(
+            const V8LocalContext& v8LocalContext) noexcept {
+            return v8::internal::Cast<V8InternalNativeContext>(*v8::Utils::OpenHandle(*v8LocalContext));
+        }
+#endif
 
+#ifdef ENABLE_NODE
         static inline V8InternalJSFunction ToV8InternalJSFunction(
             const V8LocalValue& v8LocalValue) noexcept {
             return *v8::internal::Cast<V8InternalJSFunction>(*v8::Utils::OpenHandle(*v8LocalValue));
         }
+#else
+        static inline v8::internal::Tagged<V8InternalJSFunction> ToV8InternalJSFunction(
+            const V8LocalValue& v8LocalValue) noexcept {
+            return v8::internal::Cast<V8InternalJSFunction>(*v8::Utils::OpenHandle(*v8LocalValue));
+        }
+#endif
 
+#ifdef ENABLE_NODE
         static inline V8InternalJSObject ToV8InternalJSObject(
             const V8LocalValue& v8LocalValue) noexcept {
             return *v8::internal::Cast<V8InternalJSObject>(*v8::Utils::OpenHandle(*v8LocalValue));
         }
+#else
+        static inline v8::internal::Tagged<V8InternalJSObject> ToV8InternalJSObject(
+            const V8LocalValue& v8LocalValue) noexcept {
+            return v8::internal::Cast<V8InternalJSObject>(*v8::Utils::OpenHandle(*v8LocalValue));
+        }
+#endif
 
 #ifdef ENABLE_NODE
         static inline V8InternalModule ToV8InternalModule(
@@ -350,9 +371,16 @@ namespace Javet {
         }
 #endif
 
+#ifdef ENABLE_NODE
         static inline V8InternalScript ToV8InternalScript(
             const V8LocalScript& v8LocalScript) noexcept {
             return *v8::internal::Cast<V8InternalScript>(*v8::Utils::OpenHandle(*v8LocalScript));
         }
+#else
+        static inline v8::internal::Tagged<V8InternalScript> ToV8InternalScript(
+            const V8LocalScript& v8LocalScript) noexcept {
+            return v8::internal::Cast<V8InternalScript>(*v8::Utils::OpenHandle(*v8LocalScript));
+        }
+#endif
     }
 }

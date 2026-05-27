@@ -232,11 +232,12 @@ Almost all `V8 options <https://docs.google.com/document/d/1DFsbyoPcdK1__fe1nBDz
 Statistics
 ==========
 
-V8 exposes quite a few statistics for applications to analyze the memory usage, performance, etc. Javet selectively exposes some of those statistics via ``V8Runtime`` or ``V8Host``.
+V8 exposes quite a few statistics for applications to analyze the memory usage, performance, etc. Javet selectively exposes some of those statistics via ``V8Runtime`` and ``JavetEnginePool``.
 
 * `getV8HeapSpaceStatistics() <../javadoc/com/caoccao/javet/interop/V8Runtime.html#getV8HeapSpaceStatistics-com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics.AllocationSpace->`_ (Asynchronous)
 * `getV8HeapStatistics() <../javadoc/com/caoccao/javet/interop/V8Runtime.html#getV8HeapStatistics-->`_ (Asynchronous)
-* `getV8SharedMemoryStatistics() <../javadoc/com/caoccao/javet/interop/V8Host.html#getV8SharedMemoryStatistics-->`_
+* `getV8SharedMemoryStatistics() <../javadoc/com/caoccao/javet/interop/V8Runtime.html#getV8SharedMemoryStatistics-->`_ (Asynchronous)
+* `getAggregateV8SharedMemoryStatistics() <../javadoc/com/caoccao/javet/interop/engine/IJavetEnginePool.html#getAggregateV8SharedMemoryStatistics-->`_ (Pool-wide sum)
 
 .. image:: ../../resources/images/statistics_v8_heap_space_statistics.png
     :alt: V8 Heap Space Statistics
@@ -249,7 +250,8 @@ V8 exposes quite a few statistics for applications to analyze the memory usage, 
 
 .. note::
 
-    * The ``getV8HeapSpaceStatistics()`` and ``getV8HeapStatistics()`` calls are asynchronous and not 100% guaranteed to be completed. Only when the V8 runtime is idle, 100% completion can be achieved.
+    * The ``getV8HeapSpaceStatistics()``, ``getV8HeapStatistics()``, and ``getV8SharedMemoryStatistics()`` calls are asynchronous and not 100% guaranteed to be completed. Only when the V8 runtime is idle, 100% completion can be achieved.
+    * Since 5.0.8, V8 mode runs in multi-cage pointer compression, so each ``V8Runtime`` owns its own read-only space. ``getV8SharedMemoryStatistics()`` on ``V8Runtime`` reports that runtime's group; the process-wide variants on ``V8Host`` have been removed. Use ``JavetEnginePool.getAggregateV8SharedMemoryStatistics()`` to sum across a pool.
     * More statistics will be exposed in new releases. Please file issues if you need more of them.
 
 Heap Limit

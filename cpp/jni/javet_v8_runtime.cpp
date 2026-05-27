@@ -533,6 +533,35 @@ namespace Javet {
             v8Isolate->SetModifyCodeGenerationFromStringsCallback(nullptr);
         }
 #else
+        // V8 mode + pointer compression in multi-cage mode: allocate a fresh
+        // IsolateGroup so each isolate gets its own 4 GB pointer-compression
+        // cage instead of sharing the process-wide cage. The IsolateGroup is
+        // reference counted; Isolate::Allocate/New acquires a reference, so
+        // the local can drop its reference on scope exit. The cage's virtual
+        // memory mapping is released when the isolate is disposed.
+#if defined(V8_COMPRESS_POINTERS) && defined(V8_COMPRESS_POINTERS_IN_MULTIPLE_CAGES)
+        v8::IsolateGroup v8IsolateGroup = v8::IsolateGroup::Create();
+        // With V8_ENABLE_SANDBOX the array buffer backing stores must live
+        // inside the IsolateGroup's sandbox address space. The process-wide
+        // GlobalV8ArrayBufferAllocator (NewDefaultAllocator() with no group)
+        // falls back to malloc/free and triggers
+        // "ArrayBuffer backing stores must be allocated inside the sandbox".
+        // Override with the group-aware overload so this runtime's backing
+        // stores land in the right sandbox. The allocator must outlive the
+        // isolate; storing it on the V8Runtime via reset() achieves that.
+        v8ArrayBufferAllocator.reset(V8ArrayBufferAllocator::NewDefaultAllocator(v8IsolateGroup));
+        if (createSnapshotEnabled) {
+            v8Isolate = v8::Isolate::Allocate(v8IsolateGroup);
+            v8SnapshotCreator.reset(new v8::SnapshotCreator(v8Isolate, nullptr, v8StartupData.get(), true));
+        }
+        else {
+            v8::Isolate::CreateParams createParams;
+            createParams.array_buffer_allocator = v8ArrayBufferAllocator.get();
+            createParams.oom_error_callback = Javet::Callback::OOMErrorCallback;
+            createParams.snapshot_blob = v8StartupData.get();
+            v8Isolate = v8::Isolate::New(v8IsolateGroup, createParams);
+        }
+#else
         if (createSnapshotEnabled) {
             v8Isolate = v8::Isolate::Allocate();
             v8SnapshotCreator.reset(new v8::SnapshotCreator(v8Isolate, nullptr, v8StartupData.get(), true));
@@ -544,6 +573,7 @@ namespace Javet {
             createParams.snapshot_blob = v8StartupData.get();
             v8Isolate = v8::Isolate::New(createParams);
         }
+#endif
         v8Isolate->SetPromiseRejectCallback(Javet::Callback::JavetPromiseRejectCallback);
 #endif
     }

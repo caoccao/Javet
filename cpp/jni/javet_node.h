@@ -29,6 +29,7 @@
 #define HAVE_AMARO 1
 #define HAVE_INSPECTOR 1
 #define HAVE_OPENSSL 1
+#define HAVE_SQLITE 1
 #include <node.h>
 #include <uv.h>
 #include <env-inl.h>

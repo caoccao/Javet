@@ -82,14 +82,91 @@ Environment Variables
 V8 Feature Flags
 ================
 
-======================= ======= ==================================================================================================================================
-Feature                 Flag    Description
-======================= ======= ==================================================================================================================================
-Custom libcxx           On/Off  The official release supports custom libcxx in some cases.
-Debug                   Off     The official release is a **release** build.
-External Startup Data   Off     The official release doesn't support external startup data.
-i18n                    On/Off  The official release supports both non-i18n and i18n.
-Pointer Compression     Off     The official release doesn't support pointer compression.
-Sandbox                 Off     The official release doesn't support sandbox. Please contact the maintainer for private builds supporting this feature.
-Snapshot                Off     The official release doesn't support snapshot. Please contact the maintainer for private builds supporting this feature.
-======================= ======= ==================================================================================================================================
+======================= ==================================================================================================================================
+Feature                 Description
+======================= ==================================================================================================================================
+Custom libcxx           V8 is built with Chromium's custom libc++ on some platforms.
+Debug                   The official release is a **release** build.
+External Startup Data   The V8 snapshot is embedded directly into the monolithic library.
+i18n                    Both non-i18n and i18n builds are produced for every platform.
+Pointer Compression     Pointer compression is enabled for V8 mode on all 64-bit platforms.
+Sandbox                 V8 sandbox is enabled for V8 mode on Linux and Windows.
+Snapshot                The official release doesn't support snapshot.
+======================= ==================================================================================================================================
+
+Custom libcxx
+-------------
+
+V8 mode uses Chromium's custom libc++ on Linux and Windows. On macOS, the system libc++ is used. On Android, the NDK's ``c++_static`` is used. Node.js mode uses the system's standard C++ library on all platforms.
+
+=============== ======== =============
+Platform        V8 Mode  Node.js Mode
+=============== ======== =============
+Linux x86_64    On       Off
+Linux arm64     On       Off
+Windows x86_64  On       Off
+macOS x86_64    Off      Off
+macOS arm64     Off      Off
+Android arm64   Off      Off
+Android x86_64  Off      Off
+Android arm     Off      Off
+Android x86     Off      Off
+=============== ======== =============
+
+Debug
+-----
+
+Off for all platforms and modes. The official release is always a **release** build.
+
+External Startup Data
+---------------------
+
+Off for all platforms and modes. The V8 snapshot is embedded directly into the monolithic library.
+
+i18n
+----
+
+Both i18n and non-i18n builds are produced for every platform and architecture. Node.js mode uses ``--with-intl=full-icu`` (i18n) or ``--without-intl`` (non-i18n).
+
+Pointer Compression
+-------------------
+
+Pointer compression is enabled for V8 mode on all 64-bit platforms and disabled on 32-bit platforms. Node.js mode does not enable pointer compression.
+
+=============== ================= ==============
+Platform        V8 Mode           Node.js Mode
+=============== ================= ==============
+Linux x86_64    On (from v5.0.8)  Off
+Linux arm64     On (from v5.0.8)  Off
+Windows x86_64  On (from v5.0.8)  Off
+macOS x86_64    On (from v5.0.8)  Off
+macOS arm64     On (from v5.0.8)  Off
+Android arm64   On (from v5.0.8)  Off
+Android x86_64  On (from v5.0.8)  Off
+Android arm     Off               Off
+Android x86     Off               Off
+=============== ================= ==============
+
+Sandbox
+-------
+
+V8 sandbox is enabled for V8 mode on Linux, Windows, and macOS. Sandbox requires V8's hermetic libc++ (``use_safe_libcxx = use_custom_libcxx && enable_safe_libcxx``); Android keeps the system libc++ and so the sandbox is off there. Node.js mode does not enable sandbox.
+
+=============== ================= ==============
+Platform        V8 Mode           Node.js Mode
+=============== ================= ==============
+Linux x86_64    On (from v5.0.8)  Off
+Linux arm64     On (from v5.0.8)  Off
+Windows x86_64  On (from v5.0.8)  Off
+macOS x86_64    On (from v5.0.8)  Off
+macOS arm64     On (from v5.0.8)  Off
+Android arm64   Off               Off
+Android x86_64  Off               Off
+Android arm     Off               Off
+Android x86     Off               Off
+=============== ================= ==============
+
+Snapshot
+--------
+
+Off for all platforms and modes. Please contact the maintainer for private builds supporting this feature.

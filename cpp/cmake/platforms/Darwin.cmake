@@ -28,17 +28,50 @@ endif()
 add_definitions(-D__APPLE__)
 list(APPEND includeDirs $ENV{JAVA_HOME}/include/darwin)
 if(DEFINED V8_DIR)
+    # V8 is built with use_custom_libcxx=true (required for v8_enable_sandbox).
+    # v8_monolith.a references symbols in libc++'s std::__Cr ABI namespace, so
+    # Javet must compile against the same hermetic libc++ (headers from
+    # buildtools/third_party/libc++ supply __config_site, which pins
+    # _LIBCPP_ABI_NAMESPACE=__Cr) and link the matching libc++ objects.
+    # Apple's clang would otherwise pick up the SDK's /usr/include/c++/v1 and
+    # auto-link libc++.dylib, causing std symbol mismatches.
+    add_definitions(-D_LIBCPP_HARDENING_MODE_DEFAULT=_LIBCPP_HARDENING_MODE_NONE)
+    list(APPEND includeDirs
+        ${V8_DIR}/buildtools/third_party/libc++
+        ${V8_DIR}/third_party/libc++/src/include
+    )
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -nostdinc++ -fno-exceptions -fno-modules -fno-implicit-modules -fno-builtin-module-map ")
     foreach(importLibrary ${importLibraries})
         set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/lib${importLibrary}.a)
         target_link_libraries(Javet PUBLIC -force_load ${importLibrary})
         target_link_libraries(JavetStatic PUBLIC -force_load ${importLibrary})
     endforeach(importLibrary)
-    # From V8 v11.7 abseil is somehow not built properly.
-    # This is a patch build.
-    # https://github.com/abseil/abseil-cpp/blob/master/CMake/README.md
-    add_subdirectory(${V8_DIR}/third_party/abseil-cpp ${V8_RELEASE_DIR}/third_party/abseil-cpp)
-    target_link_libraries(Javet PUBLIC -lc++ absl::base absl::time)
-    target_link_libraries(JavetStatic PUBLIC -lc++ absl::base absl::time)
+    # V8 builds libc++ as a static_library on non-Windows platforms, but the
+    # GN toolchain on macOS produces "thin" GNU archives (containing only
+    # references to the .o files, not the objects themselves). Apple's ld
+    # doesn't understand thin archives, so we can't link libc++.a / libc++abi.a
+    # directly the way Linux.cmake does with lld. Instead, glob the individual
+    # .o files - they live next to the thin archive and are what the archive
+    # references anyway. Same pattern as the Windows build (which globs because
+    # V8 builds libc++ as a source_set there).
+    file(GLOB JAVET_V8_LIBCXX_OBJS
+        "${V8_RELEASE_DIR}/obj/buildtools/third_party/libc++/libc++/*.o")
+    file(GLOB JAVET_V8_LIBCXXABI_OBJS
+        "${V8_RELEASE_DIR}/obj/buildtools/third_party/libc++abi/libc++abi/*.o")
+    if(NOT JAVET_V8_LIBCXX_OBJS)
+        message(FATAL_ERROR
+            "libc++ object files not found under "
+            "${V8_RELEASE_DIR}/obj/buildtools/third_party/libc++/libc++/. "
+            "Ensure V8 was built with use_custom_libcxx=true.")
+    endif()
+    target_link_libraries(Javet PUBLIC
+        -nostdlib++
+        ${JAVET_V8_LIBCXX_OBJS} ${JAVET_V8_LIBCXXABI_OBJS}
+        "-framework Foundation" "-framework Security" -lobjc)
+    target_link_libraries(JavetStatic PUBLIC
+        -nostdlib++
+        ${JAVET_V8_LIBCXX_OBJS} ${JAVET_V8_LIBCXXABI_OBJS}
+        "-framework Foundation" "-framework Security" -lobjc)
 endif()
 if(DEFINED NODE_DIR)
     list(APPEND includeDirs

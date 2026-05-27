@@ -80,6 +80,22 @@ namespace Javet {
             }
         };
 
+        struct SharedMemoryStatisticsContext {
+            jobject completableFuture;
+
+            SharedMemoryStatisticsContext(JNIEnv* jniEnv, jobject completableFuture) noexcept {
+                this->completableFuture = jniEnv->NewGlobalRef(completableFuture);
+                INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
+            }
+
+            ~SharedMemoryStatisticsContext() {
+                FETCH_JNI_ENV(GlobalJavaVM);
+                jniEnv->CallVoidMethod(completableFuture, jmethodIDV8StatisticsFutureSetHandle, 0);
+                jniEnv->DeleteGlobalRef(completableFuture);
+                INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
+            }
+        };
+
         void Initialize(JNIEnv* jniEnv) noexcept {
             jclassV8AllocationSpace = FIND_CLASS(jniEnv, "com/caoccao/javet/enums/V8AllocationSpace");
             jmethodIDV8AllocationSpaceGetIndex = jniEnv->GetMethodID(jclassV8AllocationSpace, "getIndex", "()I");
@@ -232,13 +248,61 @@ namespace Javet {
             INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
         }
 
-        jobject GetV8SharedMemoryStatistics(JNIEnv* jniEnv) noexcept {
+        jobject GetV8SharedMemoryStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate) noexcept {
+            jobject jFuture = jniEnv->NewObject(
+                jclassV8StatisticsFuture,
+                jmethodIDV8StatisticsFutureConstructor,
+                (jint)Javet::Enums::RawPointerType::SharedMemoryStatisticsContext);
+            auto contextPointer = new SharedMemoryStatisticsContext(jniEnv, jFuture);
+            INCREASE_COUNTER(Javet::Monitor::CounterType::New);
+            jniEnv->CallVoidMethod(jFuture, jmethodIDV8StatisticsFutureSetHandle, TO_JAVA_LONG(contextPointer));
+            if (v8Isolate->IsInUse()) {
+                jniEnv->CallStaticVoidMethod(jclassV8Host, jmethodIDV8HostRegisterV8StatisticsFuture, jFuture);
+                v8Isolate->RequestInterrupt(GetV8SharedMemoryStatisticsAsync, contextPointer);
+            }
+            else {
+                auto v8Locker = v8::Locker(v8Isolate);
+                GetV8SharedMemoryStatisticsSync(jniEnv, v8Isolate, contextPointer);
+            }
+            return jFuture;
+        }
+
+        void GetV8SharedMemoryStatisticsAsync(v8::Isolate* v8Isolate, void* data) noexcept {
+            FETCH_JNI_ENV(GlobalJavaVM);
+            if (jniEnv->CallStaticBooleanMethod(jclassV8Host, jmethodIDV8HostRequestV8StatisticsFuture, TO_JAVA_LONG(data))) {
+                GetV8SharedMemoryStatisticsSync(jniEnv, v8Isolate, data);
+            }
+            else {
+                LOG_DEBUG("Ignore GetV8SharedMemoryStatisticsAsync().");
+            }
+        }
+
+        void GetV8SharedMemoryStatisticsInternal(
+            JNIEnv* jniEnv,
+            v8::Isolate* v8Isolate,
+            const jobject& completableFuture) noexcept {
             v8::SharedMemoryStatistics sharedMemoryStatistics;
+            // In multi-cage pointer compression mode, ReadOnlyHeap statistics
+            // are owned by the calling thread's IsolateGroup (a thread_local).
+            // The interrupt callback / locker-held sync path runs with this
+            // isolate's group as `current`, so the V8 API resolves correctly.
+            // The isolate scope is needed for the sync (non-RequestInterrupt)
+            // path; the interrupt is already inside the isolate.
+            v8::Isolate::Scope v8IsolateScope(v8Isolate);
             v8::V8::GetSharedMemoryStatistics(&sharedMemoryStatistics);
-            return jniEnv->NewObject(jclassV8SharedMemoryStatistics, jmethodIDV8SharedMemoryStatisticsConstructor,
+            auto jSharedMemoryStatistics = jniEnv->NewObject(jclassV8SharedMemoryStatistics, jmethodIDV8SharedMemoryStatisticsConstructor,
                 static_cast<jlong>(sharedMemoryStatistics.read_only_space_physical_size()),
                 static_cast<jlong>(sharedMemoryStatistics.read_only_space_size()),
                 static_cast<jlong>(sharedMemoryStatistics.read_only_space_used_size()));
+            jniEnv->CallBooleanMethod(completableFuture, jmethodIDV8StatisticsFutureComplete, jSharedMemoryStatistics);
+            jniEnv->DeleteLocalRef(jSharedMemoryStatistics);
+        }
+
+        void GetV8SharedMemoryStatisticsSync(JNIEnv* jniEnv, v8::Isolate* v8Isolate, void* data) noexcept {
+            auto contextPointer = static_cast<SharedMemoryStatisticsContext*>(data);
+            GetV8SharedMemoryStatisticsInternal(jniEnv, v8Isolate, contextPointer->completableFuture);
+            delete contextPointer;
+            INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
         }
 
         void RemoveHeapSpaceStatisticsContext(jlong handle) noexcept {
@@ -249,6 +313,12 @@ namespace Javet {
 
         void RemoveHeapStatisticsContext(jlong handle) noexcept {
             auto contextPointer = reinterpret_cast<HeapStatisticsContext*>(handle);
+            delete contextPointer;
+            INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
+        }
+
+        void RemoveV8SharedMemoryStatisticsContext(jlong handle) noexcept {
+            auto contextPointer = reinterpret_cast<SharedMemoryStatisticsContext*>(handle);
             delete contextPointer;
             INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
         }

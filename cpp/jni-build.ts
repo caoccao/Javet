@@ -48,7 +48,7 @@ import * as cli from "@std/cli";
 import { green, red, yellow } from "@std/fmt/colors";
 import * as path from "@std/path";
 
-const JAVET_VERSION = "5.0.7";
+const JAVET_VERSION = "5.0.8";
 
 // Calculate script directory and project root
 const SCRIPT_DIR = path.dirname(path.fromFileUrl(import.meta.url));
@@ -381,6 +381,47 @@ async function buildLinux(config: BuildConfig): Promise<boolean> {
       console.warn(yellow("Warning: strip command failed, continuing anyway..."));
     }
 
+    // Verify shared library dependencies
+    const lddCmd = ["ldd", libraryPath];
+    console.log(`Running: ${lddCmd.join(" ")}`);
+    const lddProcess = new Deno.Command(lddCmd[0], {
+      args: lddCmd.slice(1),
+      stdout: "piped",
+      stderr: "inherit",
+    });
+    const lddResult = await lddProcess.output();
+    if (lddResult.code !== 0) {
+      console.error(red("Error: ldd command failed"));
+      return false;
+    }
+    const lddOutput = new TextDecoder().decode(lddResult.stdout);
+    const permittedDeps = [
+      "linux-vdso.so",
+      "librt.so",
+      "libm.so",
+      "libc.so",
+      "ld-linux-aarch64.so",
+      "ld-linux-x86-64.so",
+      "libpthread.so",
+    ];
+    const unexpectedDeps: string[] = [];
+    for (const line of lddOutput.split("\n")) {
+      const trimmed = line.trim();
+      if (!trimmed) {
+        continue;
+      }
+      if (!permittedDeps.some((dep) => trimmed.includes(dep))) {
+        unexpectedDeps.push(trimmed);
+      }
+    }
+    if (unexpectedDeps.length > 0) {
+      console.error(red("Error: Unexpected shared library dependencies found:"));
+      for (const dep of unexpectedDeps) {
+        console.error(red(`  ${dep}`));
+      }
+      return false;
+    }
+
     // Copy .a files
     console.log(`Copying static libraries to ${BUILD_LIBS_DIR}`);
     for await (const entry of Deno.readDir(".")) {
@@ -426,6 +467,55 @@ async function buildMacOS(config: BuildConfig): Promise<boolean> {
       return false;
     }
 
+    // Verify dynamic library dependencies
+    const libraryPath = path.join(RESOURCES_DIR, getLibraryFileName(config));
+    const dyldInfoCmd = ["dyld_info", "-dependents", libraryPath];
+    console.log(`Running: ${dyldInfoCmd.join(" ")}`);
+    const dyldInfoProcess = new Deno.Command(dyldInfoCmd[0], {
+      args: dyldInfoCmd.slice(1),
+      stdout: "piped",
+      stderr: "inherit",
+    });
+    const dyldInfoResult = await dyldInfoProcess.output();
+    if (dyldInfoResult.code !== 0) {
+      console.error(red("Error: dyld_info command failed"));
+      return false;
+    }
+    const dyldInfoOutput = new TextDecoder().decode(dyldInfoResult.stdout);
+    const lines = dyldInfoOutput.split("\n");
+    // Skip header lines until after "attributes     load path"
+    const headerIndex = lines.findIndex((line) => line.trim().startsWith("attributes"));
+    if (headerIndex === -1) {
+      console.error(red("Error: Unexpected dyld_info output format"));
+      return false;
+    }
+    const depLines = lines.slice(headerIndex + 1);
+    const permittedDeps = [
+      /^\/usr\/lib\/libc\+\+\.\d+\.dylib$/,
+      /^\/usr\/lib\/libobjc\.\w+\.dylib$/,
+      /^\/System\/Library\/Frameworks\/CoreFoundation\.framework\/Versions\/\w+\/CoreFoundation$/,
+      /^\/System\/Library\/Frameworks\/Foundation\.framework\/Versions\/\w+\/Foundation$/,
+      /^\/System\/Library\/Frameworks\/Security\.framework\/Versions\/\w+\/Security$/,
+      /^\/usr\/lib\/libSystem\.\w+\.dylib$/,
+    ];
+    const unexpectedDeps: string[] = [];
+    for (const line of depLines) {
+      const trimmed = line.trim();
+      if (!trimmed) {
+        continue;
+      }
+      if (!permittedDeps.some((regex) => regex.test(trimmed))) {
+        unexpectedDeps.push(trimmed);
+      }
+    }
+    if (unexpectedDeps.length > 0) {
+      console.error(red("Error: Unexpected dynamic library dependencies found:"));
+      for (const dep of unexpectedDeps) {
+        console.error(red(`  ${dep}`));
+      }
+      return false;
+    }
+
     // Copy .a files
     console.log(`Copying static libraries to ${BUILD_LIBS_DIR}`);
     for await (const entry of Deno.readDir(".")) {
@@ -450,14 +540,151 @@ async function buildWindows(config: BuildConfig): Promise<boolean> {
   try {
     const cmakeArgs = buildCMakeArgs(config);
 
-    // Run cmake with Visual Studio generator
+    // V8 on Windows is built by V8's bundled clang-cl against Chromium's
+    // custom libc++ (use_custom_libcxx = true), which puts std symbols in the
+    // std::__Cr ABI namespace. Compile Javet with the same toolchain to match
+    // the ABI. Node.js mode keeps MSVC's STL (matches Node's vcbuild.bat).
+    if (config.v8Dir) {
+      return await buildWindowsV8(config, cmakeArgs);
+    } else {
+      return await buildWindowsNode(config, cmakeArgs);
+    }
+  } finally {
+    Deno.chdir(originalDir);
+  }
+}
+
+async function importVcvars(): Promise<boolean> {
+  // Locate Visual Studio via vswhere so we don't depend on the caller having
+  // already run vcvars64.bat. We need vcvars's env (PATH for rc.exe/mt.exe,
+  // LIB for kernel32.lib et al., INCLUDE for MSVC headers) even though V8's
+  // clang-cl can auto-detect MSVC paths — lld-link and CMake's manifest
+  // wrappers cannot.
+  const programFilesX86 = Deno.env.get("ProgramFiles(x86)") ??
+    "C:\\Program Files (x86)";
+  const vswhereExe = path.join(
+    programFilesX86,
+    "Microsoft Visual Studio",
+    "Installer",
+    "vswhere.exe",
+  );
+
+  console.log(`Locating Visual Studio with: ${vswhereExe}`);
+  const vswhere = new Deno.Command(vswhereExe, {
+    args: [
+      "-latest",
+      "-products", "*",
+      "-requires", "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+      "-property", "installationPath",
+    ],
+    stdout: "piped",
+    stderr: "inherit",
+  });
+  const vswhereResult = await vswhere.output();
+  if (vswhereResult.code !== 0) {
+    console.error(red("vswhere.exe failed"));
+    return false;
+  }
+  const vsInstallPath = new TextDecoder()
+    .decode(vswhereResult.stdout)
+    .split(/\r?\n/)[0]
+    .trim();
+  if (!vsInstallPath) {
+    console.error(red("vswhere returned no Visual Studio installation"));
+    return false;
+  }
+  const vcvars = path.join(
+    vsInstallPath,
+    "VC", "Auxiliary", "Build", "vcvars64.bat",
+  );
+  console.log(`Importing environment from: ${vcvars}`);
+
+  // Marker isolates `set` output from vcvars64.bat's banner.
+  // Deno mangles quotes when forwarding /c args to cmd.exe (the vcvars path
+  // contains spaces), so write a temp .bat and run that instead.
+  const marker = "__JAVET_VCVARS_BEGIN__";
+  const tempBat = await Deno.makeTempFile({ suffix: ".bat" });
+  let cmdResult;
+  try {
+    await Deno.writeTextFile(
+      tempBat,
+      `@echo off\r\ncall "${vcvars}" >nul\r\nif errorlevel 1 exit /b %errorlevel%\r\necho ${marker}\r\nset\r\n`,
+    );
+    const cmd = new Deno.Command("cmd.exe", {
+      args: ["/c", tempBat],
+      stdout: "piped",
+      stderr: "inherit",
+    });
+    cmdResult = await cmd.output();
+  } finally {
+    try {
+      await Deno.remove(tempBat);
+    } catch {
+      // Best-effort cleanup.
+    }
+  }
+  if (cmdResult.code !== 0) {
+    console.error(red(`vcvars64.bat failed with exit code ${cmdResult.code}`));
+    return false;
+  }
+  const out = new TextDecoder().decode(cmdResult.stdout);
+  const markerIdx = out.indexOf(marker);
+  if (markerIdx < 0) {
+    console.error(red("vcvars marker not found in cmd output"));
+    return false;
+  }
+  let imported = 0;
+  for (const line of out.slice(markerIdx + marker.length).split(/\r?\n/)) {
+    const eq = line.indexOf("=");
+    if (eq <= 0) continue;
+    const name = line.slice(0, eq);
+    const value = line.slice(eq + 1);
+    // Skip env names Deno.env can't represent (e.g., "ProgramFiles(x86)").
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) continue;
+    try {
+      Deno.env.set(name, value);
+      imported++;
+    } catch {
+      // Ignore names Deno refuses.
+    }
+  }
+  console.log(`Imported ${imported} environment variables from vcvars64.bat`);
+  return true;
+}
+
+async function buildWindowsV8(config: BuildConfig, cmakeArgs: string[]): Promise<boolean> {
+  const v8ClangBinDir = path.join(
+    config.v8Dir,
+    "third_party",
+    "llvm-build",
+    "Release+Asserts",
+    "bin",
+  );
+  const clangCl = path.join(v8ClangBinDir, "clang-cl.exe");
+  const lldLink = path.join(v8ClangBinDir, "lld-link.exe");
+  const ninjaExe = path.join(config.v8Dir, "third_party", "ninja", "ninja.exe");
+
+  const originalPath = Deno.env.get("PATH") ?? "";
+
+  // Import vcvars first (sets PATH/INCLUDE/LIB), then prepend V8's LLVM bin
+  // so lld-link.exe wins over MSVC's link.exe when cmake/clang-cl resolves
+  // tools by name.
+  if (!await importVcvars()) {
+    return false;
+  }
+  Deno.env.set("PATH", `${v8ClangBinDir};${Deno.env.get("PATH") ?? ""}`);
+
+  try {
     const cmakeCmd = [
       "cmake",
       SCRIPT_DIR,
-      "-G", "Visual Studio 18 2026",
-      "-A", "x64",
+      "-G", "Ninja",
+      "-DCMAKE_BUILD_TYPE=Release",
+      `-DCMAKE_MAKE_PROGRAM=${ninjaExe}`,
+      `-DCMAKE_C_COMPILER=${clangCl}`,
+      `-DCMAKE_CXX_COMPILER=${clangCl}`,
+      `-DCMAKE_LINKER=${lldLink}`,
       `-DJAVET_VERSION=${JAVET_VERSION}`,
-      "-T", "ClangCL",
       ...cmakeArgs,
     ];
 
@@ -466,35 +693,70 @@ async function buildWindows(config: BuildConfig): Promise<boolean> {
       return false;
     }
 
-    // Run cmake --build
-    const buildCmd = [
-      "cmake",
-      "--build",
-      ".",
-      "--",
-      "/p:CharacterSet=Unicode",
-      "/p:Configuration=Release",
-      "/p:Platform=x64",
-    ];
-
+    const buildCmd = ["cmake", "--build", ".", "--config", "Release"];
     console.log(`Running: ${buildCmd.join(" ")}`);
     if (!await runCommand(buildCmd)) {
       return false;
     }
 
-    // Copy .lib files
+    // Ninja outputs at the build root (no Release\ subdir).
     console.log(`Copying static libraries to ${BUILD_LIBS_DIR}`);
-    for await (const entry of Deno.readDir("Release")) {
+    for await (const entry of Deno.readDir(".")) {
       if (entry.isFile && entry.name.endsWith(".lib")) {
-        await Deno.copyFile(`Release/${entry.name}`, path.join(BUILD_LIBS_DIR, entry.name));
+        await Deno.copyFile(entry.name, path.join(BUILD_LIBS_DIR, entry.name));
       }
     }
 
     console.log(green(`\n✓ Generated library: ${getLibraryFileName(config)}`));
     return true;
   } finally {
-    Deno.chdir(originalDir);
+    Deno.env.set("PATH", originalPath);
   }
+}
+
+async function buildWindowsNode(config: BuildConfig, cmakeArgs: string[]): Promise<boolean> {
+  // Run cmake with Visual Studio generator
+  const cmakeCmd = [
+    "cmake",
+    SCRIPT_DIR,
+    "-G", "Visual Studio 18 2026",
+    "-A", "x64",
+    `-DJAVET_VERSION=${JAVET_VERSION}`,
+    "-T", "ClangCL",
+    ...cmakeArgs,
+  ];
+
+  console.log(`Running: ${cmakeCmd.join(" ")}`);
+  if (!await runCommand(cmakeCmd)) {
+    return false;
+  }
+
+  // Run cmake --build
+  const buildCmd = [
+    "cmake",
+    "--build",
+    ".",
+    "--",
+    "/p:CharacterSet=Unicode",
+    "/p:Configuration=Release",
+    "/p:Platform=x64",
+  ];
+
+  console.log(`Running: ${buildCmd.join(" ")}`);
+  if (!await runCommand(buildCmd)) {
+    return false;
+  }
+
+  // Copy .lib files
+  console.log(`Copying static libraries to ${BUILD_LIBS_DIR}`);
+  for await (const entry of Deno.readDir("Release")) {
+    if (entry.isFile && entry.name.endsWith(".lib")) {
+      await Deno.copyFile(`Release/${entry.name}`, path.join(BUILD_LIBS_DIR, entry.name));
+    }
+  }
+
+  console.log(green(`\n✓ Generated library: ${getLibraryFileName(config)}`));
+  return true;
 }
 
 async function buildAndroid(config: BuildConfig): Promise<boolean> {

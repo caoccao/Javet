@@ -18,21 +18,53 @@ set(JAVET_LIB_SYSTEM "windows")
 set(JAVET_LIB_ARCH "-x86_64")
 # Generate PDB file
 # https://learn.microsoft.com/en-us/cpp/build/reference/zc-cplusplus
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi /MP /O2 /Ob2 /GS- /Zc:__cplusplus")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /clang:-Wno-invalid-offsetof /clang:-Wno-nullability-completeness")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi /O2 /Ob2 /GS- /Zc:__cplusplus")
 set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
-add_definitions(-D_ITERATOR_DEBUG_LEVEL=0 -D_WIN32)
+add_definitions(-D_WIN32)
 list(APPEND includeDirs $ENV{JAVA_HOME}/include/win32)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 if(DEFINED V8_DIR)
+    # V8 is built with use_custom_libcxx=true, so its public headers and
+    # v8_monolith.lib reference symbols in libc++'s std::__Cr ABI namespace.
+    # We must compile Javet against the same libc++ (headers + __config_site
+    # which sets _LIBCPP_ABI_NAMESPACE=__Cr) and link the matching libc++
+    # objects so std symbol references resolve.
     add_definitions(-D_WIN32_WINNT)
+    add_definitions(
+        -D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS
+        -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE
+        -D_LIBCPP_INSTRUMENTED_WITH_ASAN=0)
+    # MSBuild's ClangCL toolset doesn't know about clang's /MP behavior and
+    # /clang: passthroughs differ from a direct clang-cl invocation. Use
+    # clang-native warning flags here; jni-build.ts drives Ninja + V8's
+    # clang-cl for V8 mode on Windows.
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wno-invalid-offsetof -Wno-nullability-completeness")
+    # Place libc++ ahead of MSVC's STL include paths so <vector>, <string>
+    # etc. resolve to V8's libc++.
+    include_directories(BEFORE
+        ${V8_DIR}/buildtools/third_party/libc++
+        ${V8_DIR}/third_party/libc++/src/include)
     foreach(importLibrary ${importLibraries})
         set_target_properties(${importLibrary} PROPERTIES IMPORTED_LOCATION ${V8_RELEASE_DIR}/obj/${importLibrary}.lib)
     endforeach(importLibrary)
     set_target_properties(v8_monolith PROPERTIES LINK_FLAGS "/WHOLEARCHIVE:v8_monolith.lib")
     add_library(Javet SHARED ${sourceFiles} "jni/javet_resource_v8.rc")
+    # V8 builds libc++ as a source_set and never archives it into a .lib, so
+    # we pull the individual .obj files directly into Javet's link.
+    file(GLOB JAVET_V8_LIBCXX_OBJS
+        "${V8_RELEASE_DIR}/obj/buildtools/third_party/libc++/libc++/*.obj")
+    if(NOT JAVET_V8_LIBCXX_OBJS)
+        message(FATAL_ERROR
+            "libc++ object files not found under "
+            "${V8_RELEASE_DIR}/obj/buildtools/third_party/libc++/libc++/. "
+            "Ensure V8 was built with use_custom_libcxx=true.")
+    endif()
+    target_link_libraries(Javet ${JAVET_V8_LIBCXX_OBJS})
 endif()
 if(DEFINED NODE_DIR)
+    # Node mode keeps MSVC's STL and uses MSBuild's ClangCL toolset.
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MP /clang:-Wno-invalid-offsetof /clang:-Wno-nullability-completeness")
+    add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
     list(APPEND includeDirs
         ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/global_intermediate/generate-bytecode-output-root
         ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/global_intermediate/inspector-generated-output-root
