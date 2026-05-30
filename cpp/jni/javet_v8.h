@@ -77,7 +77,7 @@
 #endif
 // Sandbox is enabled for Windows, Linux, and macOS V8 builds. Android keeps it
 // off because it doesn't link V8's hermetic libc++ - see comment above.
-#if defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
+#if (defined(_WIN32) || defined(__linux__) || defined(__APPLE__)) && !defined(__ANDROID__)
 #ifndef V8_ENABLE_SANDBOX
 #define V8_ENABLE_SANDBOX 1
 #endif
