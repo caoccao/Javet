@@ -247,7 +247,7 @@ class ChangeJavetVersion {
 }
 
 function main(): number {
-  const changeJavetVersion = new ChangeJavetVersion("5.0.8");
+  const changeJavetVersion = new ChangeJavetVersion("5.0.9");
   changeJavetVersion.update();
   return 0;
 }
