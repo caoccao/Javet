@@ -227,7 +227,7 @@ class ChangeV8Version extends ChangeVersion {
 }
 
 function main(): number {
-  const changeNodeVersion = new ChangeNodeVersion("24.16.0");
+  const changeNodeVersion = new ChangeNodeVersion("24.17.0");
   changeNodeVersion.update();
   const changeV8Version = new ChangeV8Version("14.9.207.14");
   changeV8Version.update();

@@ -2,6 +2,12 @@
 Release Notes 5.0.x
 ===================
 
+5.0.9
+-----
+
+* Upgraded Node.js to ``v24.17.0`` `(2026-06-18) <https://nodejs.org/en/blog/release/v24.17.0>`_
+* Fixed V8 sandbox being incorrectly enabled on Android
+
 5.0.8
 -----
 
