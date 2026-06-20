@@ -36,7 +36,7 @@ jobs:
         git config --global core.eol lf
 
     - name: Checkout the code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -98,13 +98,13 @@ jobs:
         copy ..\google\v8\third_party\icu\common\*.dat icu-v8
 
     - name: Setup JDK 8
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: corretto
         java-version: 8
 
     - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v2.0
+      uses: jwlawson/actions-setup-cmake@v2.2
       with:
         cmake-version: '3.23.x'
 
@@ -114,13 +114,13 @@ jobs:
         deno run build --os windows --arch x86_64 --v8-dir ${{ env.ROOT }}\google\v8 ${{ matrix.i18n_flag }}
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: javet-windows-v8-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
         path: src\main\resources\*.dll
 
     - name: Upload the i18n
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       if: matrix.name == 'i18n'
       with:
         name: icu-v8
@@ -148,7 +148,7 @@ jobs:
         git config --global core.eol lf
 
     - name: Checkout the code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Install NASM
       run: choco install nasm
@@ -179,13 +179,13 @@ jobs:
         copy ..\node\deps\icu-tmp\*.dat icu-node
 
     - name: Setup JDK 8
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: corretto
         java-version: 8
 
     - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v2.0
+      uses: jwlawson/actions-setup-cmake@v2.2
       with:
         cmake-version: '3.23.x'
 
@@ -195,13 +195,13 @@ jobs:
         deno run build --os windows --arch x86_64 --node-dir ${{ env.ROOT }}\node ${{ matrix.i18n_flag }}
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: javet-windows-node-x86_64-${{ env.JAVET_VERSION }}-${{ matrix.name }}
         path: src\main\resources\*.dll
 
     - name: Upload the i18n
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       if: matrix.name == 'i18n'
       with:
         name: icu-node
@@ -220,10 +220,10 @@ jobs:
         git config --global core.eol lf
 
     - name: Checkout the code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Setup JDK 8
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: corretto
         java-version: 8
@@ -299,7 +299,7 @@ jobs:
         7z d build/libs/javet-${{ env.JAVET_VERSION }}-sources.jar *.dll
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: javet-windows-x86_64-${{ env.JAVET_VERSION }}
         path: |

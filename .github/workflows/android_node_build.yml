@@ -44,7 +44,7 @@ jobs:
     steps:
 
     - name: Checkout the code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Setup Ubuntu
       run: |
@@ -91,13 +91,13 @@ jobs:
         cp ../node/deps/icu-tmp/*.dat icu-node
 
     - name: Setup JDK 11
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: corretto
         java-version: 11
 
     - name: Setup Cmake
-      uses: jwlawson/actions-setup-cmake@v2.0
+      uses: jwlawson/actions-setup-cmake@v2.2
       with:
         cmake-version: '3.23.x'
 
@@ -112,13 +112,13 @@ jobs:
         deno run build --os android --arch ${{ matrix.android_arch }} --node-dir ${{ env.ROOT }}/node --android-ndk ${{ steps.setup-ndk.outputs.ndk-path }} ${{ matrix.i18n_flag }}
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: javet-android-node-${{ matrix.android_arch }}-${{ env.JAVET_VERSION }}-${{ matrix.i18n_name }}
         path: android/javet-android/src/main/jniLibs/${{ matrix.android_abi }}/*.so
 
     - name: Upload the i18n
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       if: matrix.i18n_name == 'i18n' && matrix.android_arch == 'arm64'
       with:
         name: icu-node
@@ -132,10 +132,10 @@ jobs:
     steps:
 
     - name: Checkout the code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Setup JDK 17
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: corretto
         java-version: 17
@@ -187,7 +187,7 @@ jobs:
         gradle build --debug
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: javet-android-node-${{ env.JAVET_VERSION }}
         path: android/javet-android/build/outputs/aar/javet*release.aar

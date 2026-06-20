@@ -20,7 +20,7 @@ jobs:
 
     steps:
     - name: Checkout the code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -55,7 +55,7 @@ jobs:
         docker rm $CONTAINER_ID
 
     - name: Upload the Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: javet-linux-x86_64-docker-${{ env.JAVET_VERSION }}
         path: |
