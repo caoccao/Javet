@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet-arm64:5.0.8 -f docker/linux-arm64/base_all_in_one.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-arm64:5.0.9 -f docker/linux-arm64/base_all_in_one.Dockerfile .
 
 ARG JAVET_NODE_VERSION=18.15.0
-ARG JAVET_V8_VERSION=14.9.207.14
+ARG JAVET_V8_VERSION=15.0.245.11
 
 FROM ubuntu:20.04
 WORKDIR /
