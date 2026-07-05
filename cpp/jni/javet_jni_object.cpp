@@ -126,7 +126,9 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_batchObjectGet
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (v8LocalValue->IsObject()) {
         int keyLength = jniEnv->GetArrayLength(v8ValueKeys);
+        int valueLength = jniEnv->GetArrayLength(v8ValueValues);
         length = length > keyLength ? keyLength : length;
+        length = length > valueLength ? valueLength : length;
         if (length > 0) {
             auto v8LocalObject = v8LocalValue.As<v8::Object>();
             V8TryCatch v8TryCatch(v8Isolate);
@@ -142,22 +144,32 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_batchObjectGet
                     v8MaybeLocalValueResult = v8LocalObject->Get(v8Context, v8LocalValueKey);
                 }
                 if (v8TryCatch.HasCaught()) {
+                    DELETE_LOCAL_REF(jniEnv, key);
                     Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
                     return i;
                 }
                 V8LocalValue v8LocalValueValue;
                 if (v8MaybeLocalValueResult.IsEmpty()) {
                     if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context)) {
+                        DELETE_LOCAL_REF(jniEnv, key);
                         return i;
                     }
                 }
                 else {
                     v8LocalValueValue = v8MaybeLocalValueResult.ToLocalChecked();
                 }
-                jniEnv->SetObjectArrayElement(
-                    v8ValueValues,
-                    i,
-                    Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8LocalValueValue));
+                jobject v8Value = Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8LocalValueValue);
+                if (!jniEnv->ExceptionCheck()) {
+                    jniEnv->SetObjectArrayElement(
+                        v8ValueValues,
+                        i,
+                        v8Value);
+                }
+                DELETE_LOCAL_REF(jniEnv, v8Value);
+                DELETE_LOCAL_REF(jniEnv, key);
+                if (jniEnv->ExceptionCheck()) {
+                    return i;
+                }
             }
         }
         return length;

@@ -26,6 +26,7 @@ import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interfaces.IJavetAnonymous;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.mock.MockAnnotationBasedCallbackReceiver;
+import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueDouble;
 import com.caoccao.javet.values.primitive.V8ValueInteger;
@@ -132,6 +133,24 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
             v8ValueObject.unbind(iJavetAnonymous2);
         } finally {
             v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testBatchGet() throws JavetException {
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(
+                "const a = {'A0': 0, 'A1': 1}; a;").execute();
+             V8ValueString v8ValueKey0 = v8Runtime.createV8ValueString("A0");
+             V8ValueString v8ValueKey1 = v8Runtime.createV8ValueString("A1")) {
+            V8Value[] v8ValueKeys = new V8Value[]{v8ValueKey0, v8ValueKey1};
+            V8Value[] v8ValueValues = new V8Value[1];
+            try {
+                assertEquals(1, v8ValueObject.batchGet(v8ValueKeys, v8ValueValues, 2));
+                assertEquals(0, ((V8ValueInteger) v8ValueValues[0]).getValue());
+            } finally {
+                JavetResourceUtils.safeClose(v8ValueValues);
+                Arrays.fill(v8ValueValues, null);
+            }
         }
     }
 
