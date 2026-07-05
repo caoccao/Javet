@@ -2,6 +2,11 @@
 Release Notes 5.0.x
 ===================
 
+5.0.10
+------
+
+* Fixed ``batchObjectGet()`` to clean up JNI local references and bound writes by the output array length
+
 5.0.9
 -----
 
