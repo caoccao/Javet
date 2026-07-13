@@ -627,7 +627,6 @@ namespace Javet {
             if (v8Value->IsNull()) {
                 return ToExternalV8ValueNull(jniEnv, v8Runtime);
             }
-            auto v8Isolate = v8Runtime->v8Isolate;
             // Reference types
             if (v8Value->IsObject()) {
                 if (v8Value->IsArray()) {
