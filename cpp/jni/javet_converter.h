@@ -264,13 +264,31 @@ namespace Javet {
             return v8::Undefined(v8Isolate);
         }
 
-        template<class T>
-        static inline jlong ToV8PersistentReference(
-            V8Isolate* v8Isolate,
-            const v8::Local<T>& v8Data) noexcept {
-            v8::Persistent<T>* v8PersistentDataPointer = new v8::Persistent<T>(v8Isolate, v8Data);
+        template<class T, class... Args>
+        static inline jobject ToExternalV8Reference(
+            JNIEnv* jniEnv,
+            jclass objectClass,
+            jmethodID constructor,
+            const V8Runtime* v8Runtime,
+            const v8::Local<T>& v8Data,
+            Args... args) noexcept {
+            auto v8PersistentDataPointer =
+                std::make_unique<v8::Persistent<T>>(v8Runtime->v8Isolate, v8Data);
             INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentReference);
-            return TO_JAVA_LONG(v8PersistentDataPointer);
+            jobject externalV8Reference = jniEnv->NewObject(
+                objectClass,
+                constructor,
+                v8Runtime->externalV8Runtime,
+                TO_JAVA_LONG(v8PersistentDataPointer.get()),
+                args...);
+            if (externalV8Reference != nullptr) {
+                v8PersistentDataPointer.release();
+            }
+            else {
+                v8PersistentDataPointer->Reset();
+                INCREASE_COUNTER(Javet::Monitor::CounterType::DeletePersistentReference);
+            }
+            return externalV8Reference;
         }
 
         std::unique_ptr<v8::ScriptOrigin> ToV8ScriptOringinPointer(

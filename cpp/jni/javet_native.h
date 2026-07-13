@@ -27,15 +27,76 @@
 #define SUPPORTED_JNI_VERSION JNI_VERSION_1_8
 #endif
 
+jclass FIND_CLASS(JNIEnv* jniEnv, const char* className) noexcept;
+
+void DELETE_GLOBAL_CLASS_REFS(JNIEnv* jniEnv) noexcept;
+
+namespace Javet {
+    class V8Runtime;
+
+    class ExternalExceptionScope {
+    public:
+        ExternalExceptionScope(JNIEnv* jniEnv, V8Runtime* v8Runtime) noexcept;
+        virtual ~ExternalExceptionScope();
+
+    private:
+        JNIEnv* jniEnv;
+        V8Runtime* v8Runtime;
+    };
+
+    class JNIEnvScope {
+    public:
+        explicit JNIEnvScope(JavaVM* javaVM) noexcept
+            : attached(false), javaVM(javaVM), jniEnv(nullptr), localFramePushed(false) {
+            const jint getEnvResult = javaVM->GetEnv(
+                reinterpret_cast<void**>(&jniEnv), SUPPORTED_JNI_VERSION);
+            if (getEnvResult == JNI_EDETACHED) {
+                if (javaVM->AttachCurrentThread(
+                    reinterpret_cast<void**>(&jniEnv), nullptr) == JNI_OK) {
+                    attached = true;
+                }
+                else {
+                    jniEnv = nullptr;
+                }
+            }
+            else if (getEnvResult != JNI_OK) {
+                jniEnv = nullptr;
+            }
+            if (jniEnv != nullptr && jniEnv->PushLocalFrame(64) == JNI_OK) {
+                localFramePushed = true;
+            }
+        }
+
+        inline JNIEnv* Get() const noexcept {
+            return jniEnv;
+        }
+
+        virtual ~JNIEnvScope() {
+            if (localFramePushed) {
+                jniEnv->PopLocalFrame(nullptr);
+            }
+            if (attached) {
+                javaVM->DetachCurrentThread();
+            }
+        }
+
+    private:
+        bool attached;
+        JavaVM* javaVM;
+        JNIEnv* jniEnv;
+        bool localFramePushed;
+    };
+}
+
 #define FETCH_JNI_ENV(javaVMPointer) \
-    JNIEnv* jniEnv; \
-    javaVMPointer->GetEnv((void**)&jniEnv, SUPPORTED_JNI_VERSION); \
-    javaVMPointer->AttachCurrentThread((void**)&jniEnv, nullptr);
+    Javet::JNIEnvScope jniEnvScope(javaVMPointer); \
+    JNIEnv* jniEnv = jniEnvScope.Get();
 
 #define DELETE_LOCAL_REF(jniEnv, localRef) if (localRef != nullptr) { jniEnv->DeleteLocalRef(localRef); }
 
 #define RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle) \
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
+    Javet::ExternalExceptionScope externalExceptionScope(jniEnv, v8Runtime); \
     auto v8Locker = v8Runtime->GetSharedV8Locker(); \
     auto v8Isolate = v8Runtime->v8Isolate; \
     auto v8IsolateScope = v8Runtime->GetV8IsolateScope(); \
@@ -45,6 +106,7 @@
 
 #define RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE_WITH_UNIQUE_LOCKER(v8RuntimeHandle) \
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
+    Javet::ExternalExceptionScope externalExceptionScope(jniEnv, v8Runtime); \
     auto v8Locker = v8Runtime->GetUniqueV8Locker(); \
     auto v8Isolate = v8Runtime->v8Isolate; \
     auto v8IsolateScope = v8Runtime->GetV8IsolateScope(); \
@@ -54,6 +116,7 @@
 
 #define RUNTIME_AND_DATA_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8DataHandle) \
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
+    Javet::ExternalExceptionScope externalExceptionScope(jniEnv, v8Runtime); \
     auto v8PersistentDataPointer = TO_V8_PERSISTENT_DATA_POINTER(v8DataHandle); \
     auto v8Locker = v8Runtime->GetSharedV8Locker(); \
     auto v8Isolate = v8Runtime->v8Isolate; \
@@ -64,6 +127,7 @@
 
 #define RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle) \
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
+    Javet::ExternalExceptionScope externalExceptionScope(jniEnv, v8Runtime); \
     auto v8PersistentModulePointer = TO_V8_PERSISTENT_MODULE_POINTER(v8ValueHandle); \
     auto v8Locker = v8Runtime->GetSharedV8Locker(); \
     auto v8Isolate = v8Runtime->v8Isolate; \
@@ -75,6 +139,7 @@
 
 #define RUNTIME_AND_SCRIPT_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle) \
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
+    Javet::ExternalExceptionScope externalExceptionScope(jniEnv, v8Runtime); \
     auto v8PersistentScriptPointer = TO_V8_PERSISTENT_SCRIPT_POINTER(v8ValueHandle); \
     auto v8Locker = v8Runtime->GetSharedV8Locker(); \
     auto v8Isolate = v8Runtime->v8Isolate; \
@@ -86,6 +151,7 @@
 
 #define RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle) \
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
+    Javet::ExternalExceptionScope externalExceptionScope(jniEnv, v8Runtime); \
     auto v8PersistentValuePointer = TO_V8_PERSISTENT_VALUE_POINTER(v8ValueHandle); \
     auto v8Locker = v8Runtime->GetSharedV8Locker(); \
     auto v8Isolate = v8Runtime->v8Isolate; \
@@ -97,6 +163,7 @@
 
 #define RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE_WITH_UNIQUE_LOCKER(v8RuntimeHandle, v8ValueHandle) \
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
+    Javet::ExternalExceptionScope externalExceptionScope(jniEnv, v8Runtime); \
     auto v8PersistentValuePointer = TO_V8_PERSISTENT_VALUE_POINTER(v8ValueHandle); \
     auto v8Locker = v8Runtime->GetUniqueV8Locker(); \
     auto v8Isolate = v8Runtime->v8Isolate; \
@@ -108,6 +175,7 @@
 
 #define RUNTIME_AND_2_VALUES_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle1, v8ValueHandle2) \
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle); \
+    Javet::ExternalExceptionScope externalExceptionScope(jniEnv, v8Runtime); \
     auto v8PersistentValuePointer1 = TO_V8_PERSISTENT_VALUE_POINTER(v8ValueHandle1); \
     auto v8PersistentValuePointer2 = TO_V8_PERSISTENT_VALUE_POINTER(v8ValueHandle2); \
     auto v8Locker = v8Runtime->GetSharedV8Locker(); \

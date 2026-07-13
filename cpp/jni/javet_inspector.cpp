@@ -336,6 +336,7 @@ namespace Javet {
                     jniEnv->CallVoidMethod(jobj, jmethodIDV8InspectorInstallAdditionalCommandLineAPI, jCommandLineAPI);
                 }
             }
+            DELETE_LOCAL_REF(jniEnv, jCommandLineAPI);
         }
 
         bool JavetInspectorClient::isRunningMessageLoop() const noexcept {
@@ -640,4 +641,3 @@ namespace Javet {
         }
     }
 }
-

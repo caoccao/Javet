@@ -163,13 +163,20 @@ namespace Javet {
             v8::HeapSpaceStatistics heapSpaceStatistics;
             auto index = jniEnv->CallIntMethod(allocationSpace, jmethodIDV8AllocationSpaceGetIndex);
             v8Isolate->GetHeapSpaceStatistics(&heapSpaceStatistics, static_cast<size_t>(index));
+            jstring spaceName = Javet::Converter::ToJavaString(
+                jniEnv, heapSpaceStatistics.space_name());
             auto jHeapSpaceStatistics = jniEnv->NewObject(jclassV8HeapSpaceStatistics, jmethodIDV8HeapSpaceStatisticsConstructor,
-                Javet::Converter::ToJavaString(jniEnv, heapSpaceStatistics.space_name()),
+                spaceName,
                 static_cast<jlong>(heapSpaceStatistics.physical_space_size()),
                 static_cast<jlong>(heapSpaceStatistics.space_available_size()),
                 static_cast<jlong>(heapSpaceStatistics.space_size()),
                 static_cast<jlong>(heapSpaceStatistics.space_used_size()));
-            jniEnv->CallObjectMethod(jHeapSpaceStatistics, jmethodIDV8HeapSpaceStatisticsSetAllocationSpace, allocationSpace);
+            DELETE_LOCAL_REF(jniEnv, spaceName);
+            jobject heapSpaceStatisticsWithAllocationSpace = jniEnv->CallObjectMethod(
+                jHeapSpaceStatistics,
+                jmethodIDV8HeapSpaceStatisticsSetAllocationSpace,
+                allocationSpace);
+            DELETE_LOCAL_REF(jniEnv, heapSpaceStatisticsWithAllocationSpace);
             jniEnv->CallBooleanMethod(completableFuture, jmethodIDV8StatisticsFutureComplete, jHeapSpaceStatistics);
             jniEnv->DeleteLocalRef(jHeapSpaceStatistics);
         }
@@ -345,4 +352,3 @@ namespace Javet {
 #ifdef ENABLE_MONITOR
 Javet::Monitor::JavetNativeMonitor GlobalJavetNativeMonitor;
 #endif
-

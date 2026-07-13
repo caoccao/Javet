@@ -20,6 +20,7 @@
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_NodeNative_await
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint mAwaitMode) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    Javet::ExternalExceptionScope externalExceptionScope(jniEnv, v8Runtime);
     auto umAwaitMode = static_cast<Javet::Enums::V8AwaitMode::V8AwaitMode>(mAwaitMode);
     return (jboolean)v8Runtime->Await(umAwaitMode);
 }

@@ -18,6 +18,7 @@
 #pragma once
 
 #include <mutex>
+#include <unordered_set>
 #include "javet_enums.h"
 #include "javet_logging.h"
 #include "javet_native.h"
@@ -28,6 +29,10 @@ namespace Javet {
 
     namespace Inspector {
         class JavetInspector;
+    }
+
+    namespace Callback {
+        class JavetCallbackContextReference;
     }
 
     void Initialize(JNIEnv* jniEnv) noexcept;
@@ -79,6 +84,8 @@ namespace Javet {
 
         void CloseV8Context() noexcept;
         void CloseV8Isolate() noexcept;
+
+        void CloseCallbackContextReferences() noexcept;
 
         jbyteArray CreateSnapshot(JNIEnv* jniEnv) noexcept;
 
@@ -135,6 +142,12 @@ namespace Javet {
             return (bool)v8Locker;
         }
 
+        void RegisterCallbackContextReference(
+            Callback::JavetCallbackContextReference* callbackContextReference) noexcept;
+
+        void UnregisterCallbackContextReference(
+            Callback::JavetCallbackContextReference* callbackContextReference) noexcept;
+
 #ifdef ENABLE_NODE
         bool IsBuiltInModuleResolution(JNIEnv* jniEnv) const noexcept;
 
@@ -187,6 +200,7 @@ namespace Javet {
         std::unique_ptr<node::IsolateData, decltype(&node::FreeIsolateData)> nodeIsolateData;
         std::atomic_bool nodeStopping;
         uv_loop_t uvLoop;
+        bool uvLoopInitialized;
         // CommonEnvironmentSetup manages the full lifecycle for snapshot
         // creation (CreateForSnapshotting) and restoration (CreateFromSnapshot).
         // When set, nodeEnvironment/nodeIsolateData/uvLoop are NOT used;
@@ -200,6 +214,11 @@ namespace Javet {
         std::unique_ptr<v8::StartupData, std::function<void(v8::StartupData*)>> v8StartupData;
         std::shared_ptr<v8::Locker> v8Locker;
         V8GlobalContext v8GlobalContext;
+        std::mutex callbackContextReferencesMutex;
+        std::unordered_set<Callback::JavetCallbackContextReference*> callbackContextReferences;
+
+#ifdef ENABLE_NODE
+        void CloseUVLoop() noexcept;
+#endif
     };
 }
-

@@ -24,8 +24,33 @@
 #include "javet_logging.h"
 #include "javet_native.h"
 #include "javet_v8_runtime.h"
+#include <vector>
 
 JavaVM* GlobalJavaVM;
+
+namespace {
+    std::vector<jclass> GlobalClassRefs;
+}
+
+jclass FIND_CLASS(JNIEnv* jniEnv, const char* className) noexcept {
+    jclass localClass = jniEnv->FindClass(className);
+    if (localClass == nullptr) {
+        return nullptr;
+    }
+    jclass globalClass = static_cast<jclass>(jniEnv->NewGlobalRef(localClass));
+    jniEnv->DeleteLocalRef(localClass);
+    if (globalClass != nullptr) {
+        GlobalClassRefs.push_back(globalClass);
+    }
+    return globalClass;
+}
+
+void DELETE_GLOBAL_CLASS_REFS(JNIEnv* jniEnv) noexcept {
+    for (jclass globalClass : GlobalClassRefs) {
+        jniEnv->DeleteGlobalRef(globalClass);
+    }
+    GlobalClassRefs.clear();
+}
 
 jint JNI_OnLoad(JavaVM* javaVM, void* reserved) {
     LOG_INFO("JNI_Onload() begins.");
@@ -55,7 +80,7 @@ jint JNI_OnLoad(JavaVM* javaVM, void* reserved) {
 
 void JNI_OnUnload(JavaVM* javaVM, void* reserved) {
     LOG_INFO("JNI_OnUnload() begins.");
-    JNIEnv* jniEnv;
+    JNIEnv* jniEnv = nullptr;
     if (javaVM->GetEnv((void**)&jniEnv, SUPPORTED_JNI_VERSION) != JNI_OK) {
         LOG_ERROR("Failed to call JavaVM.GetEnv().");
     }
@@ -67,7 +92,9 @@ void JNI_OnUnload(JavaVM* javaVM, void* reserved) {
         Javet::NodeNative::Dispose(jniEnv);
 #endif
         Javet::V8Native::Dispose(jniEnv);
+        DELETE_GLOBAL_CLASS_REFS(jniEnv);
     }
+    GlobalJavaVM = nullptr;
     LOG_INFO("JNI_OnUnload() ends.");
 }
 
@@ -148,6 +175,8 @@ namespace Javet {
             v8::V8::InitializeICU(umIcuDataFile->c_str());
             jniEnv->DeleteLocalRef(mIcuDataFile);
             jniEnv->DeleteLocalRef(mV8Flags);
+            jniEnv->DeleteLocalRef(jclassV8Flags);
+            jniEnv->DeleteLocalRef(jclassV8RuntimeOptions);
 #endif
 #endif
             if (Javet::V8Native::GlobalV8Platform) {
@@ -178,6 +207,8 @@ namespace Javet {
                 }
                 jniEnv->DeleteLocalRef(jniEnv->CallObjectMethod(mNodeFlags, jmethodIDNodeFlagsSeal));
                 jniEnv->DeleteLocalRef(mNodeFlags);
+                jniEnv->DeleteLocalRef(jclassNodeFlags);
+                jniEnv->DeleteLocalRef(jclassNodeRuntimeOptions);
                 std::shared_ptr<node::InitializationResult> result = node::InitializeOncePerProcess(
                     args, {
                         node::ProcessInitializationFlags::kNoFlags,
@@ -215,4 +246,3 @@ namespace Javet {
         }
     }
 }
-

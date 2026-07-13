@@ -175,7 +175,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionCreate
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mCallbackContext) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     auto javetCallbackContextReferencePointer =
-        new Javet::Callback::JavetCallbackContextReference(jniEnv, mCallbackContext);
+        new Javet::Callback::JavetCallbackContextReference(v8Runtime);
     INCREASE_COUNTER(Javet::Monitor::CounterType::NewJavetCallbackContextReference);
     auto v8LocalContextHandle =
         v8::BigInt::New(v8Isolate, TO_NATIVE_INT_64(javetCallbackContextReferencePointer));
@@ -185,6 +185,9 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionCreate
     auto v8MaybeLocalFunction =
         v8::Function::New(v8Context, Javet::Callback::JavetFunctionCallback, v8LocalContextHandle);
     if (v8MaybeLocalFunction.IsEmpty()) {
+        delete javetCallbackContextReferencePointer;
+        INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteJavetCallbackContextReference);
+        javetCallbackContextReferencePointer = nullptr;
         if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context, "Function allocation failed")) {
             return nullptr;
         }
@@ -196,8 +199,20 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionCreate
                 javetCallbackContextReferencePointer,
                 Javet::Callback::JavetCloseWeakCallbackContextHandle,
                 v8::WeakCallbackType::kParameter);
-            return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8LocalFunction);
+            jobject externalV8Function = v8Runtime->SafeToExternalV8Value(
+                jniEnv, v8Isolate, v8Context, v8LocalFunction);
+            if (externalV8Function != nullptr && !jniEnv->ExceptionCheck()) {
+                javetCallbackContextReferencePointer->SetHandle(jniEnv, mCallbackContext);
+                return externalV8Function;
+            }
+            delete javetCallbackContextReferencePointer;
+            INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteJavetCallbackContextReference);
+            return externalV8Function;
         }
+    }
+    if (javetCallbackContextReferencePointer != nullptr) {
+        delete javetCallbackContextReferencePointer;
+        INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteJavetCallbackContextReference);
     }
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
 }
@@ -249,6 +264,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_functionG
                     auto v8LocalString = v8::Utils::ToLocal(v8InternalObjectHandle).As<v8::String>();
                     jstring argument = Javet::Converter::ToJavaString(jniEnv, v8Isolate, v8LocalString);
                     jniEnv->SetObjectArrayElement(arguments, i, argument);
+                    DELETE_LOCAL_REF(jniEnv, argument);
                 }
                 return arguments;
             }
@@ -440,12 +456,15 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetScr
             const int sourceLength = v8InternalSource->length();
             size_t utf8Length = 0;
             auto sourceCode = v8InternalSource->ToCString(0, sourceLength, &utf8Length);
-            return jniEnv->NewObject(
+            jstring sourceString = Javet::Converter::ToJavaString(jniEnv, sourceCode.get());
+            jobject scriptSource = jniEnv->NewObject(
                 Javet::Converter::jclassIV8ValueFunctionScriptSource,
                 Javet::Converter::jmethodIDIV8ValueFunctionScriptSourceConstructor,
-                Javet::Converter::ToJavaString(jniEnv, sourceCode.get()),
+                sourceString,
                 startPosition,
                 endPosition);
+            DELETE_LOCAL_REF(jniEnv, sourceString);
+            return scriptSource;
         }
     }
     return nullptr;

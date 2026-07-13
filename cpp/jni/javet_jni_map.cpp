@@ -322,17 +322,21 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapSet
             auto jobjectValue = jniEnv->GetObjectArrayElement(keysAndValues, i + 1);
             auto v8LocalValueValue = Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, jobjectValue);
             if (v8TryCatch.HasCaught()) {
+                DELETE_LOCAL_REF(jniEnv, jobjectValue);
                 Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
                 return false;
             }
             auto jobjectKey = jniEnv->GetObjectArrayElement(keysAndValues, i);
-            if (!Javet::V8ValueMap::mapSet(
+            const bool success = Javet::V8ValueMap::mapSet(
                 jniEnv,
                 v8Runtime,
                 v8Context,
                 v8LocalMap,
                 jobjectKey,
-                v8LocalValueValue)) {
+                v8LocalValueValue);
+            DELETE_LOCAL_REF(jniEnv, jobjectKey);
+            DELETE_LOCAL_REF(jniEnv, jobjectValue);
+            if (!success) {
                 return false;
             }
         }

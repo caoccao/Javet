@@ -387,6 +387,15 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeReferenceHa
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     auto v8Locker = v8Runtime->GetSharedV8Locker();
     auto v8PersistentDataPointer = TO_V8_PERSISTENT_DATA_POINTER(referenceHandle);
+    if (!v8PersistentDataPointer->IsEmpty() && v8PersistentDataPointer->IsWeak()) {
+        auto v8ValueReference =
+            v8PersistentDataPointer->ClearWeak<Javet::Callback::V8ValueReference>();
+        if (v8ValueReference != nullptr) {
+            v8ValueReference->Clear();
+            delete v8ValueReference;
+            INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteWeakCallbackReference);
+        }
+    }
     v8PersistentDataPointer->Reset();
     delete v8PersistentDataPointer;
     INCREASE_COUNTER(Javet::Monitor::CounterType::DeletePersistentReference);
@@ -525,6 +534,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterNearHea
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId, jstring mMessage) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    Javet::ExternalExceptionScope externalExceptionScope(jniEnv, v8Runtime);
     char const* umMessage = jniEnv->GetStringUTFChars(mMessage, nullptr);
     std::string message(umMessage, jniEnv->GetStringUTFLength(mMessage));
     jniEnv->ReleaseStringUTFChars(mMessage, umMessage);

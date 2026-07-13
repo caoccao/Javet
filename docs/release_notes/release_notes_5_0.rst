@@ -5,7 +5,7 @@ Release Notes 5.0.x
 5.0.10
 ------
 
-* Fixed ``batchObjectGet()`` to clean up JNI local references and bound writes by the output array length
+* Fixed native resource and JNI reference leaks across runtime, callback, value wrapper, and Node.js event loop cleanup
 
 5.0.9
 -----

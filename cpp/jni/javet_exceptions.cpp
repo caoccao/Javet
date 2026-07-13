@@ -176,6 +176,7 @@ namespace Javet {
             jniEnv->DeleteLocalRef(jStringExceptionMessage);
             jniEnv->DeleteLocalRef(jObjectHeapStatistics);
             jniEnv->Throw(javetOutOfMemoryException);
+            jniEnv->DeleteLocalRef(javetOutOfMemoryException);
             return nullptr;
         }
 
@@ -187,6 +188,7 @@ namespace Javet {
                 jmethodIDJavetTerminatedExceptionConstructor,
                 canContinue);
             jniEnv->Throw(javetTerminatedException);
+            jniEnv->DeleteLocalRef(javetTerminatedException);
             return nullptr;
         }
 
@@ -198,9 +200,11 @@ namespace Javet {
             auto v8Isolate = v8Runtime->v8Isolate;
             jstring externalErrorMessage = nullptr;
             if (jniEnv->ExceptionCheck()) {
-                jthrowable externalException = jniEnv->ExceptionOccurred();
+                jthrowable localExternalException = jniEnv->ExceptionOccurred();
                 jniEnv->ExceptionClear();
-                externalException = (jthrowable)jniEnv->NewGlobalRef(externalException);
+                jthrowable externalException =
+                    (jthrowable)jniEnv->NewGlobalRef(localExternalException);
+                jniEnv->DeleteLocalRef(localExternalException);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
                 v8Runtime->ClearExternalException(jniEnv);
                 v8Runtime->externalException = externalException;

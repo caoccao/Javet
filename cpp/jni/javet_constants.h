@@ -29,11 +29,6 @@ constexpr auto INDEX_SCOPE_END_POSITION = 4;
 #define INDEX_SCOPE_SIZE 5
 
 template<typename T1, typename T2>
-constexpr auto FIND_CLASS(T1 jniEnv, T2 className) {
-    return (jclass)jniEnv->NewGlobalRef(jniEnv->FindClass(className));
-}
-
-template<typename T1, typename T2>
 constexpr auto GET_METHOD_CONSTRUCTOR(T1 jniEnv, T2 javaClass) {
     return jniEnv->GetMethodID(javaClass, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 }
@@ -42,4 +37,3 @@ template<typename T1, typename T2>
 constexpr auto GET_METHOD_GET_HANDLE(T1 jniEnv, T2 javaClass) {
     return jniEnv->GetMethodID(javaClass, "getHandle", "()J");
 }
-
