@@ -5,6 +5,7 @@ Release Notes 5.0.x
 5.0.10
 ------
 
+* Upgraded Node.js to ``v24.18.0`` `(2026-06-23) <https://nodejs.org/en/blog/release/v24.18.0>`_
 * Fixed native resource and JNI reference leaks across runtime, callback, value wrapper, and Node.js event loop cleanup
 
 5.0.9
