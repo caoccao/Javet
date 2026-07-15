@@ -37,6 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * The type V8 host.
@@ -46,6 +47,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("unchecked")
 public final class V8Host {
     private static final long INVALID_HANDLE = 0L;
+    private static final AtomicLong nextV8StatisticsRequestId = new AtomicLong(1L);
     private static final Map<Long, V8StatisticsFuture<?>> v8StatisticsFutureMap = new HashMap<>(1024);
     private static final Object v8StatisticsFutureMapLock = new Object();
     private static boolean libraryReloadable = false;
@@ -112,6 +114,14 @@ public final class V8Host {
      */
     public static double getMemoryUsageThresholdRatio() {
         return memoryUsageThresholdRatio;
+    }
+
+    private static long getNextV8StatisticsRequestId() {
+        long requestId;
+        do {
+            requestId = nextV8StatisticsRequestId.getAndIncrement();
+        } while (requestId == INVALID_HANDLE);
+        return requestId;
     }
 
     /**

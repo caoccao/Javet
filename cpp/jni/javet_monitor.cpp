@@ -15,6 +15,10 @@
  *   limitations under the License.
  */
 
+#include <memory>
+#include <mutex>
+#include <unordered_map>
+
 #include "javet_converter.h"
 #include "javet_monitor.h"
 #include "javet_logging.h"
@@ -32,6 +36,7 @@ namespace Javet {
         static jmethodID jmethodIDV8HeapStatisticsConstructor;
 
         static jclass jclassV8Host;
+        static jmethodID jmethodIDV8HostGetNextV8StatisticsRequestId;
         static jmethodID jmethodIDV8HostRegisterV8StatisticsFuture;
         static jmethodID jmethodIDV8HostRequestV8StatisticsFuture;
 
@@ -43,11 +48,57 @@ namespace Javet {
         static jmethodID jmethodIDV8StatisticsFutureComplete;
         static jmethodID jmethodIDV8StatisticsFutureSetHandle;
 
-        struct HeapSpaceStatisticsContext {
+        struct StatisticsRequest {
+            std::atomic_bool cancelled;
+            jlong requestId;
+            jint rawPointerTypeId;
+
+            explicit StatisticsRequest(jint rawPointerTypeId) noexcept
+                : cancelled(false), requestId(0), rawPointerTypeId(rawPointerTypeId) {
+            }
+        };
+
+        static std::mutex statisticsRequestMutex;
+        static std::unordered_map<jlong, StatisticsRequest*> statisticsRequestMap;
+
+        void CancelStatisticsRequest(jlong requestId, jint rawPointerTypeId) noexcept {
+            std::lock_guard<std::mutex> lock(statisticsRequestMutex);
+            const auto iterator = statisticsRequestMap.find(requestId);
+            if (iterator != statisticsRequestMap.end() &&
+                iterator->second->rawPointerTypeId == rawPointerTypeId) {
+                iterator->second->cancelled.store(true, std::memory_order_release);
+            }
+        }
+
+        bool ClaimStatisticsRequest(StatisticsRequest* request) noexcept {
+            std::lock_guard<std::mutex> lock(statisticsRequestMutex);
+            const auto iterator = statisticsRequestMap.find(request->requestId);
+            if (iterator == statisticsRequestMap.end() || iterator->second != request) {
+                return false;
+            }
+            statisticsRequestMap.erase(iterator);
+            return !request->cancelled.load(std::memory_order_acquire);
+        }
+
+        void RegisterStatisticsRequest(StatisticsRequest* request, jlong requestId) noexcept {
+            std::lock_guard<std::mutex> lock(statisticsRequestMutex);
+            request->requestId = requestId;
+            statisticsRequestMap.emplace(requestId, request);
+        }
+
+        template<typename T>
+        std::shared_ptr<T> TakeStatisticsRequest(void* data) noexcept {
+            auto requestHolder = std::unique_ptr<std::shared_ptr<T>>(
+                static_cast<std::shared_ptr<T>*>(data));
+            return std::move(*requestHolder);
+        }
+
+        struct HeapSpaceStatisticsContext : StatisticsRequest {
             jobject allocationSpace;
             jobject completableFuture;
 
-            HeapSpaceStatisticsContext(JNIEnv* jniEnv, jobject completableFuture, jobject allocationSpace) noexcept {
+            HeapSpaceStatisticsContext(JNIEnv* jniEnv, jobject completableFuture, jobject allocationSpace) noexcept
+                : StatisticsRequest(Javet::Enums::RawPointerType::HeapSpaceStatisticsContext) {
                 this->allocationSpace = jniEnv->NewGlobalRef(allocationSpace);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
                 this->completableFuture = jniEnv->NewGlobalRef(completableFuture);
@@ -61,13 +112,15 @@ namespace Javet {
                 INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
                 jniEnv->DeleteGlobalRef(completableFuture);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
+                INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
             }
         };
 
-        struct HeapStatisticsContext {
+        struct HeapStatisticsContext : StatisticsRequest {
             jobject completableFuture;
 
-            HeapStatisticsContext(JNIEnv* jniEnv, jobject completableFuture) noexcept {
+            HeapStatisticsContext(JNIEnv* jniEnv, jobject completableFuture) noexcept
+                : StatisticsRequest(Javet::Enums::RawPointerType::HeapStatisticsContext) {
                 this->completableFuture = jniEnv->NewGlobalRef(completableFuture);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
             }
@@ -77,13 +130,15 @@ namespace Javet {
                 jniEnv->CallVoidMethod(completableFuture, jmethodIDV8StatisticsFutureSetHandle, 0);
                 jniEnv->DeleteGlobalRef(completableFuture);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
+                INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
             }
         };
 
-        struct SharedMemoryStatisticsContext {
+        struct SharedMemoryStatisticsContext : StatisticsRequest {
             jobject completableFuture;
 
-            SharedMemoryStatisticsContext(JNIEnv* jniEnv, jobject completableFuture) noexcept {
+            SharedMemoryStatisticsContext(JNIEnv* jniEnv, jobject completableFuture) noexcept
+                : StatisticsRequest(Javet::Enums::RawPointerType::SharedMemoryStatisticsContext) {
                 this->completableFuture = jniEnv->NewGlobalRef(completableFuture);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
             }
@@ -93,6 +148,7 @@ namespace Javet {
                 jniEnv->CallVoidMethod(completableFuture, jmethodIDV8StatisticsFutureSetHandle, 0);
                 jniEnv->DeleteGlobalRef(completableFuture);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
+                INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
             }
         };
 
@@ -111,6 +167,7 @@ namespace Javet {
             jmethodIDV8HeapStatisticsConstructor = jniEnv->GetMethodID(jclassV8HeapStatistics, "<init>", "(JJJJJJJJJJJJJJ)V");
 
             jclassV8Host = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/V8Host");
+            jmethodIDV8HostGetNextV8StatisticsRequestId = jniEnv->GetStaticMethodID(jclassV8Host, "getNextV8StatisticsRequestId", "()J");
             jmethodIDV8HostRegisterV8StatisticsFuture = jniEnv->GetStaticMethodID(jclassV8Host, "registerV8StatisticsFuture", "(Lcom/caoccao/javet/interop/monitoring/V8StatisticsFuture;)V");
             jmethodIDV8HostRequestV8StatisticsFuture = jniEnv->GetStaticMethodID(jclassV8Host, "requestV8StatisticsFuture", "(J)Z");
 
@@ -131,24 +188,37 @@ namespace Javet {
                 jclassV8StatisticsFuture,
                 jmethodIDV8StatisticsFutureConstructor,
                 (jint)Javet::Enums::RawPointerType::HeapSpaceStatisticsContext);
-            auto contextPointer = new HeapSpaceStatisticsContext(jniEnv, jFuture, jAllocationSpace);
+            auto context = std::make_shared<HeapSpaceStatisticsContext>(jniEnv, jFuture, jAllocationSpace);
             INCREASE_COUNTER(Javet::Monitor::CounterType::New);
-            jniEnv->CallVoidMethod(jFuture, jmethodIDV8StatisticsFutureSetHandle, TO_JAVA_LONG(contextPointer));
+            const jlong requestId = jniEnv->CallStaticLongMethod(
+                jclassV8Host,
+                jmethodIDV8HostGetNextV8StatisticsRequestId);
+            RegisterStatisticsRequest(context.get(), requestId);
+            jniEnv->CallVoidMethod(jFuture, jmethodIDV8StatisticsFutureSetHandle, requestId);
             if (v8Isolate->IsInUse()) {
+                auto requestHolder = std::make_unique<std::shared_ptr<HeapSpaceStatisticsContext>>(context);
                 jniEnv->CallStaticVoidMethod(jclassV8Host, jmethodIDV8HostRegisterV8StatisticsFuture, jFuture);
-                v8Isolate->RequestInterrupt(GetHeapSpaceStatisticsAsync, contextPointer);
+                v8Isolate->RequestInterrupt(GetHeapSpaceStatisticsAsync, requestHolder.release());
             }
             else {
                 auto v8Locker = v8::Locker(v8Isolate);
-                GetHeapSpaceStatisticsSync(jniEnv, v8Isolate, contextPointer);
+                if (ClaimStatisticsRequest(context.get())) {
+                    GetHeapSpaceStatisticsSync(jniEnv, v8Isolate, context.get());
+                }
             }
             return jFuture;
         }
 
         void GetHeapSpaceStatisticsAsync(v8::Isolate* v8Isolate, void* data) noexcept {
+            auto context = TakeStatisticsRequest<HeapSpaceStatisticsContext>(data);
             FETCH_JNI_ENV(GlobalJavaVM);
-            if (jniEnv->CallStaticBooleanMethod(jclassV8Host, jmethodIDV8HostRequestV8StatisticsFuture, TO_JAVA_LONG(data))) {
-                GetHeapSpaceStatisticsSync(jniEnv, v8Isolate, data);
+            const bool requested = jniEnv->CallStaticBooleanMethod(
+                jclassV8Host,
+                jmethodIDV8HostRequestV8StatisticsFuture,
+                context->requestId);
+            const bool claimed = ClaimStatisticsRequest(context.get());
+            if (requested && claimed) {
+                GetHeapSpaceStatisticsSync(jniEnv, v8Isolate, context.get());
             }
             else {
                 LOG_DEBUG("Ignore GetHeapSpaceStatisticsAsync().");
@@ -191,8 +261,6 @@ namespace Javet {
                 v8Isolate,
                 contextPointer->completableFuture,
                 contextPointer->allocationSpace);
-            delete contextPointer;
-            INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
         }
 
         jobject GetHeapStatistics(
@@ -202,24 +270,37 @@ namespace Javet {
                 jclassV8StatisticsFuture,
                 jmethodIDV8StatisticsFutureConstructor,
                 (jint)Javet::Enums::RawPointerType::HeapStatisticsContext);
-            auto contextPointer = new HeapStatisticsContext(jniEnv, jFuture);
+            auto context = std::make_shared<HeapStatisticsContext>(jniEnv, jFuture);
             INCREASE_COUNTER(Javet::Monitor::CounterType::New);
-            jniEnv->CallVoidMethod(jFuture, jmethodIDV8StatisticsFutureSetHandle, TO_JAVA_LONG(contextPointer));
+            const jlong requestId = jniEnv->CallStaticLongMethod(
+                jclassV8Host,
+                jmethodIDV8HostGetNextV8StatisticsRequestId);
+            RegisterStatisticsRequest(context.get(), requestId);
+            jniEnv->CallVoidMethod(jFuture, jmethodIDV8StatisticsFutureSetHandle, requestId);
             if (v8Isolate->IsInUse()) {
+                auto requestHolder = std::make_unique<std::shared_ptr<HeapStatisticsContext>>(context);
                 jniEnv->CallStaticVoidMethod(jclassV8Host, jmethodIDV8HostRegisterV8StatisticsFuture, jFuture);
-                v8Isolate->RequestInterrupt(GetHeapStatisticsAsync, contextPointer);
+                v8Isolate->RequestInterrupt(GetHeapStatisticsAsync, requestHolder.release());
             }
             else {
                 auto v8Locker = v8::Locker(v8Isolate);
-                GetHeapStatisticsSync(jniEnv, v8Isolate, contextPointer);
+                if (ClaimStatisticsRequest(context.get())) {
+                    GetHeapStatisticsSync(jniEnv, v8Isolate, context.get());
+                }
             }
             return jFuture;
         }
 
         void GetHeapStatisticsAsync(v8::Isolate* v8Isolate, void* data) noexcept {
+            auto context = TakeStatisticsRequest<HeapStatisticsContext>(data);
             FETCH_JNI_ENV(GlobalJavaVM);
-            if (jniEnv->CallStaticBooleanMethod(jclassV8Host, jmethodIDV8HostRequestV8StatisticsFuture, TO_JAVA_LONG(data))) {
-                GetHeapStatisticsSync(jniEnv, v8Isolate, data);
+            const bool requested = jniEnv->CallStaticBooleanMethod(
+                jclassV8Host,
+                jmethodIDV8HostRequestV8StatisticsFuture,
+                context->requestId);
+            const bool claimed = ClaimStatisticsRequest(context.get());
+            if (requested && claimed) {
+                GetHeapStatisticsSync(jniEnv, v8Isolate, context.get());
             }
             else {
                 LOG_DEBUG("Ignore GetHeapStatisticsAsync().");
@@ -251,8 +332,6 @@ namespace Javet {
         void GetHeapStatisticsSync(JNIEnv* jniEnv, v8::Isolate* v8Isolate, void* data) noexcept {
             auto contextPointer = static_cast<HeapStatisticsContext*>(data);
             GetHeapStatisticsInternal(jniEnv, v8Isolate, contextPointer->completableFuture);
-            delete contextPointer;
-            INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
         }
 
         jobject GetV8SharedMemoryStatistics(JNIEnv* jniEnv, v8::Isolate* v8Isolate) noexcept {
@@ -260,24 +339,37 @@ namespace Javet {
                 jclassV8StatisticsFuture,
                 jmethodIDV8StatisticsFutureConstructor,
                 (jint)Javet::Enums::RawPointerType::SharedMemoryStatisticsContext);
-            auto contextPointer = new SharedMemoryStatisticsContext(jniEnv, jFuture);
+            auto context = std::make_shared<SharedMemoryStatisticsContext>(jniEnv, jFuture);
             INCREASE_COUNTER(Javet::Monitor::CounterType::New);
-            jniEnv->CallVoidMethod(jFuture, jmethodIDV8StatisticsFutureSetHandle, TO_JAVA_LONG(contextPointer));
+            const jlong requestId = jniEnv->CallStaticLongMethod(
+                jclassV8Host,
+                jmethodIDV8HostGetNextV8StatisticsRequestId);
+            RegisterStatisticsRequest(context.get(), requestId);
+            jniEnv->CallVoidMethod(jFuture, jmethodIDV8StatisticsFutureSetHandle, requestId);
             if (v8Isolate->IsInUse()) {
+                auto requestHolder = std::make_unique<std::shared_ptr<SharedMemoryStatisticsContext>>(context);
                 jniEnv->CallStaticVoidMethod(jclassV8Host, jmethodIDV8HostRegisterV8StatisticsFuture, jFuture);
-                v8Isolate->RequestInterrupt(GetV8SharedMemoryStatisticsAsync, contextPointer);
+                v8Isolate->RequestInterrupt(GetV8SharedMemoryStatisticsAsync, requestHolder.release());
             }
             else {
                 auto v8Locker = v8::Locker(v8Isolate);
-                GetV8SharedMemoryStatisticsSync(jniEnv, v8Isolate, contextPointer);
+                if (ClaimStatisticsRequest(context.get())) {
+                    GetV8SharedMemoryStatisticsSync(jniEnv, v8Isolate, context.get());
+                }
             }
             return jFuture;
         }
 
         void GetV8SharedMemoryStatisticsAsync(v8::Isolate* v8Isolate, void* data) noexcept {
+            auto context = TakeStatisticsRequest<SharedMemoryStatisticsContext>(data);
             FETCH_JNI_ENV(GlobalJavaVM);
-            if (jniEnv->CallStaticBooleanMethod(jclassV8Host, jmethodIDV8HostRequestV8StatisticsFuture, TO_JAVA_LONG(data))) {
-                GetV8SharedMemoryStatisticsSync(jniEnv, v8Isolate, data);
+            const bool requested = jniEnv->CallStaticBooleanMethod(
+                jclassV8Host,
+                jmethodIDV8HostRequestV8StatisticsFuture,
+                context->requestId);
+            const bool claimed = ClaimStatisticsRequest(context.get());
+            if (requested && claimed) {
+                GetV8SharedMemoryStatisticsSync(jniEnv, v8Isolate, context.get());
             }
             else {
                 LOG_DEBUG("Ignore GetV8SharedMemoryStatisticsAsync().");
@@ -308,26 +400,24 @@ namespace Javet {
         void GetV8SharedMemoryStatisticsSync(JNIEnv* jniEnv, v8::Isolate* v8Isolate, void* data) noexcept {
             auto contextPointer = static_cast<SharedMemoryStatisticsContext*>(data);
             GetV8SharedMemoryStatisticsInternal(jniEnv, v8Isolate, contextPointer->completableFuture);
-            delete contextPointer;
-            INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
         }
 
         void RemoveHeapSpaceStatisticsContext(jlong handle) noexcept {
-            auto contextPointer = reinterpret_cast<HeapSpaceStatisticsContext*>(handle);
-            delete contextPointer;
-            INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
+            CancelStatisticsRequest(
+                handle,
+                Javet::Enums::RawPointerType::HeapSpaceStatisticsContext);
         }
 
         void RemoveHeapStatisticsContext(jlong handle) noexcept {
-            auto contextPointer = reinterpret_cast<HeapStatisticsContext*>(handle);
-            delete contextPointer;
-            INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
+            CancelStatisticsRequest(
+                handle,
+                Javet::Enums::RawPointerType::HeapStatisticsContext);
         }
 
         void RemoveV8SharedMemoryStatisticsContext(jlong handle) noexcept {
-            auto contextPointer = reinterpret_cast<SharedMemoryStatisticsContext*>(handle);
-            delete contextPointer;
-            INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
+            CancelStatisticsRequest(
+                handle,
+                Javet::Enums::RawPointerType::SharedMemoryStatisticsContext);
         }
 
 #ifdef ENABLE_MONITOR
