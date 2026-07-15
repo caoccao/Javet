@@ -93,10 +93,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_cloneV8Value
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
-    v8Runtime->ClearExternalException(jniEnv);
-    v8Runtime->ClearExternalV8Runtime(jniEnv);
-    delete v8Runtime;
-    INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteV8Runtime);
+    if (v8Runtime->Close(jniEnv)) {
+        delete v8Runtime;
+        INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteV8Runtime);
+    }
 }
 
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Inspector

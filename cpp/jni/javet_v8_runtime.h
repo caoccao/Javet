@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <mutex>
 #include <unordered_set>
 #include "javet_enums.h"
@@ -61,6 +62,8 @@ namespace Javet {
 #endif
 
         bool Await(const Javet::Enums::V8AwaitMode::V8AwaitMode awaitMode) noexcept;
+
+        bool Close(JNIEnv* jniEnv) noexcept;
 
         inline bool ClearExternalException(JNIEnv* jniEnv) noexcept {
             if (HasExternalException()) {
@@ -193,6 +196,13 @@ namespace Javet {
         virtual ~V8Runtime();
 
     private:
+        enum class V8RuntimeState {
+            Open,
+            Closing,
+            Closed,
+        };
+
+        std::atomic<V8RuntimeState> closeState;
 #ifdef ENABLE_NODE
         // The following Node objects must be live as long as V8 context lives.
         std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator;

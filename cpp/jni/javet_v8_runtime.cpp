@@ -108,12 +108,12 @@ namespace Javet {
     V8Runtime::V8Runtime(
         node::MultiIsolatePlatform* v8PlatformPointer,
         std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator) noexcept
-        : nodeEnvironment(nullptr, node::FreeEnvironment), nodeIsolateData(nullptr, node::FreeIsolateData), nodeStopping(false), uvLoop(), uvLoopInitialized(false),
+        : closeState(V8RuntimeState::Open), nodeEnvironment(nullptr, node::FreeEnvironment), nodeIsolateData(nullptr, node::FreeIsolateData), nodeStopping(false), uvLoop(), uvLoopInitialized(false),
 #else
     V8Runtime::V8Runtime(
         V8Platform* v8PlatformPointer,
         std::shared_ptr<V8ArrayBufferAllocator> v8ArrayBufferAllocator) noexcept
-        :
+        : closeState(V8RuntimeState::Open),
 #endif
         v8SnapshotCreator(nullptr), v8StartupData(nullptr, [](v8::StartupData* x) {
             delete[] x->data;
@@ -183,6 +183,21 @@ namespace Javet {
         return false;
     }
 #endif
+
+    bool V8Runtime::Close(JNIEnv* jniEnv) noexcept {
+        V8RuntimeState expectedState = V8RuntimeState::Open;
+        if (!closeState.compare_exchange_strong(expectedState, V8RuntimeState::Closing)) {
+            return false;
+        }
+        // V8 and Node teardown may invoke Java callbacks, so their global
+        // references must remain valid until all native resources are closed.
+        CloseV8Context();
+        CloseV8Isolate();
+        ClearExternalException(jniEnv);
+        ClearExternalV8Runtime(jniEnv);
+        closeState.store(V8RuntimeState::Closed);
+        return true;
+    }
 
     void V8Runtime::CloseV8Context() noexcept {
         v8Locker.reset();
@@ -720,8 +735,12 @@ namespace Javet {
 #endif
 
     V8Runtime::~V8Runtime() {
-        CloseV8Context();
-        CloseV8Isolate();
+        V8RuntimeState expectedState = V8RuntimeState::Open;
+        if (closeState.compare_exchange_strong(expectedState, V8RuntimeState::Closing)) {
+            CloseV8Context();
+            CloseV8Isolate();
+            closeState.store(V8RuntimeState::Closed);
+        }
     }
 }
 
