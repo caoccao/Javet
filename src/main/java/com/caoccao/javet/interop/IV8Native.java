@@ -252,10 +252,14 @@ public interface IV8Native {
      *
      * @param v8RuntimeHandle the V8 runtime handle
      * @param v8ValueHandle1  the first V8 value handle
+     * @param v8ValueType1    the first V8 value type
      * @param v8ValueHandle2  the second V8 value handle
+     * @param v8ValueType2    the second V8 value type
      * @return true if the values are equal
      */
-    boolean equals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
+    boolean equals(
+            long v8RuntimeHandle, long v8ValueHandle1, int v8ValueType1,
+            long v8ValueHandle2, int v8ValueType2);
 
     /**
      * Create a new Error object with the given type and message.

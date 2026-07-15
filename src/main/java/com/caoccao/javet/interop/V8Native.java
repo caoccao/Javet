@@ -109,7 +109,9 @@ class V8Native implements IV8Native {
     public native Object doubleObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
-    public native boolean equals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
+    public native boolean equals(
+            long v8RuntimeHandle, long v8ValueHandle1, int v8ValueType1,
+            long v8ValueHandle2, int v8ValueType2);
 
     @Override
     public native Object errorCreate(long v8RuntimeHandle, int v8ValueErrorTypeId, String message);

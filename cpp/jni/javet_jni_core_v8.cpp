@@ -132,7 +132,12 @@ JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_equals
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle1, jlong v8ValueHandle2) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle,
+    jlong v8ValueHandle1, jint v8ValueType1, jlong v8ValueHandle2, jint v8ValueType2) {
+    if (IS_V8_MODULE(v8ValueType1) || IS_V8_SCRIPT(v8ValueType1)
+        || IS_V8_MODULE(v8ValueType2) || IS_V8_SCRIPT(v8ValueType2)) {
+        return v8ValueType1 == v8ValueType2 && v8ValueHandle1 == v8ValueHandle2;
+    }
     RUNTIME_AND_2_VALUES_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle1, v8ValueHandle2);
     V8MaybeBool v8MaybeBool = v8LocalValue1->Equals(v8Context, v8LocalValue2);
     if (v8MaybeBool.IsNothing()) {
@@ -483,20 +488,23 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_terminateExecutio
 
 JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_toString
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
+    if (IS_V8_MODULE(v8ValueType)) {
+        return Javet::Converter::ToJavaString(jniEnv, "[object V8Module]");
+    }
+    if (IS_V8_SCRIPT(v8ValueType)) {
+        return Javet::Converter::ToJavaString(jniEnv, "[object V8Script]");
+    }
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    if (!IS_V8_MODULE(v8ValueType) && !IS_V8_SCRIPT(v8ValueType)) {
-        V8MaybeLocalString v8MaybeLocalString = v8LocalValue->ToString(v8Context);
-        if (v8MaybeLocalString.IsEmpty()) {
-            if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context)) {
-                return nullptr;
-            }
-        }
-        else {
-            return Javet::Converter::ToJavaString(jniEnv, v8Isolate, v8MaybeLocalString.ToLocalChecked());
+    V8MaybeLocalString v8MaybeLocalString = v8LocalValue->ToString(v8Context);
+    if (v8MaybeLocalString.IsEmpty()) {
+        if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context)) {
+            return nullptr;
         }
     }
-    V8LocalString v8LocalString;
-    return Javet::Converter::ToJavaString(jniEnv, v8Isolate, v8LocalString);
+    else {
+        return Javet::Converter::ToJavaString(jniEnv, v8Isolate, v8MaybeLocalString.ToLocalChecked());
+    }
+    return nullptr;
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_unlockV8Runtime

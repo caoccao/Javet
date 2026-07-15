@@ -1210,7 +1210,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("RedundantThrows")
     boolean equals(IV8ValueReference iV8ValueReference1, IV8ValueReference iV8ValueReference2)
             throws JavetException {
-        return v8Native.equals(handle, iV8ValueReference1.getHandle(), iV8ValueReference2.getHandle());
+        return v8Native.equals(
+                handle, iV8ValueReference1.getHandle(), iV8ValueReference1.getType().getId(),
+                iV8ValueReference2.getHandle(), iV8ValueReference2.getType().getId());
     }
 
     /**

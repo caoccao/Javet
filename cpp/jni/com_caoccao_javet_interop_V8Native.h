@@ -194,10 +194,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_doubleObjectVa
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    equals
- * Signature: (JJJ)Z
+ * Signature: (JJIJI)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_equals
-  (JNIEnv *, jobject, jlong, jlong, jlong);
+  (JNIEnv *, jobject, jlong, jlong, jint, jlong, jint);
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
