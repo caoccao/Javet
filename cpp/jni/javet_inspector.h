@@ -113,7 +113,7 @@ namespace Javet {
             std::string name;
             std::condition_variable messageCondition;
             std::mutex messageMutex;
-            std::map<int, std::unique_ptr<JavetInspectorSession>> sessionMap;
+            std::map<int, std::shared_ptr<JavetInspectorSession>> sessionMap;
             int nextSessionId;
             std::unique_ptr<v8_inspector::V8Inspector> v8Inspector;
             V8LocalContext ensureDefaultContextInGroup(int contextGroupId) override;

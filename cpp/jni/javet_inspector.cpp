@@ -188,11 +188,11 @@ namespace Javet {
 
         int JavetInspectorClient::addSession(const jobject mV8Inspector, bool waitForDebugger) noexcept {
             int sessionId = nextSessionId++;
-            auto session = std::make_unique<JavetInspectorSession>(
+            auto sessionPointer = std::make_shared<JavetInspectorSession>(
                 sessionId, v8Runtime, mV8Inspector, v8Inspector.get(),
                 waitForDebugger, messageMutex);
             std::lock_guard<std::mutex> lock(messageMutex);
-            sessionMap[sessionId] = std::move(session);
+            sessionMap[sessionId] = std::move(sessionPointer);
             return sessionId;
         }
 
@@ -348,16 +348,16 @@ namespace Javet {
         }
 
         void JavetInspectorClient::postMessage(int sessionId, const std::string& message) noexcept {
-            JavetInspectorSession* sessionPtr = nullptr;
+            std::shared_ptr<JavetInspectorSession> sessionPointer;
             {
                 std::lock_guard<std::mutex> lock(messageMutex);
                 auto it = sessionMap.find(sessionId);
                 if (it != sessionMap.end()) {
-                    sessionPtr = it->second.get();
+                    sessionPointer = it->second;
                 }
             }
-            if (sessionPtr) {
-                sessionPtr->postMessage(message);
+            if (sessionPointer) {
+                sessionPointer->postMessage(message);
             }
             messageCondition.notify_one();
         }
