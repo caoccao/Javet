@@ -913,7 +913,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public V8ValueArrayBuffer createV8ValueArrayBuffer(ByteBuffer byteBuffer) throws JavetException {
         if (!isClosed()) {
             Objects.requireNonNull(byteBuffer);
-            assert byteBuffer.isDirect() : ERROR_BYTE_BUFFER_MUST_BE_DIRECT;
+            if (!byteBuffer.isDirect()) {
+                throw new IllegalArgumentException(ERROR_BYTE_BUFFER_MUST_BE_DIRECT);
+            }
             return (V8ValueArrayBuffer) v8Native.arrayBufferCreate(handle, byteBuffer);
         }
         return null;

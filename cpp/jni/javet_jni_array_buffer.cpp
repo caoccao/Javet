@@ -15,9 +15,36 @@
  *   limitations under the License.
  */
 
+#include <cstdint>
 #include <cstring>
+#include <limits>
+#include <memory>
+#include <new>
 
 #include "javet_jni.h"
+
+namespace {
+    struct DirectByteBufferReference {
+        jobject byteBuffer;
+        JavaVM* javaVM;
+    };
+
+    void DeleteDirectByteBufferReference(void*, size_t, void* deleterData) {
+        auto directByteBufferReference =
+            std::unique_ptr<DirectByteBufferReference>(
+                static_cast<DirectByteBufferReference*>(deleterData));
+        if (directByteBufferReference == nullptr ||
+            directByteBufferReference->byteBuffer == nullptr ||
+            directByteBufferReference->javaVM == nullptr) {
+            return;
+        }
+        Javet::JNIEnvScope jniEnvScope(directByteBufferReference->javaVM);
+        if (JNIEnv* jniEnv = jniEnvScope.Get(); jniEnv != nullptr) {
+            jniEnv->DeleteGlobalRef(directByteBufferReference->byteBuffer);
+            INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
+        }
+    }
+}
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_arrayBufferCreate__JI
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint length) {
@@ -35,7 +62,19 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_arrayBufferCre
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mByteBuffer) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     void* sourceData = jniEnv->GetDirectBufferAddress(mByteBuffer);
-    auto sourceLength = static_cast<size_t>(jniEnv->GetDirectBufferCapacity(mByteBuffer));
+    const jlong sourceCapacity = jniEnv->GetDirectBufferCapacity(mByteBuffer);
+    if (sourceData == nullptr || sourceCapacity < 0) {
+        return Javet::Exceptions::ThrowJavetConverterException(
+            jniEnv,
+            "Byte buffer must be direct.");
+    }
+    if (static_cast<std::uintmax_t>(sourceCapacity) >
+        static_cast<std::uintmax_t>(std::numeric_limits<size_t>::max())) {
+        return Javet::Exceptions::ThrowJavetConverterException(
+            jniEnv,
+            "Byte buffer capacity is too large.");
+    }
+    const auto sourceLength = static_cast<size_t>(sourceCapacity);
 #ifdef V8_ENABLE_SANDBOX
     // V8's sandbox requires backing stores to live inside the sandbox address
     // space. The JVM direct buffer is on the regular process heap and cannot
@@ -47,11 +86,41 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_arrayBufferCre
         std::memcpy(v8LocalArrayBuffer->GetBackingStore()->Data(), sourceData, sourceLength);
     }
 #else
+    JavaVM* javaVM = nullptr;
+    if (jniEnv->GetJavaVM(&javaVM) != JNI_OK || javaVM == nullptr) {
+        return Javet::Exceptions::ThrowJavetConverterException(
+            jniEnv,
+            "Failed to access the Java VM.");
+    }
+    auto directByteBufferReference = std::unique_ptr<DirectByteBufferReference>(
+        new (std::nothrow) DirectByteBufferReference{nullptr, javaVM});
+    if (directByteBufferReference == nullptr) {
+        return Javet::Exceptions::ThrowJavetConverterException(
+            jniEnv,
+            "Failed to retain the direct byte buffer.");
+    }
+    jobject globalByteBuffer = jniEnv->NewGlobalRef(mByteBuffer);
+    if (globalByteBuffer == nullptr) {
+        if (!jniEnv->ExceptionCheck()) {
+            return Javet::Exceptions::ThrowJavetConverterException(
+                jniEnv,
+                "Failed to retain the direct byte buffer.");
+        }
+        return nullptr;
+    }
+    INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
+    directByteBufferReference->byteBuffer = globalByteBuffer;
     std::unique_ptr<v8::BackingStore> v8BackingStorePointer = v8::ArrayBuffer::NewBackingStore(
         sourceData,
         sourceLength,
-        [](void*, size_t, void*) {},
-        nullptr);
+        DeleteDirectByteBufferReference,
+        directByteBufferReference.get());
+    if (v8BackingStorePointer == nullptr) {
+        jniEnv->DeleteGlobalRef(globalByteBuffer);
+        INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
+        return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
+    }
+    directByteBufferReference.release();
     auto v8LocalArrayBuffer = v8::ArrayBuffer::New(v8Isolate, std::move(v8BackingStorePointer));
 #endif
     if (!v8LocalArrayBuffer.IsEmpty()) {
