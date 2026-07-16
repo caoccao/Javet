@@ -364,7 +364,7 @@ namespace Javet {
             return;
         }
         int errorCode = uv_loop_close(&uvLoop);
-        if (errorCode == UV_EBUSY) {
+        while (errorCode == UV_EBUSY) {
             uv_walk(&uvLoop, [](uv_handle_t* handle, void*) {
                 if (!uv_is_closing(handle)) {
                     uv_close(handle, nullptr);
@@ -373,11 +373,11 @@ namespace Javet {
             uv_run(&uvLoop, UV_RUN_DEFAULT);
             errorCode = uv_loop_close(&uvLoop);
         }
-        if (errorCode != 0) {
-            LOG_ERROR("Failed to close uv loop. Reason: " << uv_err_name(errorCode));
+        if (errorCode == 0) {
+            uvLoopInitialized = false;
         }
         else {
-            uvLoopInitialized = false;
+            LOG_ERROR("Failed to close uv loop. Reason: " << uv_err_name(errorCode));
         }
     }
 #endif
