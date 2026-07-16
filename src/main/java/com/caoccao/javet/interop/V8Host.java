@@ -273,8 +273,11 @@ public final class V8Host {
         if (v8Runtime != null) {
             final long handle = v8Runtime.getHandle();
             if (handle != INVALID_HANDLE && v8RuntimeMap.containsKey(handle)) {
-                v8Native.closeV8Runtime(handle);
-                v8RuntimeMap.remove(handle);
+                if (!v8Native.closeV8Runtime(handle)) {
+                    logger.logWarn("Failed to close V8 runtime {0}.", handle);
+                } else {
+                    v8RuntimeMap.remove(handle);
+                }
             }
         }
     }

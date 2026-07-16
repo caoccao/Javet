@@ -82,7 +82,7 @@ class V8Native implements IV8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean referenceCopy);
 
     @Override
-    public native void closeV8Runtime(long v8RuntimeHandle);
+    public native boolean closeV8Runtime(long v8RuntimeHandle);
 
     @Override
     public native Object contextGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int index);

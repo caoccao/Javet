@@ -163,8 +163,9 @@ public interface IV8Native {
      * Close and dispose a V8 runtime.
      *
      * @param v8RuntimeHandle the V8 runtime handle
+     * @return true if the runtime is closed, false if it is already closing or closed
      */
-    void closeV8Runtime(long v8RuntimeHandle);
+    boolean closeV8Runtime(long v8RuntimeHandle);
 
     /**
      * Get a value from a Context at the given index.

@@ -122,9 +122,9 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_cloneV8Value
 /*
  * Class:     com_caoccao_javet_interop_V8Native
  * Method:    closeV8Runtime
- * Signature: (J)V
+ * Signature: (J)Z
  */
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_closeV8Runtime
   (JNIEnv *, jobject, jlong);
 
 /*
