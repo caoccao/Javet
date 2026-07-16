@@ -78,22 +78,14 @@ namespace Javet {
             jobject mV8Flags = jniEnv->GetStaticObjectField(jclassRuntimeOptions, jfieldIDRuntimeOptionsV8Flags);
             jstring mV8FlagsString = (jstring)jniEnv->CallObjectMethod(mV8Flags, jmethodIDV8FlagsToString);
             jniEnv->DeleteLocalRef(jniEnv->CallObjectMethod(mV8Flags, jmethodIDV8FlagsSeal));
-            bool v8FlagsConverted = false;
-            {
-                JNIStringUTFChars utfChars(jniEnv, mV8FlagsString);
-                if (utfChars) {
-                    v8::V8::SetFlagsFromString(
-                        utfChars.Get(),
-                        jniEnv->GetStringUTFLength(mV8FlagsString));
-                    v8FlagsConverted = true;
-                }
-            }
-            if (!v8FlagsConverted) {
+            auto v8FlagsString = Javet::Converter::ToUtf8String(jniEnv, mV8FlagsString);
+            if (!v8FlagsString) {
                 DELETE_LOCAL_REF(jniEnv, mV8FlagsString);
                 DELETE_LOCAL_REF(jniEnv, mV8Flags);
                 DELETE_LOCAL_REF(jniEnv, jclassV8Flags);
                 return false;
             }
+            v8::V8::SetFlagsFromString(v8FlagsString->data(), v8FlagsString->length());
             DELETE_LOCAL_REF(jniEnv, mV8FlagsString);
             DELETE_LOCAL_REF(jniEnv, mV8Flags);
             jniEnv->DeleteLocalRef(jclassV8Flags);
@@ -509,7 +501,7 @@ namespace Javet {
                     int consoleArgumentCount = jniEnv->GetArrayLength(mConsoleArguments);
                     for (int i = 0; i < consoleArgumentCount; ++i) {
                         jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
-                        auto consoleArgumentPointer = Javet::Converter::ToStdString(jniEnv, mConsoleArgument);
+                        auto consoleArgumentPointer = Javet::Converter::ToUtf8String(jniEnv, mConsoleArgument);
                         if (!consoleArgumentPointer) {
                             DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
                             break;
@@ -563,7 +555,7 @@ namespace Javet {
                     if (consoleArgumentCount > 0) {
                         for (int i = 0; i < consoleArgumentCount; ++i) {
                             jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
-                            auto consoleArgumentPointer = Javet::Converter::ToStdString(jniEnv, mConsoleArgument);
+                            auto consoleArgumentPointer = Javet::Converter::ToUtf8String(jniEnv, mConsoleArgument);
                             if (!consoleArgumentPointer) {
                                 DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
                                 break;
@@ -664,7 +656,7 @@ namespace Javet {
                     int consoleArgumentCount = jniEnv->GetArrayLength(mConsoleArguments);
                     for (int i = 0; i < consoleArgumentCount; ++i) {
                         jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
-                        auto consoleArgumentPointer = Javet::Converter::ToStdString(jniEnv, mConsoleArgument);
+                        auto consoleArgumentPointer = Javet::Converter::ToUtf8String(jniEnv, mConsoleArgument);
                         if (!consoleArgumentPointer) {
                             DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
                             break;

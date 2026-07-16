@@ -260,7 +260,7 @@ namespace Javet {
             v8::HeapSpaceStatistics heapSpaceStatistics;
             auto index = jniEnv->CallIntMethod(allocationSpace, jmethodIDV8AllocationSpaceGetIndex);
             v8Isolate->GetHeapSpaceStatistics(&heapSpaceStatistics, static_cast<size_t>(index));
-            jstring spaceName = Javet::Converter::ToJavaString(
+            jstring spaceName = Javet::Converter::ToJavaStringFromUtf8(
                 jniEnv, heapSpaceStatistics.space_name());
             auto jHeapSpaceStatistics = jniEnv->NewObject(jclassV8HeapSpaceStatistics, jmethodIDV8HeapSpaceStatisticsConstructor,
                 spaceName,

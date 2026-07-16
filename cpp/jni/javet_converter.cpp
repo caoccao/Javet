@@ -345,6 +345,177 @@ namespace Javet {
             return jniEnv->IsInstanceOf(obj, jclassV8ValueWeakSet);
         }
 
+        static inline void AppendCodePointToUtf8(
+            std::string& utf8String,
+            uint32_t codePoint) {
+            if (codePoint <= 0x7F) {
+                utf8String.push_back(static_cast<char>(codePoint));
+            }
+            else if (codePoint <= 0x7FF) {
+                utf8String.push_back(static_cast<char>(0xC0 | (codePoint >> 6)));
+                utf8String.push_back(static_cast<char>(0x80 | (codePoint & 0x3F)));
+            }
+            else if (codePoint <= 0xFFFF) {
+                utf8String.push_back(static_cast<char>(0xE0 | (codePoint >> 12)));
+                utf8String.push_back(static_cast<char>(0x80 | ((codePoint >> 6) & 0x3F)));
+                utf8String.push_back(static_cast<char>(0x80 | (codePoint & 0x3F)));
+            }
+            else {
+                utf8String.push_back(static_cast<char>(0xF0 | (codePoint >> 18)));
+                utf8String.push_back(static_cast<char>(0x80 | ((codePoint >> 12) & 0x3F)));
+                utf8String.push_back(static_cast<char>(0x80 | ((codePoint >> 6) & 0x3F)));
+                utf8String.push_back(static_cast<char>(0x80 | (codePoint & 0x3F)));
+            }
+        }
+
+        static inline void AppendCodePointToUtf16(
+            std::u16string& utf16String,
+            uint32_t codePoint) {
+            if (codePoint <= 0xFFFF) {
+                utf16String.push_back(static_cast<char16_t>(codePoint));
+            }
+            else {
+                codePoint -= 0x10000;
+                utf16String.push_back(static_cast<char16_t>(0xD800 | (codePoint >> 10)));
+                utf16String.push_back(static_cast<char16_t>(0xDC00 | (codePoint & 0x3FF)));
+            }
+        }
+
+        jstring ToJavaStringFromUtf8(
+            JNIEnv* jniEnv,
+            const char* utf8String) noexcept {
+            if (utf8String == nullptr) {
+                return nullptr;
+            }
+            return ToJavaStringFromUtf8(
+                jniEnv,
+                utf8String,
+                std::char_traits<char>::length(utf8String));
+        }
+
+        jstring ToJavaStringFromUtf8(
+            JNIEnv* jniEnv,
+            const char* utf8String,
+            size_t length) noexcept {
+            if (utf8String == nullptr) {
+                return nullptr;
+            }
+            std::u16string utf16String;
+            utf16String.reserve(length);
+            size_t index = 0;
+            while (index < length) {
+                const auto firstByte = static_cast<uint8_t>(utf8String[index]);
+                uint32_t codePoint = 0;
+                uint32_t minimumCodePoint = 0;
+                size_t sequenceLength = 0;
+                if (firstByte <= 0x7F) {
+                    codePoint = firstByte;
+                    sequenceLength = 1;
+                }
+                else if ((firstByte & 0xE0) == 0xC0) {
+                    codePoint = firstByte & 0x1F;
+                    minimumCodePoint = 0x80;
+                    sequenceLength = 2;
+                }
+                else if ((firstByte & 0xF0) == 0xE0) {
+                    codePoint = firstByte & 0x0F;
+                    minimumCodePoint = 0x800;
+                    sequenceLength = 3;
+                }
+                else if ((firstByte & 0xF8) == 0xF0) {
+                    codePoint = firstByte & 0x07;
+                    minimumCodePoint = 0x10000;
+                    sequenceLength = 4;
+                }
+                bool valid = sequenceLength > 0 && index + sequenceLength <= length;
+                for (size_t offset = 1; valid && offset < sequenceLength; ++offset) {
+                    const auto continuationByte = static_cast<uint8_t>(utf8String[index + offset]);
+                    if ((continuationByte & 0xC0) != 0x80) {
+                        valid = false;
+                    }
+                    else {
+                        codePoint = (codePoint << 6) | (continuationByte & 0x3F);
+                    }
+                }
+                valid = valid &&
+                    codePoint >= minimumCodePoint &&
+                    codePoint <= 0x10FFFF &&
+                    (codePoint < 0xD800 || codePoint > 0xDFFF);
+                if (!valid) {
+                    codePoint = 0xFFFD;
+                    sequenceLength = 1;
+                }
+                AppendCodePointToUtf16(utf16String, codePoint);
+                index += sequenceLength;
+            }
+            return ToJavaStringFromUtf16(jniEnv, utf16String);
+        }
+
+        jstring ToJavaStringFromUtf8(
+            JNIEnv* jniEnv,
+            const std::string& utf8String) noexcept {
+            return ToJavaStringFromUtf8(jniEnv, utf8String.data(), utf8String.length());
+        }
+
+        jstring ToJavaStringFromUtf16(
+            JNIEnv* jniEnv,
+            const std::u16string& utf16String) noexcept {
+            static_assert(sizeof(char16_t) == sizeof(jchar));
+            return jniEnv->NewString(
+                reinterpret_cast<const jchar*>(utf16String.data()),
+                static_cast<jsize>(utf16String.length()));
+        }
+
+        std::unique_ptr<std::string> ToUtf8String(
+            JNIEnv* jniEnv,
+            const jstring& mString) noexcept {
+            auto utf16String = ToUtf16String(jniEnv, mString);
+            return utf16String == nullptr ? nullptr : ToUtf8String(*utf16String);
+        }
+
+        std::unique_ptr<std::string> ToUtf8String(
+            const std::u16string& utf16String) noexcept {
+            auto utf8String = std::make_unique<std::string>();
+            utf8String->reserve(utf16String.length() * 3);
+            for (size_t index = 0; index < utf16String.length(); ++index) {
+                uint32_t codePoint = utf16String[index];
+                if (codePoint >= 0xD800 && codePoint <= 0xDBFF &&
+                    index + 1 < utf16String.length()) {
+                    const uint32_t lowSurrogate = utf16String[index + 1];
+                    if (lowSurrogate >= 0xDC00 && lowSurrogate <= 0xDFFF) {
+                        codePoint = 0x10000 +
+                            ((codePoint - 0xD800) << 10) +
+                            (lowSurrogate - 0xDC00);
+                        ++index;
+                    }
+                    else {
+                        codePoint = 0xFFFD;
+                    }
+                }
+                else if (codePoint >= 0xD800 && codePoint <= 0xDFFF) {
+                    codePoint = 0xFFFD;
+                }
+                AppendCodePointToUtf8(*utf8String, codePoint);
+            }
+            return utf8String;
+        }
+
+        std::unique_ptr<std::u16string> ToUtf16String(
+            JNIEnv* jniEnv,
+            const jstring& mString) noexcept {
+            JNIStringChars utf16Chars(jniEnv, mString);
+            if (!utf16Chars) {
+                return nullptr;
+            }
+            const jsize length = jniEnv->GetStringLength(mString);
+            auto utf16String = std::make_unique<std::u16string>();
+            utf16String->resize(length);
+            for (jsize index = 0; index < length; ++index) {
+                (*utf16String)[index] = static_cast<char16_t>(utf16Chars.Get()[index]);
+            }
+            return utf16String;
+        }
+
         bool Initialize(JNIEnv* jniEnv) noexcept {
             /*
              @see https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/types.html
@@ -1162,8 +1333,10 @@ namespace Javet {
             int lineNumber = 0, startColumn = 0, endColumn = 0, startPosition = 0, endPosition = 0;
             auto v8LocalMessage = v8TryCatch.Message();
             if (!v8LocalMessage.IsEmpty()) {
-                jStringScriptResourceName = ToJavaString(jniEnv, v8Runtime->v8Isolate, v8LocalMessage->GetScriptResourceName());
-                jStringSourceLine = ToJavaString(jniEnv, v8Runtime->v8Isolate, v8LocalMessage->GetSourceLine(v8Context).FromMaybe(V8LocalString()));
+                jStringScriptResourceName = ToJavaStringFromV8String(
+                    jniEnv, v8Runtime->v8Isolate, v8LocalMessage->GetScriptResourceName());
+                jStringSourceLine = ToJavaStringFromV8String(
+                    jniEnv, v8Runtime->v8Isolate, v8LocalMessage->GetSourceLine(v8Context).FromMaybe(V8LocalString()));
                 lineNumber = v8LocalMessage->GetLineNumber(v8Context).FromMaybe(0);
                 startColumn = v8LocalMessage->GetStartColumn();
                 endColumn = v8LocalMessage->GetEndColumn();

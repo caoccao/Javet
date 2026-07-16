@@ -214,7 +214,7 @@ namespace Javet {
                     jobject mReferrerV8Module = referrer.IsEmpty()
                         ? nullptr
                         : Javet::Converter::ToExternalV8Module(jniEnv, v8Runtime, referrer);
-                    jstring mSpecifier = Javet::Converter::ToJavaString(
+                    jstring mSpecifier = Javet::Converter::ToJavaStringFromV8String(
                         jniEnv, v8Runtime->v8Isolate, specifier);
                     jobject mIV8Module = jniEnv->CallObjectMethod(
                         v8Runtime->externalV8Runtime,
@@ -222,7 +222,7 @@ namespace Javet {
                         mSpecifier,
                         mReferrerV8Module);
                     DELETE_LOCAL_REF(jniEnv, mSpecifier);
-                    auto moduleNamePointer = Javet::Converter::ToStdString(v8Runtime->v8Isolate, specifier);
+                    auto moduleNamePointer = Javet::Converter::ToUtf8String(v8Runtime->v8Isolate, specifier);
                     if (jniEnv->ExceptionCheck()) {
                         // JNI exception is not re-thrown in this callback function because it will pop up automatically.
                         LOG_ERROR("JavetModuleResolveCallback: module '" << moduleNamePointer.get() << "' with exception");

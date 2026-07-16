@@ -246,7 +246,8 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetResou
         v8LocalObjectName = v8::Utils::ToLocal(v8::internal::handle(v8InternalStringName, v8InternalIsolate));
 }
     if (!v8LocalObjectName.IsEmpty()) {
-        return Javet::Converter::ToJavaString(jniEnv, v8Isolate, v8LocalObjectName);
+        return Javet::Converter::ToJavaStringFromV8String(
+            jniEnv, v8Isolate, v8LocalObjectName);
     }
     return nullptr;
 }

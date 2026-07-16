@@ -34,7 +34,7 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_symbolDescript
     if (IS_V8_SYMBOL(v8ValueType)) {
         auto v8LocalDescription = v8LocalValue.As<v8::Symbol>()->Description(v8Isolate);
         if (v8LocalDescription->IsString()) {
-            return Javet::Converter::ToJavaString(
+            return Javet::Converter::ToJavaStringFromV8String(
                 jniEnv,
                 v8Isolate,
                 v8LocalDescription.As<v8::String>());

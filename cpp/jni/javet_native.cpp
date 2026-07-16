@@ -199,7 +199,7 @@ namespace Javet {
             }
             jobject mV8Flags = jniEnv->GetStaticObjectField(jclassV8RuntimeOptions, jfieldIDV8RuntimeOptionsV8Flags);
             jstring mIcuDataFile = (jstring)jniEnv->CallObjectMethod(mV8Flags, jmethodIDV8FlagsGetIcuDataFile);
-            auto umIcuDataFile = Javet::Converter::ToStdString(jniEnv, mIcuDataFile);
+            auto umIcuDataFile = Javet::Converter::ToUtf8String(jniEnv, mIcuDataFile);
             if (!umIcuDataFile) {
                 DELETE_LOCAL_REF(jniEnv, mIcuDataFile);
                 DELETE_LOCAL_REF(jniEnv, mV8Flags);
@@ -247,7 +247,7 @@ namespace Javet {
                     LOG_DEBUG("Node.js flag count is " << nodeFlagCount);
                     for (int i = 0; i < nodeFlagCount; ++i) {
                         jstring mFlagString = (jstring)jniEnv->GetObjectArrayElement(mNodeFlagsStringArray, i);
-                        auto umFlagString = Javet::Converter::ToStdString(jniEnv, mFlagString);
+                        auto umFlagString = Javet::Converter::ToUtf8String(jniEnv, mFlagString);
                         if (!umFlagString) {
                             DELETE_LOCAL_REF(jniEnv, mFlagString);
                             break;

@@ -105,7 +105,7 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Inspector
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mV8Inspector, jstring mName, jboolean waitForDebugger) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     if (!v8Runtime->v8Inspector) {
-        auto name = Javet::Converter::ToStdString(jniEnv, mName);
+        auto name = Javet::Converter::ToUtf16String(jniEnv, mName);
         if (!name) {
             return 0;
         }
@@ -192,7 +192,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_getV8SharedMem
 
 JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_getVersion
 (JNIEnv* jniEnv, jobject caller) {
-    return Javet::Converter::ToJavaString(jniEnv, v8::V8::GetVersion());
+    return Javet::Converter::ToJavaStringFromUtf8(jniEnv, v8::V8::GetVersion());
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_hasInternalType
@@ -492,10 +492,10 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_terminateExecutio
 JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_toString
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType) {
     if (IS_V8_MODULE(v8ValueType)) {
-        return Javet::Converter::ToJavaString(jniEnv, "[object V8Module]");
+        return Javet::Converter::ToJavaStringFromUtf8(jniEnv, "[object V8Module]");
     }
     if (IS_V8_SCRIPT(v8ValueType)) {
-        return Javet::Converter::ToJavaString(jniEnv, "[object V8Script]");
+        return Javet::Converter::ToJavaStringFromUtf8(jniEnv, "[object V8Script]");
     }
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     V8MaybeLocalString v8MaybeLocalString = v8LocalValue->ToString(v8Context);
@@ -505,7 +505,8 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_toString
         }
     }
     else {
-        return Javet::Converter::ToJavaString(jniEnv, v8Isolate, v8MaybeLocalString.ToLocalChecked());
+        return Javet::Converter::ToJavaStringFromV8String(
+            jniEnv, v8Isolate, v8MaybeLocalString.ToLocalChecked());
     }
     return nullptr;
 }
@@ -546,7 +547,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId, jstring mMessage) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     Javet::ExternalExceptionScope externalExceptionScope(jniEnv, v8Runtime);
-    auto message = Javet::Converter::ToStdString(jniEnv, mMessage);
+    auto message = Javet::Converter::ToUtf16String(jniEnv, mMessage);
     if (!message) {
         return;
     }
@@ -575,11 +576,11 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorBreakP
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId, jstring mBreakReason, jstring mBreakDetails) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     if (v8Runtime->v8Inspector) {
-        auto breakReason = Javet::Converter::ToStdString(jniEnv, mBreakReason);
+        auto breakReason = Javet::Converter::ToUtf16String(jniEnv, mBreakReason);
         if (!breakReason) {
             return;
         }
-        auto breakDetails = Javet::Converter::ToStdString(jniEnv, mBreakDetails);
+        auto breakDetails = Javet::Converter::ToUtf16String(jniEnv, mBreakDetails);
         if (!breakDetails) {
             return;
         }
@@ -607,7 +608,7 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorEva
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId, jstring mExpression, jboolean includeCommandLineAPI) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     if (v8Runtime->v8Inspector) {
-        auto expression = Javet::Converter::ToStdString(jniEnv, mExpression);
+        auto expression = Javet::Converter::ToUtf16String(jniEnv, mExpression);
         if (!expression) {
             return nullptr;
         }
@@ -620,11 +621,11 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSchedu
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint sessionId, jstring mBreakReason, jstring mBreakDetails) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     if (v8Runtime->v8Inspector) {
-        auto breakReason = Javet::Converter::ToStdString(jniEnv, mBreakReason);
+        auto breakReason = Javet::Converter::ToUtf16String(jniEnv, mBreakReason);
         if (!breakReason) {
             return;
         }
-        auto breakDetails = Javet::Converter::ToStdString(jniEnv, mBreakDetails);
+        auto breakDetails = Javet::Converter::ToUtf16String(jniEnv, mBreakDetails);
         if (!breakDetails) {
             return;
         }

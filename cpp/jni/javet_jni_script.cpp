@@ -123,7 +123,8 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_scriptGetResou
         if (!v8LocalScript.IsEmpty()) {
             auto v8ValueResourceName = v8LocalScript->GetResourceName();
             if (!v8ValueResourceName->IsUndefined()) {
-                return Javet::Converter::ToJavaString(jniEnv, v8Isolate, v8ValueResourceName);
+                return Javet::Converter::ToJavaStringFromV8String(
+                    jniEnv, v8Isolate, v8ValueResourceName);
             }
         }
     }

@@ -508,7 +508,8 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetStrin
         nullptr,
         [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8LocalValue& v8LocalValue, jbooleanArray mPrimitiveFlags) -> jstring {
             if (v8LocalValue->IsString()) {
-                return Javet::Converter::ToJavaString(jniEnv, v8Runtime->v8Isolate, v8LocalValue);
+                return Javet::Converter::ToJavaStringFromV8String(
+                    jniEnv, v8Runtime->v8Isolate, v8LocalValue);
             }
             return nullptr;
         },
@@ -933,5 +934,5 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_objectToProtoS
         }
     }
     V8LocalString v8LocalString = v8MaybeLocalString.IsEmpty() ? V8LocalString() : v8MaybeLocalString.ToLocalChecked();
-    return Javet::Converter::ToJavaString(jniEnv, v8Isolate, v8LocalString);
+    return Javet::Converter::ToJavaStringFromV8String(jniEnv, v8Isolate, v8LocalString);
 }

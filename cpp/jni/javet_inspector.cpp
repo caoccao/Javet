@@ -25,33 +25,22 @@
 
 namespace Javet {
     namespace Inspector {
-        static inline std::unique_ptr<std::string> ConvertFromStringViewToStdStringPointer(
-            v8::Isolate* v8Isolate,
-            const v8_inspector::StringView& stringView) {
-            int length = static_cast<int>(stringView.length());
-            V8LocalString v8StringMessage;
-            if (length > 0) {
-                if (stringView.is8Bit()) {
-                    v8StringMessage = v8::String::NewFromOneByte(v8Isolate, reinterpret_cast<const uint8_t*>(
-                        stringView.characters8()), v8::NewStringType::kNormal, length).ToLocalChecked();
-                }
-                else {
-                    v8StringMessage = v8::String::NewFromTwoByte(v8Isolate, reinterpret_cast<const uint16_t*>(
-                        stringView.characters16()), v8::NewStringType::kNormal, length).ToLocalChecked();
-                }
-            }
-            V8StringUtf8Value v8Utf8Value(v8Isolate, v8StringMessage);
-            return std::make_unique<std::string>(*v8Utf8Value);
-        }
-
-        static inline std::unique_ptr<v8_inspector::StringView> ConvertFromStdStringToStringViewPointer(
-            const std::string& stdString) {
+        static inline std::unique_ptr<v8_inspector::StringView> ConvertFromAsciiStringToStringViewPointer(
+            const std::string& asciiString) {
             return std::make_unique<v8_inspector::StringView>(
-                reinterpret_cast<const uint8_t*>(stdString.c_str()),
-                stdString.length());
+                reinterpret_cast<const uint8_t*>(asciiString.data()),
+                asciiString.length());
         }
 
-        static inline std::unique_ptr<std::string> ConvertFromStringBufferToStdStringPointer(
+        static inline std::unique_ptr<v8_inspector::StringView> ConvertFromUtf16StringToStringViewPointer(
+            const std::u16string& utf16String) {
+            static_assert(sizeof(char16_t) == sizeof(uint16_t));
+            return std::make_unique<v8_inspector::StringView>(
+                reinterpret_cast<const uint16_t*>(utf16String.data()),
+                utf16String.length());
+        }
+
+        static inline std::unique_ptr<std::string> ConvertFromStringBufferToUtf8StringPointer(
             v8::Isolate* v8Isolate,
             v8_inspector::StringBuffer* stringBuffer) {
             auto stringViewMessage = stringBuffer->string();
@@ -71,6 +60,24 @@ namespace Javet {
             return std::make_unique<std::string>(*v8Utf8Value);
         }
 
+        static inline jstring ConvertFromStringViewToJavaString(
+            JNIEnv* jniEnv,
+            const v8_inspector::StringView& stringView) {
+            std::u16string utf16String;
+            utf16String.resize(stringView.length());
+            if (stringView.is8Bit()) {
+                for (size_t index = 0; index < stringView.length(); ++index) {
+                    utf16String[index] = static_cast<char16_t>(stringView.characters8()[index]);
+                }
+            }
+            else {
+                for (size_t index = 0; index < stringView.length(); ++index) {
+                    utf16String[index] = static_cast<char16_t>(stringView.characters16()[index]);
+                }
+            }
+            return Javet::Converter::ToJavaStringFromUtf16(jniEnv, utf16String);
+        }
+
         bool Initialize(JNIEnv* jniEnv) noexcept {
             JNIInitializer jniInitializer(jniEnv);
             jniInitializer.FindGlobalClass(jclassV8Inspector, "com/caoccao/javet/interop/V8Inspector");
@@ -83,7 +90,7 @@ namespace Javet {
             return jniInitializer.IsValid();
         }
 
-        JavetInspector::JavetInspector(V8Runtime* v8Runtime, const std::string& name) noexcept {
+        JavetInspector::JavetInspector(V8Runtime* v8Runtime, const std::u16string& name) noexcept {
             this->v8Runtime = v8Runtime;
             client.reset(new JavetInspectorClient(v8Runtime, name));
         }
@@ -92,7 +99,7 @@ namespace Javet {
             return client->addSession(jniEnv, mV8Inspector, waitForDebugger);
         }
 
-        void JavetInspector::breakProgram(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept {
+        void JavetInspector::breakProgram(int sessionId, const std::u16string& breakReason, const std::u16string& breakDetails) noexcept {
             client->breakProgram(sessionId, breakReason, breakDetails);
         }
 
@@ -100,7 +107,7 @@ namespace Javet {
             client->cancelPauseOnNextStatement(sessionId);
         }
 
-        jobject JavetInspector::evaluate(JNIEnv* jniEnv, int sessionId, const std::string& expression, bool includeCommandLineAPI) noexcept {
+        jobject JavetInspector::evaluate(JNIEnv* jniEnv, int sessionId, const std::u16string& expression, bool includeCommandLineAPI) noexcept {
             return client->evaluate(jniEnv, sessionId, expression, includeCommandLineAPI);
         }
 
@@ -141,8 +148,11 @@ namespace Javet {
             return client->isRunningMessageLoop();
         }
 
-        void JavetInspector::postMessage(int sessionId, const std::string& message) noexcept {
-            LOG_DEBUG("Queueing request for session " << sessionId << ": " << message);
+        void JavetInspector::postMessage(int sessionId, const std::u16string& message) noexcept {
+            auto utf8Message = Javet::Converter::ToUtf8String(message);
+            if (utf8Message) {
+                LOG_DEBUG("Queueing request for session " << sessionId << ": " << *utf8Message);
+            }
             client->postMessage(sessionId, message);
         }
 
@@ -150,7 +160,7 @@ namespace Javet {
             client->removeSession(sessionId);
         }
 
-        void JavetInspector::schedulePauseOnNextStatement(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept {
+        void JavetInspector::schedulePauseOnNextStatement(int sessionId, const std::u16string& breakReason, const std::u16string& breakDetails) noexcept {
             client->schedulePauseOnNextStatement(sessionId, breakReason, breakDetails);
         }
 
@@ -168,7 +178,7 @@ namespace Javet {
 
         JavetInspectorClient::JavetInspectorClient(
             V8Runtime* v8Runtime,
-            const std::string& name) noexcept
+            const std::u16string& name) noexcept
             : v8Inspector(nullptr) {
             activateMessageLoop = false;
             runningMessageLoop.store(false);
@@ -179,11 +189,11 @@ namespace Javet {
             auto v8Context = v8Runtime->GetV8LocalContext();
             v8Inspector.reset(v8_inspector::V8Inspector::create(v8Runtime->v8Isolate, this).release());
             v8Context->SetAlignedPointerInEmbedderData(EMBEDDER_DATA_INDEX, this);
-            auto humanReadableNamePointer = ConvertFromStdStringToStringViewPointer(name);
+            auto humanReadableNamePointer = ConvertFromUtf16StringToStringViewPointer(name);
             v8_inspector::V8ContextInfo contextInfo(v8Context, CONTEXT_GROUP_ID, *humanReadableNamePointer.get());
             contextInfo.origin = *humanReadableNamePointer.get();
             static const std::string auxDataStr = "{\"isDefault\":true}";
-            auto auxDataPointer = ConvertFromStdStringToStringViewPointer(auxDataStr);
+            auto auxDataPointer = ConvertFromAsciiStringToStringViewPointer(auxDataStr);
             contextInfo.auxData = *auxDataPointer.get();
             v8Inspector->contextCreated(contextInfo);
         }
@@ -198,7 +208,7 @@ namespace Javet {
             return sessionId;
         }
 
-        void JavetInspectorClient::breakProgram(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept {
+        void JavetInspectorClient::breakProgram(int sessionId, const std::u16string& breakReason, const std::u16string& breakDetails) noexcept {
             // Look up the session under the lock, then release it before
             // calling breakProgram().  V8's breakProgram() may enter
             // runMessageLoopOnPause() which also acquires messageMutex,
@@ -232,11 +242,11 @@ namespace Javet {
 
         void JavetInspectorClient::contextCreated(const V8LocalContext& v8Context) noexcept {
             v8Context->SetAlignedPointerInEmbedderData(EMBEDDER_DATA_INDEX, this);
-            auto humanReadableNamePointer = ConvertFromStdStringToStringViewPointer(name);
+            auto humanReadableNamePointer = ConvertFromUtf16StringToStringViewPointer(name);
             v8_inspector::V8ContextInfo contextInfo(v8Context, CONTEXT_GROUP_ID, *humanReadableNamePointer.get());
             contextInfo.origin = *humanReadableNamePointer.get();
             static const std::string auxDataStr = "{\"isDefault\":true}";
-            auto auxDataPointer = ConvertFromStdStringToStringViewPointer(auxDataStr);
+            auto auxDataPointer = ConvertFromAsciiStringToStringViewPointer(auxDataStr);
             contextInfo.auxData = *auxDataPointer.get();
             v8Inspector->contextCreated(contextInfo);
         }
@@ -254,8 +264,6 @@ namespace Javet {
                 unsigned columnNumber,
                 v8_inspector::V8StackTrace*) {
             V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
-            auto stdMessage = ConvertFromStringViewToStdStringPointer(v8Runtime->v8Isolate, message);
-            auto stdUrl = ConvertFromStringViewToStdStringPointer(v8Runtime->v8Isolate, url);
             // Notify all sessions' Java objects.
             std::vector<jobject> javaObjects;
             {
@@ -270,8 +278,8 @@ namespace Javet {
                 return;
             }
             JNIEnv* jniEnv = jniEnvScope.Get();
-            jstring jMessage = Javet::Converter::ToJavaString(jniEnv, stdMessage->c_str());
-            jstring jUrl = Javet::Converter::ToJavaString(jniEnv, stdUrl->c_str());
+            jstring jMessage = ConvertFromStringViewToJavaString(jniEnv, message);
+            jstring jUrl = ConvertFromStringViewToJavaString(jniEnv, url);
             for (jobject jobj : javaObjects) {
                 jniEnv->CallVoidMethod(jobj, jmethodIDV8InspectorConsoleAPIMessage,
                     contextGroupId, static_cast<jint>(level), jMessage, jUrl,
@@ -300,7 +308,7 @@ namespace Javet {
             return v8Runtime->GetV8LocalContext();
         }
 
-        jobject JavetInspectorClient::evaluate(JNIEnv* jniEnv, int sessionId, const std::string& expression, bool includeCommandLineAPI) noexcept {
+        jobject JavetInspectorClient::evaluate(JNIEnv* jniEnv, int sessionId, const std::u16string& expression, bool includeCommandLineAPI) noexcept {
             JavetInspectorSession* sessionPtr = nullptr;
             {
                 std::lock_guard<std::mutex> lock(messageMutex);
@@ -359,7 +367,7 @@ namespace Javet {
             return waitingForDebugger.load();
         }
 
-        void JavetInspectorClient::postMessage(int sessionId, const std::string& message) noexcept {
+        void JavetInspectorClient::postMessage(int sessionId, const std::u16string& message) noexcept {
             std::shared_ptr<JavetInspectorSession> sessionPointer;
             {
                 std::lock_guard<std::mutex> lock(messageMutex);
@@ -441,7 +449,7 @@ namespace Javet {
             }
         }
 
-        void JavetInspectorClient::schedulePauseOnNextStatement(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept {
+        void JavetInspectorClient::schedulePauseOnNextStatement(int sessionId, const std::u16string& breakReason, const std::u16string& breakDetails) noexcept {
             JavetInspectorSession* sessionPtr = nullptr;
             {
                 std::lock_guard<std::mutex> lock(messageMutex);
@@ -539,16 +547,16 @@ namespace Javet {
         void JavetInspectorSession::drainQueue() noexcept {
             std::unique_lock<std::mutex> lock(sharedMutex);
             while (!messageQueue.empty()) {
-                std::string message = std::move(messageQueue.front());
+                std::u16string message = std::move(messageQueue.front());
                 messageQueue.pop();
                 lock.unlock();
-                auto sv = ConvertFromStdStringToStringViewPointer(message);
+                auto sv = ConvertFromUtf16StringToStringViewPointer(message);
                 v8InspectorSession->dispatchProtocolMessage(*sv);
                 lock.lock();
             }
         }
 
-        void JavetInspectorSession::postMessage(const std::string& message) noexcept {
+        void JavetInspectorSession::postMessage(const std::u16string& message) noexcept {
             std::lock_guard<std::mutex> lock(sharedMutex);
             messageQueue.push(message);
         }
@@ -564,10 +572,10 @@ namespace Javet {
             }
         }
 
-        void JavetInspectorSession::breakProgram(const std::string& breakReason, const std::string& breakDetails) noexcept {
+        void JavetInspectorSession::breakProgram(const std::u16string& breakReason, const std::u16string& breakDetails) noexcept {
             if (v8InspectorSession) {
-                auto reasonSV = ConvertFromStdStringToStringViewPointer(breakReason);
-                auto detailsSV = ConvertFromStdStringToStringViewPointer(breakDetails);
+                auto reasonSV = ConvertFromUtf16StringToStringViewPointer(breakReason);
+                auto detailsSV = ConvertFromUtf16StringToStringViewPointer(breakDetails);
                 v8InspectorSession->breakProgram(*reasonSV, *detailsSV);
             }
         }
@@ -578,10 +586,10 @@ namespace Javet {
             }
         }
 
-        jobject JavetInspectorSession::evaluate(JNIEnv* jniEnv, const std::string& expression, bool includeCommandLineAPI) noexcept {
+        jobject JavetInspectorSession::evaluate(JNIEnv* jniEnv, const std::u16string& expression, bool includeCommandLineAPI) noexcept {
             if (v8InspectorSession) {
                 auto v8Context = v8Runtime->GetV8LocalContext();
-                auto expressionSV = ConvertFromStdStringToStringViewPointer(expression);
+                auto expressionSV = ConvertFromUtf16StringToStringViewPointer(expression);
                 auto result = v8InspectorSession->evaluate(v8Context, *expressionSV, includeCommandLineAPI);
                 if (result.type == v8_inspector::V8InspectorSession::EvaluateResult::ResultType::kSuccess
                     || result.type == v8_inspector::V8InspectorSession::EvaluateResult::ResultType::kException) {
@@ -593,10 +601,10 @@ namespace Javet {
             return nullptr;
         }
 
-        void JavetInspectorSession::schedulePauseOnNextStatement(const std::string& breakReason, const std::string& breakDetails) noexcept {
+        void JavetInspectorSession::schedulePauseOnNextStatement(const std::u16string& breakReason, const std::u16string& breakDetails) noexcept {
             if (v8InspectorSession) {
-                auto reasonSV = ConvertFromStdStringToStringViewPointer(breakReason);
-                auto detailsSV = ConvertFromStdStringToStringViewPointer(breakDetails);
+                auto reasonSV = ConvertFromUtf16StringToStringViewPointer(breakReason);
+                auto detailsSV = ConvertFromUtf16StringToStringViewPointer(breakDetails);
                 v8InspectorSession->schedulePauseOnNextStatement(*reasonSV, *detailsSV);
             }
         }
@@ -645,7 +653,7 @@ namespace Javet {
         void JavetInspectorChannel::sendNotification(std::unique_ptr<v8_inspector::StringBuffer> message) {
             // The lock is not required.
             V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
-            auto stdStringMessagePointer = ConvertFromStringBufferToStdStringPointer(v8Runtime->v8Isolate, message.get());
+            auto stdStringMessagePointer = ConvertFromStringBufferToUtf8StringPointer(v8Runtime->v8Isolate, message.get());
             LOG_DEBUG("Sending notification: " << *stdStringMessagePointer.get());
             auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
             if (!jniEnvScope) {
@@ -653,7 +661,7 @@ namespace Javet {
                 return;
             }
             JNIEnv* jniEnv = jniEnvScope.Get();
-            jstring jMessage = Javet::Converter::ToJavaString(jniEnv, stdStringMessagePointer->c_str());
+            jstring jMessage = ConvertFromStringViewToJavaString(jniEnv, message->string());
             jniEnv->CallVoidMethod(mV8Inspector, jmethodIDV8InspectorReceiveNotification, jMessage);
             jniEnv->DeleteLocalRef(jMessage);
         }
@@ -661,7 +669,7 @@ namespace Javet {
         void JavetInspectorChannel::sendResponse(int callId, std::unique_ptr<v8_inspector::StringBuffer> message) {
             // The lock is not required.
             V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
-            auto stdStringMessagePointer = ConvertFromStringBufferToStdStringPointer(v8Runtime->v8Isolate, message.get());
+            auto stdStringMessagePointer = ConvertFromStringBufferToUtf8StringPointer(v8Runtime->v8Isolate, message.get());
             LOG_DEBUG("Sending response: " << *stdStringMessagePointer.get());
             auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
             if (!jniEnvScope) {
@@ -669,7 +677,7 @@ namespace Javet {
                 return;
             }
             JNIEnv* jniEnv = jniEnvScope.Get();
-            jstring jMessage = Javet::Converter::ToJavaString(jniEnv, stdStringMessagePointer->c_str());
+            jstring jMessage = ConvertFromStringViewToJavaString(jniEnv, message->string());
             jniEnv->CallVoidMethod(mV8Inspector, jmethodIDV8InspectorReceiveResponse, jMessage);
             jniEnv->DeleteLocalRef(jMessage);
         }

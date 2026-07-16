@@ -261,7 +261,8 @@ JNIEXPORT jobjectArray JNICALL Java_com_caoccao_javet_interop_V8Native_functionG
                 for (int i = 0; i < length; ++i) {
                     auto v8InternalObjectHandle = v8::internal::handle(wrappedArguments->get(i), v8InternalIsolate);
                     auto v8LocalString = v8::Utils::ToLocal(v8InternalObjectHandle).As<v8::String>();
-                    jstring argument = Javet::Converter::ToJavaString(jniEnv, v8Isolate, v8LocalString);
+                    jstring argument = Javet::Converter::ToJavaStringFromV8String(
+                        jniEnv, v8Isolate, v8LocalString);
                     jniEnv->SetObjectArrayElement(arguments, i, argument);
                     DELETE_LOCAL_REF(jniEnv, argument);
                 }
@@ -455,7 +456,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetScr
             const int sourceLength = v8InternalSource->length();
             size_t utf8Length = 0;
             auto sourceCode = v8InternalSource->ToCString(0, sourceLength, &utf8Length);
-            jstring sourceString = Javet::Converter::ToJavaString(jniEnv, sourceCode.get());
+            jstring sourceString = Javet::Converter::ToJavaStringFromUtf8(
+                jniEnv, sourceCode.get(), utf8Length);
             jobject scriptSource = jniEnv->NewObject(
                 Javet::Converter::jclassIV8ValueFunctionScriptSource,
                 Javet::Converter::jmethodIDIV8ValueFunctionScriptSourceConstructor,
@@ -486,7 +488,8 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetSou
             const int endPosition = v8InternalShared->EndPosition();
             size_t utf8Length = 0;
             auto sourceCode = v8InternalSource->ToCString(startPosition, endPosition - startPosition, &utf8Length);
-            return Javet::Converter::ToJavaString(jniEnv, sourceCode.get());
+            return Javet::Converter::ToJavaStringFromUtf8(
+                jniEnv, sourceCode.get(), utf8Length);
         }
     }
     return nullptr;
