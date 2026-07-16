@@ -22,6 +22,8 @@
 
 namespace Javet {
     namespace Exceptions {
+        static jclass jclassJavetConverterException;
+
         bool Initialize(JNIEnv* jniEnv) noexcept {
             /*
              @see https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/types.html
@@ -113,6 +115,14 @@ namespace Javet {
                     }
                 }
             }
+            return nullptr;
+        }
+
+        jobject ThrowJavetConverterException(
+            JNIEnv* jniEnv,
+            const char* message) noexcept {
+            LOG_ERROR(*message);
+            jniEnv->ThrowNew(jclassJavetConverterException, message);
             return nullptr;
         }
 

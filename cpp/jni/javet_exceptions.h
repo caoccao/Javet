@@ -28,8 +28,6 @@ namespace Javet {
         static jclass jclassJavetCompilationException;
         static jmethodID jmethodIDJavetCompilationExceptionConstructor;
 
-        static jclass jclassJavetConverterException;
-
         static jclass jclassJavetExecutionException;
         static jmethodID jmethodIDJavetExecutionExceptionConstructor;
 
@@ -63,13 +61,9 @@ namespace Javet {
             const V8LocalContext& v8Context,
             const V8TryCatch& v8TryCatch) noexcept;
 
-        static inline jobject ThrowJavetConverterException(
+        jobject ThrowJavetConverterException(
             JNIEnv* jniEnv,
-            const char* message) noexcept {
-            LOG_ERROR(*message);
-            jniEnv->ThrowNew(jclassJavetConverterException, message);
-            return nullptr;
-        }
+            const char* message) noexcept;
 
         jobject ThrowJavetExecutionException(
             JNIEnv* jniEnv,
