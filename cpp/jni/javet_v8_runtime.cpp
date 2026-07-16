@@ -37,6 +37,7 @@ namespace Javet {
     jmethodID jmethodNodeRuntimeOptionsIsBuiltInModuleResolution;
     jmethodID jmethodV8RuntimeGetRuntimeOptions;
     std::mutex mutexForNodeResetEnvrironment;
+    constexpr auto isolateShutdownTimeout = std::chrono::seconds(10);
     auto oneMillisecond = std::chrono::milliseconds(1);
 #else
     jmethodID jmethodV8RuntimeOptionsGetGlobalName;
@@ -285,24 +286,43 @@ namespace Javet {
             v8Isolate = nullptr;
         }
         else {
-            // node::FreeIsolateData is thread-safe.
-            nodeIsolateData.reset();
             // Isolate must be the last one to be disposed.
             if (v8Isolate != nullptr) {
-                bool isIsolateFinished = false;
+                const auto shutdownDeadline = std::chrono::steady_clock::now() + isolateShutdownTimeout;
+                while (v8PlatformPointer->FlushForegroundTasks(v8Isolate)) {
+                    uv_run(&uvLoop, UV_RUN_NOWAIT);
+                    if (std::chrono::steady_clock::now() >= shutdownDeadline) {
+                        LOG_ERROR("Timed out draining Node.js isolate foreground tasks.");
+                        break;
+                    }
+                }
+                // node::FreeIsolateData is thread-safe.
+                nodeIsolateData.reset();
+                auto isIsolateFinished = std::make_shared<std::atomic_bool>(false);
+                auto callbackState = new std::shared_ptr<std::atomic_bool>(isIsolateFinished);
                 // AddIsolateFinishedCallback is thread-safe.
                 v8PlatformPointer->AddIsolateFinishedCallback(v8Isolate, [](void* data) {
-                    *static_cast<bool*>(data) = true;
-                    }, &isIsolateFinished);
+                    std::unique_ptr<std::shared_ptr<std::atomic_bool>> callbackState(
+                        static_cast<std::shared_ptr<std::atomic_bool>*>(data));
+                    (*callbackState)->store(true, std::memory_order_release);
+                    }, callbackState);
                 // UnregisterIsolate is thread-safe.
                 v8PlatformPointer->DisposeIsolate(v8Isolate);
                 if (v8SnapshotCreator) {
                     v8SnapshotCreator.reset();
                 }
-                while (!isIsolateFinished) {
-                    uv_run(&uvLoop, UV_RUN_ONCE);
+                while (!isIsolateFinished->load(std::memory_order_acquire)) {
+                    uv_run(&uvLoop, UV_RUN_NOWAIT);
+                    if (std::chrono::steady_clock::now() >= shutdownDeadline) {
+                        LOG_ERROR("Timed out waiting for Node.js isolate shutdown.");
+                        break;
+                    }
+                    std::this_thread::sleep_for(oneMillisecond);
                 }
                 v8Isolate = nullptr;
+            }
+            else {
+                nodeIsolateData.reset();
             }
             CloseUVLoop();
             // Free snapshot data after isolate is disposed because the
