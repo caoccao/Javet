@@ -84,6 +84,15 @@ public class TestV8ValueSymbol extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testNativeNull() throws JavetException {
+        try (V8ValueSymbol v8ValueSymbol = v8Runtime.getExecutor("Symbol()").execute()) {
+            assertNotNull(v8ValueSymbol);
+            assertNull(v8ValueSymbol.getDescription());
+            assertEquals("Symbol()", v8ValueSymbol.toString());
+        }
+    }
+
+    @Test
     public void testNativeNumber() throws JavetException {
         try (V8ValueSymbol v8ValueSymbol = v8Runtime.getExecutor("Symbol(123)").execute()) {
             assertNotNull(v8ValueSymbol);
