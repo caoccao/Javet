@@ -9,6 +9,7 @@ Release Notes 5.0.x
 * Fixed native resource and JNI reference leaks across runtime, callback, value wrapper, and Node.js event loop cleanup
 * Added a warning when a V8 runtime close request is rejected because shutdown is already in progress or complete
 * Added synchronized and bounded Node.js isolate shutdown to prevent teardown races and hangs
+* Fixed object and map Boolean getters returning ``false`` for boxed Boolean values
 
 5.0.9
 -----

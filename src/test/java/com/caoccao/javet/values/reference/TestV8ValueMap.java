@@ -42,6 +42,7 @@ public class TestV8ValueMap extends BaseTestJavetRuntime {
             }
         }
     }
+
     @Test
     public void testClear() throws JavetException {
         try (V8ValueMap v8ValueMap = v8Runtime.createV8ValueMap()) {
@@ -127,6 +128,18 @@ public class TestV8ValueMap extends BaseTestJavetRuntime {
                 }
             }
             assertEquals(1, v8Runtime.getReferenceCount());
+        }
+    }
+
+    @Test
+    public void testGetBooleanObject() throws JavetException {
+        try (V8ValueMap v8ValueMap = v8Runtime.getExecutor(
+                "new Map([['boxedTrue', new Boolean(true)], ['boxedFalse', new Boolean(false)]," +
+                        " ['primitiveTrue', true], ['primitiveFalse', false]])").execute()) {
+            assertTrue(v8ValueMap.getBoolean("boxedTrue"));
+            assertFalse(v8ValueMap.getBoolean("boxedFalse"));
+            assertTrue(v8ValueMap.getBoolean("primitiveTrue"));
+            assertFalse(v8ValueMap.getBoolean("primitiveFalse"));
         }
     }
 

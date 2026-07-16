@@ -89,6 +89,20 @@ namespace Javet {
             JNIEnv* jniEnv,
             const V8ScriptCompilerCachedData* cachedDataPointer) noexcept;
 
+        static inline bool ToJavaBoolean(
+            const V8LocalValue& v8LocalValue,
+            jboolean& booleanValue) noexcept {
+            if (v8LocalValue->IsBoolean()) {
+                booleanValue = v8LocalValue.As<v8::Boolean>()->Value();
+                return true;
+            }
+            if (v8LocalValue->IsBooleanObject()) {
+                booleanValue = v8LocalValue.As<v8::BooleanObject>()->ValueOf();
+                return true;
+            }
+            return false;
+        }
+
         jstring ToJavaStringFromUtf8(
             JNIEnv* jniEnv,
             const char* utf8String) noexcept;

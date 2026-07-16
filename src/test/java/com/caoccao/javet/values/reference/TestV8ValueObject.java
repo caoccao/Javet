@@ -264,6 +264,18 @@ public class TestV8ValueObject extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testGetBooleanObject() throws JavetException {
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(
+                "({ boxedTrue: new Boolean(true), boxedFalse: new Boolean(false)," +
+                        " primitiveTrue: true, primitiveFalse: false })").execute()) {
+            assertTrue(v8ValueObject.getBoolean("boxedTrue"));
+            assertFalse(v8ValueObject.getBoolean("boxedFalse"));
+            assertTrue(v8ValueObject.getBoolean("primitiveTrue"));
+            assertFalse(v8ValueObject.getBoolean("primitiveFalse"));
+        }
+    }
+
+    @Test
     public void testGetOwnPropertyNames() throws JavetException {
         try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(
                 "let x = {'a': 1, 'b': '2', 'c': 3n, d: 1, e: null, g: {h: 1}, " +
