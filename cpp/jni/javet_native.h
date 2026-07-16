@@ -34,6 +34,78 @@ void DELETE_GLOBAL_CLASS_REFS(JNIEnv* jniEnv) noexcept;
 namespace Javet {
     class V8Runtime;
 
+    class JNIStringChars final {
+    public:
+        JNIStringChars(JNIEnv* jniEnv, jstring string) noexcept
+            : chars(string == nullptr ? nullptr : jniEnv->GetStringChars(string, nullptr)),
+            jniEnv(jniEnv), string(string) {
+        }
+
+        JNIStringChars(const JNIStringChars&) = delete;
+        JNIStringChars& operator=(const JNIStringChars&) = delete;
+
+        JNIStringChars(JNIStringChars&& other) noexcept
+            : chars(other.chars), jniEnv(other.jniEnv), string(other.string) {
+            other.chars = nullptr;
+            other.string = nullptr;
+        }
+
+        explicit operator bool() const noexcept {
+            return chars != nullptr;
+        }
+
+        const jchar* Get() const noexcept {
+            return chars;
+        }
+
+        ~JNIStringChars() {
+            if (chars != nullptr) {
+                jniEnv->ReleaseStringChars(string, chars);
+            }
+        }
+
+    private:
+        const jchar* chars;
+        JNIEnv* jniEnv;
+        jstring string;
+    };
+
+    class JNIStringUTFChars final {
+    public:
+        JNIStringUTFChars(JNIEnv* jniEnv, jstring string) noexcept
+            : chars(string == nullptr ? nullptr : jniEnv->GetStringUTFChars(string, nullptr)),
+            jniEnv(jniEnv), string(string) {
+        }
+
+        JNIStringUTFChars(const JNIStringUTFChars&) = delete;
+        JNIStringUTFChars& operator=(const JNIStringUTFChars&) = delete;
+
+        JNIStringUTFChars(JNIStringUTFChars&& other) noexcept
+            : chars(other.chars), jniEnv(other.jniEnv), string(other.string) {
+            other.chars = nullptr;
+            other.string = nullptr;
+        }
+
+        explicit operator bool() const noexcept {
+            return chars != nullptr;
+        }
+
+        const char* Get() const noexcept {
+            return chars;
+        }
+
+        ~JNIStringUTFChars() {
+            if (chars != nullptr) {
+                jniEnv->ReleaseStringUTFChars(string, chars);
+            }
+        }
+
+    private:
+        const char* chars;
+        JNIEnv* jniEnv;
+        jstring string;
+    };
+
     class JNIInitializer final {
     public:
         explicit JNIInitializer(JNIEnv* jniEnv) noexcept

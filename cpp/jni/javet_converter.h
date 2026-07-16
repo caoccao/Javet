@@ -117,10 +117,13 @@ namespace Javet {
         static inline std::unique_ptr<std::string> ToStdString(
             JNIEnv* jniEnv,
             const jstring& mString) noexcept {
-            const char* utfChars = jniEnv->GetStringUTFChars(mString, nullptr);
-            auto stdStringPointer = std::make_unique<std::string>(utfChars, jniEnv->GetStringUTFLength(mString));
-            jniEnv->ReleaseStringUTFChars(mString, utfChars);
-            return stdStringPointer;
+            JNIStringUTFChars utfChars(jniEnv, mString);
+            if (!utfChars) {
+                return nullptr;
+            }
+            return std::make_unique<std::string>(
+                utfChars.Get(),
+                jniEnv->GetStringUTFLength(mString));
         }
 
         static inline std::unique_ptr<std::string> ToStdString(

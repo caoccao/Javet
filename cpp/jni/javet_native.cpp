@@ -200,6 +200,13 @@ namespace Javet {
             jobject mV8Flags = jniEnv->GetStaticObjectField(jclassV8RuntimeOptions, jfieldIDV8RuntimeOptionsV8Flags);
             jstring mIcuDataFile = (jstring)jniEnv->CallObjectMethod(mV8Flags, jmethodIDV8FlagsGetIcuDataFile);
             auto umIcuDataFile = Javet::Converter::ToStdString(jniEnv, mIcuDataFile);
+            if (!umIcuDataFile) {
+                DELETE_LOCAL_REF(jniEnv, mIcuDataFile);
+                DELETE_LOCAL_REF(jniEnv, mV8Flags);
+                DELETE_LOCAL_REF(jniEnv, jclassV8Flags);
+                DELETE_LOCAL_REF(jniEnv, jclassV8RuntimeOptions);
+                return false;
+            }
             LOG_INFO("Calling v8::V8::InitializeICU(\"" << *umIcuDataFile << "\").");
             v8::V8::InitializeICU(umIcuDataFile->c_str());
             jniEnv->DeleteLocalRef(mIcuDataFile);
@@ -241,11 +248,21 @@ namespace Javet {
                     for (int i = 0; i < nodeFlagCount; ++i) {
                         jstring mFlagString = (jstring)jniEnv->GetObjectArrayElement(mNodeFlagsStringArray, i);
                         auto umFlagString = Javet::Converter::ToStdString(jniEnv, mFlagString);
+                        if (!umFlagString) {
+                            DELETE_LOCAL_REF(jniEnv, mFlagString);
+                            break;
+                        }
                         LOG_DEBUG("    " << i << ": " << *umFlagString);
                         args.push_back(*umFlagString);
                         jniEnv->DeleteLocalRef(mFlagString);
                     }
                     jniEnv->DeleteLocalRef(mNodeFlagsStringArray);
+                }
+                if (jniEnv->ExceptionCheck()) {
+                    DELETE_LOCAL_REF(jniEnv, mNodeFlags);
+                    DELETE_LOCAL_REF(jniEnv, jclassNodeFlags);
+                    DELETE_LOCAL_REF(jniEnv, jclassNodeRuntimeOptions);
+                    return false;
                 }
                 jniEnv->DeleteLocalRef(jniEnv->CallObjectMethod(mNodeFlags, jmethodIDNodeFlagsSeal));
                 jniEnv->DeleteLocalRef(mNodeFlags);

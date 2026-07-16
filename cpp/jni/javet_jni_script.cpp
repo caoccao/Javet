@@ -28,8 +28,12 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_scriptCompile
             jniEnv, v8Isolate, mResourceName, mResourceLineOffset, mResourceColumnOffset, mScriptId, mIsWASM, mIsModule);
         v8::MaybeLocal<v8::Script> v8MaybeLocalScript;
         if (mCachedData) {
+            auto cachedDataPointer = Javet::Converter::ToCachedDataPointer(jniEnv, mCachedData);
+            if (cachedDataPointer == nullptr) {
+                return nullptr;
+            }
             V8ScriptCompilerSource scriptSource(
-                umScript, *scriptOriginPointer.get(), Javet::Converter::ToCachedDataPointer(jniEnv, mCachedData));
+                umScript, *scriptOriginPointer.get(), cachedDataPointer);
             auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Isolate);
             V8InternalDisallowCompilation v8InternalDisallowCompilation(v8InternalIsolate);
             v8MaybeLocalScript = v8::ScriptCompiler::Compile(v8Context, &scriptSource, v8::ScriptCompiler::kConsumeCodeCache);
@@ -59,8 +63,12 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_scriptExecute
         jniEnv, v8Isolate, mResourceName, mResourceLineOffset, mResourceColumnOffset, mScriptId, mIsWASM, false);
     v8::MaybeLocal<v8::Script> v8MaybeLocalScript;
     if (mCachedData) {
+        auto cachedDataPointer = Javet::Converter::ToCachedDataPointer(jniEnv, mCachedData);
+        if (cachedDataPointer == nullptr) {
+            return nullptr;
+        }
         V8ScriptCompilerSource scriptSource(
-            umScript, *scriptOriginPointer.get(), Javet::Converter::ToCachedDataPointer(jniEnv, mCachedData));
+            umScript, *scriptOriginPointer.get(), cachedDataPointer);
         auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Isolate);
         V8InternalDisallowCompilation v8InternalDisallowCompilation(v8InternalIsolate);
         v8MaybeLocalScript = v8::ScriptCompiler::Compile(v8Context, &scriptSource, v8::ScriptCompiler::kConsumeCodeCache);

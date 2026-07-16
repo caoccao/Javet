@@ -28,10 +28,14 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleCompile
             jniEnv, v8Isolate, mResourceName, mResourceLineOffset, mResourceColumnOffset, mScriptId, mIsWASM, mIsModule);
         v8::MaybeLocal<v8::Module> v8MaybeLocalCompiledModule;
         if (mCachedData) {
+            auto cachedDataPointer = Javet::Converter::ToCachedDataPointer(jniEnv, mCachedData);
+            if (cachedDataPointer == nullptr) {
+                return nullptr;
+            }
             V8ScriptCompilerSource scriptSource(
                 umScript,
                 *scriptOriginPointer.get(),
-                Javet::Converter::ToCachedDataPointer(jniEnv, mCachedData));
+                cachedDataPointer);
             v8MaybeLocalCompiledModule = v8::ScriptCompiler::CompileModule(
                 v8Isolate,
                 &scriptSource,
@@ -126,8 +130,12 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleExecute
         jniEnv, v8Isolate, mResourceName, mResourceLineOffset, mResourceColumnOffset, mScriptId, mIsWASM, true);
     v8::MaybeLocal<v8::Module> v8MaybeLocalCompiledModule;
     if (mCachedData) {
+        auto cachedDataPointer = Javet::Converter::ToCachedDataPointer(jniEnv, mCachedData);
+        if (cachedDataPointer == nullptr) {
+            return nullptr;
+        }
         V8ScriptCompilerSource scriptSource(
-            umScript, *scriptOriginPointer.get(), Javet::Converter::ToCachedDataPointer(jniEnv, mCachedData));
+            umScript, *scriptOriginPointer.get(), cachedDataPointer);
         v8MaybeLocalCompiledModule = v8::ScriptCompiler::CompileModule(
             v8Isolate, &scriptSource, v8::ScriptCompiler::kConsumeCodeCache);
         LOG_DEBUG("Module cache is " << (scriptSource.GetCachedData()->rejected ? "rejected" : "accepted") << ".");

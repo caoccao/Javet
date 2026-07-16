@@ -15,6 +15,9 @@
  *   limitations under the License.
  */
 
+#include <limits>
+#include <new>
+
 #include "javet_converter.h"
 #include "javet_enums.h"
 #include "javet_exceptions.h"
@@ -530,25 +533,55 @@ namespace Javet {
         V8ScriptCompilerCachedData* ToCachedDataPointer(
             JNIEnv* jniEnv,
             const jbyteArray mCachedArray) noexcept {
+            if (mCachedArray == nullptr) {
+                return nullptr;
+            }
             jsize length = jniEnv->GetArrayLength(mCachedArray);
-            uint8_t* bytes = new uint8_t[length];
-            jboolean isCopy;
-            jbyte* bytePointer = jniEnv->GetByteArrayElements(mCachedArray, &isCopy);
-            memcpy(bytes, bytePointer, length);
-            jniEnv->ReleaseByteArrayElements(mCachedArray, bytePointer, JNI_ABORT);
-            return new V8ScriptCompilerCachedData(bytes, length, V8ScriptCompilerCachedDataBufferPolicy::BufferOwned);
+            std::unique_ptr<uint8_t[]> bytes(new (std::nothrow) uint8_t[length]);
+            if (!bytes) {
+                return nullptr;
+            }
+            if (length > 0) {
+                jniEnv->GetByteArrayRegion(
+                    mCachedArray,
+                    0,
+                    length,
+                    reinterpret_cast<jbyte*>(bytes.get()));
+                if (jniEnv->ExceptionCheck()) {
+                    return nullptr;
+                }
+            }
+            auto cachedDataPointer = new (std::nothrow) V8ScriptCompilerCachedData(
+                bytes.get(),
+                length,
+                V8ScriptCompilerCachedDataBufferPolicy::BufferOwned);
+            if (cachedDataPointer != nullptr) {
+                bytes.release();
+            }
+            return cachedDataPointer;
         }
 
         jbyteArray ToJavaByteArray(
             JNIEnv* jniEnv,
             const V8ScriptCompilerCachedData* cachedDataPointer) noexcept {
-            jbyteArray byteArray = jniEnv->NewByteArray((jsize)cachedDataPointer->length);
-            if (byteArray != nullptr && cachedDataPointer->length > 0) {
+            if (cachedDataPointer == nullptr ||
+                cachedDataPointer->length > static_cast<size_t>(std::numeric_limits<jsize>::max())) {
+                return nullptr;
+            }
+            jbyteArray byteArray = jniEnv->NewByteArray(static_cast<jsize>(cachedDataPointer->length));
+            if (byteArray == nullptr) {
+                return nullptr;
+            }
+            if (cachedDataPointer->length > 0) {
                 jniEnv->SetByteArrayRegion(
                     byteArray,
                     0,
                     static_cast<jsize>(cachedDataPointer->length),
                     reinterpret_cast<const jbyte*>(cachedDataPointer->data));
+                if (jniEnv->ExceptionCheck()) {
+                    DELETE_LOCAL_REF(jniEnv, byteArray);
+                    return nullptr;
+                }
             }
             return byteArray;
         }
@@ -701,6 +734,13 @@ namespace Javet {
                     jobject directByteBuffer = jniEnv->NewDirectByteBuffer(
                         v8ArrayBuffer->GetBackingStore()->Data(),
                         v8ArrayBuffer->ByteLength());
+                    if (directByteBuffer == nullptr) {
+                        return nullptr;
+                    }
+                    if (jniEnv->ExceptionCheck()) {
+                        DELETE_LOCAL_REF(jniEnv, directByteBuffer);
+                        return nullptr;
+                    }
                     jobject v8ValueArrayBuffer = ToExternalV8Reference(
                         jniEnv,
                         jclassV8ValueArrayBuffer,
@@ -716,6 +756,13 @@ namespace Javet {
                     jobject directByteBuffer = jniEnv->NewDirectByteBuffer(
                         v8SharedArrayBuffer->GetBackingStore()->Data(),
                         v8SharedArrayBuffer->ByteLength());
+                    if (directByteBuffer == nullptr) {
+                        return nullptr;
+                    }
+                    if (jniEnv->ExceptionCheck()) {
+                        DELETE_LOCAL_REF(jniEnv, directByteBuffer);
+                        return nullptr;
+                    }
                     jobject v8ValueSharedArrayBuffer = ToExternalV8Reference(
                         jniEnv,
                         jclassV8ValueSharedArrayBuffer,
@@ -943,10 +990,23 @@ namespace Javet {
                 else {
                     int signBit;
                     jlongArray mLongArray = jniEnv->NewLongArray(wordCount);
-                    jboolean isCopy;
-                    jlong* mLongArrayPointer = jniEnv->GetLongArrayElements(mLongArray, &isCopy);
-                    v8LocalBigInt->ToWordsArray(&signBit, &wordCount, reinterpret_cast<uint64_t*>(mLongArrayPointer));
-                    jniEnv->ReleaseLongArrayElements(mLongArray, mLongArrayPointer, 0);
+                    if (mLongArray == nullptr) {
+                        return nullptr;
+                    }
+                    auto words = std::unique_ptr<jlong[]>(new (std::nothrow) jlong[wordCount]);
+                    if (!words) {
+                        DELETE_LOCAL_REF(jniEnv, mLongArray);
+                        return nullptr;
+                    }
+                    v8LocalBigInt->ToWordsArray(
+                        &signBit,
+                        &wordCount,
+                        reinterpret_cast<uint64_t*>(words.get()));
+                    jniEnv->SetLongArrayRegion(mLongArray, 0, wordCount, words.get());
+                    if (jniEnv->ExceptionCheck()) {
+                        DELETE_LOCAL_REF(jniEnv, mLongArray);
+                        return nullptr;
+                    }
                     jint signum = signBit == 0 ? 1 : -1;
                     jobject v8ValueBigInteger = jniEnv->NewObject(
                         jclassV8ValueBigInteger,
@@ -976,12 +1036,23 @@ namespace Javet {
             jobjectArray v8ValueArray = nullptr;
             int argLength = args.Length();
             if (argLength > 0) {
-                // TODO: Memory leak might take place.
                 v8ValueArray = jniEnv->NewObjectArray(argLength, jclassV8Value, nullptr);
+                if (v8ValueArray == nullptr) {
+                    return nullptr;
+                }
                 for (int i = 0; i < argLength; ++i) {
                     jobject v8Value = ToExternalV8Value(jniEnv, v8Runtime, v8Context, args[i]);
+                    if (jniEnv->ExceptionCheck()) {
+                        DELETE_LOCAL_REF(jniEnv, v8Value);
+                        DELETE_LOCAL_REF(jniEnv, v8ValueArray);
+                        return nullptr;
+                    }
                     jniEnv->SetObjectArrayElement(v8ValueArray, i, v8Value);
                     DELETE_LOCAL_REF(jniEnv, v8Value);
+                    if (jniEnv->ExceptionCheck()) {
+                        DELETE_LOCAL_REF(jniEnv, v8ValueArray);
+                        return nullptr;
+                    }
                 }
             }
             return v8ValueArray;
@@ -993,8 +1064,10 @@ namespace Javet {
             const V8LocalContext& v8Context,
             const V8LocalArray& v8LocalArray) noexcept {
             int length = v8LocalArray->Length();
-            // TODO: Memory leak might take place.
             auto v8ValueArray = jniEnv->NewObjectArray(length, jclassV8Value, nullptr);
+            if (v8ValueArray == nullptr) {
+                return nullptr;
+            }
             ToExternalV8ValueArray(
                 jniEnv,
                 v8Runtime,
@@ -1004,6 +1077,10 @@ namespace Javet {
                 v8ValueArray,
                 0,
                 length);
+            if (jniEnv->ExceptionCheck()) {
+                DELETE_LOCAL_REF(jniEnv, v8ValueArray);
+                return nullptr;
+            }
             return v8ValueArray;
         }
 
@@ -1114,17 +1191,28 @@ namespace Javet {
                 return v8::BigInt::New(v8Isolate, 0);
             }
             else {
+                if (mLongArray == nullptr) {
+                    return v8::BigInt::New(v8Isolate, 0);
+                }
                 jsize wordCount = jniEnv->GetArrayLength(mLongArray);
                 if (wordCount == 0) {
                     return v8::BigInt::New(v8Isolate, 0);
                 }
                 else {
-                    jboolean isCopy;
-                    jlong* mLongArrayPointer = jniEnv->GetLongArrayElements(mLongArray, &isCopy);
+                    auto words = std::unique_ptr<jlong[]>(new (std::nothrow) jlong[wordCount]);
+                    if (!words) {
+                        return v8::BigInt::New(v8Isolate, 0);
+                    }
+                    jniEnv->GetLongArrayRegion(mLongArray, 0, wordCount, words.get());
+                    if (jniEnv->ExceptionCheck()) {
+                        return v8::BigInt::New(v8Isolate, 0);
+                    }
                     int signBit = mSignum > 0 ? 0 : 1;
                     V8LocalBigInt v8LocalBigInt = v8::BigInt::NewFromWords(
-                        v8Context, signBit, wordCount, reinterpret_cast<uint64_t*>(mLongArrayPointer)).ToLocalChecked();
-                    jniEnv->ReleaseLongArrayElements(mLongArray, mLongArrayPointer, 0);
+                        v8Context,
+                        signBit,
+                        wordCount,
+                        reinterpret_cast<uint64_t*>(words.get())).ToLocalChecked();
                     return v8LocalBigInt;
                 }
             }
@@ -1170,11 +1258,16 @@ namespace Javet {
             if (mString == nullptr) {
                 return V8LocalString();
             }
-            const uint16_t* unmanagedString = jniEnv->GetStringChars(mString, nullptr);
+            JNIStringChars unmanagedString(jniEnv, mString);
+            if (!unmanagedString) {
+                return V8LocalString();
+            }
             int length = jniEnv->GetStringLength(mString);
             auto twoByteString = v8::String::NewFromTwoByte(
-                v8Isolate, unmanagedString, v8::NewStringType::kNormal, length);
-            jniEnv->ReleaseStringChars(mString, unmanagedString);
+                v8Isolate,
+                reinterpret_cast<const uint16_t*>(unmanagedString.Get()),
+                v8::NewStringType::kNormal,
+                length);
             if (twoByteString.IsEmpty()) {
                 return V8LocalString();
             }

@@ -111,8 +111,12 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionCompil
     }
     v8::MaybeLocal<v8::Function> v8MaybeLocalFunction;
     if (mCachedData) {
+        auto cachedDataPointer = Javet::Converter::ToCachedDataPointer(jniEnv, mCachedData);
+        if (cachedDataPointer == nullptr) {
+            return nullptr;
+        }
         V8ScriptCompilerSource scriptSource(
-            umScript, *scriptOriginPointer.get(), Javet::Converter::ToCachedDataPointer(jniEnv, mCachedData));
+            umScript, *scriptOriginPointer.get(), cachedDataPointer);
         v8MaybeLocalFunction = v8::ScriptCompiler::CompileFunction(
             v8Context, &scriptSource,
             argumentCount, argumentsPointer.get(),

@@ -16,6 +16,9 @@
  */
 
 #include <chrono>
+#include <limits>
+#include <memory>
+#include <new>
 #include <thread>
 #include <unordered_map>
 #include "javet_callbacks.h"
@@ -75,9 +78,22 @@ namespace Javet {
             jobject mV8Flags = jniEnv->GetStaticObjectField(jclassRuntimeOptions, jfieldIDRuntimeOptionsV8Flags);
             jstring mV8FlagsString = (jstring)jniEnv->CallObjectMethod(mV8Flags, jmethodIDV8FlagsToString);
             jniEnv->DeleteLocalRef(jniEnv->CallObjectMethod(mV8Flags, jmethodIDV8FlagsSeal));
-            char const* utfChars = jniEnv->GetStringUTFChars(mV8FlagsString, nullptr);
-            v8::V8::SetFlagsFromString(utfChars, jniEnv->GetStringUTFLength(mV8FlagsString));
-            jniEnv->ReleaseStringUTFChars(mV8FlagsString, utfChars);
+            bool v8FlagsConverted = false;
+            {
+                JNIStringUTFChars utfChars(jniEnv, mV8FlagsString);
+                if (utfChars) {
+                    v8::V8::SetFlagsFromString(
+                        utfChars.Get(),
+                        jniEnv->GetStringUTFLength(mV8FlagsString));
+                    v8FlagsConverted = true;
+                }
+            }
+            if (!v8FlagsConverted) {
+                DELETE_LOCAL_REF(jniEnv, mV8FlagsString);
+                DELETE_LOCAL_REF(jniEnv, mV8Flags);
+                DELETE_LOCAL_REF(jniEnv, jclassV8Flags);
+                return false;
+            }
             DELETE_LOCAL_REF(jniEnv, mV8FlagsString);
             DELETE_LOCAL_REF(jniEnv, mV8Flags);
             jniEnv->DeleteLocalRef(jclassV8Flags);
@@ -421,11 +437,20 @@ namespace Javet {
             auto snapshot = nodeCommonSetup->CreateSnapshot();
             if (snapshot) {
                 auto blobVec = snapshot->ToBlob();
-                jbytes = jniEnv->NewByteArray(static_cast<jsize>(blobVec.size()));
-                jboolean isCopy;
-                void* data = jniEnv->GetPrimitiveArrayCritical(jbytes, &isCopy);
-                memcpy(data, blobVec.data(), blobVec.size());
-                jniEnv->ReleasePrimitiveArrayCritical(jbytes, data, JNI_ABORT);
+                if (blobVec.size() <= static_cast<size_t>(std::numeric_limits<jsize>::max())) {
+                    jbytes = jniEnv->NewByteArray(static_cast<jsize>(blobVec.size()));
+                    if (jbytes != nullptr && !blobVec.empty()) {
+                        jniEnv->SetByteArrayRegion(
+                            jbytes,
+                            0,
+                            static_cast<jsize>(blobVec.size()),
+                            reinterpret_cast<const jbyte*>(blobVec.data()));
+                        if (jniEnv->ExceptionCheck()) {
+                            DELETE_LOCAL_REF(jniEnv, jbytes);
+                            jbytes = nullptr;
+                        }
+                    }
+                }
             }
         }
 #else
@@ -437,12 +462,19 @@ namespace Javet {
             v8SnapshotCreator->SetDefaultContext(v8LocalContext);
             v8::StartupData newV8StartupData = v8SnapshotCreator->CreateBlob(v8::SnapshotCreator::FunctionCodeHandling::kKeep);
             if (newV8StartupData.IsValid()) {
+                std::unique_ptr<const char[]> snapshotData(newV8StartupData.data);
                 jbytes = jniEnv->NewByteArray(newV8StartupData.raw_size);
-                jboolean isCopy;
-                void* data = jniEnv->GetPrimitiveArrayCritical(jbytes, &isCopy);
-                memcpy(data, newV8StartupData.data, newV8StartupData.raw_size);
-                jniEnv->ReleasePrimitiveArrayCritical(jbytes, data, JNI_ABORT);
-                delete[] newV8StartupData.data;
+                if (jbytes != nullptr && newV8StartupData.raw_size > 0) {
+                    jniEnv->SetByteArrayRegion(
+                        jbytes,
+                        0,
+                        newV8StartupData.raw_size,
+                        reinterpret_cast<const jbyte*>(snapshotData.get()));
+                    if (jniEnv->ExceptionCheck()) {
+                        DELETE_LOCAL_REF(jniEnv, jbytes);
+                        jbytes = nullptr;
+                    }
+                }
             }
             // Restore context and global object.
             v8GlobalContext.Reset(v8Isolate, v8LocalContext);
@@ -478,7 +510,11 @@ namespace Javet {
                     for (int i = 0; i < consoleArgumentCount; ++i) {
                         jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
                         auto consoleArgumentPointer = Javet::Converter::ToStdString(jniEnv, mConsoleArgument);
-                        args.push_back(*consoleArgumentPointer.get());
+                        if (!consoleArgumentPointer) {
+                            DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
+                            break;
+                        }
+                        args.push_back(*consoleArgumentPointer);
                         DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
                     }
                     DELETE_LOCAL_REF(jniEnv, mConsoleArguments);
@@ -528,9 +564,12 @@ namespace Javet {
                         for (int i = 0; i < consoleArgumentCount; ++i) {
                             jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
                             auto consoleArgumentPointer = Javet::Converter::ToStdString(jniEnv, mConsoleArgument);
-                            auto umConsoleArgument = consoleArgumentPointer.get();
-                            LOG_DEBUG("    " << i << ": " << *umConsoleArgument);
-                            args.push_back(*umConsoleArgument);
+                            if (!consoleArgumentPointer) {
+                                DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
+                                break;
+                            }
+                            LOG_DEBUG("    " << i << ": " << *consoleArgumentPointer);
+                            args.push_back(*consoleArgumentPointer);
                             DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
                         }
                     }
@@ -586,13 +625,27 @@ namespace Javet {
             snapshotBlob = (jbyteArray)jniEnv->CallObjectMethod(mRuntimeOptions, jmethodRuntimeOptionsGetSnapshotBlob);
             if (snapshotBlob) {
                 jsize snapshotBlobSize = jniEnv->GetArrayLength(snapshotBlob);
-                jboolean isCopy;
-                jbyte* snapshotBlobElements = jniEnv->GetByteArrayElements(snapshotBlob, &isCopy);
-                v8StartupData.reset(new v8::StartupData());
-                v8StartupData->data = new char[snapshotBlobSize];
-                v8StartupData->raw_size = snapshotBlobSize;
-                memcpy((void*)v8StartupData->data, (void*)snapshotBlobElements, snapshotBlobSize);
-                jniEnv->ReleaseByteArrayElements(snapshotBlob, snapshotBlobElements, JNI_ABORT);
+                auto startupData = std::unique_ptr<v8::StartupData>(
+                    new (std::nothrow) v8::StartupData());
+                auto snapshotData = std::unique_ptr<char[]>(
+                    new (std::nothrow) char[snapshotBlobSize]);
+                if (startupData && snapshotData) {
+                    if (snapshotBlobSize > 0) {
+                        jniEnv->GetByteArrayRegion(
+                            snapshotBlob,
+                            0,
+                            snapshotBlobSize,
+                            reinterpret_cast<jbyte*>(snapshotData.get()));
+                    }
+                    if (!jniEnv->ExceptionCheck()) {
+                        startupData->data = snapshotData.release();
+                        startupData->raw_size = snapshotBlobSize;
+                        v8StartupData.reset(startupData.release());
+                    }
+                }
+                if (!v8StartupData) {
+                    createSnapshotEnabled = false;
+                }
             }
             DELETE_LOCAL_REF(jniEnv, snapshotBlob);
         }
@@ -612,7 +665,11 @@ namespace Javet {
                     for (int i = 0; i < consoleArgumentCount; ++i) {
                         jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
                         auto consoleArgumentPointer = Javet::Converter::ToStdString(jniEnv, mConsoleArgument);
-                        args.push_back(*consoleArgumentPointer.get());
+                        if (!consoleArgumentPointer) {
+                            DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
+                            break;
+                        }
+                        args.push_back(*consoleArgumentPointer);
                         DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
                     }
                     DELETE_LOCAL_REF(jniEnv, mConsoleArguments);
