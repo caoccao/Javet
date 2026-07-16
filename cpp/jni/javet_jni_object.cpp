@@ -573,10 +573,23 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectHasOwnP
             jint integerKey = Javet::Converter::ToJavaIntegerFromV8ValueInteger(jniEnv, key);
             v8MaybeBool = v8LocalObject->HasOwnProperty(v8Context, integerKey);
         }
-        else if (Javet::Converter::IsV8ValueString(jniEnv, key)) {
-            jstring stringKey = Javet::Converter::ToJavaStringFromV8ValueString(jniEnv, key);
-            auto v8ValueKey = Javet::Converter::ToV8String(jniEnv, v8Isolate, stringKey);
-            v8MaybeBool = v8LocalObject->HasOwnProperty(v8Context, v8ValueKey);
+        else if (
+            Javet::Converter::IsV8ValueString(jniEnv, key) ||
+            Javet::Converter::IsV8ValueSymbol(jniEnv, key)) {
+            auto v8LocalValueKey = Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, key);
+            if (v8LocalValueKey.IsEmpty()) {
+                if (!jniEnv->ExceptionCheck()) {
+                    Javet::Exceptions::ThrowJavetConverterException(jniEnv, "Failed to convert the property key.");
+                }
+                return false;
+            }
+            v8MaybeBool = v8LocalObject->HasOwnProperty(v8Context, v8LocalValueKey.As<v8::Name>());
+        }
+        else {
+            Javet::Exceptions::ThrowJavetConverterException(
+                jniEnv,
+                "Property key must be an integer, string, or symbol.");
+            return false;
         }
         if (v8MaybeBool.IsNothing()) {
             Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context);

@@ -10,6 +10,7 @@ Release Notes 5.0.x
 * Added a warning when a V8 runtime close request is rejected because shutdown is already in progress or complete
 * Added synchronized and bounded Node.js isolate shutdown to prevent teardown races and hangs
 * Fixed object and map Boolean getters returning ``false`` for boxed Boolean values
+* Fixed ``hasOwnProperty()`` rejecting symbol property keys
 
 5.0.9
 -----
