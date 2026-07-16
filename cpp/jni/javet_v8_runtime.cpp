@@ -244,19 +244,18 @@ namespace Javet {
             if (errorCode != 0) {
                 LOG_ERROR("node::EmitProcessExit() returns " << errorCode << ".");
             }
-            else {
-                // node::Stop is thread-safe.
-                errorCode = node::Stop(nodeEnvironment.get());
-                if (errorCode != 0) {
-                    LOG_ERROR("node::Stop() returns " << errorCode << ".");
-                }
-                std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
-                auto internalV8Locker = GetUniqueV8Locker();
-                auto v8IsolateScope = GetV8IsolateScope();
-                LOG_DEBUG("nodeEnvironment.reset() begin");
-                nodeEnvironment.reset();
-                LOG_DEBUG("nodeEnvironment.reset() end");
+            // node::Stop is thread-safe and must be attempted even when
+            // draining the event loop fails.
+            int stopErrorCode = node::Stop(nodeEnvironment.get());
+            if (stopErrorCode != 0) {
+                LOG_ERROR("node::Stop() returns " << stopErrorCode << ".");
             }
+            std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
+            auto internalV8Locker = GetUniqueV8Locker();
+            auto v8IsolateScope = GetV8IsolateScope();
+            LOG_DEBUG("nodeEnvironment.reset() begin");
+            nodeEnvironment.reset();
+            LOG_DEBUG("nodeEnvironment.reset() end");
         }
 #endif
         v8GlobalContext.Reset();
