@@ -38,8 +38,9 @@ namespace {
             directByteBufferReference->javaVM == nullptr) {
             return;
         }
-        Javet::JNIEnvScope jniEnvScope(directByteBufferReference->javaVM);
-        if (JNIEnv* jniEnv = jniEnvScope.Get(); jniEnv != nullptr) {
+        auto jniEnvScope = Javet::JNIEnvScope::Acquire(directByteBufferReference->javaVM);
+        if (jniEnvScope) {
+            JNIEnv* jniEnv = jniEnvScope.Get();
             jniEnv->DeleteGlobalRef(directByteBufferReference->byteBuffer);
             INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
         }

@@ -46,7 +46,7 @@ namespace Javet {
         class JavetInspector {
         public:
             JavetInspector(V8Runtime* v8Runtime, const std::string& name) noexcept;
-            int addSession(const jobject mV8Inspector, bool waitForDebugger) noexcept;
+            int addSession(JNIEnv* jniEnv, const jobject mV8Inspector, bool waitForDebugger) noexcept;
             void breakProgram(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept;
             void cancelPauseOnNextStatement(int sessionId) noexcept;
             void contextCreated() noexcept;
@@ -74,7 +74,7 @@ namespace Javet {
             JavetInspectorClient(
                 V8Runtime* v8Runtime,
                 const std::string& name) noexcept;
-            int addSession(const jobject mV8Inspector, bool waitForDebugger) noexcept;
+            int addSession(JNIEnv* jniEnv, const jobject mV8Inspector, bool waitForDebugger) noexcept;
             void breakProgram(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept;
             void cancelPauseOnNextStatement(int sessionId) noexcept;
             void consoleAPIMessage(
@@ -122,6 +122,7 @@ namespace Javet {
         class JavetInspectorSession {
         public:
             JavetInspectorSession(
+                JNIEnv* jniEnv,
                 int sessionId,
                 V8Runtime* v8Runtime,
                 const jobject mV8Inspector,

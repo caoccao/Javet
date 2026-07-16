@@ -86,8 +86,8 @@ namespace Javet {
             client.reset(new JavetInspectorClient(v8Runtime, name));
         }
 
-        int JavetInspector::addSession(const jobject mV8Inspector, bool waitForDebugger) noexcept {
-            return client->addSession(mV8Inspector, waitForDebugger);
+        int JavetInspector::addSession(JNIEnv* jniEnv, const jobject mV8Inspector, bool waitForDebugger) noexcept {
+            return client->addSession(jniEnv, mV8Inspector, waitForDebugger);
         }
 
         void JavetInspector::breakProgram(int sessionId, const std::string& breakReason, const std::string& breakDetails) noexcept {
@@ -186,10 +186,10 @@ namespace Javet {
             v8Inspector->contextCreated(contextInfo);
         }
 
-        int JavetInspectorClient::addSession(const jobject mV8Inspector, bool waitForDebugger) noexcept {
+        int JavetInspectorClient::addSession(JNIEnv* jniEnv, const jobject mV8Inspector, bool waitForDebugger) noexcept {
             int sessionId = nextSessionId++;
             auto sessionPointer = std::make_shared<JavetInspectorSession>(
-                sessionId, v8Runtime, mV8Inspector, v8Inspector.get(),
+                jniEnv, sessionId, v8Runtime, mV8Inspector, v8Inspector.get(),
                 waitForDebugger, messageMutex);
             std::lock_guard<std::mutex> lock(messageMutex);
             sessionMap[sessionId] = std::move(sessionPointer);
@@ -262,7 +262,12 @@ namespace Javet {
                     javaObjects.push_back(session->getJavaObject());
                 }
             }
-            FETCH_JNI_ENV(GlobalJavaVM);
+            auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+            if (!jniEnvScope) {
+                LOG_ERROR("JavetInspectorClient::consoleAPIMessage(): JNI environment is unavailable.");
+                return;
+            }
+            JNIEnv* jniEnv = jniEnvScope.Get();
             jstring jMessage = Javet::Converter::ToJavaString(jniEnv, stdMessage->c_str());
             jstring jUrl = Javet::Converter::ToJavaString(jniEnv, stdUrl->c_str());
             for (jobject jobj : javaObjects) {
@@ -321,7 +326,12 @@ namespace Javet {
             // Wrap the command-line API object via the converter so Java
             // listeners can install custom properties on it.
             // The Java side is responsible for closing the object.
-            FETCH_JNI_ENV(GlobalJavaVM);
+            auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+            if (!jniEnvScope) {
+                LOG_ERROR("JavetInspectorClient::installAdditionalCommandLineAPI(): JNI environment is unavailable.");
+                return;
+            }
+            JNIEnv* jniEnv = jniEnvScope.Get();
             jobject jCommandLineAPI = Javet::Converter::ToExternalV8Value(
                 jniEnv, v8Runtime, v8Context, commandLineAPI);
             if (jCommandLineAPI != nullptr) {
@@ -389,7 +399,12 @@ namespace Javet {
                     javaObjects.push_back(session->getJavaObject());
                 }
             }
-            FETCH_JNI_ENV(GlobalJavaVM);
+            auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+            if (!jniEnvScope) {
+                LOG_ERROR("JavetInspectorClient::runIfWaitingForDebugger(): JNI environment is unavailable.");
+                return;
+            }
+            JNIEnv* jniEnv = jniEnvScope.Get();
             for (jobject jobj : javaObjects) {
                 jniEnv->CallVoidMethod(jobj, jmethodIDV8InspectorRunIfWaitingForDebugger, contextGroupId);
             }
@@ -478,6 +493,7 @@ namespace Javet {
         }
 
         JavetInspectorSession::JavetInspectorSession(
+            JNIEnv* jniEnv,
             int sessionId,
             V8Runtime* v8Runtime,
             const jobject mV8Inspector,
@@ -487,7 +503,6 @@ namespace Javet {
             : sharedMutex(sharedMutex) {
             this->sessionId = sessionId;
             this->v8Runtime = v8Runtime;
-            FETCH_JNI_ENV(GlobalJavaVM);
             this->mV8Inspector = jniEnv->NewGlobalRef(mV8Inspector);
             INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
             channel.reset(new JavetInspectorChannel(v8Runtime, this->mV8Inspector));
@@ -598,7 +613,12 @@ namespace Javet {
             v8InspectorSession.reset();
             channel.reset();
             if (mV8Inspector != nullptr) {
-                FETCH_JNI_ENV(GlobalJavaVM);
+                auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+                if (!jniEnvScope) {
+                    LOG_ERROR("JavetInspectorSession::~JavetInspectorSession(): JNI environment is unavailable.");
+                    return;
+                }
+                JNIEnv* jniEnv = jniEnvScope.Get();
                 jniEnv->DeleteGlobalRef(mV8Inspector);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
                 mV8Inspector = nullptr;
@@ -611,7 +631,12 @@ namespace Javet {
         }
 
         void JavetInspectorChannel::flushProtocolNotifications() {
-            FETCH_JNI_ENV(GlobalJavaVM);
+            auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+            if (!jniEnvScope) {
+                LOG_ERROR("JavetInspectorChannel::flushProtocolNotifications(): JNI environment is unavailable.");
+                return;
+            }
+            JNIEnv* jniEnv = jniEnvScope.Get();
             jniEnv->CallVoidMethod(mV8Inspector, jmethodIDV8InspectorFlushProtocolNotifications);
         }
 
@@ -620,7 +645,12 @@ namespace Javet {
             V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
             auto stdStringMessagePointer = ConvertFromStringBufferToStdStringPointer(v8Runtime->v8Isolate, message.get());
             LOG_DEBUG("Sending notification: " << *stdStringMessagePointer.get());
-            FETCH_JNI_ENV(GlobalJavaVM);
+            auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+            if (!jniEnvScope) {
+                LOG_ERROR("JavetInspectorChannel::sendNotification(): JNI environment is unavailable.");
+                return;
+            }
+            JNIEnv* jniEnv = jniEnvScope.Get();
             jstring jMessage = Javet::Converter::ToJavaString(jniEnv, stdStringMessagePointer->c_str());
             jniEnv->CallVoidMethod(mV8Inspector, jmethodIDV8InspectorReceiveNotification, jMessage);
             jniEnv->DeleteLocalRef(jMessage);
@@ -631,7 +661,12 @@ namespace Javet {
             V8HandleScope v8HandleScope(v8Runtime->v8Isolate);
             auto stdStringMessagePointer = ConvertFromStringBufferToStdStringPointer(v8Runtime->v8Isolate, message.get());
             LOG_DEBUG("Sending response: " << *stdStringMessagePointer.get());
-            FETCH_JNI_ENV(GlobalJavaVM);
+            auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+            if (!jniEnvScope) {
+                LOG_ERROR("JavetInspectorChannel::sendResponse(): JNI environment is unavailable.");
+                return;
+            }
+            JNIEnv* jniEnv = jniEnvScope.Get();
             jstring jMessage = Javet::Converter::ToJavaString(jniEnv, stdStringMessagePointer->c_str());
             jniEnv->CallVoidMethod(mV8Inspector, jmethodIDV8InspectorReceiveResponse, jMessage);
             jniEnv->DeleteLocalRef(jMessage);

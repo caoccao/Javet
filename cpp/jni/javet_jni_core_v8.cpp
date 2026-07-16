@@ -110,7 +110,7 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Inspector
         jniEnv->ReleaseStringUTFChars(mName, umName);
         v8Runtime->v8Inspector.reset(new Javet::Inspector::JavetInspector(v8Runtime, name));
     }
-    return v8Runtime->v8Inspector->addSession(mV8Inspector, waitForDebugger);
+    return v8Runtime->v8Inspector->addSession(jniEnv, mV8Inspector, waitForDebugger);
 }
 
 /*

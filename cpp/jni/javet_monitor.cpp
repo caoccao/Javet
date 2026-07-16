@@ -106,7 +106,13 @@ namespace Javet {
             }
 
             ~HeapSpaceStatisticsContext() {
-                FETCH_JNI_ENV(GlobalJavaVM);
+                auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+                if (!jniEnvScope) {
+                    LOG_ERROR("HeapSpaceStatisticsContext::~HeapSpaceStatisticsContext(): JNI environment is unavailable.");
+                    INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
+                    return;
+                }
+                JNIEnv* jniEnv = jniEnvScope.Get();
                 jniEnv->CallVoidMethod(completableFuture, jmethodIDV8StatisticsFutureSetHandle, 0);
                 jniEnv->DeleteGlobalRef(allocationSpace);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
@@ -126,7 +132,13 @@ namespace Javet {
             }
 
             ~HeapStatisticsContext() {
-                FETCH_JNI_ENV(GlobalJavaVM);
+                auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+                if (!jniEnvScope) {
+                    LOG_ERROR("HeapStatisticsContext::~HeapStatisticsContext(): JNI environment is unavailable.");
+                    INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
+                    return;
+                }
+                JNIEnv* jniEnv = jniEnvScope.Get();
                 jniEnv->CallVoidMethod(completableFuture, jmethodIDV8StatisticsFutureSetHandle, 0);
                 jniEnv->DeleteGlobalRef(completableFuture);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
@@ -144,7 +156,13 @@ namespace Javet {
             }
 
             ~SharedMemoryStatisticsContext() {
-                FETCH_JNI_ENV(GlobalJavaVM);
+                auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+                if (!jniEnvScope) {
+                    LOG_ERROR("SharedMemoryStatisticsContext::~SharedMemoryStatisticsContext(): JNI environment is unavailable.");
+                    INCREASE_COUNTER(Javet::Monitor::CounterType::Delete);
+                    return;
+                }
+                JNIEnv* jniEnv = jniEnvScope.Get();
                 jniEnv->CallVoidMethod(completableFuture, jmethodIDV8StatisticsFutureSetHandle, 0);
                 jniEnv->DeleteGlobalRef(completableFuture);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
@@ -211,7 +229,13 @@ namespace Javet {
 
         void GetHeapSpaceStatisticsAsync(v8::Isolate* v8Isolate, void* data) noexcept {
             auto context = TakeStatisticsRequest<HeapSpaceStatisticsContext>(data);
-            FETCH_JNI_ENV(GlobalJavaVM);
+            auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+            if (!jniEnvScope) {
+                LOG_ERROR("GetHeapSpaceStatisticsAsync(): JNI environment is unavailable.");
+                ClaimStatisticsRequest(context.get());
+                return;
+            }
+            JNIEnv* jniEnv = jniEnvScope.Get();
             const bool requested = jniEnv->CallStaticBooleanMethod(
                 jclassV8Host,
                 jmethodIDV8HostRequestV8StatisticsFuture,
@@ -293,7 +317,13 @@ namespace Javet {
 
         void GetHeapStatisticsAsync(v8::Isolate* v8Isolate, void* data) noexcept {
             auto context = TakeStatisticsRequest<HeapStatisticsContext>(data);
-            FETCH_JNI_ENV(GlobalJavaVM);
+            auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+            if (!jniEnvScope) {
+                LOG_ERROR("GetHeapStatisticsAsync(): JNI environment is unavailable.");
+                ClaimStatisticsRequest(context.get());
+                return;
+            }
+            JNIEnv* jniEnv = jniEnvScope.Get();
             const bool requested = jniEnv->CallStaticBooleanMethod(
                 jclassV8Host,
                 jmethodIDV8HostRequestV8StatisticsFuture,
@@ -362,7 +392,13 @@ namespace Javet {
 
         void GetV8SharedMemoryStatisticsAsync(v8::Isolate* v8Isolate, void* data) noexcept {
             auto context = TakeStatisticsRequest<SharedMemoryStatisticsContext>(data);
-            FETCH_JNI_ENV(GlobalJavaVM);
+            auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+            if (!jniEnvScope) {
+                LOG_ERROR("GetV8SharedMemoryStatisticsAsync(): JNI environment is unavailable.");
+                ClaimStatisticsRequest(context.get());
+                return;
+            }
+            JNIEnv* jniEnv = jniEnvScope.Get();
             const bool requested = jniEnv->CallStaticBooleanMethod(
                 jclassV8Host,
                 jmethodIDV8HostRequestV8StatisticsFuture,

@@ -44,10 +44,38 @@ namespace Javet {
         V8Runtime* v8Runtime;
     };
 
-    class JNIEnvScope {
+    class JNIEnvScope final {
     public:
+        [[nodiscard]] static JNIEnvScope Acquire(JavaVM* javaVM) noexcept {
+            return JNIEnvScope(javaVM);
+        }
+
+        JNIEnvScope(const JNIEnvScope&) = delete;
+        JNIEnvScope& operator=(const JNIEnvScope&) = delete;
+
+        explicit operator bool() const noexcept {
+            return jniEnv != nullptr;
+        }
+
+        inline JNIEnv* Get() const noexcept {
+            return jniEnv;
+        }
+
+        ~JNIEnvScope() {
+            if (localFramePushed) {
+                jniEnv->PopLocalFrame(nullptr);
+            }
+            if (attached) {
+                javaVM->DetachCurrentThread();
+            }
+        }
+
+    private:
         explicit JNIEnvScope(JavaVM* javaVM) noexcept
             : attached(false), javaVM(javaVM), jniEnv(nullptr), localFramePushed(false) {
+            if (javaVM == nullptr) {
+                return;
+            }
             const jint getEnvResult = javaVM->GetEnv(
                 reinterpret_cast<void**>(&jniEnv), SUPPORTED_JNI_VERSION);
             if (getEnvResult == JNI_EDETACHED) {
@@ -66,31 +94,12 @@ namespace Javet {
                 localFramePushed = true;
             }
         }
-
-        inline JNIEnv* Get() const noexcept {
-            return jniEnv;
-        }
-
-        virtual ~JNIEnvScope() {
-            if (localFramePushed) {
-                jniEnv->PopLocalFrame(nullptr);
-            }
-            if (attached) {
-                javaVM->DetachCurrentThread();
-            }
-        }
-
-    private:
         bool attached;
         JavaVM* javaVM;
         JNIEnv* jniEnv;
         bool localFramePushed;
     };
 }
-
-#define FETCH_JNI_ENV(javaVMPointer) \
-    Javet::JNIEnvScope jniEnvScope(javaVMPointer); \
-    JNIEnv* jniEnv = jniEnvScope.Get();
 
 #define DELETE_LOCAL_REF(jniEnv, localRef) if (localRef != nullptr) { jniEnv->DeleteLocalRef(localRef); }
 
