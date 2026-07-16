@@ -1013,8 +1013,13 @@ namespace Javet {
             jobjectArray v8Values,
             const int startIndex,
             const int endIndex) noexcept {
+            if (v8Values == nullptr) {
+                return 0;
+            }
+            int v8ValueLength = jniEnv->GetArrayLength(v8Values);
             int actualEndIndex = endIndex > arrayLength ? arrayLength : endIndex;
             int actualLength = actualEndIndex - startIndex;
+            actualLength = actualLength > v8ValueLength ? v8ValueLength : actualLength;
             if (startIndex >= 0 && actualLength > 0) {
                 for (int i = 0; i < actualLength; ++i) {
                     auto v8MaybeLocalValue = v8LocalObject->Get(v8Context, i + startIndex);
@@ -1028,8 +1033,13 @@ namespace Javet {
                         v8LocalValue = v8MaybeLocalValue.ToLocalChecked();
                     }
                     jobject v8Value = ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8LocalValue);
-                    jniEnv->SetObjectArrayElement(v8Values, i, v8Value);
+                    if (!jniEnv->ExceptionCheck()) {
+                        jniEnv->SetObjectArrayElement(v8Values, i, v8Value);
+                    }
                     DELETE_LOCAL_REF(jniEnv, v8Value);
+                    if (jniEnv->ExceptionCheck()) {
+                        return i;
+                    }
                 }
                 return actualLength;
             }
