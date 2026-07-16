@@ -997,6 +997,7 @@ namespace Javet {
                 v8Runtime,
                 v8Context,
                 v8LocalArray,
+                length,
                 v8ValueArray,
                 0,
                 length);
@@ -1007,16 +1008,16 @@ namespace Javet {
             JNIEnv* jniEnv,
             V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
-            const V8LocalArray& v8LocalArray,
+            const V8LocalObject& v8LocalObject,
+            const int arrayLength,
             jobjectArray v8Values,
             const int startIndex,
             const int endIndex) noexcept {
-            int arrayLength = v8LocalArray->Length();
             int actualEndIndex = endIndex > arrayLength ? arrayLength : endIndex;
             int actualLength = actualEndIndex - startIndex;
             if (startIndex >= 0 && actualLength > 0) {
                 for (int i = 0; i < actualLength; ++i) {
-                    auto v8MaybeLocalValue = v8LocalArray->Get(v8Context, i + startIndex);
+                    auto v8MaybeLocalValue = v8LocalObject->Get(v8Context, i + startIndex);
                     V8LocalValue v8LocalValue;
                     if (v8MaybeLocalValue.IsEmpty()) {
                         if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context)) {

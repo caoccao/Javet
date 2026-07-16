@@ -173,7 +173,8 @@ namespace Javet {
             JNIEnv* jniEnv,
             V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
-            const V8LocalArray& v8LocalArray,
+            const V8LocalObject& v8LocalObject,
+            const int arrayLength,
             jobjectArray v8Values,
             const int startIndex,
             const int endIndex) noexcept;
