@@ -15,6 +15,9 @@
  *   limitations under the License.
  */
 
+#include <cstdint>
+#include <limits>
+
 #include "javet_callbacks.h"
 #include "javet_converter.h"
 #include "javet_exceptions.h"
@@ -289,7 +292,22 @@ namespace Javet {
                 LOG_ERROR("JavetNearHeapLimitCallback: Exception occurred in Java callback.");
                 return currentHeapLimit;
             }
-            return (size_t)newHeapLimit;
+            if (newHeapLimit < 0) {
+                LOG_ERROR("JavetNearHeapLimitCallback: Invalid negative heap limit " << newHeapLimit << ".");
+                return currentHeapLimit;
+            }
+            if (static_cast<std::uintmax_t>(newHeapLimit) >
+                static_cast<std::uintmax_t>(std::numeric_limits<size_t>::max())) {
+                LOG_ERROR("JavetNearHeapLimitCallback: Heap limit " << newHeapLimit << " exceeds the native size limit.");
+                return currentHeapLimit;
+            }
+            const auto validatedHeapLimit = static_cast<size_t>(newHeapLimit);
+            if (validatedHeapLimit < currentHeapLimit) {
+                LOG_ERROR("JavetNearHeapLimitCallback: Heap limit " << validatedHeapLimit
+                    << " is below the current heap limit " << currentHeapLimit << ".");
+                return currentHeapLimit;
+            }
+            return validatedHeapLimit;
         }
 
         void JavetPromiseRejectCallback(v8::PromiseRejectMessage message) noexcept {
