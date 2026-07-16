@@ -27,7 +27,7 @@ namespace Javet {
         class JavetCallbackContextReference;
         class V8ValueReference;
 
-        void Initialize(JNIEnv* jniEnv) noexcept;
+        [[nodiscard]] bool Initialize(JNIEnv* jniEnv) noexcept;
 
         void JavetCloseWeakCallbackContextHandle(const v8::WeakCallbackInfo<JavetCallbackContextReference>& info) noexcept;
         void JavetCloseWeakDataReference(const v8::WeakCallbackInfo<V8ValueReference>& info) noexcept;

@@ -36,7 +36,7 @@ namespace Javet {
         class JavetCallbackContextReference;
     }
 
-    void Initialize(JNIEnv* jniEnv) noexcept;
+    [[nodiscard]] bool Initialize(JNIEnv* jniEnv) noexcept;
 
     class V8Runtime {
     public:

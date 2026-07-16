@@ -170,32 +170,35 @@ namespace Javet {
             }
         };
 
-        void Initialize(JNIEnv* jniEnv) noexcept {
-            jclassV8AllocationSpace = FIND_CLASS(jniEnv, "com/caoccao/javet/enums/V8AllocationSpace");
-            jmethodIDV8AllocationSpaceGetIndex = jniEnv->GetMethodID(jclassV8AllocationSpace, "getIndex", "()I");
+        bool Initialize(JNIEnv* jniEnv) noexcept {
+            JNIInitializer jniInitializer(jniEnv);
+            jniInitializer.FindGlobalClass(jclassV8AllocationSpace, "com/caoccao/javet/enums/V8AllocationSpace");
+            jniInitializer.GetMethodID(jmethodIDV8AllocationSpaceGetIndex, jclassV8AllocationSpace, "getIndex", "()I");
 
-            jclassV8HeapSpaceStatistics = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics");
-            jmethodIDV8HeapSpaceStatisticsConstructor = jniEnv->GetMethodID(jclassV8HeapSpaceStatistics, "<init>", "(Ljava/lang/String;JJJJ)V");
-            jmethodIDV8HeapSpaceStatisticsSetAllocationSpace = jniEnv->GetMethodID(
+            jniInitializer.FindGlobalClass(jclassV8HeapSpaceStatistics, "com/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics");
+            jniInitializer.GetMethodID(jmethodIDV8HeapSpaceStatisticsConstructor, jclassV8HeapSpaceStatistics, "<init>", "(Ljava/lang/String;JJJJ)V");
+            jniInitializer.GetMethodID(
+                jmethodIDV8HeapSpaceStatisticsSetAllocationSpace,
                 jclassV8HeapSpaceStatistics,
                 "setAllocationSpace",
                 "(Lcom/caoccao/javet/enums/V8AllocationSpace;)Lcom/caoccao/javet/interop/monitoring/V8HeapSpaceStatistics;");
 
-            jclassV8HeapStatistics = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/monitoring/V8HeapStatistics");
-            jmethodIDV8HeapStatisticsConstructor = jniEnv->GetMethodID(jclassV8HeapStatistics, "<init>", "(JJJJJJJJJJJJJJ)V");
+            jniInitializer.FindGlobalClass(jclassV8HeapStatistics, "com/caoccao/javet/interop/monitoring/V8HeapStatistics");
+            jniInitializer.GetMethodID(jmethodIDV8HeapStatisticsConstructor, jclassV8HeapStatistics, "<init>", "(JJJJJJJJJJJJJJ)V");
 
-            jclassV8Host = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/V8Host");
-            jmethodIDV8HostGetNextV8StatisticsRequestId = jniEnv->GetStaticMethodID(jclassV8Host, "getNextV8StatisticsRequestId", "()J");
-            jmethodIDV8HostRegisterV8StatisticsFuture = jniEnv->GetStaticMethodID(jclassV8Host, "registerV8StatisticsFuture", "(Lcom/caoccao/javet/interop/monitoring/V8StatisticsFuture;)V");
-            jmethodIDV8HostRequestV8StatisticsFuture = jniEnv->GetStaticMethodID(jclassV8Host, "requestV8StatisticsFuture", "(J)Z");
+            jniInitializer.FindGlobalClass(jclassV8Host, "com/caoccao/javet/interop/V8Host");
+            jniInitializer.GetStaticMethodID(jmethodIDV8HostGetNextV8StatisticsRequestId, jclassV8Host, "getNextV8StatisticsRequestId", "()J");
+            jniInitializer.GetStaticMethodID(jmethodIDV8HostRegisterV8StatisticsFuture, jclassV8Host, "registerV8StatisticsFuture", "(Lcom/caoccao/javet/interop/monitoring/V8StatisticsFuture;)V");
+            jniInitializer.GetStaticMethodID(jmethodIDV8HostRequestV8StatisticsFuture, jclassV8Host, "requestV8StatisticsFuture", "(J)Z");
 
-            jclassV8SharedMemoryStatistics = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/monitoring/V8SharedMemoryStatistics");
-            jmethodIDV8SharedMemoryStatisticsConstructor = jniEnv->GetMethodID(jclassV8SharedMemoryStatistics, "<init>", "(JJJ)V");
+            jniInitializer.FindGlobalClass(jclassV8SharedMemoryStatistics, "com/caoccao/javet/interop/monitoring/V8SharedMemoryStatistics");
+            jniInitializer.GetMethodID(jmethodIDV8SharedMemoryStatisticsConstructor, jclassV8SharedMemoryStatistics, "<init>", "(JJJ)V");
 
-            jclassV8StatisticsFuture = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/monitoring/V8StatisticsFuture");
-            jmethodIDV8StatisticsFutureConstructor = jniEnv->GetMethodID(jclassV8StatisticsFuture, "<init>", "(I)V");
-            jmethodIDV8StatisticsFutureComplete = jniEnv->GetMethodID(jclassV8StatisticsFuture, "complete", "(Ljava/lang/Object;)Z");
-            jmethodIDV8StatisticsFutureSetHandle = jniEnv->GetMethodID(jclassV8StatisticsFuture, "setHandle", "(J)V");
+            jniInitializer.FindGlobalClass(jclassV8StatisticsFuture, "com/caoccao/javet/interop/monitoring/V8StatisticsFuture");
+            jniInitializer.GetMethodID(jmethodIDV8StatisticsFutureConstructor, jclassV8StatisticsFuture, "<init>", "(I)V");
+            jniInitializer.GetMethodID(jmethodIDV8StatisticsFutureComplete, jclassV8StatisticsFuture, "complete", "(Ljava/lang/Object;)Z");
+            jniInitializer.GetMethodID(jmethodIDV8StatisticsFutureSetHandle, jclassV8StatisticsFuture, "setHandle", "(J)V");
+            return jniInitializer.IsValid();
         }
 
         jobject GetHeapSpaceStatistics(

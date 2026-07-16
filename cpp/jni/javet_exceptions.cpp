@@ -22,28 +22,30 @@
 
 namespace Javet {
     namespace Exceptions {
-        void Initialize(JNIEnv* jniEnv) noexcept {
+        bool Initialize(JNIEnv* jniEnv) noexcept {
             /*
              @see https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/types.html
              @see https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/functions.html
             */
 
-            jclassJavetCompilationException = FIND_CLASS(jniEnv, "com/caoccao/javet/exceptions/JavetCompilationException");
-            jmethodIDJavetCompilationExceptionConstructor = jniEnv->GetMethodID(jclassJavetCompilationException, "<init>", "(Lcom/caoccao/javet/exceptions/JavetScriptingError;Ljava/lang/Throwable;)V");
+            JNIInitializer jniInitializer(jniEnv);
+            jniInitializer.FindGlobalClass(jclassJavetCompilationException, "com/caoccao/javet/exceptions/JavetCompilationException");
+            jniInitializer.GetMethodID(jmethodIDJavetCompilationExceptionConstructor, jclassJavetCompilationException, "<init>", "(Lcom/caoccao/javet/exceptions/JavetScriptingError;Ljava/lang/Throwable;)V");
 
-            jclassJavetConverterException = FIND_CLASS(jniEnv, "com/caoccao/javet/exceptions/JavetConverterException");
+            jniInitializer.FindGlobalClass(jclassJavetConverterException, "com/caoccao/javet/exceptions/JavetConverterException");
 
-            jclassJavetExecutionException = FIND_CLASS(jniEnv, "com/caoccao/javet/exceptions/JavetExecutionException");
-            jmethodIDJavetExecutionExceptionConstructor = jniEnv->GetMethodID(jclassJavetExecutionException, "<init>", "(Lcom/caoccao/javet/exceptions/JavetScriptingError;Ljava/lang/Throwable;)V");
+            jniInitializer.FindGlobalClass(jclassJavetExecutionException, "com/caoccao/javet/exceptions/JavetExecutionException");
+            jniInitializer.GetMethodID(jmethodIDJavetExecutionExceptionConstructor, jclassJavetExecutionException, "<init>", "(Lcom/caoccao/javet/exceptions/JavetScriptingError;Ljava/lang/Throwable;)V");
 
-            jclassJavetOutOfMemoryException = FIND_CLASS(jniEnv, "com/caoccao/javet/exceptions/JavetOutOfMemoryException");
-            jmethodIDJavetOutOfMemoryExceptionConstructor = jniEnv->GetMethodID(jclassJavetOutOfMemoryException, "<init>", "(Ljava/lang/String;Lcom/caoccao/javet/interop/monitoring/V8HeapStatistics;)V");
+            jniInitializer.FindGlobalClass(jclassJavetOutOfMemoryException, "com/caoccao/javet/exceptions/JavetOutOfMemoryException");
+            jniInitializer.GetMethodID(jmethodIDJavetOutOfMemoryExceptionConstructor, jclassJavetOutOfMemoryException, "<init>", "(Ljava/lang/String;Lcom/caoccao/javet/interop/monitoring/V8HeapStatistics;)V");
 
-            jclassJavetTerminatedException = FIND_CLASS(jniEnv, "com/caoccao/javet/exceptions/JavetTerminatedException");
-            jmethodIDJavetTerminatedExceptionConstructor = jniEnv->GetMethodID(jclassJavetTerminatedException, "<init>", "(Z)V");
+            jniInitializer.FindGlobalClass(jclassJavetTerminatedException, "com/caoccao/javet/exceptions/JavetTerminatedException");
+            jniInitializer.GetMethodID(jmethodIDJavetTerminatedExceptionConstructor, jclassJavetTerminatedException, "<init>", "(Z)V");
 
-            jclassThrowable = FIND_CLASS(jniEnv, "java/lang/Throwable");
-            jmethodIDThrowableGetMessage = jniEnv->GetMethodID(jclassThrowable, "getMessage", "()Ljava/lang/String;");
+            jniInitializer.FindGlobalClass(jclassThrowable, "java/lang/Throwable");
+            jniInitializer.GetMethodID(jmethodIDThrowableGetMessage, jclassThrowable, "getMessage", "()Ljava/lang/String;");
+            return jniInitializer.IsValid();
         }
 
         bool HandlePendingException(

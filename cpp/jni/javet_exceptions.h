@@ -42,7 +42,7 @@ namespace Javet {
         static jclass jclassThrowable;
         static jmethodID jmethodIDThrowableGetMessage;
 
-        void Initialize(JNIEnv* jniEnv) noexcept;
+        [[nodiscard]] bool Initialize(JNIEnv* jniEnv) noexcept;
 
         static inline void ClearJNIException(JNIEnv* jniEnv) noexcept {
             if (jniEnv->ExceptionCheck()) {

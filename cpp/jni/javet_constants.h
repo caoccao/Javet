@@ -17,8 +17,6 @@
 
 #pragma once
 
-#define ERROR_JNI_ON_LOAD -1
-
 constexpr auto EMBEDDER_DATA_INDEX_V8_RUNTIME = 5;
 
 constexpr auto INDEX_SCOPE_TYPE = 0;

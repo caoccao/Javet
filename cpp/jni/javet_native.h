@@ -34,6 +34,106 @@ void DELETE_GLOBAL_CLASS_REFS(JNIEnv* jniEnv) noexcept;
 namespace Javet {
     class V8Runtime;
 
+    class JNIInitializer final {
+    public:
+        explicit JNIInitializer(JNIEnv* jniEnv) noexcept
+            : jniEnv(jniEnv), valid(jniEnv != nullptr && !jniEnv->ExceptionCheck()) {
+        }
+
+        void FindGlobalClass(jclass& javaClass, const char* className) noexcept {
+            if (valid) {
+                javaClass = FIND_CLASS(jniEnv, className);
+                Validate(javaClass);
+            }
+            else {
+                javaClass = nullptr;
+            }
+        }
+
+        void FindLocalClass(jclass& javaClass, const char* className) noexcept {
+            if (valid) {
+                javaClass = jniEnv->FindClass(className);
+                Validate(javaClass);
+            }
+            else {
+                javaClass = nullptr;
+            }
+        }
+
+        void GetFieldID(
+            jfieldID& fieldID,
+            jclass javaClass,
+            const char* name,
+            const char* signature) noexcept {
+            if (valid && javaClass != nullptr) {
+                fieldID = jniEnv->GetFieldID(javaClass, name, signature);
+                Validate(fieldID);
+            }
+            else {
+                fieldID = nullptr;
+                valid = false;
+            }
+        }
+
+        void GetMethodID(
+            jmethodID& methodID,
+            jclass javaClass,
+            const char* name,
+            const char* signature) noexcept {
+            if (valid && javaClass != nullptr) {
+                methodID = jniEnv->GetMethodID(javaClass, name, signature);
+                Validate(methodID);
+            }
+            else {
+                methodID = nullptr;
+                valid = false;
+            }
+        }
+
+        void GetStaticFieldID(
+            jfieldID& fieldID,
+            jclass javaClass,
+            const char* name,
+            const char* signature) noexcept {
+            if (valid && javaClass != nullptr) {
+                fieldID = jniEnv->GetStaticFieldID(javaClass, name, signature);
+                Validate(fieldID);
+            }
+            else {
+                fieldID = nullptr;
+                valid = false;
+            }
+        }
+
+        void GetStaticMethodID(
+            jmethodID& methodID,
+            jclass javaClass,
+            const char* name,
+            const char* signature) noexcept {
+            if (valid && javaClass != nullptr) {
+                methodID = jniEnv->GetStaticMethodID(javaClass, name, signature);
+                Validate(methodID);
+            }
+            else {
+                methodID = nullptr;
+                valid = false;
+            }
+        }
+
+        [[nodiscard]] bool IsValid() const noexcept {
+            return valid && !jniEnv->ExceptionCheck();
+        }
+
+    private:
+        template<typename T>
+        void Validate(T reference) noexcept {
+            valid = reference != nullptr && !jniEnv->ExceptionCheck();
+        }
+
+        JNIEnv* jniEnv;
+        bool valid;
+    };
+
     class ExternalExceptionScope {
     public:
         ExternalExceptionScope(JNIEnv* jniEnv, V8Runtime* v8Runtime) noexcept;
@@ -205,7 +305,7 @@ namespace Javet {
         extern std::shared_ptr<node::ArrayBufferAllocator> GlobalNodeArrayBufferAllocator;
 
         void Dispose(JNIEnv* jniEnv) noexcept;
-        void Initialize(JNIEnv* jniEnv) noexcept;
+        [[nodiscard]] bool Initialize(JNIEnv* jniEnv) noexcept;
     }
 #endif
 
@@ -218,6 +318,6 @@ namespace Javet {
 #endif
 
         void Dispose(JNIEnv* jniEnv) noexcept;
-        void Initialize(JNIEnv* jniEnv) noexcept;
+        [[nodiscard]] bool Initialize(JNIEnv* jniEnv) noexcept;
     }
 }

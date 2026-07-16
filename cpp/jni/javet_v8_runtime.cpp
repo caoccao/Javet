@@ -43,26 +43,35 @@ namespace Javet {
     jmethodID jmethodV8RuntimeOptionsGetGlobalName;
 #endif
 
-    void Initialize(JNIEnv* jniEnv) noexcept {
+    bool Initialize(JNIEnv* jniEnv) noexcept {
+        JNIInitializer jniInitializer(jniEnv);
 #ifdef ENABLE_NODE
-        jclassRuntimeOptions = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/options/NodeRuntimeOptions");
-        jmethodNodeRuntimeOptionsGetConsoleArguments = jniEnv->GetMethodID(jclassRuntimeOptions, "getConsoleArguments", "()[Ljava/lang/String;");
-        jmethodNodeRuntimeOptionsIsBuiltInModuleResolution = jniEnv->GetMethodID(jclassRuntimeOptions, "isBuiltInModuleResolution", "()Z");
-        jclassV8Runtime = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/V8Runtime");
-        jmethodV8RuntimeGetRuntimeOptions = jniEnv->GetMethodID(jclassV8Runtime, "getRuntimeOptions", "()Lcom/caoccao/javet/interop/options/RuntimeOptions;");
+        jniInitializer.FindGlobalClass(jclassRuntimeOptions, "com/caoccao/javet/interop/options/NodeRuntimeOptions");
+        jniInitializer.GetMethodID(jmethodNodeRuntimeOptionsGetConsoleArguments, jclassRuntimeOptions, "getConsoleArguments", "()[Ljava/lang/String;");
+        jniInitializer.GetMethodID(jmethodNodeRuntimeOptionsIsBuiltInModuleResolution, jclassRuntimeOptions, "isBuiltInModuleResolution", "()Z");
+        jniInitializer.FindGlobalClass(jclassV8Runtime, "com/caoccao/javet/interop/V8Runtime");
+        jniInitializer.GetMethodID(jmethodV8RuntimeGetRuntimeOptions, jclassV8Runtime, "getRuntimeOptions", "()Lcom/caoccao/javet/interop/options/RuntimeOptions;");
 #else
-        jclassRuntimeOptions = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/options/V8RuntimeOptions");
-        jmethodV8RuntimeOptionsGetGlobalName = jniEnv->GetMethodID(jclassRuntimeOptions, "getGlobalName", "()Ljava/lang/String;");
+        jniInitializer.FindGlobalClass(jclassRuntimeOptions, "com/caoccao/javet/interop/options/V8RuntimeOptions");
+        jniInitializer.GetMethodID(jmethodV8RuntimeOptionsGetGlobalName, jclassRuntimeOptions, "getGlobalName", "()Ljava/lang/String;");
 #endif
-        jmethodRuntimeOptionsIsCreateSnapshotEnabled = jniEnv->GetMethodID(jclassRuntimeOptions, "isCreateSnapshotEnabled", "()Z");
-        jmethodRuntimeOptionsGetSnapshotBlob = jniEnv->GetMethodID(jclassRuntimeOptions, "getSnapshotBlob", "()[B");
+        jniInitializer.GetMethodID(jmethodRuntimeOptionsIsCreateSnapshotEnabled, jclassRuntimeOptions, "isCreateSnapshotEnabled", "()Z");
+        jniInitializer.GetMethodID(jmethodRuntimeOptionsGetSnapshotBlob, jclassRuntimeOptions, "getSnapshotBlob", "()[B");
         // Set V8 flags
         bool isFrozen = V8InternalFlagList::IsFrozen(); // Since V8 v10.5
         if (!isFrozen) {
-            jclass jclassV8Flags = jniEnv->FindClass("com/caoccao/javet/interop/options/V8Flags");
-            jmethodID jmethodIDV8FlagsToString = jniEnv->GetMethodID(jclassV8Flags, "toString", "()Ljava/lang/String;");
-            jmethodID jmethodIDV8FlagsSeal = jniEnv->GetMethodID(jclassV8Flags, "seal", "()Lcom/caoccao/javet/interop/options/V8Flags;");
-            jfieldID jfieldIDRuntimeOptionsV8Flags = jniEnv->GetStaticFieldID(jclassRuntimeOptions, "V8_FLAGS", "Lcom/caoccao/javet/interop/options/V8Flags;");
+            jclass jclassV8Flags = nullptr;
+            jmethodID jmethodIDV8FlagsToString = nullptr;
+            jmethodID jmethodIDV8FlagsSeal = nullptr;
+            jfieldID jfieldIDRuntimeOptionsV8Flags = nullptr;
+            jniInitializer.FindLocalClass(jclassV8Flags, "com/caoccao/javet/interop/options/V8Flags");
+            jniInitializer.GetMethodID(jmethodIDV8FlagsToString, jclassV8Flags, "toString", "()Ljava/lang/String;");
+            jniInitializer.GetMethodID(jmethodIDV8FlagsSeal, jclassV8Flags, "seal", "()Lcom/caoccao/javet/interop/options/V8Flags;");
+            jniInitializer.GetStaticFieldID(jfieldIDRuntimeOptionsV8Flags, jclassRuntimeOptions, "V8_FLAGS", "Lcom/caoccao/javet/interop/options/V8Flags;");
+            if (!jniInitializer.IsValid()) {
+                DELETE_LOCAL_REF(jniEnv, jclassV8Flags);
+                return false;
+            }
             jobject mV8Flags = jniEnv->GetStaticObjectField(jclassRuntimeOptions, jfieldIDRuntimeOptionsV8Flags);
             jstring mV8FlagsString = (jstring)jniEnv->CallObjectMethod(mV8Flags, jmethodIDV8FlagsToString);
             jniEnv->DeleteLocalRef(jniEnv->CallObjectMethod(mV8Flags, jmethodIDV8FlagsSeal));
@@ -73,6 +82,7 @@ namespace Javet {
             DELETE_LOCAL_REF(jniEnv, mV8Flags);
             jniEnv->DeleteLocalRef(jclassV8Flags);
         }
+        return jniInitializer.IsValid();
     }
 
     ExternalExceptionScope::ExternalExceptionScope(

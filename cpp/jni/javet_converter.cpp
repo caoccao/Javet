@@ -342,186 +342,189 @@ namespace Javet {
             return jniEnv->IsInstanceOf(obj, jclassV8ValueWeakSet);
         }
 
-        void Initialize(JNIEnv* jniEnv) noexcept {
+        bool Initialize(JNIEnv* jniEnv) noexcept {
             /*
              @see https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/types.html
              @see https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/functions.html
             */
 
+            JNIInitializer jniInitializer(jniEnv);
+
             // Runtime
 
-            jclassV8Runtime = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/V8Runtime");
-            jmethodIDV8RuntimeCreateV8ValueBoolean = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueBoolean", "(Z)Lcom/caoccao/javet/values/primitive/V8ValueBoolean;");
-            jmethodIDV8RuntimeCreateV8ValueDouble = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueDouble", "(D)Lcom/caoccao/javet/values/primitive/V8ValueDouble;");
-            jmethodIDV8RuntimeCreateV8ValueInteger = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueInteger", "(I)Lcom/caoccao/javet/values/primitive/V8ValueInteger;");
-            jmethodIDV8RuntimeCreateV8ValueLong = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueLong", "(J)Lcom/caoccao/javet/values/primitive/V8ValueLong;");
-            jmethodIDV8RuntimeCreateV8ValueNull = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueNull", "()Lcom/caoccao/javet/values/primitive/V8ValueNull;");
-            jmethodIDV8RuntimeCreateV8ValueUndefined = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueUndefined", "()Lcom/caoccao/javet/values/primitive/V8ValueUndefined;");
-            jmethodIDV8RuntimeCreateV8ValueZonedDateTime = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueZonedDateTime", "(J)Lcom/caoccao/javet/values/primitive/V8ValueZonedDateTime;");
+            jniInitializer.FindGlobalClass(jclassV8Runtime, "com/caoccao/javet/interop/V8Runtime");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeCreateV8ValueBoolean, jclassV8Runtime, "createV8ValueBoolean", "(Z)Lcom/caoccao/javet/values/primitive/V8ValueBoolean;");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeCreateV8ValueDouble, jclassV8Runtime, "createV8ValueDouble", "(D)Lcom/caoccao/javet/values/primitive/V8ValueDouble;");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeCreateV8ValueInteger, jclassV8Runtime, "createV8ValueInteger", "(I)Lcom/caoccao/javet/values/primitive/V8ValueInteger;");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeCreateV8ValueLong, jclassV8Runtime, "createV8ValueLong", "(J)Lcom/caoccao/javet/values/primitive/V8ValueLong;");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeCreateV8ValueNull, jclassV8Runtime, "createV8ValueNull", "()Lcom/caoccao/javet/values/primitive/V8ValueNull;");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeCreateV8ValueUndefined, jclassV8Runtime, "createV8ValueUndefined", "()Lcom/caoccao/javet/values/primitive/V8ValueUndefined;");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeCreateV8ValueZonedDateTime, jclassV8Runtime, "createV8ValueZonedDateTime", "(J)Lcom/caoccao/javet/values/primitive/V8ValueZonedDateTime;");
 
             // Primitive
 
-            jclassV8Value = FIND_CLASS(jniEnv, "com/caoccao/javet/values/V8Value");
+            jniInitializer.FindGlobalClass(jclassV8Value, "com/caoccao/javet/values/V8Value");
 
-            jclassV8ValueBigInteger = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueBigInteger");
-            jmethodIDV8ValueBigIntegerConstructor = jniEnv->GetMethodID(jclassV8ValueBigInteger, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;I[J)V");
-            jmethodIDV8ValueBigIntegerGetLongArray = jniEnv->GetMethodID(jclassV8ValueBigInteger, "getLongArray", "()[J");
-            jmethodIDV8ValueBigIntegerGetSignum = jniEnv->GetMethodID(jclassV8ValueBigInteger, "getSignum", "()I");
+            jniInitializer.FindGlobalClass(jclassV8ValueBigInteger, "com/caoccao/javet/values/primitive/V8ValueBigInteger");
+            jniInitializer.GetMethodID(jmethodIDV8ValueBigIntegerConstructor, jclassV8ValueBigInteger, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;I[J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueBigIntegerGetLongArray, jclassV8ValueBigInteger, "getLongArray", "()[J");
+            jniInitializer.GetMethodID(jmethodIDV8ValueBigIntegerGetSignum, jclassV8ValueBigInteger, "getSignum", "()I");
 
-            jclassV8ValueBoolean = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueBoolean");
-            jmethodIDV8ValueBooleanToPrimitive = jniEnv->GetMethodID(jclassV8ValueBoolean, JAVA_METHOD_TO_PRIMITIVE, "()Z");
+            jniInitializer.FindGlobalClass(jclassV8ValueBoolean, "com/caoccao/javet/values/primitive/V8ValueBoolean");
+            jniInitializer.GetMethodID(jmethodIDV8ValueBooleanToPrimitive, jclassV8ValueBoolean, JAVA_METHOD_TO_PRIMITIVE, "()Z");
 
-            jclassV8ValueDouble = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueDouble");
-            jmethodIDV8ValueDoubleToPrimitive = jniEnv->GetMethodID(jclassV8ValueDouble, JAVA_METHOD_TO_PRIMITIVE, "()D");
+            jniInitializer.FindGlobalClass(jclassV8ValueDouble, "com/caoccao/javet/values/primitive/V8ValueDouble");
+            jniInitializer.GetMethodID(jmethodIDV8ValueDoubleToPrimitive, jclassV8ValueDouble, JAVA_METHOD_TO_PRIMITIVE, "()D");
 
-            jclassV8ValueInteger = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueInteger");
-            jmethodIDV8ValueIntegerToPrimitive = jniEnv->GetMethodID(jclassV8ValueInteger, JAVA_METHOD_TO_PRIMITIVE, "()I");
+            jniInitializer.FindGlobalClass(jclassV8ValueInteger, "com/caoccao/javet/values/primitive/V8ValueInteger");
+            jniInitializer.GetMethodID(jmethodIDV8ValueIntegerToPrimitive, jclassV8ValueInteger, JAVA_METHOD_TO_PRIMITIVE, "()I");
 
-            jclassV8ValueLong = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueLong");
-            jmethodIDV8ValueLongToPrimitive = jniEnv->GetMethodID(jclassV8ValueLong, JAVA_METHOD_TO_PRIMITIVE, "()J");
+            jniInitializer.FindGlobalClass(jclassV8ValueLong, "com/caoccao/javet/values/primitive/V8ValueLong");
+            jniInitializer.GetMethodID(jmethodIDV8ValueLongToPrimitive, jclassV8ValueLong, JAVA_METHOD_TO_PRIMITIVE, "()J");
 
-            jclassV8ValueNull = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueNull");
+            jniInitializer.FindGlobalClass(jclassV8ValueNull, "com/caoccao/javet/values/primitive/V8ValueNull");
 
-            jclassV8ValueString = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueString");
-            jmethodIDV8ValueStringConstructor = jniEnv->GetMethodID(jclassV8ValueString, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;Ljava/lang/String;)V");
-            jmethodIDV8ValueStringToPrimitive = jniEnv->GetMethodID(jclassV8ValueString, JAVA_METHOD_TO_PRIMITIVE, "()Ljava/lang/String;");
+            jniInitializer.FindGlobalClass(jclassV8ValueString, "com/caoccao/javet/values/primitive/V8ValueString");
+            jniInitializer.GetMethodID(jmethodIDV8ValueStringConstructor, jclassV8ValueString, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;Ljava/lang/String;)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueStringToPrimitive, jclassV8ValueString, JAVA_METHOD_TO_PRIMITIVE, "()Ljava/lang/String;");
 
-            jclassV8ValueUndefined = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueUndefined");
+            jniInitializer.FindGlobalClass(jclassV8ValueUndefined, "com/caoccao/javet/values/primitive/V8ValueUndefined");
 
-            jclassV8ValueUnknown = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueUnknown");
-            jmethodIDV8ValueUnknownConstructor = jniEnv->GetMethodID(jclassV8ValueUnknown, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;Ljava/lang/String;)V");
+            jniInitializer.FindGlobalClass(jclassV8ValueUnknown, "com/caoccao/javet/values/primitive/V8ValueUnknown");
+            jniInitializer.GetMethodID(jmethodIDV8ValueUnknownConstructor, jclassV8ValueUnknown, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;Ljava/lang/String;)V");
 
-            jclassV8ValueZonedDateTime = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueZonedDateTime");
-            jmethodIDV8ValueZonedDateTimeToPrimitive = jniEnv->GetMethodID(jclassV8ValueZonedDateTime, JAVA_METHOD_TO_PRIMITIVE, "()J");
+            jniInitializer.FindGlobalClass(jclassV8ValueZonedDateTime, "com/caoccao/javet/values/primitive/V8ValueZonedDateTime");
+            jniInitializer.GetMethodID(jmethodIDV8ValueZonedDateTimeToPrimitive, jclassV8ValueZonedDateTime, JAVA_METHOD_TO_PRIMITIVE, "()J");
 
             // Reference
 
-            jclassV8Context = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8Context");
-            jmethodIDV8ContextConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8Context);
-            jmethodIDV8ContextGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8Context);
+            jniInitializer.FindGlobalClass(jclassV8Context, "com/caoccao/javet/values/reference/V8Context");
+            jniInitializer.GetMethodID(jmethodIDV8ContextConstructor, jclassV8Context, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ContextGetHandle, jclassV8Context, "getHandle", "()J");
 
-            jclassV8Module = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8Module");
-            jmethodIDV8ModuleConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8Module);
-            jmethodIDV8ModuleGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8Module);
+            jniInitializer.FindGlobalClass(jclassV8Module, "com/caoccao/javet/values/reference/V8Module");
+            jniInitializer.GetMethodID(jmethodIDV8ModuleConstructor, jclassV8Module, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ModuleGetHandle, jclassV8Module, "getHandle", "()J");
 
-            jclassV8Script = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8Script");
-            jmethodIDV8ScriptConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8Script);
-            jmethodIDV8ScriptGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8Script);
+            jniInitializer.FindGlobalClass(jclassV8Script, "com/caoccao/javet/values/reference/V8Script");
+            jniInitializer.GetMethodID(jmethodIDV8ScriptConstructor, jclassV8Script, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ScriptGetHandle, jclassV8Script, "getHandle", "()J");
 
-            jclassV8ValueArguments = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueArguments");
-            jmethodIDV8ValueArgumentsConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueArguments);
-            jmethodIDV8ValueArgumentsGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueArguments);
+            jniInitializer.FindGlobalClass(jclassV8ValueArguments, "com/caoccao/javet/values/reference/V8ValueArguments");
+            jniInitializer.GetMethodID(jmethodIDV8ValueArgumentsConstructor, jclassV8ValueArguments, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueArgumentsGetHandle, jclassV8ValueArguments, "getHandle", "()J");
 
-            jclassV8ValueArray = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueArray");
-            jmethodIDV8ValueArrayConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueArray);
-            jmethodIDV8ValueArrayGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueArray);
+            jniInitializer.FindGlobalClass(jclassV8ValueArray, "com/caoccao/javet/values/reference/V8ValueArray");
+            jniInitializer.GetMethodID(jmethodIDV8ValueArrayConstructor, jclassV8ValueArray, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueArrayGetHandle, jclassV8ValueArray, "getHandle", "()J");
 
-            jclassV8ValueArrayBuffer = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueArrayBuffer");
-            jmethodIDV8ValueArrayBufferConstructor = jniEnv->GetMethodID(jclassV8ValueArrayBuffer, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;JLjava/nio/ByteBuffer;)V");
-            jmethodIDV8ValueArrayBufferGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueArrayBuffer);
+            jniInitializer.FindGlobalClass(jclassV8ValueArrayBuffer, "com/caoccao/javet/values/reference/V8ValueArrayBuffer");
+            jniInitializer.GetMethodID(jmethodIDV8ValueArrayBufferConstructor, jclassV8ValueArrayBuffer, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;JLjava/nio/ByteBuffer;)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueArrayBufferGetHandle, jclassV8ValueArrayBuffer, "getHandle", "()J");
 
-            jclassV8ValueBooleanObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueBooleanObject");
-            jmethodIDV8ValueBooleanObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueBooleanObject);
-            jmethodIDV8ValueBooleanObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueBooleanObject);
+            jniInitializer.FindGlobalClass(jclassV8ValueBooleanObject, "com/caoccao/javet/values/reference/V8ValueBooleanObject");
+            jniInitializer.GetMethodID(jmethodIDV8ValueBooleanObjectConstructor, jclassV8ValueBooleanObject, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueBooleanObjectGetHandle, jclassV8ValueBooleanObject, "getHandle", "()J");
 
-            jclassV8ValueDataView = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueDataView");
-            jmethodIDV8ValueDataViewConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueDataView);
-            jmethodIDV8ValueDataViewGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueDataView);
+            jniInitializer.FindGlobalClass(jclassV8ValueDataView, "com/caoccao/javet/values/reference/V8ValueDataView");
+            jniInitializer.GetMethodID(jmethodIDV8ValueDataViewConstructor, jclassV8ValueDataView, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueDataViewGetHandle, jclassV8ValueDataView, "getHandle", "()J");
 
-            jclassV8ValueDoubleObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueDoubleObject");
-            jmethodIDV8ValueDoubleObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueDoubleObject);
-            jmethodIDV8ValueDoubleObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueDoubleObject);
+            jniInitializer.FindGlobalClass(jclassV8ValueDoubleObject, "com/caoccao/javet/values/reference/V8ValueDoubleObject");
+            jniInitializer.GetMethodID(jmethodIDV8ValueDoubleObjectConstructor, jclassV8ValueDoubleObject, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueDoubleObjectGetHandle, jclassV8ValueDoubleObject, "getHandle", "()J");
 
-            jclassV8ValueFunction = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueFunction");
-            jmethodIDV8ValueFunctionConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueFunction);
-            jmethodIDV8ValueFunctionGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueFunction);
+            jniInitializer.FindGlobalClass(jclassV8ValueFunction, "com/caoccao/javet/values/reference/V8ValueFunction");
+            jniInitializer.GetMethodID(jmethodIDV8ValueFunctionConstructor, jclassV8ValueFunction, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueFunctionGetHandle, jclassV8ValueFunction, "getHandle", "()J");
 
-            jclassV8ValueError = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueError");
-            jmethodIDV8ValueErrorConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueError);
-            jmethodIDV8ValueErrorGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueError);
+            jniInitializer.FindGlobalClass(jclassV8ValueError, "com/caoccao/javet/values/reference/V8ValueError");
+            jniInitializer.GetMethodID(jmethodIDV8ValueErrorConstructor, jclassV8ValueError, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueErrorGetHandle, jclassV8ValueError, "getHandle", "()J");
 
-            jclassV8ValueGlobalObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueGlobalObject");
-            jmethodIDV8ValueGlobalObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueGlobalObject);
-            jmethodIDV8ValueGlobalObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueGlobalObject);
+            jniInitializer.FindGlobalClass(jclassV8ValueGlobalObject, "com/caoccao/javet/values/reference/V8ValueGlobalObject");
+            jniInitializer.GetMethodID(jmethodIDV8ValueGlobalObjectConstructor, jclassV8ValueGlobalObject, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueGlobalObjectGetHandle, jclassV8ValueGlobalObject, "getHandle", "()J");
 
-            jclassV8ValueIntegerObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueIntegerObject");
-            jmethodIDV8ValueIntegerObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueIntegerObject);
-            jmethodIDV8ValueIntegerObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueIntegerObject);
+            jniInitializer.FindGlobalClass(jclassV8ValueIntegerObject, "com/caoccao/javet/values/reference/V8ValueIntegerObject");
+            jniInitializer.GetMethodID(jmethodIDV8ValueIntegerObjectConstructor, jclassV8ValueIntegerObject, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueIntegerObjectGetHandle, jclassV8ValueIntegerObject, "getHandle", "()J");
 
-            jclassV8ValueIterator = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueIterator");
-            jmethodIDV8ValueIteratorConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueIterator);
-            jmethodIDV8ValueIteratorGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueIterator);
+            jniInitializer.FindGlobalClass(jclassV8ValueIterator, "com/caoccao/javet/values/reference/V8ValueIterator");
+            jniInitializer.GetMethodID(jmethodIDV8ValueIteratorConstructor, jclassV8ValueIterator, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueIteratorGetHandle, jclassV8ValueIterator, "getHandle", "()J");
 
-            jclassV8ValueLongObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueLongObject");
-            jmethodIDV8ValueLongObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueLongObject);
-            jmethodIDV8ValueLongObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueLongObject);
+            jniInitializer.FindGlobalClass(jclassV8ValueLongObject, "com/caoccao/javet/values/reference/V8ValueLongObject");
+            jniInitializer.GetMethodID(jmethodIDV8ValueLongObjectConstructor, jclassV8ValueLongObject, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueLongObjectGetHandle, jclassV8ValueLongObject, "getHandle", "()J");
 
-            jclassV8ValueMap = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueMap");
-            jmethodIDV8ValueMapConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueMap);
-            jmethodIDV8ValueMapGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueMap);
+            jniInitializer.FindGlobalClass(jclassV8ValueMap, "com/caoccao/javet/values/reference/V8ValueMap");
+            jniInitializer.GetMethodID(jmethodIDV8ValueMapConstructor, jclassV8ValueMap, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueMapGetHandle, jclassV8ValueMap, "getHandle", "()J");
 
-            jclassV8ValueObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueObject");
-            jmethodIDV8ValueObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueObject);
-            jmethodIDV8ValueObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueObject);
+            jniInitializer.FindGlobalClass(jclassV8ValueObject, "com/caoccao/javet/values/reference/V8ValueObject");
+            jniInitializer.GetMethodID(jmethodIDV8ValueObjectConstructor, jclassV8ValueObject, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueObjectGetHandle, jclassV8ValueObject, "getHandle", "()J");
 
-            jclassV8ValuePromise = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValuePromise");
-            jmethodIDV8ValuePromiseConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValuePromise);
-            jmethodIDV8ValuePromiseGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValuePromise);
+            jniInitializer.FindGlobalClass(jclassV8ValuePromise, "com/caoccao/javet/values/reference/V8ValuePromise");
+            jniInitializer.GetMethodID(jmethodIDV8ValuePromiseConstructor, jclassV8ValuePromise, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValuePromiseGetHandle, jclassV8ValuePromise, "getHandle", "()J");
 
-            jclassV8ValueProxy = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueProxy");
-            jmethodIDV8ValueProxyConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueProxy);
-            jmethodIDV8ValueProxyGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueProxy);
+            jniInitializer.FindGlobalClass(jclassV8ValueProxy, "com/caoccao/javet/values/reference/V8ValueProxy");
+            jniInitializer.GetMethodID(jmethodIDV8ValueProxyConstructor, jclassV8ValueProxy, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueProxyGetHandle, jclassV8ValueProxy, "getHandle", "()J");
 
-            jclassV8ValueReference = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueReference");
+            jniInitializer.FindGlobalClass(jclassV8ValueReference, "com/caoccao/javet/values/reference/V8ValueReference");
 
-            jclassV8ValueRegExp = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueRegExp");
-            jmethodIDV8ValueRegExpConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueRegExp);
-            jmethodIDV8ValueRegExpGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueRegExp);
+            jniInitializer.FindGlobalClass(jclassV8ValueRegExp, "com/caoccao/javet/values/reference/V8ValueRegExp");
+            jniInitializer.GetMethodID(jmethodIDV8ValueRegExpConstructor, jclassV8ValueRegExp, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueRegExpGetHandle, jclassV8ValueRegExp, "getHandle", "()J");
 
-            jclassV8ValueSet = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueSet");
-            jmethodIDV8ValueSetConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueSet);
-            jmethodIDV8ValueSetGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueSet);
+            jniInitializer.FindGlobalClass(jclassV8ValueSet, "com/caoccao/javet/values/reference/V8ValueSet");
+            jniInitializer.GetMethodID(jmethodIDV8ValueSetConstructor, jclassV8ValueSet, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueSetGetHandle, jclassV8ValueSet, "getHandle", "()J");
 
-            jclassV8ValueSharedArrayBuffer = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueSharedArrayBuffer");
-            jmethodIDV8ValueSharedArrayBufferConstructor = jniEnv->GetMethodID(jclassV8ValueSharedArrayBuffer, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;JLjava/nio/ByteBuffer;)V");
-            jmethodIDV8ValueSharedArrayBufferGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueSharedArrayBuffer);
+            jniInitializer.FindGlobalClass(jclassV8ValueSharedArrayBuffer, "com/caoccao/javet/values/reference/V8ValueSharedArrayBuffer");
+            jniInitializer.GetMethodID(jmethodIDV8ValueSharedArrayBufferConstructor, jclassV8ValueSharedArrayBuffer, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;JLjava/nio/ByteBuffer;)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueSharedArrayBufferGetHandle, jclassV8ValueSharedArrayBuffer, "getHandle", "()J");
 
-            jclassV8ValueStringObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueStringObject");
-            jmethodIDV8ValueStringObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueStringObject);
-            jmethodIDV8ValueStringObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueStringObject);
+            jniInitializer.FindGlobalClass(jclassV8ValueStringObject, "com/caoccao/javet/values/reference/V8ValueStringObject");
+            jniInitializer.GetMethodID(jmethodIDV8ValueStringObjectConstructor, jclassV8ValueStringObject, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueStringObjectGetHandle, jclassV8ValueStringObject, "getHandle", "()J");
 
-            jclassV8ValueSymbol = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueSymbol");
-            jmethodIDV8ValueSymbolConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueSymbol);
-            jmethodIDV8ValueSymbolGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueSymbol);
+            jniInitializer.FindGlobalClass(jclassV8ValueSymbol, "com/caoccao/javet/values/reference/V8ValueSymbol");
+            jniInitializer.GetMethodID(jmethodIDV8ValueSymbolConstructor, jclassV8ValueSymbol, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueSymbolGetHandle, jclassV8ValueSymbol, "getHandle", "()J");
 
-            jclassV8ValueSymbolObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueSymbolObject");
-            jmethodIDV8ValueSymbolObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueSymbolObject);
-            jmethodIDV8ValueSymbolObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueSymbolObject);
+            jniInitializer.FindGlobalClass(jclassV8ValueSymbolObject, "com/caoccao/javet/values/reference/V8ValueSymbolObject");
+            jniInitializer.GetMethodID(jmethodIDV8ValueSymbolObjectConstructor, jclassV8ValueSymbolObject, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueSymbolObjectGetHandle, jclassV8ValueSymbolObject, "getHandle", "()J");
 
-            jclassV8ValueTypedArray = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueTypedArray");
-            jmethodIDV8ValueTypedArrayConstructor = jniEnv->GetMethodID(jclassV8ValueTypedArray, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;JI)V");
-            jmethodIDV8ValueTypedArrayGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueTypedArray);
+            jniInitializer.FindGlobalClass(jclassV8ValueTypedArray, "com/caoccao/javet/values/reference/V8ValueTypedArray");
+            jniInitializer.GetMethodID(jmethodIDV8ValueTypedArrayConstructor, jclassV8ValueTypedArray, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;JI)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueTypedArrayGetHandle, jclassV8ValueTypedArray, "getHandle", "()J");
 
-            jclassV8ValueWeakMap = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueWeakMap");
-            jmethodIDV8ValueWeakMapConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueWeakMap);
-            jmethodIDV8ValueWeakMapGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueWeakMap);
+            jniInitializer.FindGlobalClass(jclassV8ValueWeakMap, "com/caoccao/javet/values/reference/V8ValueWeakMap");
+            jniInitializer.GetMethodID(jmethodIDV8ValueWeakMapConstructor, jclassV8ValueWeakMap, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueWeakMapGetHandle, jclassV8ValueWeakMap, "getHandle", "()J");
 
-            jclassV8ValueWeakSet = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueWeakSet");
-            jmethodIDV8ValueWeakSetConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueWeakSet);
-            jmethodIDV8ValueWeakSetGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueWeakSet);
+            jniInitializer.FindGlobalClass(jclassV8ValueWeakSet, "com/caoccao/javet/values/reference/V8ValueWeakSet");
+            jniInitializer.GetMethodID(jmethodIDV8ValueWeakSetConstructor, jclassV8ValueWeakSet, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueWeakSetGetHandle, jclassV8ValueWeakSet, "getHandle", "()J");
 
             // Misc
-            jclassByteBuffer = FIND_CLASS(jniEnv, "java/nio/ByteBuffer");
-            jclassString = FIND_CLASS(jniEnv, "java/lang/String");
+            jniInitializer.FindGlobalClass(jclassByteBuffer, "java/nio/ByteBuffer");
+            jniInitializer.FindGlobalClass(jclassString, "java/lang/String");
 
-            jclassJavetScriptingError = FIND_CLASS(jniEnv, "com/caoccao/javet/exceptions/JavetScriptingError");
-            jmethodIDJavetScriptingErrorConstructor = jniEnv->GetMethodID(jclassJavetScriptingError, "<init>", "(Lcom/caoccao/javet/values/V8Value;Ljava/lang/String;Ljava/lang/String;IIIII)V");
+            jniInitializer.FindGlobalClass(jclassJavetScriptingError, "com/caoccao/javet/exceptions/JavetScriptingError");
+            jniInitializer.GetMethodID(jmethodIDJavetScriptingErrorConstructor, jclassJavetScriptingError, "<init>", "(Lcom/caoccao/javet/values/V8Value;Ljava/lang/String;Ljava/lang/String;IIIII)V");
 
-            jclassIV8ValueFunctionScriptSource = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/IV8ValueFunction$ScriptSource");
-            jmethodIDIV8ValueFunctionScriptSourceConstructor = jniEnv->GetMethodID(jclassIV8ValueFunctionScriptSource, "<init>", "(Ljava/lang/String;II)V");
-            jmethodIDIV8ValueFunctionScriptGetCode = jniEnv->GetMethodID(jclassIV8ValueFunctionScriptSource, "getCode", "()Ljava/lang/String;");
-            jmethodIDIV8ValueFunctionScriptGetEndPosition = jniEnv->GetMethodID(jclassIV8ValueFunctionScriptSource, "getEndPosition", "()I");
-            jmethodIDIV8ValueFunctionScriptGetStartPosition = jniEnv->GetMethodID(jclassIV8ValueFunctionScriptSource, "getStartPosition", "()I");
+            jniInitializer.FindGlobalClass(jclassIV8ValueFunctionScriptSource, "com/caoccao/javet/values/reference/IV8ValueFunction$ScriptSource");
+            jniInitializer.GetMethodID(jmethodIDIV8ValueFunctionScriptSourceConstructor, jclassIV8ValueFunctionScriptSource, "<init>", "(Ljava/lang/String;II)V");
+            jniInitializer.GetMethodID(jmethodIDIV8ValueFunctionScriptGetCode, jclassIV8ValueFunctionScriptSource, "getCode", "()Ljava/lang/String;");
+            jniInitializer.GetMethodID(jmethodIDIV8ValueFunctionScriptGetEndPosition, jclassIV8ValueFunctionScriptSource, "getEndPosition", "()I");
+            jniInitializer.GetMethodID(jmethodIDIV8ValueFunctionScriptGetStartPosition, jclassIV8ValueFunctionScriptSource, "getStartPosition", "()I");
+            return jniInitializer.IsValid();
         }
 
         V8ScriptCompilerCachedData* ToCachedDataPointer(

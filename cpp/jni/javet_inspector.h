@@ -41,7 +41,7 @@ namespace Javet {
         static jmethodID jmethodIDV8InspectorReceiveResponse;
         static jmethodID jmethodIDV8InspectorRunIfWaitingForDebugger;
 
-        void Initialize(JNIEnv* jniEnv) noexcept;
+        [[nodiscard]] bool Initialize(JNIEnv* jniEnv) noexcept;
 
         class JavetInspector {
         public:

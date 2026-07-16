@@ -71,14 +71,16 @@ namespace Javet {
             return std::make_unique<std::string>(*v8Utf8Value);
         }
 
-        void Initialize(JNIEnv* jniEnv) noexcept {
-            jclassV8Inspector = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/V8Inspector");
-            jmethodIDV8InspectorConsoleAPIMessage = jniEnv->GetMethodID(jclassV8Inspector, "consoleAPIMessage", "(IILjava/lang/String;Ljava/lang/String;II)V");
-            jmethodIDV8InspectorFlushProtocolNotifications = jniEnv->GetMethodID(jclassV8Inspector, "flushProtocolNotifications", "()V");
-            jmethodIDV8InspectorInstallAdditionalCommandLineAPI = jniEnv->GetMethodID(jclassV8Inspector, "installAdditionalCommandLineAPI", "(Lcom/caoccao/javet/values/reference/IV8ValueObject;)V");
-            jmethodIDV8InspectorReceiveNotification = jniEnv->GetMethodID(jclassV8Inspector, "receiveNotification", "(Ljava/lang/String;)V");
-            jmethodIDV8InspectorReceiveResponse = jniEnv->GetMethodID(jclassV8Inspector, "receiveResponse", "(Ljava/lang/String;)V");
-            jmethodIDV8InspectorRunIfWaitingForDebugger = jniEnv->GetMethodID(jclassV8Inspector, "runIfWaitingForDebugger", "(I)V");
+        bool Initialize(JNIEnv* jniEnv) noexcept {
+            JNIInitializer jniInitializer(jniEnv);
+            jniInitializer.FindGlobalClass(jclassV8Inspector, "com/caoccao/javet/interop/V8Inspector");
+            jniInitializer.GetMethodID(jmethodIDV8InspectorConsoleAPIMessage, jclassV8Inspector, "consoleAPIMessage", "(IILjava/lang/String;Ljava/lang/String;II)V");
+            jniInitializer.GetMethodID(jmethodIDV8InspectorFlushProtocolNotifications, jclassV8Inspector, "flushProtocolNotifications", "()V");
+            jniInitializer.GetMethodID(jmethodIDV8InspectorInstallAdditionalCommandLineAPI, jclassV8Inspector, "installAdditionalCommandLineAPI", "(Lcom/caoccao/javet/values/reference/IV8ValueObject;)V");
+            jniInitializer.GetMethodID(jmethodIDV8InspectorReceiveNotification, jclassV8Inspector, "receiveNotification", "(Ljava/lang/String;)V");
+            jniInitializer.GetMethodID(jmethodIDV8InspectorReceiveResponse, jclassV8Inspector, "receiveResponse", "(Ljava/lang/String;)V");
+            jniInitializer.GetMethodID(jmethodIDV8InspectorRunIfWaitingForDebugger, jclassV8Inspector, "runIfWaitingForDebugger", "(I)V");
+            return jniInitializer.IsValid();
         }
 
         JavetInspector::JavetInspector(V8Runtime* v8Runtime, const std::string& name) noexcept {

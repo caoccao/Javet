@@ -29,7 +29,7 @@
 
 namespace Javet {
     namespace Monitor {
-        void Initialize(JNIEnv* jniEnv) noexcept;
+        [[nodiscard]] bool Initialize(JNIEnv* jniEnv) noexcept;
 
         jobject GetHeapSpaceStatistics(
             JNIEnv* jniEnv,
@@ -121,4 +121,3 @@ namespace Javet {
 #ifdef ENABLE_MONITOR
 extern Javet::Monitor::JavetNativeMonitor GlobalJavetNativeMonitor;
 #endif
-

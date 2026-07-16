@@ -57,33 +57,35 @@ namespace Javet {
             "PromiseRejectAfterResolved",
         };
 
-        void Initialize(JNIEnv* jniEnv) noexcept {
-            jclassJavetCallbackContext = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/callback/JavetCallbackContext");
-            jmethodIDJavetCallbackContextIsReturnResult = jniEnv->GetMethodID(jclassJavetCallbackContext, "isReturnResult", "()Z");
-            jmethodIDJavetCallbackContextIsThisObjectRequired = jniEnv->GetMethodID(jclassJavetCallbackContext, "isThisObjectRequired", "()Z");
-            jmethodIDJavetCallbackContextSetHandle = jniEnv->GetMethodID(jclassJavetCallbackContext, "setHandle", "(J)V");
+        bool Initialize(JNIEnv* jniEnv) noexcept {
+            JNIInitializer jniInitializer(jniEnv);
+            jniInitializer.FindGlobalClass(jclassJavetCallbackContext, "com/caoccao/javet/interop/callback/JavetCallbackContext");
+            jniInitializer.GetMethodID(jmethodIDJavetCallbackContextIsReturnResult, jclassJavetCallbackContext, "isReturnResult", "()Z");
+            jniInitializer.GetMethodID(jmethodIDJavetCallbackContextIsThisObjectRequired, jclassJavetCallbackContext, "isThisObjectRequired", "()Z");
+            jniInitializer.GetMethodID(jmethodIDJavetCallbackContextSetHandle, jclassJavetCallbackContext, "setHandle", "(J)V");
 
-            jclassIV8Module = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/IV8Module");
-            jmethodIDIV8ModuleGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassIV8Module);
+            jniInitializer.FindGlobalClass(jclassIV8Module, "com/caoccao/javet/values/reference/IV8Module");
+            jniInitializer.GetMethodID(jmethodIDIV8ModuleGetHandle, jclassIV8Module, "getHandle", "()J");
 
-            jclassIV8ValueReference = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/IV8ValueReference");
-            jmethodIDIV8ValueReferenceClose = jniEnv->GetMethodID(jclassIV8ValueReference, "close", "(Z)V");
+            jniInitializer.FindGlobalClass(jclassIV8ValueReference, "com/caoccao/javet/values/reference/IV8ValueReference");
+            jniInitializer.GetMethodID(jmethodIDIV8ValueReferenceClose, jclassIV8ValueReference, "close", "(Z)V");
 
-            jclassJavetResourceUtils = FIND_CLASS(jniEnv, "com/caoccao/javet/utils/JavetResourceUtils");
-            jmethodIDJavetResourceUtilsSafeClose = jniEnv->GetStaticMethodID(jclassJavetResourceUtils, "safeClose", "(Ljava/lang/Object;)V");
+            jniInitializer.FindGlobalClass(jclassJavetResourceUtils, "com/caoccao/javet/utils/JavetResourceUtils");
+            jniInitializer.GetStaticMethodID(jmethodIDJavetResourceUtilsSafeClose, jclassJavetResourceUtils, "safeClose", "(Ljava/lang/Object;)V");
 
-            jclassV8FunctionCallback = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/callback/V8FunctionCallback");
-            jmethodIDV8FunctionCallbackReceiveCallback = jniEnv->GetStaticMethodID(jclassV8FunctionCallback, "receiveCallback",
+            jniInitializer.FindGlobalClass(jclassV8FunctionCallback, "com/caoccao/javet/interop/callback/V8FunctionCallback");
+            jniInitializer.GetStaticMethodID(jmethodIDV8FunctionCallbackReceiveCallback, jclassV8FunctionCallback, "receiveCallback",
                 "(Lcom/caoccao/javet/interop/V8Runtime;Lcom/caoccao/javet/interop/callback/JavetCallbackContext;Lcom/caoccao/javet/values/V8Value;[Lcom/caoccao/javet/values/V8Value;)Lcom/caoccao/javet/values/V8Value;");
 
-            jclassV8Runtime = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/V8Runtime");
-            jmethodIDV8RuntimeGetCallbackContext = jniEnv->GetMethodID(jclassV8Runtime, "getCallbackContext", "(J)Lcom/caoccao/javet/interop/callback/JavetCallbackContext;");
-            jmethodIDV8RuntimeGetV8Module = jniEnv->GetMethodID(jclassV8Runtime, "getV8Module", "(Ljava/lang/String;Lcom/caoccao/javet/values/reference/IV8Module;)Lcom/caoccao/javet/values/reference/IV8Module;");
-            jmethodIDV8RuntimeReceiveGCEpilogueCallback = jniEnv->GetMethodID(jclassV8Runtime, "receiveGCEpilogueCallback", "(II)V");
-            jmethodIDV8RuntimeReceiveGCPrologueCallback = jniEnv->GetMethodID(jclassV8Runtime, "receiveGCPrologueCallback", "(II)V");
-            jmethodIDV8RuntimeReceiveNearHeapLimitCallback = jniEnv->GetMethodID(jclassV8Runtime, "receiveNearHeapLimitCallback", "(JJ)J");
-            jmethodIDV8RuntimeReceivePromiseRejectCallback = jniEnv->GetMethodID(jclassV8Runtime, "receivePromiseRejectCallback", "(ILcom/caoccao/javet/values/reference/V8ValuePromise;Lcom/caoccao/javet/values/V8Value;)V");
-            jmethodIDV8RuntimeRemoveCallbackContext = jniEnv->GetMethodID(jclassV8Runtime, "removeCallbackContext", "(J)V");
+            jniInitializer.FindGlobalClass(jclassV8Runtime, "com/caoccao/javet/interop/V8Runtime");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeGetCallbackContext, jclassV8Runtime, "getCallbackContext", "(J)Lcom/caoccao/javet/interop/callback/JavetCallbackContext;");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeGetV8Module, jclassV8Runtime, "getV8Module", "(Ljava/lang/String;Lcom/caoccao/javet/values/reference/IV8Module;)Lcom/caoccao/javet/values/reference/IV8Module;");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeReceiveGCEpilogueCallback, jclassV8Runtime, "receiveGCEpilogueCallback", "(II)V");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeReceiveGCPrologueCallback, jclassV8Runtime, "receiveGCPrologueCallback", "(II)V");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeReceiveNearHeapLimitCallback, jclassV8Runtime, "receiveNearHeapLimitCallback", "(JJ)J");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeReceivePromiseRejectCallback, jclassV8Runtime, "receivePromiseRejectCallback", "(ILcom/caoccao/javet/values/reference/V8ValuePromise;Lcom/caoccao/javet/values/V8Value;)V");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeRemoveCallbackContext, jclassV8Runtime, "removeCallbackContext", "(J)V");
+            return jniInitializer.IsValid();
         }
 
         void JavetCloseWeakCallbackContextHandle(const v8::WeakCallbackInfo<JavetCallbackContextReference>& info) noexcept {

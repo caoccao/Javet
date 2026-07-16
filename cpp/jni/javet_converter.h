@@ -76,7 +76,7 @@ namespace Javet {
             return (jstring)jniEnv->CallObjectMethod(obj, jmethodIDV8ValueStringToPrimitive);
         }
 
-        void Initialize(JNIEnv* jniEnv) noexcept;
+        [[nodiscard]] bool Initialize(JNIEnv* jniEnv) noexcept;
 
         V8ScriptCompilerCachedData* ToCachedDataPointer(
             JNIEnv* jniEnv,
