@@ -320,11 +320,11 @@ namespace Javet {
             }
             else {
                 auto v8Runtime = Javet::V8Runtime::FromV8Context(v8Context);
-                auto v8Isolate = v8Runtime->v8Isolate;
                 if (v8Runtime == nullptr) {
                     LOG_ERROR("JavetSyntheticModuleEvaluationStepsCallback: V8 runtime is empty.");
                 }
                 else {
+                    auto v8Isolate = v8Runtime->v8Isolate;
                     V8TryCatch v8TryCatch(v8Isolate);
                     auto v8GlobalObject = v8Runtime->v8GlobalObject.Get(v8Isolate);
                     std::string stringKey("module:{}" + std::to_string(v8LocalModule->GetIdentityHash()));
