@@ -24,6 +24,7 @@
 #include "javet_logging.h"
 #include "javet_native.h"
 #include "javet_v8_runtime.h"
+#include <utility>
 #include <vector>
 
 JavaVM* GlobalJavaVM;
@@ -199,16 +200,16 @@ namespace Javet {
             }
             jobject mV8Flags = jniEnv->GetStaticObjectField(jclassV8RuntimeOptions, jfieldIDV8RuntimeOptionsV8Flags);
             jstring mIcuDataFile = (jstring)jniEnv->CallObjectMethod(mV8Flags, jmethodIDV8FlagsGetIcuDataFile);
-            auto umIcuDataFile = Javet::Converter::ToUtf8String(jniEnv, mIcuDataFile);
-            if (!umIcuDataFile) {
+            auto icuDataFile = Javet::Converter::ToUtf8String(jniEnv, mIcuDataFile);
+            if (!icuDataFile) {
                 DELETE_LOCAL_REF(jniEnv, mIcuDataFile);
                 DELETE_LOCAL_REF(jniEnv, mV8Flags);
                 DELETE_LOCAL_REF(jniEnv, jclassV8Flags);
                 DELETE_LOCAL_REF(jniEnv, jclassV8RuntimeOptions);
                 return false;
             }
-            LOG_INFO("Calling v8::V8::InitializeICU(\"" << *umIcuDataFile << "\").");
-            v8::V8::InitializeICU(umIcuDataFile->c_str());
+            LOG_INFO("Calling v8::V8::InitializeICU(\"" << *icuDataFile << "\").");
+            v8::V8::InitializeICU(icuDataFile->c_str());
             jniEnv->DeleteLocalRef(mIcuDataFile);
             jniEnv->DeleteLocalRef(mV8Flags);
             jniEnv->DeleteLocalRef(jclassV8Flags);
@@ -247,13 +248,13 @@ namespace Javet {
                     LOG_DEBUG("Node.js flag count is " << nodeFlagCount);
                     for (int i = 0; i < nodeFlagCount; ++i) {
                         jstring mFlagString = (jstring)jniEnv->GetObjectArrayElement(mNodeFlagsStringArray, i);
-                        auto umFlagString = Javet::Converter::ToUtf8String(jniEnv, mFlagString);
-                        if (!umFlagString) {
+                        auto flagString = Javet::Converter::ToUtf8String(jniEnv, mFlagString);
+                        if (!flagString) {
                             DELETE_LOCAL_REF(jniEnv, mFlagString);
                             break;
                         }
-                        LOG_DEBUG("    " << i << ": " << *umFlagString);
-                        args.push_back(*umFlagString);
+                        LOG_DEBUG("    " << i << ": " << *flagString);
+                        args.push_back(std::move(*flagString));
                         jniEnv->DeleteLocalRef(mFlagString);
                     }
                     jniEnv->DeleteLocalRef(mNodeFlagsStringArray);

@@ -225,26 +225,26 @@ namespace Javet {
                         mSpecifier,
                         mReferrerV8Module);
                     DELETE_LOCAL_REF(jniEnv, mSpecifier);
-                    auto moduleNamePointer = Javet::Converter::ToUtf8String(v8Runtime->v8Isolate, specifier);
+                    auto moduleName = Javet::Converter::ToUtf8String(v8Runtime->v8Isolate, specifier);
                     if (jniEnv->ExceptionCheck()) {
                         // JNI exception is not re-thrown in this callback function because it will pop up automatically.
-                        LOG_ERROR("JavetModuleResolveCallback: module '" << *moduleNamePointer << "' with exception");
+                        LOG_ERROR("JavetModuleResolveCallback: module '" << moduleName << "' with exception");
                         std::string errorMessage("Cannot resolve package '");
-                        errorMessage.append(*moduleNamePointer);
+                        errorMessage.append(moduleName);
                         errorMessage.append("'");
                         Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, errorMessage.c_str());
                     }
                     else if (mIV8Module == nullptr) {
-                        LOG_ERROR("JavetModuleResolveCallback: module '" << *moduleNamePointer << "' not found");
+                        LOG_ERROR("JavetModuleResolveCallback: module '" << moduleName << "' not found");
                         std::string errorMessage("Cannot find package '");
-                        errorMessage.append(*moduleNamePointer);
+                        errorMessage.append(moduleName);
                         errorMessage.append("'");
                         Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, errorMessage.c_str());
                     }
                     else {
                         auto mHandle = jniEnv->CallLongMethod(mIV8Module, jmethodIDIV8ModuleGetHandle);
                         auto v8PersistentModule = TO_V8_PERSISTENT_MODULE_POINTER(mHandle);
-                        LOG_DEBUG("JavetModuleResolveCallback: module '" << *moduleNamePointer << "' found");
+                        LOG_DEBUG("JavetModuleResolveCallback: module '" << moduleName << "' found");
                         resolvedV8MaybeLocalModule = v8PersistentModule->Get(v8Runtime->v8Isolate);
                     }
                     DELETE_LOCAL_REF(jniEnv, mIV8Module);

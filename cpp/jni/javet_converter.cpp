@@ -226,21 +226,16 @@ namespace Javet {
             }
             return ToJavaStringFromUtf8(
                 jniEnv,
-                utf8String,
-                std::char_traits<char>::length(utf8String));
+                std::string_view(utf8String));
         }
 
         jstring ToJavaStringFromUtf8(
             JNIEnv* jniEnv,
-            const char* utf8String,
-            size_t length) noexcept {
-            if (utf8String == nullptr) {
-                return nullptr;
-            }
+            std::string_view utf8String) noexcept {
             std::u16string utf16String;
-            utf16String.reserve(length);
+            utf16String.reserve(utf8String.length());
             size_t index = 0;
-            while (index < length) {
+            while (index < utf8String.length()) {
                 const auto firstByte = static_cast<uint8_t>(utf8String[index]);
                 uint32_t codePoint = 0;
                 uint32_t minimumCodePoint = 0;
@@ -264,7 +259,7 @@ namespace Javet {
                     minimumCodePoint = 0x10000;
                     sequenceLength = 4;
                 }
-                bool valid = sequenceLength > 0 && index + sequenceLength <= length;
+                bool valid = sequenceLength > 0 && index + sequenceLength <= utf8String.length();
                 for (size_t offset = 1; valid && offset < sequenceLength; ++offset) {
                     const auto continuationByte = static_cast<uint8_t>(utf8String[index + offset]);
                     if ((continuationByte & 0xC0) != 0x80) {
@@ -291,7 +286,7 @@ namespace Javet {
         jstring ToJavaStringFromUtf8(
             JNIEnv* jniEnv,
             const std::string& utf8String) noexcept {
-            return ToJavaStringFromUtf8(jniEnv, utf8String.data(), utf8String.length());
+            return ToJavaStringFromUtf8(jniEnv, std::string_view(utf8String));
         }
 
         jstring ToJavaStringFromUtf16(
@@ -303,17 +298,20 @@ namespace Javet {
                 static_cast<jsize>(utf16String.length()));
         }
 
-        std::unique_ptr<std::string> ToUtf8String(
+        std::optional<std::string> ToUtf8String(
             JNIEnv* jniEnv,
             const jstring& mString) noexcept {
             auto utf16String = ToUtf16String(jniEnv, mString);
-            return utf16String == nullptr ? nullptr : ToUtf8String(*utf16String);
+            if (!utf16String) {
+                return std::nullopt;
+            }
+            return ToUtf8String(*utf16String);
         }
 
-        std::unique_ptr<std::string> ToUtf8String(
+        std::string ToUtf8String(
             const std::u16string& utf16String) noexcept {
-            auto utf8String = std::make_unique<std::string>();
-            utf8String->reserve(utf16String.length() * 3);
+            std::string utf8String;
+            utf8String.reserve(utf16String.length() * 3);
             for (size_t index = 0; index < utf16String.length(); ++index) {
                 uint32_t codePoint = utf16String[index];
                 if (codePoint >= 0xD800 && codePoint <= 0xDBFF &&
@@ -332,23 +330,23 @@ namespace Javet {
                 else if (codePoint >= 0xD800 && codePoint <= 0xDFFF) {
                     codePoint = 0xFFFD;
                 }
-                AppendCodePointToUtf8(*utf8String, codePoint);
+                AppendCodePointToUtf8(utf8String, codePoint);
             }
             return utf8String;
         }
 
-        std::unique_ptr<std::u16string> ToUtf16String(
+        std::optional<std::u16string> ToUtf16String(
             JNIEnv* jniEnv,
             const jstring& mString) noexcept {
             JNIStringChars utf16Chars(jniEnv, mString);
             if (!utf16Chars) {
-                return nullptr;
+                return std::nullopt;
             }
             const jsize length = jniEnv->GetStringLength(mString);
-            auto utf16String = std::make_unique<std::u16string>();
-            utf16String->resize(length);
+            std::u16string utf16String;
+            utf16String.resize(length);
             for (jsize index = 0; index < length; ++index) {
-                (*utf16String)[index] = static_cast<char16_t>(utf16Chars.Get()[index]);
+                utf16String[index] = static_cast<char16_t>(utf16Chars.Get()[index]);
             }
             return utf16String;
         }
@@ -1216,7 +1214,7 @@ namespace Javet {
             return V8LocalContext();
         }
 
-        std::unique_ptr<v8::ScriptOrigin> ToV8ScriptOringinPointer(
+        v8::ScriptOrigin ToV8ScriptOrigin(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const jstring mResourceName,
@@ -1225,7 +1223,7 @@ namespace Javet {
             const jint mScriptId,
             const jboolean mIsWASM,
             const jboolean mIsModule) noexcept {
-            return std::make_unique<v8::ScriptOrigin>(
+            return v8::ScriptOrigin(
                 ToV8String(jniEnv, v8Isolate, mResourceName),
                 (int)mResourceLineOffset,
                 (int)mResourceColumnOffset,
@@ -1387,79 +1385,79 @@ namespace Javet {
             }
         }
 
-        std::unique_ptr<V8LocalObject[]> ToV8Objects(
+        std::vector<V8LocalObject> ToV8Objects(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const V8LocalContext& v8Context,
             const jobjectArray mObjects,
             const jintArray mObjectTypes) noexcept {
-            std::unique_ptr<V8LocalObject[]> umObjectsPointer;
+            std::vector<V8LocalObject> objects;
             uint32_t count = mObjects == nullptr ? 0 : jniEnv->GetArrayLength(mObjects);
             if (count > 0) {
                 jint* objectTypes = jniEnv->GetIntArrayElements(mObjectTypes, nullptr);
                 if (objectTypes == nullptr) {
-                    return umObjectsPointer;
+                    return objects;
                 }
-                umObjectsPointer.reset(new V8LocalObject[count]);
+                objects.reserve(count);
                 for (uint32_t i = 0; i < count; ++i) {
                     jobject element = jniEnv->GetObjectArrayElement(mObjects, i);
-                    umObjectsPointer.get()[i] = ToV8Value(
+                    objects.emplace_back(ToV8Value(
                         jniEnv,
                         v8Isolate,
                         v8Context,
                         element,
-                        objectTypes[i]).As<v8::Object>();
+                        objectTypes[i]).As<v8::Object>());
                     DELETE_LOCAL_REF(jniEnv, element);
                 }
                 jniEnv->ReleaseIntArrayElements(mObjectTypes, objectTypes, JNI_ABORT);
             }
-            return umObjectsPointer;
+            return objects;
         }
 
-        std::unique_ptr<V8LocalString[]> ToV8Strings(
+        std::vector<V8LocalString> ToV8Strings(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const jobjectArray mStrings) noexcept {
-            std::unique_ptr<V8LocalString[]> umStringsPointer;
+            std::vector<V8LocalString> strings;
             uint32_t count = mStrings == nullptr ? 0 : jniEnv->GetArrayLength(mStrings);
             if (count > 0) {
-                umStringsPointer.reset(new V8LocalString[count]);
+                strings.reserve(count);
                 for (uint32_t i = 0; i < count; ++i) {
                     jstring element = (jstring)jniEnv->GetObjectArrayElement(mStrings, i);
-                    umStringsPointer.get()[i] = ToV8String(jniEnv, v8Isolate, element);
+                    strings.emplace_back(ToV8String(jniEnv, v8Isolate, element));
                     DELETE_LOCAL_REF(jniEnv, element);
                 }
             }
-            return umStringsPointer;
+            return strings;
         }
 
-        std::unique_ptr<V8LocalValue[]> ToV8Values(
+        std::vector<V8LocalValue> ToV8Values(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const V8LocalContext& v8Context,
             const jobjectArray mValues,
             const jintArray mValueTypes) noexcept {
-            std::unique_ptr<V8LocalValue[]> umValuesPointer;
+            std::vector<V8LocalValue> values;
             uint32_t count = mValues == nullptr ? 0 : jniEnv->GetArrayLength(mValues);
             if (count > 0) {
                 jint* valueTypes = jniEnv->GetIntArrayElements(mValueTypes, nullptr);
                 if (valueTypes == nullptr) {
-                    return umValuesPointer;
+                    return values;
                 }
-                umValuesPointer.reset(new V8LocalValue[count]);
+                values.reserve(count);
                 for (uint32_t i = 0; i < count; ++i) {
                     jobject element = jniEnv->GetObjectArrayElement(mValues, i);
-                    umValuesPointer.get()[i] = ToV8Value(
+                    values.emplace_back(ToV8Value(
                         jniEnv,
                         v8Isolate,
                         v8Context,
                         element,
-                        valueTypes[i]);
+                        valueTypes[i]));
                     DELETE_LOCAL_REF(jniEnv, element);
                 }
                 jniEnv->ReleaseIntArrayElements(mValueTypes, valueTypes, JNI_ABORT);
             }
-            return umValuesPointer;
+            return values;
         }
     }
 }

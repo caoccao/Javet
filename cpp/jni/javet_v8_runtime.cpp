@@ -21,6 +21,7 @@
 #include <new>
 #include <thread>
 #include <unordered_map>
+#include <utility>
 #include "javet_callbacks.h"
 #include "javet_converter.h"
 #include "javet_exceptions.h"
@@ -503,12 +504,12 @@ namespace Javet {
                     int consoleArgumentCount = jniEnv->GetArrayLength(mConsoleArguments);
                     for (int i = 0; i < consoleArgumentCount; ++i) {
                         jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
-                        auto consoleArgumentPointer = Javet::Converter::ToUtf8String(jniEnv, mConsoleArgument);
-                        if (!consoleArgumentPointer) {
+                        auto consoleArgument = Javet::Converter::ToUtf8String(jniEnv, mConsoleArgument);
+                        if (!consoleArgument) {
                             DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
                             break;
                         }
-                        args.push_back(*consoleArgumentPointer);
+                        args.push_back(std::move(*consoleArgument));
                         DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
                     }
                     DELETE_LOCAL_REF(jniEnv, mConsoleArguments);
@@ -557,13 +558,13 @@ namespace Javet {
                     if (consoleArgumentCount > 0) {
                         for (int i = 0; i < consoleArgumentCount; ++i) {
                             jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
-                            auto consoleArgumentPointer = Javet::Converter::ToUtf8String(jniEnv, mConsoleArgument);
-                            if (!consoleArgumentPointer) {
+                            auto consoleArgument = Javet::Converter::ToUtf8String(jniEnv, mConsoleArgument);
+                            if (!consoleArgument) {
                                 DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
                                 break;
                             }
-                            LOG_DEBUG("    " << i << ": " << *consoleArgumentPointer);
-                            args.push_back(*consoleArgumentPointer);
+                            LOG_DEBUG("    " << i << ": " << *consoleArgument);
+                            args.push_back(std::move(*consoleArgument));
                             DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
                         }
                     }
@@ -658,12 +659,12 @@ namespace Javet {
                     int consoleArgumentCount = jniEnv->GetArrayLength(mConsoleArguments);
                     for (int i = 0; i < consoleArgumentCount; ++i) {
                         jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
-                        auto consoleArgumentPointer = Javet::Converter::ToUtf8String(jniEnv, mConsoleArgument);
-                        if (!consoleArgumentPointer) {
+                        auto consoleArgument = Javet::Converter::ToUtf8String(jniEnv, mConsoleArgument);
+                        if (!consoleArgument) {
                             DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
                             break;
                         }
-                        args.push_back(*consoleArgumentPointer);
+                        args.push_back(std::move(*consoleArgument));
                         DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
                     }
                     DELETE_LOCAL_REF(jniEnv, mConsoleArguments);

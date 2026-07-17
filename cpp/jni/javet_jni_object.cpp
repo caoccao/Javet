@@ -466,13 +466,17 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectInvoke
                 V8MaybeLocalValue v8MaybeLocalValueResult;
                 uint32_t valueCount = mValues == nullptr ? 0 : jniEnv->GetArrayLength(mValues);
                 if (valueCount > 0) {
-                    auto umValuesPointer = Javet::Converter::ToV8Values(
+                    auto v8Values = Javet::Converter::ToV8Values(
                         jniEnv,
                         v8Isolate,
                         v8Context,
                         mValues,
                         valueTypes);
-                    v8MaybeLocalValueResult = v8Function.As<v8::Function>()->Call(v8Context, v8LocalObject, valueCount, umValuesPointer.get());
+                    v8MaybeLocalValueResult = v8Function.As<v8::Function>()->Call(
+                        v8Context,
+                        v8LocalObject,
+                        valueCount,
+                        v8Values.empty() ? nullptr : v8Values.data());
                 }
                 else {
                     v8MaybeLocalValueResult = v8Function.As<v8::Function>()->Call(v8Context, v8LocalObject, 0, nullptr);

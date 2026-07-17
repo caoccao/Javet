@@ -18,6 +18,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 #include "javet_converter.h"
 #include "javet_exceptions.h"
 #include "javet_jni_compiler.h"
@@ -41,12 +42,12 @@ namespace Javet {
                     : jniEnv(jniEnv),
                     v8Runtime(v8Runtime),
                     v8Context(v8Context),
-                    v8TryCatch(v8Runtime->v8Isolate) {
-                    v8LocalSource = Javet::Converter::ToV8String(
+                    v8TryCatch(v8Runtime->v8Isolate),
+                    v8LocalSource(Javet::Converter::ToV8String(
                         jniEnv,
                         v8Runtime->v8Isolate,
-                        script);
-                    scriptOriginPointer = Javet::Converter::ToV8ScriptOringinPointer(
+                        script)),
+                    scriptOrigin(Javet::Converter::ToV8ScriptOrigin(
                         jniEnv,
                         v8Runtime->v8Isolate,
                         resourceName,
@@ -54,7 +55,7 @@ namespace Javet {
                         resourceColumnOffset,
                         scriptId,
                         isWASM,
-                        isModule);
+                        isModule)) {
                 }
 
                 CompileRequest(const CompileRequest&) = delete;
@@ -91,11 +92,11 @@ namespace Javet {
                         }
                         compilerSource.emplace(
                             v8LocalSource,
-                            *scriptOriginPointer,
+                            scriptOrigin,
                             cachedDataPointer);
                     }
                     else {
-                        compilerSource.emplace(v8LocalSource, *scriptOriginPointer);
+                        compilerSource.emplace(v8LocalSource, scriptOrigin);
                     }
                     return true;
                 }
@@ -111,7 +112,7 @@ namespace Javet {
             private:
                 V8TryCatch v8TryCatch;
                 V8LocalString v8LocalSource;
-                std::unique_ptr<v8::ScriptOrigin> scriptOriginPointer;
+                v8::ScriptOrigin scriptOrigin;
                 std::optional<V8ScriptCompilerSource> compilerSource;
                 bool hasCachedData = false;
             };
@@ -198,12 +199,12 @@ namespace Javet {
                 false);
             size_t argumentCount = 0;
             size_t contextExtensionCount = 0;
-            std::unique_ptr<V8LocalString[]> argumentsPointer;
-            std::unique_ptr<V8LocalObject[]> contextExtensionsPointer;
+            std::vector<V8LocalString> v8Arguments;
+            std::vector<V8LocalObject> v8ContextExtensions;
             if (arguments != nullptr) {
                 argumentCount = jniEnv->GetArrayLength(arguments);
                 if (argumentCount > 0) {
-                    argumentsPointer = Javet::Converter::ToV8Strings(
+                    v8Arguments = Javet::Converter::ToV8Strings(
                         jniEnv,
                         v8Runtime->v8Isolate,
                         arguments);
@@ -212,7 +213,7 @@ namespace Javet {
             if (contextExtensions != nullptr) {
                 contextExtensionCount = jniEnv->GetArrayLength(contextExtensions);
                 if (contextExtensionCount > 0) {
-                    contextExtensionsPointer = Javet::Converter::ToV8Objects(
+                    v8ContextExtensions = Javet::Converter::ToV8Objects(
                         jniEnv,
                         v8Runtime->v8Isolate,
                         v8Context,
@@ -230,9 +231,9 @@ namespace Javet {
                         v8Context,
                         compilerSource,
                         argumentCount,
-                        argumentsPointer.get(),
+                        v8Arguments.empty() ? nullptr : v8Arguments.data(),
                         contextExtensionCount,
-                        contextExtensionsPointer.get(),
+                        v8ContextExtensions.empty() ? nullptr : v8ContextExtensions.data(),
                         compileOptions);
                 });
         }

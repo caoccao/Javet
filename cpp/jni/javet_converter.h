@@ -21,7 +21,10 @@
 #include <cstddef>
 #include <jni.h>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
+#include <vector>
 #include "javet_constants.h"
 #include "javet_monitor.h"
 #include "javet_native.h"
@@ -90,8 +93,7 @@ namespace Javet {
 
         jstring ToJavaStringFromUtf8(
             JNIEnv* jniEnv,
-            const char* utf8String,
-            size_t length) noexcept;
+            std::string_view utf8String) noexcept;
 
         jstring ToJavaStringFromUtf8(
             JNIEnv* jniEnv,
@@ -117,22 +119,22 @@ namespace Javet {
             return jniEnv->NewString(*v8StringValue, v8StringValue.length());
         }
 
-        std::unique_ptr<std::string> ToUtf8String(
+        std::optional<std::string> ToUtf8String(
             JNIEnv* jniEnv,
             const jstring& mString) noexcept;
 
-        std::unique_ptr<std::string> ToUtf8String(
+        std::string ToUtf8String(
             const std::u16string& utf16String) noexcept;
 
-        std::unique_ptr<std::u16string> ToUtf16String(
+        std::optional<std::u16string> ToUtf16String(
             JNIEnv* jniEnv,
             const jstring& mString) noexcept;
 
-        static inline std::unique_ptr<std::string> ToUtf8String(
+        static inline std::string ToUtf8String(
             V8Isolate* v8Isolate,
             const V8LocalString& v8LocalString) noexcept {
             V8StringUtf8Value v8StringUtf8Value(v8Isolate, v8LocalString);
-            return std::make_unique<std::string>(*v8StringUtf8Value, v8StringUtf8Value.length());
+            return std::string(*v8StringUtf8Value, v8StringUtf8Value.length());
         }
 
         jobject ToExternalV8Context(
@@ -301,7 +303,7 @@ namespace Javet {
             return externalV8Reference;
         }
 
-        std::unique_ptr<v8::ScriptOrigin> ToV8ScriptOringinPointer(
+        v8::ScriptOrigin ToV8ScriptOrigin(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const jstring mResourceName,
@@ -335,19 +337,19 @@ namespace Javet {
             const jobject obj,
             const jint valueType) noexcept;
 
-        std::unique_ptr<V8LocalObject[]> ToV8Objects(
+        std::vector<V8LocalObject> ToV8Objects(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const V8LocalContext& v8Context,
             const jobjectArray mObjects,
             const jintArray mObjectTypes) noexcept;
 
-        std::unique_ptr<V8LocalString[]> ToV8Strings(
+        std::vector<V8LocalString> ToV8Strings(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const jobjectArray mStrings) noexcept;
 
-        std::unique_ptr<V8LocalValue[]> ToV8Values(
+        std::vector<V8LocalValue> ToV8Values(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const V8LocalContext& v8Context,

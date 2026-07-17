@@ -15,6 +15,7 @@
  *   limitations under the License.
  */
 
+#include <string_view>
 #include "javet_jni.h"
 #include "javet_jni_compiler.h"
 
@@ -32,13 +33,17 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionCall
             receiverType);
         uint32_t valueCount = mValues == nullptr ? 0 : jniEnv->GetArrayLength(mValues);
         if (valueCount > 0) {
-            auto umValuesPointer = Javet::Converter::ToV8Values(
+            auto v8Values = Javet::Converter::ToV8Values(
                 jniEnv,
                 v8Isolate,
                 v8Context,
                 mValues,
                 valueTypes);
-            v8MaybeLocalValueResult = v8LocalValue.As<v8::Function>()->Call(v8Context, umReceiver, valueCount, umValuesPointer.get());
+            v8MaybeLocalValueResult = v8LocalValue.As<v8::Function>()->Call(
+                v8Context,
+                umReceiver,
+                valueCount,
+                v8Values.empty() ? nullptr : v8Values.data());
         }
         else {
             v8MaybeLocalValueResult = v8LocalValue.As<v8::Function>()->Call(v8Context, umReceiver, 0, nullptr);
@@ -61,13 +66,16 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionCallAs
         V8MaybeLocalValue v8MaybeLocalValueResult;
         uint32_t valueCount = mValues == nullptr ? 0 : jniEnv->GetArrayLength(mValues);
         if (valueCount > 0) {
-            auto umValuesPointer = Javet::Converter::ToV8Values(
+            auto v8Values = Javet::Converter::ToV8Values(
                 jniEnv,
                 v8Isolate,
                 v8Context,
                 mValues,
                 valueTypes);
-            v8MaybeLocalValueResult = v8LocalValue.As<v8::Function>()->CallAsConstructor(v8Context, valueCount, umValuesPointer.get());
+            v8MaybeLocalValueResult = v8LocalValue.As<v8::Function>()->CallAsConstructor(
+                v8Context,
+                valueCount,
+                v8Values.empty() ? nullptr : v8Values.data());
         }
         else {
             v8MaybeLocalValueResult = v8LocalValue.As<v8::Function>()->CallAsConstructor(v8Context, 0, nullptr);
@@ -436,8 +444,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetScr
             const int sourceLength = v8InternalSource->length();
             size_t utf8Length = 0;
             auto sourceCode = v8InternalSource->ToCString(0, sourceLength, &utf8Length);
-            jstring sourceString = Javet::Converter::ToJavaStringFromUtf8(
-                jniEnv, sourceCode.get(), utf8Length);
+            jstring sourceString = sourceCode
+                ? Javet::Converter::ToJavaStringFromUtf8(
+                    jniEnv, std::string_view(sourceCode.get(), utf8Length))
+                : nullptr;
             jobject scriptSource = jniEnv->NewObject(
                 Javet::Converter::jclassIV8ValueFunctionScriptSource,
                 Javet::Converter::jmethodIDIV8ValueFunctionScriptSourceConstructor,
@@ -468,8 +478,10 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_functionGetSou
             const int endPosition = v8InternalShared->EndPosition();
             size_t utf8Length = 0;
             auto sourceCode = v8InternalSource->ToCString(startPosition, endPosition - startPosition, &utf8Length);
-            return Javet::Converter::ToJavaStringFromUtf8(
-                jniEnv, sourceCode.get(), utf8Length);
+            return sourceCode
+                ? Javet::Converter::ToJavaStringFromUtf8(
+                    jniEnv, std::string_view(sourceCode.get(), utf8Length))
+                : nullptr;
         }
     }
     return nullptr;
