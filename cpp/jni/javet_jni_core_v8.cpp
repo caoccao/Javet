@@ -374,20 +374,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeJNIGlobalRe
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeRawPointer
 (JNIEnv* jniEnv, jobject caller, jlong handle, jint rawPointerTypeId) {
-    using namespace Javet::Enums::RawPointerType;
-    switch (rawPointerTypeId) {
-    case HeapStatisticsContext:
-        Javet::Monitor::RemoveHeapStatisticsContext(handle);
-        break;
-    case HeapSpaceStatisticsContext:
-        Javet::Monitor::RemoveHeapSpaceStatisticsContext(handle);
-        break;
-    case SharedMemoryStatisticsContext:
-        Javet::Monitor::RemoveV8SharedMemoryStatisticsContext(handle);
-        break;
-    default:
-        break;
-    }
+    Javet::Monitor::RemoveStatisticsContext(handle, rawPointerTypeId);
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_removeReferenceHandle
