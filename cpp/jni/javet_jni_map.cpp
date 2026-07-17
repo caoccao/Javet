@@ -16,78 +16,7 @@
  */
 
 #include "javet_jni.h"
-
-namespace Javet {
-    namespace V8ValueMap {
-        const jboolean defaultPrimitiveFlags[] = { JNI_FALSE };
-        template <typename T>
-        T mapGet(
-            JNIEnv* jniEnv,
-            V8Runtime* v8Runtime,
-            const V8LocalContext& v8Context,
-            V8LocalValue v8LocalValue,
-            jint v8ValueType,
-            jobject key,
-            jbooleanArray primitiveFlags,
-            T(convert)(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8LocalValue& v8LocalValue, jbooleanArray primitiveFlags),
-            T(fallback)(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context, jbooleanArray primitiveFlags),
-            T(except)(JNIEnv* jniEnv, V8Runtime* v8Runtime, const V8LocalContext& v8Context)) {
-            if (IS_V8_MAP(v8ValueType)) {
-                V8TryCatch v8TryCatch(v8Runtime->v8Isolate);
-                auto v8LocalValueKey = Javet::Converter::ToV8Value(jniEnv, v8Runtime->v8Isolate, v8Context, key);
-                if (v8LocalValueKey.IsEmpty()) {
-                    if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context)) {
-                        return except(jniEnv, v8Runtime, v8Context);
-                    }
-                }
-                else {
-                    V8MaybeLocalValue v8MaybeLocalValue = v8LocalValue.As<v8::Map>()->Get(v8Context, v8LocalValueKey);
-                    if (v8TryCatch.HasCaught()) {
-                        Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
-                        return except(jniEnv, v8Runtime, v8Context);
-                    }
-                    if (v8MaybeLocalValue.IsEmpty()) {
-                        if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context)) {
-                            return except(jniEnv, v8Runtime, v8Context);
-                        }
-                    }
-                    else {
-                        return convert(jniEnv, v8Runtime, v8Context, v8MaybeLocalValue.ToLocalChecked(), primitiveFlags);
-                    }
-                }
-            }
-            return fallback(jniEnv, v8Runtime, v8Context, primitiveFlags);
-        }
-
-        bool mapSet(
-            JNIEnv* jniEnv,
-            V8Runtime* v8Runtime,
-            const V8LocalContext& v8Context,
-            const V8LocalMap& v8LocalMap,
-            const jobject key,
-            const V8LocalValue& v8LocalValueValue) {
-            V8TryCatch v8TryCatch(v8Runtime->v8Isolate);
-            auto v8LocalValueKey = Javet::Converter::ToV8Value(jniEnv, v8Runtime->v8Isolate, v8Context, key);
-            if (v8TryCatch.HasCaught()) {
-                Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
-                return false;
-            }
-            if (!v8LocalValueKey.IsEmpty()) {
-                auto v8MaybeLocalMap = v8LocalMap->Set(v8Context, v8LocalValueKey, v8LocalValueValue);
-                if (v8TryCatch.HasCaught()) {
-                    Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
-                    return false;
-                }
-                if (v8MaybeLocalMap.IsEmpty()) {
-                    Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context);
-                    return false;
-                }
-                return true;
-            }
-            return false;
-        }
-    }
-}
+#include "javet_jni_property_accessor.h"
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_mapCreate
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
@@ -136,121 +65,64 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapDelete
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_mapGet
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    return Javet::V8ValueMap::mapGet<jobject>(
+    return Javet::PropertyAccessor::getMap(
         jniEnv,
         v8Runtime,
         v8Context,
         v8LocalValue,
         v8ValueType,
-        key,
-        nullptr,
-        [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8LocalValue& v8LocalValue, jbooleanArray mPrimitiveFlags) -> jobject {
-            return v8Runtime->SafeToExternalV8Value(jniEnv, v8Runtime->v8Isolate, v8Context, v8LocalValue);
-        },
-        [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context, jbooleanArray mPrimitiveFlags) -> jobject {
-            return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
-        },
-            [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context) -> jobject { return nullptr; });
+        key);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapGetBoolean
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key, jbooleanArray mPrimitiveFlags) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    return Javet::V8ValueMap::mapGet<jboolean>(
+    return Javet::PropertyAccessor::getMapBoolean(
         jniEnv,
         v8Runtime,
         v8Context,
         v8LocalValue,
         v8ValueType,
         key,
-        mPrimitiveFlags,
-        [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8LocalValue& v8LocalValue, jbooleanArray mPrimitiveFlags) -> jboolean {
-            jboolean booleanValue = false;
-            if (Javet::Converter::ToJavaBoolean(v8LocalValue, booleanValue)) {
-                return booleanValue;
-            }
-            jniEnv->SetBooleanArrayRegion(mPrimitiveFlags, 0, 1, Javet::V8ValueMap::defaultPrimitiveFlags);
-            return false;
-        },
-        [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context, jbooleanArray mPrimitiveFlags) -> jboolean {
-            jniEnv->SetBooleanArrayRegion(mPrimitiveFlags, 0, 1, Javet::V8ValueMap::defaultPrimitiveFlags);
-            return false;
-        },
-            [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context) -> jboolean { return false; });
+        mPrimitiveFlags);
 }
 
 JNIEXPORT jdouble JNICALL Java_com_caoccao_javet_interop_V8Native_mapGetDouble
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key, jbooleanArray mPrimitiveFlags) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    return Javet::V8ValueMap::mapGet<jdouble>(
+    return Javet::PropertyAccessor::getMapDouble(
         jniEnv,
         v8Runtime,
         v8Context,
         v8LocalValue,
         v8ValueType,
         key,
-        mPrimitiveFlags,
-        [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8LocalValue& v8LocalValue, jbooleanArray mPrimitiveFlags) -> jdouble {
-            if (v8LocalValue->IsNumber() || v8LocalValue->IsNumberObject()) {
-                return v8LocalValue->NumberValue(v8Context).FromMaybe(0);
-            }
-            jniEnv->SetBooleanArrayRegion(mPrimitiveFlags, 0, 1, Javet::V8ValueMap::defaultPrimitiveFlags);
-            return 0;
-        },
-        [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context, jbooleanArray mPrimitiveFlags) -> jdouble {
-            jniEnv->SetBooleanArrayRegion(mPrimitiveFlags, 0, 1, Javet::V8ValueMap::defaultPrimitiveFlags);
-            return 0;
-        },
-            [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context) -> jdouble { return 0; });
+        mPrimitiveFlags);
 }
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_mapGetInteger
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key, jbooleanArray mPrimitiveFlags) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    return Javet::V8ValueMap::mapGet<jint>(
+    return Javet::PropertyAccessor::getMapInteger(
         jniEnv,
         v8Runtime,
         v8Context,
         v8LocalValue,
         v8ValueType,
         key,
-        mPrimitiveFlags,
-        [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8LocalValue& v8LocalValue, jbooleanArray mPrimitiveFlags) -> jint {
-            if (v8LocalValue->IsInt32()) {
-                return v8LocalValue->Int32Value(v8Context).FromMaybe(0);
-            }
-            jniEnv->SetBooleanArrayRegion(mPrimitiveFlags, 0, 1, Javet::V8ValueMap::defaultPrimitiveFlags);
-            return 0;
-        },
-        [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context, jbooleanArray mPrimitiveFlags) -> jint {
-            jniEnv->SetBooleanArrayRegion(mPrimitiveFlags, 0, 1, Javet::V8ValueMap::defaultPrimitiveFlags);
-            return 0;
-        },
-            [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context) -> jint { return 0; });
+        mPrimitiveFlags);
 }
 
 JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_mapGetLong
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key, jbooleanArray mPrimitiveFlags) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    return Javet::V8ValueMap::mapGet<jlong>(
+    return Javet::PropertyAccessor::getMapLong(
         jniEnv,
         v8Runtime,
         v8Context,
         v8LocalValue,
         v8ValueType,
         key,
-        mPrimitiveFlags,
-        [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8LocalValue& v8LocalValue, jbooleanArray mPrimitiveFlags) -> jlong {
-            if (v8LocalValue->IsBigInt() || v8LocalValue->IsBigIntObject()) {
-                return v8LocalValue->ToBigInt(v8Context).ToLocalChecked()->Int64Value();
-            }
-            jniEnv->SetBooleanArrayRegion(mPrimitiveFlags, 0, 1, Javet::V8ValueMap::defaultPrimitiveFlags);
-            return 0;
-        },
-        [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context, jbooleanArray mPrimitiveFlags) -> jlong {
-            jniEnv->SetBooleanArrayRegion(mPrimitiveFlags, 0, 1, Javet::V8ValueMap::defaultPrimitiveFlags);
-            return 0;
-        },
-            [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context) -> jlong { return 0; });
+        mPrimitiveFlags);
 }
 
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_mapGetSize
@@ -265,23 +137,13 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_mapGetSize
 JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_mapGetString
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    return Javet::V8ValueMap::mapGet<jstring>(
+    return Javet::PropertyAccessor::getMapString(
         jniEnv,
         v8Runtime,
         v8Context,
         v8LocalValue,
         v8ValueType,
-        key,
-        nullptr,
-        [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context, const V8LocalValue& v8LocalValue, jbooleanArray mPrimitiveFlags) -> jstring {
-            if (v8LocalValue->IsString()) {
-                return Javet::Converter::ToJavaStringFromV8String(
-                    jniEnv, v8Runtime->v8Isolate, v8LocalValue);
-            }
-            return nullptr;
-        },
-        [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context, jbooleanArray mPrimitiveFlags) -> jstring { return nullptr; },
-            [](JNIEnv* jniEnv, Javet::V8Runtime* v8Runtime, const V8LocalContext& v8Context) -> jstring { return nullptr; });
+        key);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapHas
@@ -329,7 +191,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapSet
                 return false;
             }
             auto jobjectKey = jniEnv->GetObjectArrayElement(keysAndValues, i);
-            const bool success = Javet::V8ValueMap::mapSet(
+            const bool success = Javet::PropertyAccessor::setMap(
                 jniEnv,
                 v8Runtime,
                 v8Context,
@@ -353,7 +215,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapSetBoolean
     if (IS_V8_MAP(v8ValueType)) {
         auto v8LocalMap = v8LocalValue.As<v8::Map>();
         auto v8LocalValueValue = Javet::Converter::ToV8Boolean(v8Isolate, value);
-        return Javet::V8ValueMap::mapSet(jniEnv, v8Runtime, v8Context, v8LocalMap, key, v8LocalValueValue);
+        return Javet::PropertyAccessor::setMap(
+            jniEnv, v8Runtime, v8Context, v8LocalMap, key, v8LocalValueValue);
     }
     return false;
 }
@@ -364,7 +227,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapSetDouble
     if (IS_V8_MAP(v8ValueType)) {
         auto v8LocalMap = v8LocalValue.As<v8::Map>();
         auto v8LocalValueValue = Javet::Converter::ToV8Double(v8Isolate, value);
-        return Javet::V8ValueMap::mapSet(jniEnv, v8Runtime, v8Context, v8LocalMap, key, v8LocalValueValue);
+        return Javet::PropertyAccessor::setMap(
+            jniEnv, v8Runtime, v8Context, v8LocalMap, key, v8LocalValueValue);
     }
     return false;
 }
@@ -375,7 +239,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapSetInteger
     if (IS_V8_MAP(v8ValueType)) {
         auto v8LocalMap = v8LocalValue.As<v8::Map>();
         auto v8LocalValueValue = Javet::Converter::ToV8Integer(v8Isolate, value);
-        return Javet::V8ValueMap::mapSet(jniEnv, v8Runtime, v8Context, v8LocalMap, key, v8LocalValueValue);
+        return Javet::PropertyAccessor::setMap(
+            jniEnv, v8Runtime, v8Context, v8LocalMap, key, v8LocalValueValue);
     }
     return false;
 }
@@ -386,7 +251,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapSetLong
     if (IS_V8_MAP(v8ValueType)) {
         auto v8LocalMap = v8LocalValue.As<v8::Map>();
         auto v8LocalValueValue = Javet::Converter::ToV8Long(v8Isolate, value);
-        return Javet::V8ValueMap::mapSet(jniEnv, v8Runtime, v8Context, v8LocalMap, key, v8LocalValueValue);
+        return Javet::PropertyAccessor::setMap(
+            jniEnv, v8Runtime, v8Context, v8LocalMap, key, v8LocalValueValue);
     }
     return false;
 }
@@ -397,7 +263,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapSetNull
     if (IS_V8_MAP(v8ValueType)) {
         auto v8LocalMap = v8LocalValue.As<v8::Map>();
         auto v8LocalValueValue = Javet::Converter::ToV8Null(v8Isolate);
-        return Javet::V8ValueMap::mapSet(jniEnv, v8Runtime, v8Context, v8LocalMap, key, v8LocalValueValue);
+        return Javet::PropertyAccessor::setMap(
+            jniEnv, v8Runtime, v8Context, v8LocalMap, key, v8LocalValueValue);
     }
     return false;
 }
@@ -410,7 +277,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapSetString
         auto v8LocalValueValue = value == nullptr
             ? Javet::Converter::ToV8Null(v8Isolate).As<v8::Value>()
             : Javet::Converter::ToV8String(jniEnv, v8Isolate, value).As<v8::Value>();
-        return Javet::V8ValueMap::mapSet(jniEnv, v8Runtime, v8Context, v8LocalMap, key, v8LocalValueValue);
+        return Javet::PropertyAccessor::setMap(
+            jniEnv, v8Runtime, v8Context, v8LocalMap, key, v8LocalValueValue);
     }
     return false;
 }
@@ -421,7 +289,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_mapSetUndefin
     if (IS_V8_MAP(v8ValueType)) {
         auto v8LocalMap = v8LocalValue.As<v8::Map>();
         auto v8LocalValueValue = Javet::Converter::ToV8Undefined(v8Isolate);
-        return Javet::V8ValueMap::mapSet(jniEnv, v8Runtime, v8Context, v8LocalMap, key, v8LocalValueValue);
+        return Javet::PropertyAccessor::setMap(
+            jniEnv, v8Runtime, v8Context, v8LocalMap, key, v8LocalValueValue);
     }
     return false;
 }
