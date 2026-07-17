@@ -18,7 +18,7 @@ package com.caoccao.javet.interop;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueErrorType;
-import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.values.V8Value;
@@ -350,7 +350,7 @@ public interface IV8Creatable {
      * @since 0.8.4
      */
     @CheckReturnValue
-    V8ValueTypedArray createV8ValueTypedArray(V8ValueReferenceType type, int length) throws JavetException;
+    V8ValueTypedArray createV8ValueTypedArray(V8ValueType type, int length) throws JavetException;
 
     /**
      * Create V8 value undefined.

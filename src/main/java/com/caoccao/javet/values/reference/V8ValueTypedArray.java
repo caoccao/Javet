@@ -17,7 +17,7 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
-import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.V8Value;
@@ -119,7 +119,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      *
      * @since 0.8.4
      */
-    protected V8ValueReferenceType type;
+    protected V8ValueType type;
 
     /**
      * Instantiates a new V8 value typed array.
@@ -132,7 +132,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      */
     V8ValueTypedArray(V8Runtime v8Runtime, long handle, int type) throws JavetException {
         super(v8Runtime, handle);
-        setType(V8ValueReferenceType.parse(type));
+        setType(V8ValueType.parse(type));
     }
 
     /**
@@ -167,7 +167,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      */
     public boolean fromDoubles(double[] doubles) throws JavetException {
         Objects.requireNonNull(doubles);
-        if (getType() == V8ValueReferenceType.Float64Array) {
+        if (getType() == V8ValueType.Float64Array) {
             try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.fromDoubles(doubles);
             }
@@ -185,7 +185,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      */
     public boolean fromFloats(float[] floats) throws JavetException {
         Objects.requireNonNull(floats);
-        if (getType() == V8ValueReferenceType.Float32Array) {
+        if (getType() == V8ValueType.Float32Array) {
             try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.fromFloats(floats);
             }
@@ -292,13 +292,13 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
     }
 
     @Override
-    public V8ValueReferenceType getType() {
+    public V8ValueType getType() {
         return type;
     }
 
     @Override
     public boolean isValid() {
-        return type != V8ValueReferenceType.Invalid;
+        return type != V8ValueType.Invalid;
     }
 
     /**
@@ -307,7 +307,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @param type the type
      * @since 0.9.1
      */
-    protected void setType(V8ValueReferenceType type) {
+    protected void setType(V8ValueType type) {
         switch (type) {
             case Int8Array:
             case Uint8Array:
@@ -330,7 +330,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
                 sizeInBytes = EIGHT_BYTES_PER_VALUE;
                 break;
             default:
-                type = V8ValueReferenceType.Invalid;
+                type = V8ValueType.Invalid;
                 sizeInBytes = ZERO_BYTE_PER_VALUE;
                 break;
         }
@@ -365,7 +365,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @since 0.7.2
      */
     public double[] toDoubles() throws JavetException {
-        if (getType() == V8ValueReferenceType.Float64Array) {
+        if (getType() == V8ValueType.Float64Array) {
             try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.toDoubles();
             }
@@ -381,7 +381,7 @@ public class V8ValueTypedArray extends V8ValueObject implements IV8ValueTypedArr
      * @since 0.7.2
      */
     public float[] toFloats() throws JavetException {
-        if (getType() == V8ValueReferenceType.Float32Array) {
+        if (getType() == V8ValueType.Float32Array) {
             try (V8ValueArrayBuffer v8ValueArrayBuffer = getBuffer()) {
                 return v8ValueArrayBuffer.toFloats();
             }

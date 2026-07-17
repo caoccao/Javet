@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.values.primitive;
 
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.IV8ValuePrimitiveValue;
@@ -74,6 +75,11 @@ public final class V8ValueBoolean
     @Override
     public int asInt() {
         return value ? 1 : 0;
+    }
+
+    @Override
+    public V8ValueType getType() {
+        return V8ValueType.Boolean;
     }
 
     @Override

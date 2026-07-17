@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.values.primitive;
 
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.IV8ValueNonProxyable;
@@ -50,6 +51,11 @@ public final class V8ValueUnknown extends V8ValuePrimitive<String> implements IV
      */
     public V8ValueUnknown(V8Runtime v8Runtime, String value) throws JavetException {
         super(v8Runtime, Objects.requireNonNull(value));
+    }
+
+    @Override
+    public V8ValueType getType() {
+        return V8ValueType.Invalid;
     }
 
     @Override

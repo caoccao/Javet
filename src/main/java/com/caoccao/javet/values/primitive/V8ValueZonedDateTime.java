@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.values.primitive;
 
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
@@ -73,6 +74,11 @@ public final class V8ValueZonedDateTime extends V8ValuePrimitive<ZonedDateTime> 
     @Override
     public int asInt() throws JavetException {
         return asBoolean() ? 1 : 0;
+    }
+
+    @Override
+    public V8ValueType getType() {
+        return V8ValueType.ZonedDateTime;
     }
 
     @Override

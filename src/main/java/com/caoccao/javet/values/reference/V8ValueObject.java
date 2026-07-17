@@ -18,8 +18,8 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.*;
 import com.caoccao.javet.enums.V8ValueInternalType;
-import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.enums.V8ValueSymbolType;
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetBiConsumer;
@@ -581,8 +581,8 @@ public class V8ValueObject extends V8ValueReference implements IV8ValueObject {
     }
 
     @Override
-    public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.Object;
+    public V8ValueType getType() {
+        return V8ValueType.Object;
     }
 
     @Override

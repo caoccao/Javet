@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.values.primitive;
 
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.ArrayUtils;
@@ -199,6 +200,11 @@ public final class V8ValueBigInteger extends V8ValueBigNumber<BigInteger> {
      */
     int getSignum() {
         return value.signum();
+    }
+
+    @Override
+    public V8ValueType getType() {
+        return V8ValueType.BigInteger;
     }
 
     @Override

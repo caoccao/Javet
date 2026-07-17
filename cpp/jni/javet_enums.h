@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <jni.h>
+
 namespace Javet {
     namespace Enums {
         namespace NodeScriptMode {
@@ -131,48 +133,55 @@ namespace Javet {
             };
         };
 
-        namespace V8ValueReferenceType {
-            enum V8ValueReferenceType {
-                Invalid = 0,
-                Object = 1,
-                Error = 2,
-                RegExp = 3,
-                Promise = 4,
-                Proxy = 5,
-                Symbol = 6,
-                SymbolObject = 7,
-                Arguments = 8,
-                Map = 9,
-                Set = 10,
-                Array = 11,
-                Function = 12,
-                Iterator = 13,
-                WeakMap = 14,
-                WeakSet = 15,
-                Script = 20,
-                Module = 21,
-                Context = 22,
-                BigIntObject = 23,
-                BooleanObject = 24,
-                IntegerObject = 25,
-                DoubleObject = 26,
-                StringObject = 27,
-                DataView = 30,
-                ArrayBuffer = 31,
-                SharedArrayBuffer = 32,
-                Int8Array = 33, // -128 to 127     1     8-bit two's complement signed integer     byte     int8_t
-                Uint8Array = 34, // 0 to 255     1     8-bit unsigned integer     octet     uint8_t
-                Uint8ClampedArray = 35, // 0 to 255     1     8-bit unsigned integer (clamped)     octet     uint8_t
-                Int16Array = 36, // -32768 to 32767     2     16-bit two's complement signed integer     short     int16_t
-                Uint16Array = 37, //      0 to 65535     2     16-bit unsigned integer     unsigned short     uint16_t
-                Int32Array = 38, // -2147483648 to 2147483647     4     32-bit two's complement signed integer     long     int32_t
-                Uint32Array = 39, // 0 to 4294967295     4     32-bit unsigned integer     unsigned long     uint32_t
-                Float16Array = 40, // -65504 to 65504	2	N/A
-                Float32Array = 41, // -3.4e38 to 3.4e38     4     32-bit IEEE floating point number (7 significant digits e.g., 1.234567)     unrestricted float     float
-                Float64Array = 42, // -1.8e308 to 1.8e308     8     64-bit IEEE floating point number (16 significant digits e.g., 1.23456789012345)     unrestricted double     double
-                BigInt64Array = 43, // -2^63 to 2^63-1     8     64-bit two's complement signed integer     bigint     int64_t (signed long long)
-                BigUint64Array = 44, // 0 to 2^64-1     8     64-bit unsigned integer     bigint     uint64_t (unsigned long long)
-            };
+        enum class V8ValueType : jint {
+            Invalid = 0,
+            Null = 1,
+            Undefined = 2,
+            Boolean = 3,
+            Integer = 4,
+            Double = 5,
+            Long = 6,
+            BigInteger = 7,
+            String = 8,
+            ZonedDateTime = 9,
+            Object = 10,
+            Error = 11,
+            RegExp = 12,
+            Promise = 13,
+            Proxy = 14,
+            Symbol = 15,
+            SymbolObject = 16,
+            Arguments = 17,
+            Map = 18,
+            Set = 19,
+            Array = 20,
+            Function = 21,
+            Iterator = 22,
+            WeakMap = 23,
+            WeakSet = 24,
+            Script = 29,
+            Module = 30,
+            Context = 31,
+            BigIntObject = 32,
+            BooleanObject = 33,
+            IntegerObject = 34,
+            DoubleObject = 35,
+            StringObject = 36,
+            DataView = 39,
+            ArrayBuffer = 40,
+            SharedArrayBuffer = 41,
+            Int8Array = 42,
+            Uint8Array = 43,
+            Uint8ClampedArray = 44,
+            Int16Array = 45,
+            Uint16Array = 46,
+            Int32Array = 47,
+            Uint32Array = 48,
+            Float16Array = 49,
+            Float32Array = 50,
+            Float64Array = 51,
+            BigInt64Array = 52,
+            BigUint64Array = 53,
         };
 
         namespace JSFunctionType {
@@ -202,22 +211,22 @@ namespace Javet {
     }
 }
 
-constexpr auto IS_V8_ARRAY(jint type) { return type == Javet::Enums::V8ValueReferenceType::Array; }
-constexpr auto IS_V8_ARRAY_BUFFER(jint type) { return type == Javet::Enums::V8ValueReferenceType::ArrayBuffer; }
-constexpr auto IS_V8_ARGUMENTS(jint type) { return type == Javet::Enums::V8ValueReferenceType::Arguments; }
-constexpr auto IS_V8_BIG_INT_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::BigIntObject; }
-constexpr auto IS_V8_BOOLEAN_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::BooleanObject; }
-constexpr auto IS_V8_CONTEXT(jint type) { return type == Javet::Enums::V8ValueReferenceType::Context; }
-constexpr auto IS_V8_DOUBLE_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::DoubleObject; }
-constexpr auto IS_V8_FUNCTION(jint type) { return type == Javet::Enums::V8ValueReferenceType::Function; }
-constexpr auto IS_V8_INTEGER_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::IntegerObject; }
-constexpr auto IS_V8_MAP(jint type) { return type == Javet::Enums::V8ValueReferenceType::Map; }
-constexpr auto IS_V8_MODULE(jint type) { return type == Javet::Enums::V8ValueReferenceType::Module; }
-constexpr auto IS_V8_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::Object; }
-constexpr auto IS_V8_PROMISE(jint type) { return type == Javet::Enums::V8ValueReferenceType::Promise; }
-constexpr auto IS_V8_PROXY(jint type) { return type == Javet::Enums::V8ValueReferenceType::Proxy; }
-constexpr auto IS_V8_SCRIPT(jint type) { return type == Javet::Enums::V8ValueReferenceType::Script; }
-constexpr auto IS_V8_SET(jint type) { return type == Javet::Enums::V8ValueReferenceType::Set; }
-constexpr auto IS_V8_STRING_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::StringObject; }
-constexpr auto IS_V8_SYMBOL(jint type) { return type == Javet::Enums::V8ValueReferenceType::Symbol; }
-constexpr auto IS_V8_SYMBOL_OBJECT(jint type) { return type == Javet::Enums::V8ValueReferenceType::SymbolObject; }
+constexpr auto IS_V8_ARRAY(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::Array); }
+constexpr auto IS_V8_ARRAY_BUFFER(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::ArrayBuffer); }
+constexpr auto IS_V8_ARGUMENTS(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::Arguments); }
+constexpr auto IS_V8_BIG_INT_OBJECT(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::BigIntObject); }
+constexpr auto IS_V8_BOOLEAN_OBJECT(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::BooleanObject); }
+constexpr auto IS_V8_CONTEXT(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::Context); }
+constexpr auto IS_V8_DOUBLE_OBJECT(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::DoubleObject); }
+constexpr auto IS_V8_FUNCTION(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::Function); }
+constexpr auto IS_V8_INTEGER_OBJECT(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::IntegerObject); }
+constexpr auto IS_V8_MAP(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::Map); }
+constexpr auto IS_V8_MODULE(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::Module); }
+constexpr auto IS_V8_OBJECT(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::Object); }
+constexpr auto IS_V8_PROMISE(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::Promise); }
+constexpr auto IS_V8_PROXY(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::Proxy); }
+constexpr auto IS_V8_SCRIPT(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::Script); }
+constexpr auto IS_V8_SET(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::Set); }
+constexpr auto IS_V8_STRING_OBJECT(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::StringObject); }
+constexpr auto IS_V8_SYMBOL(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::Symbol); }
+constexpr auto IS_V8_SYMBOL_OBJECT(jint type) { return type == static_cast<jint>(Javet::Enums::V8ValueType::SymbolObject); }

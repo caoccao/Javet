@@ -45,6 +45,13 @@ public final class V8FunctionCallback {
 
     private static final String NULL = "null";
 
+    private static V8Value setResultType(V8Value v8Value, int[] resultType) {
+        if (resultType != null && resultType.length > 0) {
+            resultType[0] = V8ValueUtils.getV8ValueTypeId(v8Value);
+        }
+        return v8Value;
+    }
+
     private static Object convert(IJavetConverter converter, Class<?> expectedClass, V8Value v8Value)
             throws JavetException {
         if (v8Value == null) {
@@ -308,6 +315,7 @@ public final class V8FunctionCallback {
      * @param javetCallbackContext the javet callback context
      * @param thisObject           this object
      * @param args                 the args
+     * @param resultType           the result type
      * @return the V8 value
      * @throws Throwable the throwable
      * @since 0.8.3
@@ -316,7 +324,8 @@ public final class V8FunctionCallback {
             V8Runtime v8Runtime,
             JavetCallbackContext javetCallbackContext,
             V8Value thisObject,
-            V8Value[] args) throws Throwable {
+            V8Value[] args,
+            int[] resultType) throws Throwable {
         if (javetCallbackContext != null) {
             Object resultObject = null;
             try {
@@ -455,7 +464,7 @@ public final class V8FunctionCallback {
                     }
                     // The lifecycle of the result is handed over to JNI native implementation.
                     // So, close() or setWeak() must not be called.
-                    return (V8Value) resultObject;
+                    return setResultType((V8Value) resultObject, resultType);
                 } else {
                     JavetResourceUtils.safeClose(resultObject);
                 }
@@ -477,6 +486,6 @@ public final class V8FunctionCallback {
                 }
             }
         }
-        return v8Runtime.createV8ValueUndefined();
+        return setResultType(v8Runtime.createV8ValueUndefined(), resultType);
     }
 }

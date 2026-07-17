@@ -17,7 +17,7 @@
 package com.caoccao.javet.interop;
 
 import com.caoccao.javet.enums.V8ValueErrorType;
-import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
@@ -303,7 +303,7 @@ public class V8Scope implements IV8Creatable, IJavetClosable {
     }
 
     @Override
-    public V8ValueTypedArray createV8ValueTypedArray(V8ValueReferenceType type, int length) throws JavetException {
+    public V8ValueTypedArray createV8ValueTypedArray(V8ValueType type, int length) throws JavetException {
         Objects.requireNonNull(v8Runtime, ERROR_MESSAGE_V8_RUNTIME_CANNOT_BE_EMPTY);
         return add(v8Runtime.createV8ValueTypedArray(type, length));
     }

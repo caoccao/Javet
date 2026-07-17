@@ -29,12 +29,12 @@ All typed array share the same V8 value type ``V8ValueTypedArray``. They can be 
 .. code-block:: java
 
     try (V8ValueTypedArray v8ValueTypedArray = v8Runtime.createV8ValueTypedArray(
-        V8ValueReferenceType.Int8Array, 4)) {
+        V8ValueType.Int8Array, 4)) {
         assertEquals(4, v8ValueTypedArray.getLength());
         assertEquals(1, v8ValueTypedArray.getSizeInBytes());
         assertEquals(4, v8ValueTypedArray.getByteLength());
         assertEquals(0, v8ValueTypedArray.getByteOffset());
-        assertEquals(V8ValueReferenceType.Int8Array, v8ValueTypedArray.getType());
+        assertEquals(V8ValueType.Int8Array, v8ValueTypedArray.getType());
         try (V8ValueArrayBuffer v8ValueArrayBuffer = v8ValueTypedArray.getBuffer()) {
             v8ValueArrayBuffer.fromBytes(new byte[]{ (byte) 1, (byte) 2, (byte) 3, (byte) 4,});
         }

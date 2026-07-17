@@ -18,10 +18,10 @@
 #include "javet_jni.h"
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setAdd
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject value) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject value, jint valueType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_SET(v8ValueType)) {
-        auto v8ValueValue = Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, value);
+        auto v8ValueValue = Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, value, valueType);
         auto v8MaybeLocalSet = v8LocalValue.As<v8::Set>()->Add(v8Context, v8ValueValue);
         if (v8MaybeLocalSet.IsEmpty()) {
             Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context);
@@ -58,10 +58,10 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_setCreate
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setDelete
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject key, jint keyType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_SET(v8ValueType)) {
-        auto v8ValueKey = Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, key);
+        auto v8ValueKey = Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, key, keyType);
         V8MaybeBool v8MaybeBool = v8LocalValue.As<v8::Set>()->Delete(v8Context, v8ValueKey);
         if (v8MaybeBool.IsNothing()) {
             Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context);
@@ -83,11 +83,11 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_setGetSize
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_setHas
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject value) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject value, jint valueType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_SET(v8ValueType)) {
         V8TryCatch v8TryCatch(v8Isolate);
-        auto v8LocalValueKey = Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, value);
+        auto v8LocalValueKey = Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, value, valueType);
         if (v8TryCatch.HasCaught()) {
             Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
             return false;

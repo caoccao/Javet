@@ -19,15 +19,25 @@
 #include "javet_jni_compiler.h"
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionCall
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject mReceiver, jboolean mResultRequired, jobjectArray mValues) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject mReceiver, jint receiverType, jboolean mResultRequired, jobjectArray mValues, jintArray valueTypes) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (v8LocalValue->IsFunction()) {
         V8TryCatch v8TryCatch(v8Isolate);
         V8MaybeLocalValue v8MaybeLocalValueResult;
-        auto umReceiver = Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, mReceiver);
+        auto umReceiver = Javet::Converter::ToV8Value(
+            jniEnv,
+            v8Isolate,
+            v8Context,
+            mReceiver,
+            receiverType);
         uint32_t valueCount = mValues == nullptr ? 0 : jniEnv->GetArrayLength(mValues);
         if (valueCount > 0) {
-            auto umValuesPointer = Javet::Converter::ToV8Values(jniEnv, v8Isolate, v8Context, mValues);
+            auto umValuesPointer = Javet::Converter::ToV8Values(
+                jniEnv,
+                v8Isolate,
+                v8Context,
+                mValues,
+                valueTypes);
             v8MaybeLocalValueResult = v8LocalValue.As<v8::Function>()->Call(v8Context, umReceiver, valueCount, umValuesPointer.get());
         }
         else {
@@ -44,14 +54,19 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionCall
 }
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionCallAsConstructor
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobjectArray mValues) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobjectArray mValues, jintArray valueTypes) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (v8LocalValue->IsFunction()) {
         V8TryCatch v8TryCatch(v8Isolate);
         V8MaybeLocalValue v8MaybeLocalValueResult;
         uint32_t valueCount = mValues == nullptr ? 0 : jniEnv->GetArrayLength(mValues);
         if (valueCount > 0) {
-            auto umValuesPointer = Javet::Converter::ToV8Values(jniEnv, v8Isolate, v8Context, mValues);
+            auto umValuesPointer = Javet::Converter::ToV8Values(
+                jniEnv,
+                v8Isolate,
+                v8Context,
+                mValues,
+                valueTypes);
             v8MaybeLocalValueResult = v8LocalValue.As<v8::Function>()->CallAsConstructor(v8Context, valueCount, umValuesPointer.get());
         }
         else {
@@ -87,7 +102,7 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionCanDi
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionCompile
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jstring mScript, jbyteArray mCachedData,
     jstring mResourceName, jint mResourceLineOffset, jint mResourceColumnOffset, jint mScriptId, jboolean mIsWASM,
-    jobjectArray mArguments, jobjectArray mContextExtensions) {
+    jobjectArray mArguments, jobjectArray mContextExtensions, jintArray contextExtensionTypes) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     const auto compileResult = Javet::Compiler::compileFunction(
         jniEnv,
@@ -101,7 +116,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_functionCompil
         mScriptId,
         mIsWASM,
         mArguments,
-        mContextExtensions);
+        mContextExtensions,
+        contextExtensionTypes);
     return Javet::Compiler::toExternal(
         jniEnv,
         v8Runtime,
@@ -494,11 +510,12 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionIsWra
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_functionSetContext
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject mV8ContextValue) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject mV8ContextValue, jint v8ContextValueType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     jboolean success = false;
     if (IS_V8_FUNCTION(v8ValueType)) {
-        V8LocalContext v8ContextValue = Javet::Converter::ToV8Context(jniEnv, v8Isolate, mV8ContextValue);
+        V8LocalContext v8ContextValue = Javet::Converter::ToV8Context(
+            jniEnv, v8Isolate, mV8ContextValue, v8ContextValueType);
         auto v8InternalContext = v8::internal::Cast<V8InternalNativeContext>(
             v8::Utils::OpenHandle(*v8ContextValue));
         auto v8InternalFunction = v8::internal::Cast<V8InternalJSFunction>(

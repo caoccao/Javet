@@ -17,7 +17,7 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
-import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.IV8ValuePrimitiveValue;
@@ -71,8 +71,8 @@ public class V8ValueSymbol
     }
 
     @Override
-    public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.Symbol;
+    public V8ValueType getType() {
+        return V8ValueType.Symbol;
     }
 
     /**

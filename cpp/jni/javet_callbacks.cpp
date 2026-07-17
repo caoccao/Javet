@@ -78,7 +78,7 @@ namespace Javet {
 
             jniInitializer.FindGlobalClass(jclassV8FunctionCallback, "com/caoccao/javet/interop/callback/V8FunctionCallback");
             jniInitializer.GetStaticMethodID(jmethodIDV8FunctionCallbackReceiveCallback, jclassV8FunctionCallback, "receiveCallback",
-                "(Lcom/caoccao/javet/interop/V8Runtime;Lcom/caoccao/javet/interop/callback/JavetCallbackContext;Lcom/caoccao/javet/values/V8Value;[Lcom/caoccao/javet/values/V8Value;)Lcom/caoccao/javet/values/V8Value;");
+                "(Lcom/caoccao/javet/interop/V8Runtime;Lcom/caoccao/javet/interop/callback/JavetCallbackContext;Lcom/caoccao/javet/values/V8Value;[Lcom/caoccao/javet/values/V8Value;[I)Lcom/caoccao/javet/values/V8Value;");
 
             jniInitializer.FindGlobalClass(jclassV8Runtime, "com/caoccao/javet/interop/V8Runtime");
             jniInitializer.GetMethodID(jmethodIDV8RuntimeGetCallbackContext, jclassV8Runtime, "getCallbackContext", "(J)Lcom/caoccao/javet/interop/callback/JavetCallbackContext;");
@@ -457,13 +457,15 @@ namespace Javet {
                     jboolean isThisObjectRequired = jniEnv->CallBooleanMethod(callbackContext, jmethodIDJavetCallbackContextIsThisObjectRequired);
                     jobjectArray externalArgs = Javet::Converter::ToExternalV8ValueArray(jniEnv, v8Runtime, v8Context, args);
                     jobject thisObject = isThisObjectRequired ? Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, args.This()) : nullptr;
+                    jintArray resultType = isReturnResult ? jniEnv->NewIntArray(1) : nullptr;
                     jobject mResult = jniEnv->CallStaticObjectMethod(
                         jclassV8FunctionCallback,
                         jmethodIDV8FunctionCallbackReceiveCallback,
                         externalV8Runtime,
                         callbackContext,
                         thisObject,
-                        externalArgs);
+                        externalArgs,
+                        resultType);
                     DELETE_LOCAL_REF(jniEnv, thisObject);
                     DELETE_LOCAL_REF(jniEnv, externalArgs);
                     DELETE_LOCAL_REF(jniEnv, callbackContext);
@@ -480,7 +482,16 @@ namespace Javet {
                                 args.GetReturnValue().SetUndefined();
                             }
                             else {
-                                args.GetReturnValue().Set(Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, mResult));
+                                jint valueType = static_cast<jint>(Javet::Enums::V8ValueType::Invalid);
+                                jniEnv->GetIntArrayRegion(resultType, 0, 1, &valueType);
+                                if (jniEnv->ExceptionCheck()) {
+                                    Javet::Exceptions::ThrowV8Exception(
+                                        jniEnv, v8Context, "Uncaught JavaError while reading function callback result type");
+                                }
+                                else {
+                                    args.GetReturnValue().Set(Javet::Converter::ToV8Value(
+                                        jniEnv, v8Isolate, v8Context, mResult, valueType));
+                                }
                             }
                         }
                         if (mResult != nullptr) {
@@ -488,6 +499,7 @@ namespace Javet {
                             DELETE_LOCAL_REF(jniEnv, mResult);
                         }
                     }
+                    DELETE_LOCAL_REF(jniEnv, resultType);
                 }
             }
         }
@@ -529,13 +541,15 @@ namespace Javet {
                         args.HolderV2()
 #endif
                     ) : nullptr;
+                    jintArray resultType = jniEnv->NewIntArray(1);
                     jobject mResult = jniEnv->CallStaticObjectMethod(
                         jclassV8FunctionCallback,
                         jmethodIDV8FunctionCallbackReceiveCallback,
                         externalV8Runtime,
                         callbackContext,
                         thisObject,
-                        nullptr);
+                        nullptr,
+                        resultType);
                     DELETE_LOCAL_REF(jniEnv, thisObject);
                     DELETE_LOCAL_REF(jniEnv, callbackContext);
                     if (jniEnv->ExceptionCheck()) {
@@ -546,7 +560,16 @@ namespace Javet {
                             args.GetReturnValue().SetUndefined();
                         }
                         else {
-                            args.GetReturnValue().Set(Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, mResult));
+                            jint valueType = static_cast<jint>(Javet::Enums::V8ValueType::Invalid);
+                            jniEnv->GetIntArrayRegion(resultType, 0, 1, &valueType);
+                            if (jniEnv->ExceptionCheck()) {
+                                Javet::Exceptions::ThrowV8Exception(
+                                    jniEnv, v8Context, "Uncaught JavaError while reading property getter callback result type");
+                            }
+                            else {
+                                args.GetReturnValue().Set(Javet::Converter::ToV8Value(
+                                    jniEnv, v8Isolate, v8Context, mResult, valueType));
+                            }
                         }
                     }
                     if (mResult != nullptr) {
@@ -556,6 +579,7 @@ namespace Javet {
                             Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in property getter callback");
                         }
                     }
+                    DELETE_LOCAL_REF(jniEnv, resultType);
                 }
             }
         }
@@ -608,7 +632,8 @@ namespace Javet {
                             externalV8Runtime,
                             callbackContext,
                             thisObject,
-                            mArguments);
+                            mArguments,
+                            nullptr);
                         DELETE_LOCAL_REF(jniEnv, thisObject);
                         DELETE_LOCAL_REF(jniEnv, mArguments);
                         DELETE_LOCAL_REF(jniEnv, callbackContext);

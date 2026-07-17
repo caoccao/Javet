@@ -183,7 +183,8 @@ namespace Javet {
             jint scriptId,
             jboolean isWASM,
             jobjectArray arguments,
-            jobjectArray contextExtensions) noexcept {
+            jobjectArray contextExtensions,
+            jintArray contextExtensionTypes) noexcept {
             CompileRequest compileRequest(
                 jniEnv,
                 v8Runtime,
@@ -215,7 +216,8 @@ namespace Javet {
                         jniEnv,
                         v8Runtime->v8Isolate,
                         v8Context,
-                        contextExtensions);
+                        contextExtensions,
+                        contextExtensionTypes);
                 }
             }
             return withCompilerSource<v8::Function>(

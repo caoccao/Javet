@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.values;
 
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetClosable;
 import com.caoccao.javet.interop.IV8Cloneable;
@@ -96,6 +97,13 @@ public interface IV8Value extends IJavetClosable, IV8Cloneable {
      * @since 0.7.2
      */
     boolean equals(V8Value v8Value) throws JavetException;
+
+    /**
+     * Gets the V8 value type.
+     *
+     * @return the V8 value type
+     */
+    V8ValueType getType();
 
     /**
      * Gets V8 runtime.

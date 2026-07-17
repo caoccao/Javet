@@ -27,7 +27,8 @@ namespace Javet {
             const V8LocalContext& v8Context,
             V8LocalValue v8LocalValue,
             jint v8ValueType,
-            jobject key) noexcept;
+            jobject key,
+            jint keyType) noexcept;
 
         [[nodiscard]] jboolean getMapBoolean(
             JNIEnv* jniEnv,
@@ -36,6 +37,7 @@ namespace Javet {
             V8LocalValue v8LocalValue,
             jint v8ValueType,
             jobject key,
+            jint keyType,
             jbooleanArray primitiveFlags) noexcept;
 
         [[nodiscard]] jdouble getMapDouble(
@@ -45,6 +47,7 @@ namespace Javet {
             V8LocalValue v8LocalValue,
             jint v8ValueType,
             jobject key,
+            jint keyType,
             jbooleanArray primitiveFlags) noexcept;
 
         [[nodiscard]] jint getMapInteger(
@@ -54,6 +57,7 @@ namespace Javet {
             V8LocalValue v8LocalValue,
             jint v8ValueType,
             jobject key,
+            jint keyType,
             jbooleanArray primitiveFlags) noexcept;
 
         [[nodiscard]] jlong getMapLong(
@@ -63,6 +67,7 @@ namespace Javet {
             V8LocalValue v8LocalValue,
             jint v8ValueType,
             jobject key,
+            jint keyType,
             jbooleanArray primitiveFlags) noexcept;
 
         [[nodiscard]] jstring getMapString(
@@ -71,7 +76,8 @@ namespace Javet {
             const V8LocalContext& v8Context,
             V8LocalValue v8LocalValue,
             jint v8ValueType,
-            jobject key) noexcept;
+            jobject key,
+            jint keyType) noexcept;
 
         [[nodiscard]] jobject getObject(
             JNIEnv* jniEnv,
@@ -79,7 +85,8 @@ namespace Javet {
             const V8LocalContext& v8Context,
             V8LocalValue v8LocalValue,
             jint v8ValueType,
-            jobject key) noexcept;
+            jobject key,
+            jint keyType) noexcept;
 
         [[nodiscard]] jboolean getObjectBoolean(
             JNIEnv* jniEnv,
@@ -88,6 +95,7 @@ namespace Javet {
             V8LocalValue v8LocalValue,
             jint v8ValueType,
             jobject key,
+            jint keyType,
             jbooleanArray primitiveFlags) noexcept;
 
         [[nodiscard]] jdouble getObjectDouble(
@@ -97,6 +105,7 @@ namespace Javet {
             V8LocalValue v8LocalValue,
             jint v8ValueType,
             jobject key,
+            jint keyType,
             jbooleanArray primitiveFlags) noexcept;
 
         [[nodiscard]] jint getObjectInteger(
@@ -106,6 +115,7 @@ namespace Javet {
             V8LocalValue v8LocalValue,
             jint v8ValueType,
             jobject key,
+            jint keyType,
             jbooleanArray primitiveFlags) noexcept;
 
         [[nodiscard]] jlong getObjectLong(
@@ -115,6 +125,7 @@ namespace Javet {
             V8LocalValue v8LocalValue,
             jint v8ValueType,
             jobject key,
+            jint keyType,
             jbooleanArray primitiveFlags) noexcept;
 
         [[nodiscard]] jstring getObjectString(
@@ -123,7 +134,8 @@ namespace Javet {
             const V8LocalContext& v8Context,
             V8LocalValue v8LocalValue,
             jint v8ValueType,
-            jobject key) noexcept;
+            jobject key,
+            jint keyType) noexcept;
 
         [[nodiscard]] bool setMap(
             JNIEnv* jniEnv,
@@ -131,6 +143,7 @@ namespace Javet {
             const V8LocalContext& v8Context,
             const V8LocalMap& v8LocalMap,
             jobject key,
+            jint keyType,
             const V8LocalValue& v8LocalValueValue) noexcept;
 
         [[nodiscard]] bool setObject(
@@ -139,6 +152,7 @@ namespace Javet {
             const V8LocalContext& v8Context,
             const V8LocalObject& v8LocalObject,
             jobject key,
+            jint keyType,
             const V8LocalValue& v8LocalValueValue) noexcept;
     }
 }

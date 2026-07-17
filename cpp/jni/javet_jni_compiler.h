@@ -44,7 +44,8 @@ namespace Javet {
             jint scriptId,
             jboolean isWASM,
             jobjectArray arguments,
-            jobjectArray contextExtensions) noexcept;
+            jobjectArray contextExtensions,
+            jintArray contextExtensionTypes) noexcept;
 
         [[nodiscard]] ModuleCompileResult compileModule(
             JNIEnv* jniEnv,

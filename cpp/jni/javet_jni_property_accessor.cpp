@@ -33,9 +33,10 @@ namespace Javet {
                     V8Runtime* v8Runtime,
                     const V8LocalContext& v8Context,
                     const V8LocalValue& v8LocalValue,
-                    jobject key) noexcept {
+                    jobject key,
+                    jint keyType) noexcept {
                     auto v8LocalObject = v8LocalValue.As<v8::Object>();
-                    if (Javet::Converter::IsV8ValueInteger(jniEnv, key)) {
+                    if (keyType == static_cast<jint>(Javet::Enums::V8ValueType::Integer)) {
                         const jint integerKey =
                             Javet::Converter::ToJavaIntegerFromV8ValueInteger(jniEnv, key);
                         return v8LocalObject->Get(v8Context, integerKey);
@@ -44,7 +45,8 @@ namespace Javet {
                         jniEnv,
                         v8Runtime->v8Isolate,
                         v8Context,
-                        key);
+                        key,
+                        keyType);
                     if (v8LocalValueKey.IsEmpty()) {
                         return V8MaybeLocalValue();
                     }
@@ -71,8 +73,9 @@ namespace Javet {
                     const V8LocalContext& v8Context,
                     const Target& v8LocalObject,
                     jobject key,
+                    jint keyType,
                     const V8LocalValue& v8LocalValueValue) noexcept {
-                    if (Javet::Converter::IsV8ValueInteger(jniEnv, key)) {
+                    if (keyType == static_cast<jint>(Javet::Enums::V8ValueType::Integer)) {
                         const jint integerKey =
                             Javet::Converter::ToJavaIntegerFromV8ValueInteger(jniEnv, key);
                         return v8LocalObject->Set(v8Context, integerKey, v8LocalValueValue);
@@ -81,7 +84,8 @@ namespace Javet {
                         jniEnv,
                         v8Runtime->v8Isolate,
                         v8Context,
-                        key);
+                        key,
+                        keyType);
                     if (v8LocalValueKey.IsEmpty()) {
                         return v8::Just(false);
                     }
@@ -97,12 +101,14 @@ namespace Javet {
                     V8Runtime* v8Runtime,
                     const V8LocalContext& v8Context,
                     const V8LocalValue& v8LocalValue,
-                    jobject key) noexcept {
+                    jobject key,
+                    jint keyType) noexcept {
                     auto v8LocalValueKey = Javet::Converter::ToV8Value(
                         jniEnv,
                         v8Runtime->v8Isolate,
                         v8Context,
-                        key);
+                        key,
+                        keyType);
                     if (v8LocalValueKey.IsEmpty()) {
                         return V8MaybeLocalValue();
                     }
@@ -122,12 +128,14 @@ namespace Javet {
                     const V8LocalContext& v8Context,
                     const Target& v8LocalMap,
                     jobject key,
+                    jint keyType,
                     const V8LocalValue& v8LocalValueValue) noexcept {
                     auto v8LocalValueKey = Javet::Converter::ToV8Value(
                         jniEnv,
                         v8Runtime->v8Isolate,
                         v8Context,
-                        key);
+                        key,
+                        keyType);
                     if (v8LocalValueKey.IsEmpty()) {
                         return v8::Just(false);
                     }
@@ -301,6 +309,7 @@ namespace Javet {
                 V8LocalValue v8LocalValue,
                 jint v8ValueType,
                 jobject key,
+                jint keyType,
                 jbooleanArray primitiveFlags) noexcept {
                 V8TryCatch v8TryCatch(v8Runtime->v8Isolate);
                 if (Accessor::prepareForGet(v8Context, v8LocalValue, v8ValueType)) {
@@ -309,7 +318,8 @@ namespace Javet {
                         v8Runtime,
                         v8Context,
                         v8LocalValue,
-                        key);
+                        key,
+                        keyType);
                     if (v8TryCatch.HasCaught()) {
                         Javet::Exceptions::ThrowJavetExecutionException(
                             jniEnv,
@@ -365,6 +375,7 @@ namespace Javet {
                 const V8LocalContext& v8Context,
                 const typename Accessor::Target& target,
                 jobject key,
+                jint keyType,
                 const V8LocalValue& v8LocalValueValue) noexcept {
                 V8TryCatch v8TryCatch(v8Runtime->v8Isolate);
                 auto v8MaybeBool = Accessor::set(
@@ -373,6 +384,7 @@ namespace Javet {
                     v8Context,
                     target,
                     key,
+                    keyType,
                     v8LocalValueValue);
                 if (v8TryCatch.HasCaught()) {
                     Javet::Exceptions::ThrowJavetExecutionException(
@@ -396,9 +408,10 @@ namespace Javet {
             const V8LocalContext& v8Context,
             V8LocalValue v8LocalValue,
             jint v8ValueType,
-            jobject key) noexcept {
+            jobject key,
+            jint keyType) noexcept {
             return getConverted<jobject, MapAccessor>(
-                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, nullptr);
+                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, keyType, nullptr);
         }
 
         jboolean getMapBoolean(
@@ -408,9 +421,10 @@ namespace Javet {
             V8LocalValue v8LocalValue,
             jint v8ValueType,
             jobject key,
+            jint keyType,
             jbooleanArray primitiveFlags) noexcept {
             return getConverted<jboolean, MapAccessor>(
-                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, primitiveFlags);
+                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, keyType, primitiveFlags);
         }
 
         jdouble getMapDouble(
@@ -420,9 +434,10 @@ namespace Javet {
             V8LocalValue v8LocalValue,
             jint v8ValueType,
             jobject key,
+            jint keyType,
             jbooleanArray primitiveFlags) noexcept {
             return getConverted<jdouble, MapAccessor>(
-                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, primitiveFlags);
+                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, keyType, primitiveFlags);
         }
 
         jint getMapInteger(
@@ -432,9 +447,10 @@ namespace Javet {
             V8LocalValue v8LocalValue,
             jint v8ValueType,
             jobject key,
+            jint keyType,
             jbooleanArray primitiveFlags) noexcept {
             return getConverted<jint, MapAccessor>(
-                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, primitiveFlags);
+                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, keyType, primitiveFlags);
         }
 
         jlong getMapLong(
@@ -444,9 +460,10 @@ namespace Javet {
             V8LocalValue v8LocalValue,
             jint v8ValueType,
             jobject key,
+            jint keyType,
             jbooleanArray primitiveFlags) noexcept {
             return getConverted<jlong, MapAccessor>(
-                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, primitiveFlags);
+                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, keyType, primitiveFlags);
         }
 
         jstring getMapString(
@@ -455,9 +472,10 @@ namespace Javet {
             const V8LocalContext& v8Context,
             V8LocalValue v8LocalValue,
             jint v8ValueType,
-            jobject key) noexcept {
+            jobject key,
+            jint keyType) noexcept {
             return getConverted<jstring, MapAccessor>(
-                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, nullptr);
+                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, keyType, nullptr);
         }
 
         jobject getObject(
@@ -466,9 +484,10 @@ namespace Javet {
             const V8LocalContext& v8Context,
             V8LocalValue v8LocalValue,
             jint v8ValueType,
-            jobject key) noexcept {
+            jobject key,
+            jint keyType) noexcept {
             return getConverted<jobject, ObjectAccessor>(
-                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, nullptr);
+                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, keyType, nullptr);
         }
 
         jboolean getObjectBoolean(
@@ -478,9 +497,10 @@ namespace Javet {
             V8LocalValue v8LocalValue,
             jint v8ValueType,
             jobject key,
+            jint keyType,
             jbooleanArray primitiveFlags) noexcept {
             return getConverted<jboolean, ObjectAccessor>(
-                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, primitiveFlags);
+                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, keyType, primitiveFlags);
         }
 
         jdouble getObjectDouble(
@@ -490,9 +510,10 @@ namespace Javet {
             V8LocalValue v8LocalValue,
             jint v8ValueType,
             jobject key,
+            jint keyType,
             jbooleanArray primitiveFlags) noexcept {
             return getConverted<jdouble, ObjectAccessor>(
-                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, primitiveFlags);
+                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, keyType, primitiveFlags);
         }
 
         jint getObjectInteger(
@@ -502,9 +523,10 @@ namespace Javet {
             V8LocalValue v8LocalValue,
             jint v8ValueType,
             jobject key,
+            jint keyType,
             jbooleanArray primitiveFlags) noexcept {
             return getConverted<jint, ObjectAccessor>(
-                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, primitiveFlags);
+                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, keyType, primitiveFlags);
         }
 
         jlong getObjectLong(
@@ -514,9 +536,10 @@ namespace Javet {
             V8LocalValue v8LocalValue,
             jint v8ValueType,
             jobject key,
+            jint keyType,
             jbooleanArray primitiveFlags) noexcept {
             return getConverted<jlong, ObjectAccessor>(
-                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, primitiveFlags);
+                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, keyType, primitiveFlags);
         }
 
         jstring getObjectString(
@@ -525,9 +548,10 @@ namespace Javet {
             const V8LocalContext& v8Context,
             V8LocalValue v8LocalValue,
             jint v8ValueType,
-            jobject key) noexcept {
+            jobject key,
+            jint keyType) noexcept {
             return getConverted<jstring, ObjectAccessor>(
-                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, nullptr);
+                jniEnv, v8Runtime, v8Context, v8LocalValue, v8ValueType, key, keyType, nullptr);
         }
 
         bool setMap(
@@ -536,9 +560,10 @@ namespace Javet {
             const V8LocalContext& v8Context,
             const V8LocalMap& v8LocalMap,
             jobject key,
+            jint keyType,
             const V8LocalValue& v8LocalValueValue) noexcept {
             return setConverted<MapAccessor>(
-                jniEnv, v8Runtime, v8Context, v8LocalMap, key, v8LocalValueValue);
+                jniEnv, v8Runtime, v8Context, v8LocalMap, key, keyType, v8LocalValueValue);
         }
 
         bool setObject(
@@ -547,9 +572,10 @@ namespace Javet {
             const V8LocalContext& v8Context,
             const V8LocalObject& v8LocalObject,
             jobject key,
+            jint keyType,
             const V8LocalValue& v8LocalValueValue) noexcept {
             return setConverted<ObjectAccessor>(
-                jniEnv, v8Runtime, v8Context, v8LocalObject, key, v8LocalValueValue);
+                jniEnv, v8Runtime, v8Context, v8LocalObject, key, keyType, v8LocalValueValue);
         }
     }
 }

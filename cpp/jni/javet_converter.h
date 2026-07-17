@@ -32,13 +32,9 @@
 namespace Javet {
     namespace Converter {
         // extern
-        extern jclass jclassV8ValueInteger;
         extern jmethodID jmethodIDV8ValueIntegerToPrimitive;
 
-        extern jclass jclassV8ValueString;
         extern jmethodID jmethodIDV8ValueStringToPrimitive;
-
-        extern jclass jclassV8ValueSymbol;
 
         extern jclass jclassByteBuffer;
         extern jclass jclassString;
@@ -52,21 +48,6 @@ namespace Javet {
         template<typename T1, typename T2>
         constexpr auto IsJavaByteBuffer(T1 jniEnv, T2 obj) {
             return jniEnv->IsInstanceOf(obj, jclassByteBuffer);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueInteger(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueInteger);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueString(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueString);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueSymbol(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueSymbol);
         }
 
         template<typename T1, typename T2>
@@ -256,7 +237,8 @@ namespace Javet {
         V8LocalContext ToV8Context(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
-            const jobject obj) noexcept;
+            const jobject obj,
+            const jint valueType) noexcept;
 
         static inline V8LocalValue ToV8Date(
             const V8LocalContext& v8Context,
@@ -350,13 +332,15 @@ namespace Javet {
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const V8LocalContext& v8Context,
-            const jobject obj) noexcept;
+            const jobject obj,
+            const jint valueType) noexcept;
 
         std::unique_ptr<V8LocalObject[]> ToV8Objects(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const V8LocalContext& v8Context,
-            const jobjectArray mObjects) noexcept;
+            const jobjectArray mObjects,
+            const jintArray mObjectTypes) noexcept;
 
         std::unique_ptr<V8LocalString[]> ToV8Strings(
             JNIEnv* jniEnv,
@@ -367,7 +351,8 @@ namespace Javet {
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const V8LocalContext& v8Context,
-            const jobjectArray mValues) noexcept;
+            const jobjectArray mValues,
+            const jintArray mValueTypes) noexcept;
 
 #ifdef ENABLE_NODE
         static inline V8InternalNativeContext ToV8InternalContext(

@@ -18,6 +18,7 @@ package com.caoccao.javet.utils;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.V8ValueErrorType;
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.V8ErrorTemplate;
 import com.caoccao.javet.interop.V8Runtime;
@@ -323,6 +324,35 @@ public final class V8ValueUtils {
             v8Scope.setEscapable();
             return v8ValueSet;
         }
+    }
+
+    /**
+     * Get the V8 value type ID.
+     *
+     * @param v8Value the V8 value
+     * @return the V8 value type ID
+     * @since 5.0.10
+     */
+    public static int getV8ValueTypeId(V8Value v8Value) {
+        return (v8Value == null ? V8ValueType.Null : v8Value.getType()).getId();
+    }
+
+    /**
+     * Get the V8 value type IDs.
+     *
+     * @param v8Values the V8 values
+     * @return the V8 value type IDs
+     * @since 5.0.10
+     */
+    public static int[] getV8ValueTypeIds(V8Value[] v8Values) {
+        if (v8Values == null) {
+            return null;
+        }
+        int[] v8ValueTypes = new int[v8Values.length];
+        for (int i = 0; i < v8Values.length; ++i) {
+            v8ValueTypes[i] = getV8ValueTypeId(v8Values[i]);
+        }
+        return v8ValueTypes;
     }
 
     /**

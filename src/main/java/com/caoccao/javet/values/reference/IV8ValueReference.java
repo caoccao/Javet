@@ -16,7 +16,6 @@
 
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.enums.V8ValueReferenceType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.IV8Value;
 
@@ -45,13 +44,6 @@ public interface IV8ValueReference extends IV8Value {
      * @return the native handle
      */
     long getHandle();
-
-    /**
-     * Returns the reference type of this V8 value.
-     *
-     * @return the V8 value reference type
-     */
-    V8ValueReferenceType getType();
 
     /**
      * Returns whether this V8 reference has been closed.

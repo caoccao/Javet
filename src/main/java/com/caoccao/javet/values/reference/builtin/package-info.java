@@ -26,7 +26,7 @@
  * <p>
  * Obtain via {@code v8Runtime.getGlobalObject().getBuiltInObject()}, etc.
  *
- * @since 0.7.0
  * @author Sam Cao
+ * @since 0.7.0
  */
 package com.caoccao.javet.values.reference.builtin;
