@@ -157,6 +157,9 @@ namespace Javet {
         switch (awaitMode)
         {
         case RunOnce:
+        case RunTillNoMoreTasks:
+            // UV_RUN_ONCE waits for libuv's backend timeout. Node's per-isolate
+            // platform async handle wakes the loop when V8 tasks are posted.
             uvRunMode = UV_RUN_ONCE;
             break;
         default:
@@ -179,8 +182,7 @@ namespace Javet {
             }
             hasMoreTasks = uv_loop_alive(loop);
             if (awaitMode == RunTillNoMoreTasks && hasMoreTasks) {
-                // Sleep a while to give CPU cycles to other threads.
-                std::this_thread::sleep_for(oneMillisecond);
+                continue;
             }
             else {
                 auto v8Locker = GetUniqueV8Locker();
