@@ -19,6 +19,7 @@
 
 #include <atomic>
 #include <mutex>
+#include <optional>
 #include <unordered_set>
 #include "javet_enums.h"
 #include "javet_logging.h"
@@ -27,6 +28,27 @@
 namespace Javet {
     class V8Runtime;
     class V8Scope;
+
+    class V8LockerScope final {
+    public:
+        explicit V8LockerScope(V8Isolate* v8Isolate) noexcept
+            : ownedV8Locker(std::in_place, v8Isolate) {
+        }
+
+        // Keep the explicit locker alive if Unlock() is called re-entrantly.
+        explicit V8LockerScope(const std::shared_ptr<v8::Locker>& sharedV8Locker) noexcept
+            : sharedV8Locker(sharedV8Locker) {
+        }
+
+        V8LockerScope(const V8LockerScope&) = delete;
+        V8LockerScope(V8LockerScope&&) = delete;
+        V8LockerScope& operator=(const V8LockerScope&) = delete;
+        V8LockerScope& operator=(V8LockerScope&&) = delete;
+
+    private:
+        std::shared_ptr<v8::Locker> sharedV8Locker;
+        std::optional<v8::Locker> ownedV8Locker;
+    };
 
     namespace Inspector {
         class JavetInspector;
@@ -109,28 +131,31 @@ namespace Javet {
          * Shared V8 locker is for implicit mode.
          * Javet manages the lock automatically.
          */
-        inline auto GetSharedV8Locker() const noexcept {
-            return v8Locker ? v8Locker : std::make_shared<v8::Locker>(v8Isolate);
+        inline V8LockerScope GetSharedV8Locker() const noexcept {
+            if (v8Locker) {
+                return V8LockerScope(v8Locker);
+            }
+            return V8LockerScope(v8Isolate);
         }
 
         /*
          * Unique V8 locker is for explicit mode.
          * Application manages the lock.
          */
-        inline auto GetUniqueV8Locker() const noexcept {
-            return std::make_unique<v8::Locker>(v8Isolate);
+        inline V8LockerScope GetUniqueV8Locker() const noexcept {
+            return V8LockerScope(v8Isolate);
         }
 
-        inline auto GetV8ContextScope(const V8LocalContext& v8LocalContext) const noexcept {
-            return std::make_unique<V8ContextScope>(v8LocalContext);
+        inline V8ContextScope GetV8ContextScope(const V8LocalContext& v8LocalContext) const noexcept {
+            return V8ContextScope(v8LocalContext);
         }
 
         inline V8LocalContext GetV8LocalContext() const noexcept {
             return v8GlobalContext.Get(v8Isolate);
         }
 
-        inline auto GetV8IsolateScope() const noexcept {
-            return std::make_unique<V8IsolateScope>(v8Isolate);
+        inline V8IsolateScope GetV8IsolateScope() const noexcept {
+            return V8IsolateScope(v8Isolate);
         }
 
         inline bool HasExternalException() const noexcept {
