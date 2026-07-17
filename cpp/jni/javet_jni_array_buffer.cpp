@@ -23,6 +23,7 @@
 
 #include "javet_jni.h"
 
+#ifndef V8_ENABLE_SANDBOX
 namespace {
     struct DirectByteBufferReference {
         jobject byteBuffer;
@@ -46,6 +47,7 @@ namespace {
         }
     }
 }
+#endif
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_arrayBufferCreate__JI
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint length) {
