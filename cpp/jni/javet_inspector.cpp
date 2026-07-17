@@ -148,12 +148,12 @@ namespace Javet {
             return client->isRunningMessageLoop();
         }
 
-        void JavetInspector::postMessage(int sessionId, const std::u16string& message) noexcept {
+        void JavetInspector::postMessage(int sessionId, std::u16string message) noexcept {
             auto utf8Message = Javet::Converter::ToUtf8String(message);
             if (utf8Message) {
                 LOG_DEBUG("Queueing request for session " << sessionId << ": " << *utf8Message);
             }
-            client->postMessage(sessionId, message);
+            client->postMessage(sessionId, std::move(message));
         }
 
         void JavetInspector::removeSession(int sessionId) noexcept {
@@ -367,7 +367,17 @@ namespace Javet {
             return waitingForDebugger.load();
         }
 
-        void JavetInspectorClient::postMessage(int sessionId, const std::u16string& message) noexcept {
+        bool JavetInspectorClient::hasQueuedMessages() const noexcept {
+            // Caller must hold messageMutex.
+            for (const auto& [id, session] : sessionMap) {
+                if (session->hasQueuedMessages()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        void JavetInspectorClient::postMessage(int sessionId, std::u16string message) noexcept {
             std::shared_ptr<JavetInspectorSession> sessionPointer;
             {
                 std::lock_guard<std::mutex> lock(messageMutex);
@@ -377,13 +387,16 @@ namespace Javet {
                 }
             }
             if (sessionPointer) {
-                sessionPointer->postMessage(message);
+                sessionPointer->postMessage(std::move(message));
+                messageCondition.notify_one();
             }
-            messageCondition.notify_one();
         }
 
         void JavetInspectorClient::quitMessageLoopOnPause() {
-            activateMessageLoop = false;
+            {
+                std::lock_guard<std::mutex> lock(messageMutex);
+                activateMessageLoop = false;
+            }
             messageCondition.notify_one();
         }
 
@@ -399,16 +412,16 @@ namespace Javet {
         }
 
         void JavetInspectorClient::runIfWaitingForDebugger(int contextGroupId) {
-            waitingForDebugger.store(false);
-            messageCondition.notify_one();
             // Notify all sessions' Java objects.
             std::vector<jobject> javaObjects;
             {
                 std::lock_guard<std::mutex> lock(messageMutex);
+                waitingForDebugger.store(false);
                 for (auto& [id, session] : sessionMap) {
                     javaObjects.push_back(session->getJavaObject());
                 }
             }
+            messageCondition.notify_one();
             auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
             if (!jniEnvScope) {
                 LOG_ERROR("JavetInspectorClient::runIfWaitingForDebugger(): JNI environment is unavailable.");
@@ -422,27 +435,26 @@ namespace Javet {
 
         void JavetInspectorClient::runMessageLoopOnPause(int contextGroupId) {
             if (!runningMessageLoop) {
-                activateMessageLoop = true;
+                {
+                    std::lock_guard<std::mutex> lock(messageMutex);
+                    activateMessageLoop = true;
+                }
                 runningMessageLoop.store(true);
-                while (activateMessageLoop) {
+                while (true) {
                     // Drain any queued protocol messages from the DevTools frontend.
                     drainQueue();
                     // Pump V8 platform tasks.
                     while (v8::platform::PumpMessageLoop(v8Runtime->v8PlatformPointer, v8Runtime->v8Isolate)) {
                     }
-                    // Wait for new messages instead of busy-spinning.
-                    {
-                        std::unique_lock<std::mutex> lock(messageMutex);
-                        bool anyQueued = false;
-                        for (auto& [id, session] : sessionMap) {
-                            if (session->hasQueuedMessages()) {
-                                anyQueued = true;
-                                break;
-                            }
-                        }
-                        if (activateMessageLoop && !anyQueued) {
-                            messageCondition.wait_for(lock, std::chrono::milliseconds(10));
-                        }
+                    std::unique_lock<std::mutex> lock(messageMutex);
+                    if (!activateMessageLoop) {
+                        break;
+                    }
+                    messageCondition.wait(lock, [this]() {
+                        return !activateMessageLoop || hasQueuedMessages();
+                    });
+                    if (!activateMessageLoop) {
+                        break;
                     }
                 }
                 runningMessageLoop.store(false);
@@ -478,27 +490,20 @@ namespace Javet {
         }
 
         void JavetInspectorClient::waitForDebuggerLoop() noexcept {
-            waitingForDebugger.store(true);
+            {
+                std::lock_guard<std::mutex> lock(messageMutex);
+                waitingForDebugger.store(true);
+            }
             while (waitingForDebugger.load()) {
                 // Drain any queued protocol messages from the DevTools frontend.
                 drainQueue();
                 // Pump V8 platform tasks.
                 while (v8::platform::PumpMessageLoop(v8Runtime->v8PlatformPointer, v8Runtime->v8Isolate)) {
                 }
-                // Wait for new messages instead of busy-spinning.
-                {
-                    std::unique_lock<std::mutex> lock(messageMutex);
-                    bool anyQueued = false;
-                    for (auto& [id, session] : sessionMap) {
-                        if (session->hasQueuedMessages()) {
-                            anyQueued = true;
-                            break;
-                        }
-                    }
-                    if (waitingForDebugger.load() && !anyQueued) {
-                        messageCondition.wait_for(lock, std::chrono::milliseconds(10));
-                    }
-                }
+                std::unique_lock<std::mutex> lock(messageMutex);
+                messageCondition.wait(lock, [this]() {
+                    return !waitingForDebugger.load() || hasQueuedMessages();
+                });
             }
         }
 
@@ -545,20 +550,26 @@ namespace Javet {
         }
 
         void JavetInspectorSession::drainQueue() noexcept {
-            std::unique_lock<std::mutex> lock(sharedMutex);
-            while (!messageQueue.empty()) {
-                std::u16string message = std::move(messageQueue.front());
-                messageQueue.pop();
-                lock.unlock();
-                auto sv = ConvertFromUtf16StringToStringViewPointer(message);
-                v8InspectorSession->dispatchProtocolMessage(*sv);
-                lock.lock();
+            while (true) {
+                std::queue<std::u16string> localMessageQueue;
+                {
+                    std::lock_guard<std::mutex> lock(sharedMutex);
+                    if (messageQueue.empty()) {
+                        return;
+                    }
+                    messageQueue.swap(localMessageQueue);
+                }
+                while (!localMessageQueue.empty()) {
+                    auto sv = ConvertFromUtf16StringToStringViewPointer(localMessageQueue.front());
+                    v8InspectorSession->dispatchProtocolMessage(*sv);
+                    localMessageQueue.pop();
+                }
             }
         }
 
-        void JavetInspectorSession::postMessage(const std::u16string& message) noexcept {
+        void JavetInspectorSession::postMessage(std::u16string message) noexcept {
             std::lock_guard<std::mutex> lock(sharedMutex);
-            messageQueue.push(message);
+            messageQueue.push(std::move(message));
         }
 
         bool JavetInspectorSession::hasQueuedMessages() const noexcept {

@@ -547,7 +547,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_v8InspectorSend
         // V8's Locker is reentrant, so the lock-acquire path is also safe
         // when called from a thread that already holds the lock (e.g.
         // during a JS→Java callback).
-        v8Runtime->v8Inspector->postMessage(sessionId, *message);
+        v8Runtime->v8Inspector->postMessage(sessionId, std::move(*message));
         if (!v8Runtime->v8Inspector->isMessageLoopActive()) {
             auto v8Locker = v8Runtime->GetUniqueV8Locker();
             auto v8IsolateScope = v8Runtime->GetV8IsolateScope();
