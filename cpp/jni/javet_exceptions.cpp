@@ -121,7 +121,7 @@ namespace Javet {
         jobject ThrowJavetConverterException(
             JNIEnv* jniEnv,
             const char* message) noexcept {
-            LOG_ERROR(*message);
+            LOG_ERROR(message);
             jniEnv->ThrowNew(jclassJavetConverterException, message);
             return nullptr;
         }
@@ -177,7 +177,7 @@ namespace Javet {
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const char* message) noexcept {
-            LOG_ERROR(*message);
+            LOG_ERROR(message);
             jstring jStringExceptionMessage = Javet::Converter::ToJavaStringFromUtf8(jniEnv, message);
             jobject jObjectHeapStatistics = Javet::Monitor::GetHeapStatistics(jniEnv, v8Isolate);
             jthrowable javetOutOfMemoryException = (jthrowable)jniEnv->NewObject(
