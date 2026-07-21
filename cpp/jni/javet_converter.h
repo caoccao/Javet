@@ -34,6 +34,22 @@
 
 namespace Javet {
     namespace Converter {
+        enum class StringArrayNullability {
+            NonNullable,
+            Nullable,
+        };
+
+        enum class StringEncoding {
+            ModifiedUtf8,
+            Utf8,
+        };
+
+        struct StringVectorResult final {
+            std::vector<std::string> strings;
+            bool present = false;
+            bool success = false;
+        };
+
         // extern
         extern jmethodID jmethodIDV8ValueIntegerToPrimitive;
 
@@ -129,6 +145,13 @@ namespace Javet {
         std::optional<std::u16string> ToUtf16String(
             JNIEnv* jniEnv,
             const jstring& mString) noexcept;
+
+        [[nodiscard]] StringVectorResult ExtractStringVector(
+            JNIEnv* jniEnv,
+            const jobject source,
+            jmethodID stringArrayGetter,
+            StringArrayNullability nullability,
+            StringEncoding encoding) noexcept;
 
         static inline std::string ToUtf8String(
             V8Isolate* v8Isolate,

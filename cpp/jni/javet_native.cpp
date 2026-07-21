@@ -242,28 +242,23 @@ namespace Javet {
                     return false;
                 }
                 jobject mNodeFlags = jniEnv->GetStaticObjectField(jclassNodeRuntimeOptions, jfieldIDNodeRuntimeOptionsNodeFlags);
-                jobjectArray mNodeFlagsStringArray = (jobjectArray)jniEnv->CallObjectMethod(mNodeFlags, jmethodIDNodeFlagsToArray);
-                if (mNodeFlagsStringArray != nullptr) {
-                    const int nodeFlagCount = jniEnv->GetArrayLength(mNodeFlagsStringArray);
-                    LOG_DEBUG("Node.js flag count is " << nodeFlagCount);
-                    for (int i = 0; i < nodeFlagCount; ++i) {
-                        jstring mFlagString = (jstring)jniEnv->GetObjectArrayElement(mNodeFlagsStringArray, i);
-                        auto flagString = Javet::Converter::ToUtf8String(jniEnv, mFlagString);
-                        if (!flagString) {
-                            DELETE_LOCAL_REF(jniEnv, mFlagString);
-                            break;
-                        }
-                        LOG_DEBUG("    " << i << ": " << *flagString);
-                        args.push_back(std::move(*flagString));
-                        jniEnv->DeleteLocalRef(mFlagString);
-                    }
-                    jniEnv->DeleteLocalRef(mNodeFlagsStringArray);
-                }
-                if (jniEnv->ExceptionCheck()) {
+                auto nodeFlagsResult = Javet::Converter::ExtractStringVector(
+                    jniEnv,
+                    mNodeFlags,
+                    jmethodIDNodeFlagsToArray,
+                    Javet::Converter::StringArrayNullability::NonNullable,
+                    Javet::Converter::StringEncoding::Utf8);
+                if (!nodeFlagsResult.success || jniEnv->ExceptionCheck()) {
                     DELETE_LOCAL_REF(jniEnv, mNodeFlags);
                     DELETE_LOCAL_REF(jniEnv, jclassNodeFlags);
                     DELETE_LOCAL_REF(jniEnv, jclassNodeRuntimeOptions);
                     return false;
+                }
+                LOG_DEBUG("Node.js flag count is " << nodeFlagsResult.strings.size());
+                args.reserve(args.size() + nodeFlagsResult.strings.size());
+                for (size_t i = 0; i < nodeFlagsResult.strings.size(); ++i) {
+                    LOG_DEBUG("    " << i << ": " << nodeFlagsResult.strings[i]);
+                    args.emplace_back(std::move(nodeFlagsResult.strings[i]));
                 }
                 jniEnv->DeleteLocalRef(jniEnv->CallObjectMethod(mNodeFlags, jmethodIDNodeFlagsSeal));
                 jniEnv->DeleteLocalRef(mNodeFlags);

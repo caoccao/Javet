@@ -17,6 +17,7 @@
 
 #include <limits>
 #include <new>
+#include <utility>
 
 #include "javet_converter.h"
 #include "javet_enums.h"
@@ -349,6 +350,75 @@ namespace Javet {
                 utf16String[index] = static_cast<char16_t>(utf16Chars.Get()[index]);
             }
             return utf16String;
+        }
+
+        StringVectorResult ExtractStringVector(
+            JNIEnv* jniEnv,
+            const jobject source,
+            jmethodID stringArrayGetter,
+            StringArrayNullability nullability,
+            StringEncoding encoding) noexcept {
+            StringVectorResult result;
+            if (source == nullptr) {
+                result.success = nullability == StringArrayNullability::Nullable
+                    && !jniEnv->ExceptionCheck();
+                return result;
+            }
+            jobjectArray mStrings = (jobjectArray)jniEnv->CallObjectMethod(
+                source,
+                stringArrayGetter);
+            if (mStrings == nullptr) {
+                result.success = nullability == StringArrayNullability::Nullable
+                    && !jniEnv->ExceptionCheck();
+                return result;
+            }
+            result.present = true;
+            const jsize stringCount = jniEnv->GetArrayLength(mStrings);
+            if (jniEnv->ExceptionCheck()) {
+                DELETE_LOCAL_REF(jniEnv, mStrings);
+                return result;
+            }
+            result.strings.reserve(stringCount);
+            for (jsize i = 0; i < stringCount; ++i) {
+                jstring mString = (jstring)jniEnv->GetObjectArrayElement(mStrings, i);
+                if (mString == nullptr || jniEnv->ExceptionCheck()) {
+                    DELETE_LOCAL_REF(jniEnv, mString);
+                    DELETE_LOCAL_REF(jniEnv, mStrings);
+                    result.strings.clear();
+                    return result;
+                }
+                bool converted = false;
+                switch (encoding) {
+                case StringEncoding::ModifiedUtf8:
+                {
+                    const char* modifiedUtf8String = jniEnv->GetStringUTFChars(mString, nullptr);
+                    if (modifiedUtf8String != nullptr) {
+                        result.strings.emplace_back(modifiedUtf8String);
+                        jniEnv->ReleaseStringUTFChars(mString, modifiedUtf8String);
+                        converted = true;
+                    }
+                    break;
+                }
+                case StringEncoding::Utf8:
+                {
+                    auto utf8String = ToUtf8String(jniEnv, mString);
+                    if (utf8String) {
+                        result.strings.emplace_back(std::move(*utf8String));
+                        converted = true;
+                    }
+                    break;
+                }
+                }
+                DELETE_LOCAL_REF(jniEnv, mString);
+                if (!converted || jniEnv->ExceptionCheck()) {
+                    DELETE_LOCAL_REF(jniEnv, mStrings);
+                    result.strings.clear();
+                    return result;
+                }
+            }
+            DELETE_LOCAL_REF(jniEnv, mStrings);
+            result.success = true;
+            return result;
         }
 
         bool Initialize(JNIEnv* jniEnv) noexcept {
