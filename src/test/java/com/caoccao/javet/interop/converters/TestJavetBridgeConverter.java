@@ -507,10 +507,13 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
         assertEquals(1, v8Runtime.getExecutor("s.lastIndexOf('e')").executeInteger());
         // localeCompare()
         assertEquals(0, v8Runtime.getExecutor("s.localeCompare('test', 'en-US')").executeInteger());
-        if (isI18nEnabled()) {
-            assertEquals(-1, v8Runtime.getExecutor("s.localeCompare('tést', 'en-US')").executeInteger());
-        } else {
+        if (isNode() && !isI18nEnabled()) {
+            // Node.js bundles an older V8 whose non-Intl localeCompare returns the raw
+            // char-code difference ('e' - 'é' = -132).
             assertEquals(-132, v8Runtime.getExecutor("s.localeCompare('tést', 'en-US')").executeInteger());
+        } else {
+            // The Intl build and V8 v15.1+ normalize the result to -1/0/1.
+            assertEquals(-1, v8Runtime.getExecutor("s.localeCompare('tést', 'en-US')").executeInteger());
         }
         // match()
         assertTrue(v8Runtime.getExecutor("s.match(/^t/)").executeBoolean());

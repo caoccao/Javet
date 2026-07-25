@@ -6,6 +6,7 @@ Release Notes 5.0.x
 ------
 
 * Upgraded Node.js to ``v24.18.0`` `(2026-06-23) <https://nodejs.org/en/blog/release/v24.18.0>`_
+* Upgraded V8 to ``v15.1.206.11`` (2026-07-22)
 * Fixed native resource and JNI reference leaks across runtime, callback, value wrapper, and Node.js event loop cleanup
 * Added a warning when a V8 runtime close request is rejected because shutdown is already in progress or complete
 * Added synchronized and bounded Node.js isolate shutdown to prevent teardown races and hangs
