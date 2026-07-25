@@ -498,22 +498,20 @@ namespace Javet {
             node::crypto::InitCryptoOnce(v8Isolate);
             std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
             std::vector<std::string> execArgs;
-            if (mRuntimeOptions != nullptr) {
-                jobjectArray mConsoleArguments = (jobjectArray)jniEnv->CallObjectMethod(mRuntimeOptions, jmethodNodeRuntimeOptionsGetConsoleArguments);
-                if (mConsoleArguments != nullptr) {
-                    int consoleArgumentCount = jniEnv->GetArrayLength(mConsoleArguments);
-                    for (int i = 0; i < consoleArgumentCount; ++i) {
-                        jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
-                        auto consoleArgument = Javet::Converter::ToUtf8String(jniEnv, mConsoleArgument);
-                        if (!consoleArgument) {
-                            DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
-                            break;
-                        }
-                        args.push_back(std::move(*consoleArgument));
-                        DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
-                    }
-                    DELETE_LOCAL_REF(jniEnv, mConsoleArguments);
+            auto consoleArgumentsResult = Javet::Converter::ExtractStringVector(
+                jniEnv,
+                mRuntimeOptions,
+                jmethodNodeRuntimeOptionsGetConsoleArguments,
+                Javet::Converter::StringArrayNullability::Nullable,
+                Javet::Converter::StringEncoding::Utf8);
+            if (consoleArgumentsResult.success) {
+                args.reserve(args.size() + consoleArgumentsResult.strings.size());
+                for (auto& consoleArgument : consoleArgumentsResult.strings) {
+                    args.emplace_back(std::move(consoleArgument));
                 }
+            }
+            else {
+                LOG_ERROR("Failed to extract Node.js console arguments.");
             }
             // node::CreateEnvironment is not thread-safe.
             std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
@@ -550,26 +548,24 @@ namespace Javet {
             // Normal path: create and load the environment.
             std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
             std::vector<std::string> execArgs;
-            if (mRuntimeOptions != nullptr) {
-                jobjectArray mConsoleArguments = (jobjectArray)jniEnv->CallObjectMethod(mRuntimeOptions, jmethodNodeRuntimeOptionsGetConsoleArguments);
-                if (mConsoleArguments != nullptr) {
-                    int consoleArgumentCount = jniEnv->GetArrayLength(mConsoleArguments);
-                    LOG_DEBUG("Node.js console argument count is " << consoleArgumentCount);
-                    if (consoleArgumentCount > 0) {
-                        for (int i = 0; i < consoleArgumentCount; ++i) {
-                            jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
-                            auto consoleArgument = Javet::Converter::ToUtf8String(jniEnv, mConsoleArgument);
-                            if (!consoleArgument) {
-                                DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
-                                break;
-                            }
-                            LOG_DEBUG("    " << i << ": " << *consoleArgument);
-                            args.push_back(std::move(*consoleArgument));
-                            DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
-                        }
-                    }
-                    DELETE_LOCAL_REF(jniEnv, mConsoleArguments);
+            auto consoleArgumentsResult = Javet::Converter::ExtractStringVector(
+                jniEnv,
+                mRuntimeOptions,
+                jmethodNodeRuntimeOptionsGetConsoleArguments,
+                Javet::Converter::StringArrayNullability::Nullable,
+                Javet::Converter::StringEncoding::Utf8);
+            if (consoleArgumentsResult.success) {
+                if (consoleArgumentsResult.present) {
+                    LOG_DEBUG("Node.js console argument count is " << consoleArgumentsResult.strings.size());
                 }
+                args.reserve(args.size() + consoleArgumentsResult.strings.size());
+                for (size_t i = 0; i < consoleArgumentsResult.strings.size(); ++i) {
+                    LOG_DEBUG("    " << i << ": " << consoleArgumentsResult.strings[i]);
+                    args.emplace_back(std::move(consoleArgumentsResult.strings[i]));
+                }
+            }
+            else {
+                LOG_ERROR("Failed to extract Node.js console arguments.");
             }
             // node::CreateEnvironment is not thread-safe.
             std::lock_guard<std::mutex> lock(mutexForNodeResetEnvrironment);
@@ -653,22 +649,20 @@ namespace Javet {
             std::vector<std::string> errors;
             std::vector<std::string> args{ DEFAULT_SCRIPT_NAME, node::GetAnonymousMainPath() };
             std::vector<std::string> execArgs;
-            if (mRuntimeOptions != nullptr) {
-                jobjectArray mConsoleArguments = (jobjectArray)jniEnv->CallObjectMethod(mRuntimeOptions, jmethodNodeRuntimeOptionsGetConsoleArguments);
-                if (mConsoleArguments != nullptr) {
-                    int consoleArgumentCount = jniEnv->GetArrayLength(mConsoleArguments);
-                    for (int i = 0; i < consoleArgumentCount; ++i) {
-                        jstring mConsoleArgument = (jstring)jniEnv->GetObjectArrayElement(mConsoleArguments, i);
-                        auto consoleArgument = Javet::Converter::ToUtf8String(jniEnv, mConsoleArgument);
-                        if (!consoleArgument) {
-                            DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
-                            break;
-                        }
-                        args.push_back(std::move(*consoleArgument));
-                        DELETE_LOCAL_REF(jniEnv, mConsoleArgument);
-                    }
-                    DELETE_LOCAL_REF(jniEnv, mConsoleArguments);
+            auto consoleArgumentsResult = Javet::Converter::ExtractStringVector(
+                jniEnv,
+                mRuntimeOptions,
+                jmethodNodeRuntimeOptionsGetConsoleArguments,
+                Javet::Converter::StringArrayNullability::Nullable,
+                Javet::Converter::StringEncoding::Utf8);
+            if (consoleArgumentsResult.success) {
+                args.reserve(args.size() + consoleArgumentsResult.strings.size());
+                for (auto& consoleArgument : consoleArgumentsResult.strings) {
+                    args.emplace_back(std::move(consoleArgument));
                 }
+            }
+            else {
+                LOG_ERROR("Failed to extract Node.js console arguments.");
             }
             nodeCommonSetup = node::CommonEnvironmentSetup::CreateForSnapshotting(
                 v8PlatformPointer, &errors, args, execArgs);
