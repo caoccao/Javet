@@ -18,6 +18,7 @@ package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.entities.JavetEntitySymbol;
+import com.caoccao.javet.exceptions.JavetConverterException;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInObject;
 import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
@@ -36,11 +37,16 @@ public class TestV8ValueSymbol extends BaseTestJavetRuntime {
                  V8ValueSymbol v8ValueSymbolB = v8ValueBuiltInSymbol._for("b")) {
                 assertTrue(v8ValueObject.get(v8ValueSymbolA).isUndefined());
                 assertTrue(v8ValueObject.get(v8ValueSymbolB).isUndefined());
+                assertFalse(v8ValueObject.hasOwnProperty(v8ValueSymbolA));
+                assertFalse(v8ValueObject.hasOwnProperty(v8ValueSymbolB));
                 v8ValueObject.set(v8ValueSymbolA, "aaa");
                 v8ValueObject.set(v8ValueSymbolB, "bbb");
                 assertEquals("aaa", v8ValueObject.getString(v8ValueSymbolA));
                 assertEquals("bbb", v8ValueObject.getString(v8ValueSymbolB));
+                assertTrue(v8ValueObject.hasOwnProperty(v8ValueSymbolA));
+                assertTrue(v8ValueObject.hasOwnProperty(v8ValueSymbolB));
             }
+            assertThrows(JavetConverterException.class, () -> v8ValueObject.hasOwnProperty(v8ValueObject));
             assertEquals("aaa", v8ValueObject.getString(new JavetEntitySymbol("a")));
             assertEquals("bbb", v8ValueObject.getString(new JavetEntitySymbol("b")));
             assertEquals("{}", v8ValueObject.toJsonString());
@@ -80,6 +86,15 @@ public class TestV8ValueSymbol extends BaseTestJavetRuntime {
             assertEquals("test", v8ValueSymbol2.getDescription());
             assertEquals("Symbol(test)", v8ValueSymbol1.toString());
             assertEquals("Symbol(test)", v8ValueSymbol2.toString());
+        }
+    }
+
+    @Test
+    public void testNativeNull() throws JavetException {
+        try (V8ValueSymbol v8ValueSymbol = v8Runtime.getExecutor("Symbol()").execute()) {
+            assertNotNull(v8ValueSymbol);
+            assertNull(v8ValueSymbol.getDescription());
+            assertEquals("Symbol()", v8ValueSymbol.toString());
         }
     }
 

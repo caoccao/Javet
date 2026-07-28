@@ -60,7 +60,7 @@ class V8Native implements IV8Native {
     @Override
     public native int batchObjectGet(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
-            Object[] v8ValueKeys, Object[] v8ValueValues, int length);
+            Object[] v8ValueKeys, int[] v8ValueKeyTypes, Object[] v8ValueValues, int length);
 
     @Override
     public native Object booleanObjectCreate(long v8RuntimeHandle, boolean booleanValue);
@@ -82,7 +82,7 @@ class V8Native implements IV8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean referenceCopy);
 
     @Override
-    public native void closeV8Runtime(long v8RuntimeHandle);
+    public native boolean closeV8Runtime(long v8RuntimeHandle);
 
     @Override
     public native Object contextGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, int index);
@@ -109,7 +109,9 @@ class V8Native implements IV8Native {
     public native Object doubleObjectValueOf(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
-    public native boolean equals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
+    public native boolean equals(
+            long v8RuntimeHandle, long v8ValueHandle1, int v8ValueType1,
+            long v8ValueHandle2, int v8ValueType2);
 
     @Override
     public native Object errorCreate(long v8RuntimeHandle, int v8ValueErrorTypeId, String message);
@@ -117,11 +119,11 @@ class V8Native implements IV8Native {
     @Override
     public native Object functionCall(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
-            Object receiver, boolean returnResult, Object[] values);
+            Object receiver, int receiverType, boolean returnResult, Object[] values, int[] valueTypes);
 
     @Override
     public native Object functionCallAsConstructor(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] values);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] values, int[] valueTypes);
 
     @Override
     public native boolean functionCanDiscardCompiled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -131,7 +133,7 @@ class V8Native implements IV8Native {
             long v8RuntimeHandle, String script, byte[] cachedData,
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean wasm,
-            String[] arguments, Object[] contextExtensions);
+            String[] arguments, Object[] contextExtensions, int[] contextExtensionTypes);
 
     @Override
     public native boolean functionCopyScopeInfoFrom(
@@ -181,7 +183,9 @@ class V8Native implements IV8Native {
     public native boolean functionIsWrapped(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
-    public native boolean functionSetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object v8Context);
+    public native boolean functionSetContext(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object v8Context, int v8ContextType);
 
     @Override
     public native boolean functionSetScriptSource(
@@ -273,64 +277,76 @@ class V8Native implements IV8Native {
     public native Object mapCreate(long v8RuntimeHandle);
 
     @Override
-    public native boolean mapDelete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    public native boolean mapDelete(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     @Override
-    public native Object mapGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    public native Object mapGet(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     @Override
     public native boolean mapGetBoolean(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, boolean[] primitiveFlags);
 
     @Override
     public native double mapGetDouble(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, boolean[] primitiveFlags);
 
     @Override
     public native int mapGetInteger(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, boolean[] primitiveFlags);
 
     @Override
     public native long mapGetLong(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, boolean[] primitiveFlags);
 
     @Override
     public native int mapGetSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
-    public native String mapGetString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    public native String mapGetString(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     @Override
-    public native boolean mapHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+    public native boolean mapHas(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value, int valueType);
 
     @Override
-    public native boolean mapSet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] keysAndValues);
+    public native boolean mapSet(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object[] keysAndValues, int[] valueTypes);
 
     @Override
     public native boolean mapSetBoolean(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean value);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType, boolean value);
 
     @Override
     public native boolean mapSetDouble(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, double value);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType, double value);
 
     @Override
     public native boolean mapSetInteger(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int value);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType, int value);
 
     @Override
     public native boolean mapSetLong(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, long value);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType, long value);
 
     @Override
-    public native boolean mapSetNull(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    public native boolean mapSetNull(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     @Override
     public native boolean mapSetString(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, String value);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType, String value);
 
     @Override
-    public native boolean mapSetUndefined(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    public native boolean mapSetUndefined(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     @Override
     public native Object moduleCompile(
@@ -384,32 +400,38 @@ class V8Native implements IV8Native {
     public native Object objectCreate(long v8RuntimeHandle);
 
     @Override
-    public native boolean objectDelete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    public native boolean objectDelete(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     @Override
     public native boolean objectDeletePrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String key);
 
     @Override
-    public native Object objectGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    public native Object objectGet(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     @Override
     public native boolean objectGetBoolean(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, boolean[] primitiveFlags);
 
     @Override
     public native double objectGetDouble(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, boolean[] primitiveFlags);
 
     @Override
     public native int objectGetIdentityHash(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
     public native int objectGetInteger(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, boolean[] primitiveFlags);
 
     @Override
     public native long objectGetLong(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, boolean[] primitiveFlags);
 
     @Override
     public native Object objectGetOwnPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -419,7 +441,8 @@ class V8Native implements IV8Native {
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String propertyName);
 
     @Override
-    public native Object objectGetProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    public native Object objectGetProperty(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     @Override
     public native Object objectGetPropertyNames(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -428,13 +451,16 @@ class V8Native implements IV8Native {
     public native Object objectGetPrototype(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
-    public native String objectGetString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    public native String objectGetString(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     @Override
-    public native boolean objectHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+    public native boolean objectHas(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value, int valueType);
 
     @Override
-    public native boolean objectHasOwnProperty(long v8RuntimeHandle, long v8ValueHandle, int type, Object key);
+    public native boolean objectHasOwnProperty(
+            long v8RuntimeHandle, long v8ValueHandle, int type, Object key, int keyType);
 
     @Override
     public native boolean objectHasPrivateProperty(
@@ -443,7 +469,7 @@ class V8Native implements IV8Native {
     @Override
     public native Object objectInvoke(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
-            String functionName, boolean returnResult, Object[] values);
+            String functionName, boolean returnResult, Object[] values, int[] valueTypes);
 
     @Override
     public native boolean objectIsFrozen(long v8RuntimeHandle, long v8ValueHandle);
@@ -453,39 +479,43 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean objectSet(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] keysAndValues);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object[] keysAndValues, int[] valueTypes);
 
     @Override
     public native boolean objectSetAccessor(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
-            Object propertyName, Object getter, Object setter);
+            Object propertyName, int propertyNameType, Object getter, Object setter);
 
     @Override
     public native boolean objectSetBoolean(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean value);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType, boolean value);
 
     @Override
     public native boolean objectSetDouble(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, double value);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType, double value);
 
     @Override
     public native boolean objectSetInteger(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int value);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType, int value);
 
     @Override
     public native boolean objectSetLong(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, long value);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType, long value);
 
     @Override
-    public native boolean objectSetNull(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    public native boolean objectSetNull(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     @Override
     public native boolean objectSetPrivateProperty(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String key, Object value);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            String key, Object value, int valueType);
 
     @Override
     public native boolean objectSetProperty(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, Object value, int valueType);
 
     @Override
     public native boolean objectSetPrototype(
@@ -493,10 +523,11 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean objectSetString(
-            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, String value);
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType, String value);
 
     @Override
-    public native boolean objectSetUndefined(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    public native boolean objectSetUndefined(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     @Override
     public native String objectToProtoString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -524,10 +555,12 @@ class V8Native implements IV8Native {
     public native void promiseMarkAsHandled(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
-    public native boolean promiseReject(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+    public native boolean promiseReject(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value, int valueType);
 
     @Override
-    public native boolean promiseResolve(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+    public native boolean promiseResolve(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value, int valueType);
 
     @Override
     public native Object promiseThen(
@@ -535,7 +568,7 @@ class V8Native implements IV8Native {
             long v8ValueFunctionFulfilledHandle, long v8ValueFunctionRejectedHandle);
 
     @Override
-    public native Object proxyCreate(long v8RuntimeHandle, Object target);
+    public native Object proxyCreate(long v8RuntimeHandle, Object target, int targetType);
 
     @Override
     public native Object proxyGetHandler(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -607,7 +640,8 @@ class V8Native implements IV8Native {
     public native Object scriptRun(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, boolean resultRequired);
 
     @Override
-    public native void setAdd(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+    public native void setAdd(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value, int valueType);
 
     @Override
     public native Object setAsArray(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
@@ -622,13 +656,15 @@ class V8Native implements IV8Native {
     public native Object setCreate(long v8RuntimeHandle);
 
     @Override
-    public native boolean setDelete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    public native boolean setDelete(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     @Override
     public native int setGetSize(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     @Override
-    public native boolean setHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+    public native boolean setHas(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value, int valueType);
 
     @Override
     public native void setMemorySaverModeEnabled(long v8RuntimeHandle, boolean enabled);
@@ -670,7 +706,7 @@ class V8Native implements IV8Native {
     public native boolean throwError(long v8RuntimeHandle, int v8ValueErrorType, String message);
 
     @Override
-    public native boolean throwError(long v8RuntimeHandle, Object v8Value);
+    public native boolean throwError(long v8RuntimeHandle, Object v8Value, int v8ValueType);
 
     @Override
     public native String toString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

@@ -22,7 +22,7 @@ import com.caoccao.javet.entities.JavetEntityMap;
 import com.caoccao.javet.entities.JavetEntitySymbol;
 import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.enums.V8ValueErrorType;
-import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetConverterException;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
@@ -350,7 +350,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertArrayEquals(bytes, v8ValueTypedArray.toBytes());
         }
         try (V8ValueTypedArray v8ValueTypedArray =
-                     v8Runtime.createV8ValueTypedArray(V8ValueReferenceType.Int8Array, bytes.length)) {
+                     v8Runtime.createV8ValueTypedArray(V8ValueType.Int8Array, bytes.length)) {
             assertTrue(v8ValueTypedArray.fromBytes(bytes));
             byte[] newBytes = converter.toObject(v8ValueTypedArray);
             assertArrayEquals(bytes, newBytes);
@@ -368,7 +368,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertArrayEquals(doubles, v8ValueTypedArray.toDoubles());
         }
         try (V8ValueTypedArray v8ValueTypedArray =
-                     v8Runtime.createV8ValueTypedArray(V8ValueReferenceType.Float64Array, doubles.length)) {
+                     v8Runtime.createV8ValueTypedArray(V8ValueType.Float64Array, doubles.length)) {
             assertTrue(v8ValueTypedArray.fromDoubles(doubles));
             double[] newDoubles = converter.toObject(v8ValueTypedArray);
             assertArrayEquals(doubles, newDoubles, 0.001D);
@@ -386,7 +386,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertArrayEquals(floats, v8ValueTypedArray.toFloats());
         }
         try (V8ValueTypedArray v8ValueTypedArray =
-                     v8Runtime.createV8ValueTypedArray(V8ValueReferenceType.Float32Array, floats.length)) {
+                     v8Runtime.createV8ValueTypedArray(V8ValueType.Float32Array, floats.length)) {
             assertTrue(v8ValueTypedArray.fromFloats(floats));
             float[] newFloats = converter.toObject(v8ValueTypedArray);
             assertArrayEquals(floats, newFloats, 0.001F);
@@ -404,7 +404,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertArrayEquals(integers, v8ValueTypedArray.toIntegers());
         }
         try (V8ValueTypedArray v8ValueTypedArray =
-                     v8Runtime.createV8ValueTypedArray(V8ValueReferenceType.Int32Array, integers.length)) {
+                     v8Runtime.createV8ValueTypedArray(V8ValueType.Int32Array, integers.length)) {
             assertTrue(v8ValueTypedArray.fromIntegers(integers));
             int[] newIntegers = converter.toObject(v8ValueTypedArray);
             assertArrayEquals(integers, newIntegers);
@@ -422,7 +422,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertArrayEquals(longs, v8ValueTypedArray.toLongs());
         }
         try (V8ValueTypedArray v8ValueTypedArray =
-                     v8Runtime.createV8ValueTypedArray(V8ValueReferenceType.BigInt64Array, longs.length)) {
+                     v8Runtime.createV8ValueTypedArray(V8ValueType.BigInt64Array, longs.length)) {
             assertTrue(v8ValueTypedArray.fromLongs(longs));
             long[] newLongs = converter.toObject(v8ValueTypedArray);
             assertArrayEquals(longs, newLongs);
@@ -440,7 +440,7 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
             assertArrayEquals(shorts, v8ValueTypedArray.toShorts());
         }
         try (V8ValueTypedArray v8ValueTypedArray =
-                     v8Runtime.createV8ValueTypedArray(V8ValueReferenceType.Int16Array, shorts.length)) {
+                     v8Runtime.createV8ValueTypedArray(V8ValueType.Int16Array, shorts.length)) {
             assertTrue(v8ValueTypedArray.fromShorts(shorts));
             short[] newShorts = converter.toObject(v8ValueTypedArray);
             assertArrayEquals(shorts, newShorts);

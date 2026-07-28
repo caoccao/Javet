@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.values.primitive;
 
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.IV8ValueNonProxyable;
@@ -59,6 +60,11 @@ public final class V8ValueNull extends V8Value implements IV8ValueNonProxyable {
     @Override
     public boolean equals(V8Value v8Value) {
         return v8Value instanceof V8ValueNull;
+    }
+
+    @Override
+    public V8ValueType getType() {
+        return V8ValueType.Null;
     }
 
     @Override

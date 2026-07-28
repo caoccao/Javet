@@ -15,6 +15,9 @@
  *   limitations under the License.
  */
 
+#include <cstdint>
+#include <limits>
+
 #include "javet_callbacks.h"
 #include "javet_converter.h"
 #include "javet_exceptions.h"
@@ -57,51 +60,43 @@ namespace Javet {
             "PromiseRejectAfterResolved",
         };
 
-        void Initialize(JNIEnv* jniEnv) noexcept {
-            jclassJavetCallbackContext = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/callback/JavetCallbackContext");
-            jmethodIDJavetCallbackContextIsReturnResult = jniEnv->GetMethodID(jclassJavetCallbackContext, "isReturnResult", "()Z");
-            jmethodIDJavetCallbackContextIsThisObjectRequired = jniEnv->GetMethodID(jclassJavetCallbackContext, "isThisObjectRequired", "()Z");
-            jmethodIDJavetCallbackContextSetHandle = jniEnv->GetMethodID(jclassJavetCallbackContext, "setHandle", "(J)V");
+        bool Initialize(JNIEnv* jniEnv) noexcept {
+            JNIInitializer jniInitializer(jniEnv);
+            jniInitializer.FindGlobalClass(jclassJavetCallbackContext, "com/caoccao/javet/interop/callback/JavetCallbackContext");
+            jniInitializer.GetMethodID(jmethodIDJavetCallbackContextIsReturnResult, jclassJavetCallbackContext, "isReturnResult", "()Z");
+            jniInitializer.GetMethodID(jmethodIDJavetCallbackContextIsThisObjectRequired, jclassJavetCallbackContext, "isThisObjectRequired", "()Z");
+            jniInitializer.GetMethodID(jmethodIDJavetCallbackContextSetHandle, jclassJavetCallbackContext, "setHandle", "(J)V");
 
-            jclassIV8Module = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/IV8Module");
-            jmethodIDIV8ModuleGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassIV8Module);
+            jniInitializer.FindGlobalClass(jclassIV8Module, "com/caoccao/javet/values/reference/IV8Module");
+            jniInitializer.GetMethodID(jmethodIDIV8ModuleGetHandle, jclassIV8Module, "getHandle", "()J");
 
-            jclassIV8ValueReference = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/IV8ValueReference");
-            jmethodIDIV8ValueReferenceClose = jniEnv->GetMethodID(jclassIV8ValueReference, "close", "(Z)V");
+            jniInitializer.FindGlobalClass(jclassIV8ValueReference, "com/caoccao/javet/values/reference/IV8ValueReference");
+            jniInitializer.GetMethodID(jmethodIDIV8ValueReferenceClose, jclassIV8ValueReference, "close", "(Z)V");
 
-            jclassJavetResourceUtils = FIND_CLASS(jniEnv, "com/caoccao/javet/utils/JavetResourceUtils");
-            jmethodIDJavetResourceUtilsSafeClose = jniEnv->GetStaticMethodID(jclassJavetResourceUtils, "safeClose", "(Ljava/lang/Object;)V");
+            jniInitializer.FindGlobalClass(jclassJavetResourceUtils, "com/caoccao/javet/utils/JavetResourceUtils");
+            jniInitializer.GetStaticMethodID(jmethodIDJavetResourceUtilsSafeClose, jclassJavetResourceUtils, "safeClose", "(Ljava/lang/Object;)V");
 
-            jclassV8FunctionCallback = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/callback/V8FunctionCallback");
-            jmethodIDV8FunctionCallbackReceiveCallback = jniEnv->GetStaticMethodID(jclassV8FunctionCallback, "receiveCallback",
-                "(Lcom/caoccao/javet/interop/V8Runtime;Lcom/caoccao/javet/interop/callback/JavetCallbackContext;Lcom/caoccao/javet/values/V8Value;[Lcom/caoccao/javet/values/V8Value;)Lcom/caoccao/javet/values/V8Value;");
+            jniInitializer.FindGlobalClass(jclassV8FunctionCallback, "com/caoccao/javet/interop/callback/V8FunctionCallback");
+            jniInitializer.GetStaticMethodID(jmethodIDV8FunctionCallbackReceiveCallback, jclassV8FunctionCallback, "receiveCallback",
+                "(Lcom/caoccao/javet/interop/V8Runtime;Lcom/caoccao/javet/interop/callback/JavetCallbackContext;Lcom/caoccao/javet/values/V8Value;[Lcom/caoccao/javet/values/V8Value;[I)Lcom/caoccao/javet/values/V8Value;");
 
-            jclassV8Runtime = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/V8Runtime");
-            jmethodIDV8RuntimeGetCallbackContext = jniEnv->GetMethodID(jclassV8Runtime, "getCallbackContext", "(J)Lcom/caoccao/javet/interop/callback/JavetCallbackContext;");
-            jmethodIDV8RuntimeGetV8Module = jniEnv->GetMethodID(jclassV8Runtime, "getV8Module", "(Ljava/lang/String;Lcom/caoccao/javet/values/reference/IV8Module;)Lcom/caoccao/javet/values/reference/IV8Module;");
-            jmethodIDV8RuntimeReceiveGCEpilogueCallback = jniEnv->GetMethodID(jclassV8Runtime, "receiveGCEpilogueCallback", "(II)V");
-            jmethodIDV8RuntimeReceiveGCPrologueCallback = jniEnv->GetMethodID(jclassV8Runtime, "receiveGCPrologueCallback", "(II)V");
-            jmethodIDV8RuntimeReceiveNearHeapLimitCallback = jniEnv->GetMethodID(jclassV8Runtime, "receiveNearHeapLimitCallback", "(JJ)J");
-            jmethodIDV8RuntimeReceivePromiseRejectCallback = jniEnv->GetMethodID(jclassV8Runtime, "receivePromiseRejectCallback", "(ILcom/caoccao/javet/values/reference/V8ValuePromise;Lcom/caoccao/javet/values/V8Value;)V");
-            jmethodIDV8RuntimeRemoveCallbackContext = jniEnv->GetMethodID(jclassV8Runtime, "removeCallbackContext", "(J)V");
+            jniInitializer.FindGlobalClass(jclassV8Runtime, "com/caoccao/javet/interop/V8Runtime");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeGetCallbackContext, jclassV8Runtime, "getCallbackContext", "(J)Lcom/caoccao/javet/interop/callback/JavetCallbackContext;");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeGetV8Module, jclassV8Runtime, "getV8Module", "(Ljava/lang/String;Lcom/caoccao/javet/values/reference/IV8Module;)Lcom/caoccao/javet/values/reference/IV8Module;");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeReceiveGCEpilogueCallback, jclassV8Runtime, "receiveGCEpilogueCallback", "(II)V");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeReceiveGCPrologueCallback, jclassV8Runtime, "receiveGCPrologueCallback", "(II)V");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeReceiveNearHeapLimitCallback, jclassV8Runtime, "receiveNearHeapLimitCallback", "(JJ)J");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeReceivePromiseRejectCallback, jclassV8Runtime, "receivePromiseRejectCallback", "(ILcom/caoccao/javet/values/reference/V8ValuePromise;Lcom/caoccao/javet/values/V8Value;)V");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeRemoveCallbackContext, jclassV8Runtime, "removeCallbackContext", "(J)V");
+            return jniInitializer.IsValid();
         }
 
         void JavetCloseWeakCallbackContextHandle(const v8::WeakCallbackInfo<JavetCallbackContextReference>& info) noexcept {
-            FETCH_JNI_ENV(GlobalJavaVM);
             auto javetCallbackContextReferencePointer = info.GetParameter();
-            auto v8Context = info.GetIsolate()->GetCurrentContext();
-            if (v8Context.IsEmpty()) {
-                LOG_ERROR("JavetCloseWeakCallbackContextHandle: V8 context is empty.");
-            }
-            else {
-                auto v8Runtime = V8Runtime::FromV8Context(v8Context);
-                if (v8Runtime == nullptr) {
-                    LOG_ERROR("JavetCloseWeakCallbackContextHandle: V8 runtime is empty.");
-                }
-                else {
-                    jobject externalV8Runtime = v8Runtime->externalV8Runtime;
-                    javetCallbackContextReferencePointer->RemoveCallbackContext(externalV8Runtime);
-                }
+            auto v8Runtime = javetCallbackContextReferencePointer->v8Runtime;
+            if (v8Runtime != nullptr && v8Runtime->HasExternalV8Runtime()) {
+                javetCallbackContextReferencePointer->RemoveCallbackContext(
+                    v8Runtime->externalV8Runtime);
             }
             delete javetCallbackContextReferencePointer;
             INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteJavetCallbackContextReference);
@@ -134,7 +129,12 @@ namespace Javet {
                     LOG_ERROR("JavetGCEpilogueCallback: V8 runtime is empty.");
                 }
                 else {
-                    FETCH_JNI_ENV(GlobalJavaVM);
+                    auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+                    if (!jniEnvScope) {
+                        LOG_ERROR("JavetGCEpilogueCallback: JNI environment is unavailable.");
+                        return;
+                    }
+                    JNIEnv* jniEnv = jniEnvScope.Get();
                     auto externalV8Runtime = v8Runtime->externalV8Runtime;
                     jniEnv->CallVoidMethod(
                         externalV8Runtime,
@@ -159,7 +159,12 @@ namespace Javet {
                     LOG_ERROR("JavetGCPrologueCallback: V8 runtime is empty.");
                 }
                 else {
-                    FETCH_JNI_ENV(GlobalJavaVM);
+                    auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+                    if (!jniEnvScope) {
+                        LOG_ERROR("JavetGCPrologueCallback: JNI environment is unavailable.");
+                        return;
+                    }
+                    JNIEnv* jniEnv = jniEnvScope.Get();
                     auto externalV8Runtime = v8Runtime->externalV8Runtime;
                     jniEnv->CallVoidMethod(
                         externalV8Runtime,
@@ -202,38 +207,47 @@ namespace Javet {
                     LOG_ERROR("JavetModuleResolveCallback: V8 runtime is empty.");
                 }
                 else {
-                    FETCH_JNI_ENV(GlobalJavaVM);
+                    auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+                    if (!jniEnvScope) {
+                        LOG_ERROR("JavetModuleResolveCallback: JNI environment is unavailable.");
+                        return resolvedV8MaybeLocalModule;
+                    }
+                    JNIEnv* jniEnv = jniEnvScope.Get();
+                    ExternalExceptionScope externalExceptionScope(jniEnv, v8Runtime);
                     jobject mReferrerV8Module = referrer.IsEmpty()
                         ? nullptr
                         : Javet::Converter::ToExternalV8Module(jniEnv, v8Runtime, referrer);
+                    jstring mSpecifier = Javet::Converter::ToJavaStringFromV8String(
+                        jniEnv, v8Runtime->v8Isolate, specifier);
                     jobject mIV8Module = jniEnv->CallObjectMethod(
                         v8Runtime->externalV8Runtime,
                         jmethodIDV8RuntimeGetV8Module,
-                        Javet::Converter::ToJavaString(jniEnv, v8Runtime->v8Isolate, specifier),
+                        mSpecifier,
                         mReferrerV8Module);
-                    auto moduleNamePointer = Javet::Converter::ToStdString(v8Runtime->v8Isolate, specifier);
+                    DELETE_LOCAL_REF(jniEnv, mSpecifier);
+                    auto moduleName = Javet::Converter::ToUtf8String(v8Runtime->v8Isolate, specifier);
                     if (jniEnv->ExceptionCheck()) {
                         // JNI exception is not re-thrown in this callback function because it will pop up automatically.
-                        LOG_ERROR("JavetModuleResolveCallback: module '" << moduleNamePointer.get() << "' with exception");
+                        LOG_ERROR("JavetModuleResolveCallback: module '" << moduleName << "' with exception");
                         std::string errorMessage("Cannot resolve package '");
-                        errorMessage.append(*moduleNamePointer);
+                        errorMessage.append(moduleName);
                         errorMessage.append("'");
                         Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, errorMessage.c_str());
                     }
                     else if (mIV8Module == nullptr) {
-                        LOG_ERROR("JavetModuleResolveCallback: module '" << moduleNamePointer.get() << "' not found");
+                        LOG_ERROR("JavetModuleResolveCallback: module '" << moduleName << "' not found");
                         std::string errorMessage("Cannot find package '");
-                        errorMessage.append(*moduleNamePointer);
+                        errorMessage.append(moduleName);
                         errorMessage.append("'");
                         Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, errorMessage.c_str());
                     }
                     else {
                         auto mHandle = jniEnv->CallLongMethod(mIV8Module, jmethodIDIV8ModuleGetHandle);
                         auto v8PersistentModule = TO_V8_PERSISTENT_MODULE_POINTER(mHandle);
-                        LOG_DEBUG("JavetModuleResolveCallback: module '" << moduleNamePointer.get() << "' found");
+                        LOG_DEBUG("JavetModuleResolveCallback: module '" << moduleName << "' found");
                         resolvedV8MaybeLocalModule = v8PersistentModule->Get(v8Runtime->v8Isolate);
-                        DELETE_LOCAL_REF(jniEnv, mIV8Module);
                     }
+                    DELETE_LOCAL_REF(jniEnv, mIV8Module);
                     if (mReferrerV8Module != nullptr) {
                         jniEnv->CallVoidMethod(mReferrerV8Module, jmethodIDIV8ValueReferenceClose, true);
                         DELETE_LOCAL_REF(jniEnv, mReferrerV8Module);
@@ -262,7 +276,12 @@ namespace Javet {
             LOG_DEBUG("JavetNearHeapLimitCallback: current heap limit is " << currentHeapLimit << ", initial heap limit is " << initialHeapLimit << ".");
             auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(data);
             auto externalV8Runtime = v8Runtime->externalV8Runtime;
-            FETCH_JNI_ENV(GlobalJavaVM);
+            auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+            if (!jniEnvScope) {
+                LOG_ERROR("JavetNearHeapLimitCallback: JNI environment is unavailable.");
+                return currentHeapLimit;
+            }
+            JNIEnv* jniEnv = jniEnvScope.Get();
             jlong newHeapLimit = jniEnv->CallLongMethod(
                 externalV8Runtime,
                 jmethodIDV8RuntimeReceiveNearHeapLimitCallback,
@@ -273,14 +292,34 @@ namespace Javet {
                 LOG_ERROR("JavetNearHeapLimitCallback: Exception occurred in Java callback.");
                 return currentHeapLimit;
             }
-            return (size_t)newHeapLimit;
+            if (newHeapLimit < 0) {
+                LOG_ERROR("JavetNearHeapLimitCallback: Invalid negative heap limit " << newHeapLimit << ".");
+                return currentHeapLimit;
+            }
+            if (static_cast<std::uintmax_t>(newHeapLimit) >
+                static_cast<std::uintmax_t>(std::numeric_limits<size_t>::max())) {
+                LOG_ERROR("JavetNearHeapLimitCallback: Heap limit " << newHeapLimit << " exceeds the native size limit.");
+                return currentHeapLimit;
+            }
+            const auto validatedHeapLimit = static_cast<size_t>(newHeapLimit);
+            if (validatedHeapLimit < currentHeapLimit) {
+                LOG_ERROR("JavetNearHeapLimitCallback: Heap limit " << validatedHeapLimit
+                    << " is below the current heap limit " << currentHeapLimit << ".");
+                return currentHeapLimit;
+            }
+            return validatedHeapLimit;
         }
 
         void JavetPromiseRejectCallback(v8::PromiseRejectMessage message) noexcept {
             auto promiseRejectEvent = message.GetEvent();
             auto v8LocalPromise = message.GetPromise();
             LOG_ERROR("Unhandled promise rejection with event " << PROMISE_REJECT_EVENTS[promiseRejectEvent] << ".");
-            FETCH_JNI_ENV(GlobalJavaVM);
+            auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+            if (!jniEnvScope) {
+                LOG_ERROR("JavetPromiseRejectCallback: JNI environment is unavailable.");
+                return;
+            }
+            JNIEnv* jniEnv = jniEnvScope.Get();
             auto v8Context = v8LocalPromise->GetCreationContextChecked();
             if (v8Context.IsEmpty()) {
                 LOG_ERROR("JavetPromiseRejectCallback: V8 context is empty.");
@@ -291,6 +330,7 @@ namespace Javet {
                     LOG_ERROR("JavetPromiseRejectCallback: V8 runtime is empty.");
                 }
                 else {
+                    ExternalExceptionScope externalExceptionScope(jniEnv, v8Runtime);
                     jobject value;
                     if (promiseRejectEvent == v8::PromiseRejectEvent::kPromiseHandlerAddedAfterReject) {
                         value = Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
@@ -298,12 +338,15 @@ namespace Javet {
                     else {
                         value = Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, message.GetValue());
                     }
+                    jobject promise = Javet::Converter::ToExternalV8Value(
+                        jniEnv, v8Runtime, v8Context, v8LocalPromise);
                     jniEnv->CallVoidMethod(
                         v8Runtime->externalV8Runtime,
                         jmethodIDV8RuntimeReceivePromiseRejectCallback,
                         promiseRejectEvent,
-                        Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8LocalPromise),
+                        promise,
                         value);
+                    DELETE_LOCAL_REF(jniEnv, promise);
                     DELETE_LOCAL_REF(jniEnv, value);
                     if (jniEnv->ExceptionCheck()) {
                         Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in promise reject callback");
@@ -315,18 +358,23 @@ namespace Javet {
         V8MaybeLocalValue JavetSyntheticModuleEvaluationStepsCallback(
             V8LocalContext v8Context,
             V8LocalModule v8LocalModule) {
-            FETCH_JNI_ENV(GlobalJavaVM);
+            auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+            if (!jniEnvScope) {
+                LOG_ERROR("JavetSyntheticModuleEvaluationStepsCallback: JNI environment is unavailable.");
+                return V8MaybeLocalValue();
+            }
+            JNIEnv* jniEnv = jniEnvScope.Get();
             Javet::Exceptions::ClearJNIException(jniEnv);
             if (v8Context.IsEmpty()) {
                 LOG_ERROR("JavetSyntheticModuleEvaluationStepsCallback: V8 context is empty.");
             }
             else {
                 auto v8Runtime = Javet::V8Runtime::FromV8Context(v8Context);
-                auto v8Isolate = v8Runtime->v8Isolate;
                 if (v8Runtime == nullptr) {
                     LOG_ERROR("JavetSyntheticModuleEvaluationStepsCallback: V8 runtime is empty.");
                 }
                 else {
+                    auto v8Isolate = v8Runtime->v8Isolate;
                     V8TryCatch v8TryCatch(v8Isolate);
                     auto v8GlobalObject = v8Runtime->v8GlobalObject.Get(v8Isolate);
                     std::string stringKey("module:{}" + std::to_string(v8LocalModule->GetIdentityHash()));
@@ -372,14 +420,19 @@ namespace Javet {
             return V8MaybeLocalValue();
         }
 
-        JavetCallbackContextReference::JavetCallbackContextReference(JNIEnv* jniEnv, const jobject callbackContext) noexcept
-            : v8PersistentCallbackContextHandlePointer(nullptr) {
-            jniEnv->CallVoidMethod(callbackContext, jmethodIDJavetCallbackContextSetHandle, TO_JAVA_LONG(this));
+        JavetCallbackContextReference::JavetCallbackContextReference(V8Runtime* v8Runtime) noexcept
+            : v8Runtime(v8Runtime), v8PersistentCallbackContextHandlePointer(nullptr) {
         }
 
         void JavetCallbackContextReference::CallFunction(
             const v8::FunctionCallbackInfo<v8::Value>& args) noexcept {
-            FETCH_JNI_ENV(GlobalJavaVM);
+            auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+            if (!jniEnvScope) {
+                LOG_ERROR("CallFunction: JNI environment is unavailable.");
+                args.GetReturnValue().SetUndefined();
+                return;
+            }
+            JNIEnv* jniEnv = jniEnvScope.Get();
             Javet::Exceptions::ClearJNIException(jniEnv);
             auto v8Isolate = args.GetIsolate();
             V8IsolateScope v8IsolateScope(v8Isolate);
@@ -396,6 +449,7 @@ namespace Javet {
                     args.GetReturnValue().SetUndefined();
                 }
                 else {
+                    ExternalExceptionScope externalExceptionScope(jniEnv, v8Runtime);
                     jobject externalV8Runtime = v8Runtime->externalV8Runtime;
                     V8ContextScope v8ContextScope(v8Context);
                     jobject callbackContext = jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeGetCallbackContext, TO_JAVA_LONG(this));
@@ -403,13 +457,15 @@ namespace Javet {
                     jboolean isThisObjectRequired = jniEnv->CallBooleanMethod(callbackContext, jmethodIDJavetCallbackContextIsThisObjectRequired);
                     jobjectArray externalArgs = Javet::Converter::ToExternalV8ValueArray(jniEnv, v8Runtime, v8Context, args);
                     jobject thisObject = isThisObjectRequired ? Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, args.This()) : nullptr;
+                    jintArray resultType = isReturnResult ? jniEnv->NewIntArray(1) : nullptr;
                     jobject mResult = jniEnv->CallStaticObjectMethod(
                         jclassV8FunctionCallback,
                         jmethodIDV8FunctionCallbackReceiveCallback,
                         externalV8Runtime,
                         callbackContext,
                         thisObject,
-                        externalArgs);
+                        externalArgs,
+                        resultType);
                     DELETE_LOCAL_REF(jniEnv, thisObject);
                     DELETE_LOCAL_REF(jniEnv, externalArgs);
                     DELETE_LOCAL_REF(jniEnv, callbackContext);
@@ -426,7 +482,16 @@ namespace Javet {
                                 args.GetReturnValue().SetUndefined();
                             }
                             else {
-                                args.GetReturnValue().Set(Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, mResult));
+                                jint valueType = static_cast<jint>(Javet::Enums::V8ValueType::Invalid);
+                                jniEnv->GetIntArrayRegion(resultType, 0, 1, &valueType);
+                                if (jniEnv->ExceptionCheck()) {
+                                    Javet::Exceptions::ThrowV8Exception(
+                                        jniEnv, v8Context, "Uncaught JavaError while reading function callback result type");
+                                }
+                                else {
+                                    args.GetReturnValue().Set(Javet::Converter::ToV8Value(
+                                        jniEnv, v8Isolate, v8Context, mResult, valueType));
+                                }
                             }
                         }
                         if (mResult != nullptr) {
@@ -434,6 +499,7 @@ namespace Javet {
                             DELETE_LOCAL_REF(jniEnv, mResult);
                         }
                     }
+                    DELETE_LOCAL_REF(jniEnv, resultType);
                 }
             }
         }
@@ -441,7 +507,13 @@ namespace Javet {
         void JavetCallbackContextReference::CallPropertyGetter(
             const V8LocalName& propertyName,
             const v8::PropertyCallbackInfo<v8::Value>& args) noexcept {
-            FETCH_JNI_ENV(GlobalJavaVM);
+            auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+            if (!jniEnvScope) {
+                LOG_ERROR("CallPropertyGetter: JNI environment is unavailable.");
+                args.GetReturnValue().SetUndefined();
+                return;
+            }
+            JNIEnv* jniEnv = jniEnvScope.Get();
             auto v8Isolate = args.GetIsolate();
             V8IsolateScope v8IsolateScope(v8Isolate);
             V8HandleScope v8HandleScope(v8Isolate);
@@ -457,6 +529,7 @@ namespace Javet {
                     args.GetReturnValue().SetUndefined();
                 }
                 else {
+                    ExternalExceptionScope externalExceptionScope(jniEnv, v8Runtime);
                     jobject externalV8Runtime = v8Runtime->externalV8Runtime;
                     V8ContextScope v8ContextScope(v8Context);
                     jobject callbackContext = jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeGetCallbackContext, TO_JAVA_LONG(this));
@@ -468,13 +541,15 @@ namespace Javet {
                         args.HolderV2()
 #endif
                     ) : nullptr;
+                    jintArray resultType = jniEnv->NewIntArray(1);
                     jobject mResult = jniEnv->CallStaticObjectMethod(
                         jclassV8FunctionCallback,
                         jmethodIDV8FunctionCallbackReceiveCallback,
                         externalV8Runtime,
                         callbackContext,
                         thisObject,
-                        nullptr);
+                        nullptr,
+                        resultType);
                     DELETE_LOCAL_REF(jniEnv, thisObject);
                     DELETE_LOCAL_REF(jniEnv, callbackContext);
                     if (jniEnv->ExceptionCheck()) {
@@ -485,7 +560,16 @@ namespace Javet {
                             args.GetReturnValue().SetUndefined();
                         }
                         else {
-                            args.GetReturnValue().Set(Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, mResult));
+                            jint valueType = static_cast<jint>(Javet::Enums::V8ValueType::Invalid);
+                            jniEnv->GetIntArrayRegion(resultType, 0, 1, &valueType);
+                            if (jniEnv->ExceptionCheck()) {
+                                Javet::Exceptions::ThrowV8Exception(
+                                    jniEnv, v8Context, "Uncaught JavaError while reading property getter callback result type");
+                            }
+                            else {
+                                args.GetReturnValue().Set(Javet::Converter::ToV8Value(
+                                    jniEnv, v8Isolate, v8Context, mResult, valueType));
+                            }
                         }
                     }
                     if (mResult != nullptr) {
@@ -495,6 +579,7 @@ namespace Javet {
                             Javet::Exceptions::ThrowV8Exception(jniEnv, v8Context, "Uncaught JavaError in property getter callback");
                         }
                     }
+                    DELETE_LOCAL_REF(jniEnv, resultType);
                 }
             }
         }
@@ -503,7 +588,12 @@ namespace Javet {
             const V8LocalName& propertyName,
             const V8LocalValue& propertyValue,
             const v8::PropertyCallbackInfo<void>& args) noexcept {
-            FETCH_JNI_ENV(GlobalJavaVM);
+            auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+            if (!jniEnvScope) {
+                LOG_ERROR("CallPropertySetter: JNI environment is unavailable.");
+                return;
+            }
+            JNIEnv* jniEnv = jniEnvScope.Get();
             auto v8Isolate = args.GetIsolate();
             V8IsolateScope v8IsolateScope(v8Isolate);
             V8HandleScope v8HandleScope(v8Isolate);
@@ -517,6 +607,7 @@ namespace Javet {
                     LOG_ERROR("CallPropertySetter: V8 runtime is empty.");
                 }
                 else {
+                    ExternalExceptionScope externalExceptionScope(jniEnv, v8Runtime);
                     V8ContextScope v8ContextScope(v8Context);
                     auto v8LocalArray = v8::Array::New(v8Isolate, 1);
                     auto maybeResult = v8LocalArray->Set(v8Context, 0, propertyValue);
@@ -541,7 +632,8 @@ namespace Javet {
                             externalV8Runtime,
                             callbackContext,
                             thisObject,
-                            mArguments);
+                            mArguments,
+                            nullptr);
                         DELETE_LOCAL_REF(jniEnv, thisObject);
                         DELETE_LOCAL_REF(jniEnv, mArguments);
                         DELETE_LOCAL_REF(jniEnv, callbackContext);
@@ -561,11 +653,32 @@ namespace Javet {
         }
 
         void JavetCallbackContextReference::RemoveCallbackContext(const jobject externalV8Runtime) noexcept {
-            FETCH_JNI_ENV(GlobalJavaVM);
+            auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+            if (!jniEnvScope) {
+                LOG_ERROR("RemoveCallbackContext: JNI environment is unavailable.");
+                return;
+            }
+            JNIEnv* jniEnv = jniEnvScope.Get();
             jniEnv->CallVoidMethod(externalV8Runtime, jmethodIDV8RuntimeRemoveCallbackContext, TO_JAVA_LONG(this));
         }
 
+        void JavetCallbackContextReference::SetHandle(
+            JNIEnv* jniEnv,
+            const jobject callbackContext) noexcept {
+            jniEnv->CallVoidMethod(
+                callbackContext,
+                jmethodIDJavetCallbackContextSetHandle,
+                TO_JAVA_LONG(this));
+            if (v8Runtime != nullptr) {
+                v8Runtime->RegisterCallbackContextReference(this);
+            }
+        }
+
         JavetCallbackContextReference::~JavetCallbackContextReference() {
+            if (v8Runtime != nullptr) {
+                v8Runtime->UnregisterCallbackContextReference(this);
+                v8Runtime = nullptr;
+            }
             if (v8PersistentCallbackContextHandlePointer != nullptr) {
                 v8PersistentCallbackContextHandlePointer->Reset();
                 delete v8PersistentCallbackContextHandlePointer;
@@ -582,9 +695,16 @@ namespace Javet {
 
         void V8ValueReference::Clear() noexcept {
             if (v8PersistentDataPointer != nullptr) {
-                FETCH_JNI_ENV(GlobalJavaVM);
+                auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+                if (!jniEnvScope) {
+                    LOG_ERROR("V8ValueReference::Clear(): JNI environment is unavailable.");
+                    return;
+                }
+                JNIEnv* jniEnv = jniEnvScope.Get();
                 jniEnv->DeleteGlobalRef(objectReference);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
+                objectReference = nullptr;
+                v8PersistentDataPointer = nullptr;
             }
         }
 
@@ -593,12 +713,17 @@ namespace Javet {
                 v8PersistentDataPointer->Reset();
                 // v8PersistentDataPointer is borrowed. So it cannot be deleted.
                 v8PersistentDataPointer = nullptr;
-                FETCH_JNI_ENV(GlobalJavaVM);
+                auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+                if (!jniEnvScope) {
+                    LOG_ERROR("V8ValueReference::Close(): JNI environment is unavailable.");
+                    return;
+                }
+                JNIEnv* jniEnv = jniEnvScope.Get();
                 jniEnv->CallVoidMethod(objectReference, jmethodIDIV8ValueReferenceClose, true);
                 jniEnv->DeleteGlobalRef(objectReference);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteGlobalRef);
+                objectReference = nullptr;
             }
         }
     }
 }
-

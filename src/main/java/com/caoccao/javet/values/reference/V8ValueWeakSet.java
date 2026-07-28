@@ -16,8 +16,7 @@
 
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.annotations.CheckReturnValue;
-import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
@@ -56,8 +55,8 @@ public class V8ValueWeakSet extends V8ValueObject {
     }
 
     @Override
-    public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.WeakSet;
+    public V8ValueType getType() {
+        return V8ValueType.WeakSet;
     }
 
     @Override

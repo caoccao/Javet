@@ -17,7 +17,7 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
-import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.IJavetUniConsumer;
 import com.caoccao.javet.interfaces.IJavetUniIndexedConsumer;
@@ -141,8 +141,8 @@ public class V8ValueSet extends V8ValueObject implements IV8ValueSet {
     }
 
     @Override
-    public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.Set;
+    public V8ValueType getType() {
+        return V8ValueType.Set;
     }
 
     @Override

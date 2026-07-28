@@ -28,7 +28,7 @@
  *   <li>{@link com.caoccao.javet.values.primitive.V8ValueZonedDateTime} - JavaScript Date as {@code ZonedDateTime}.</li>
  * </ul>
  *
- * @since 0.7.0
  * @author Sam Cao
+ * @since 0.7.0
  */
 package com.caoccao.javet.values.primitive;

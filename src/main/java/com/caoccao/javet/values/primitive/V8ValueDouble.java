@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.values.primitive;
 
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.values.IV8ValuePrimitiveValue;
@@ -30,7 +31,9 @@ import com.caoccao.javet.values.reference.V8ValueDoubleObject;
 public final class V8ValueDouble
         extends V8ValueNumber<Double>
         implements IV8ValuePrimitiveValue<V8ValueDoubleObject> {
-    /** The string representation of positive infinity. */
+    /**
+     * The string representation of positive infinity.
+     */
     public static final String INFINITY = "Infinity";
 
     /**
@@ -75,6 +78,11 @@ public final class V8ValueDouble
     @Override
     public long asLong() throws JavetException {
         return value.longValue();
+    }
+
+    @Override
+    public V8ValueType getType() {
+        return V8ValueType.Double;
     }
 
     /**

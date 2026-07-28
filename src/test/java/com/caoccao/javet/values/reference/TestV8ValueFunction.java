@@ -803,6 +803,57 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testCaughtCallbackExceptionDoesNotLeakCause() throws JavetException {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            IJavetDirectCallable.NoThisAndNoResult<RuntimeException> callback = v8Values -> {
+                throw new IllegalStateException("Expected callback failure.");
+            };
+            try (V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(
+                    new JavetCallbackContext(
+                            "throwFromJava",
+                            JavetCallbackType.DirectCallNoThisAndNoResult,
+                            callback))) {
+                v8Runtime.getGlobalObject().set("throwFromJava", v8ValueFunction);
+                v8Runtime.getExecutor("try { throwFromJava(); } catch (e) {}").executeVoid();
+                JavetExecutionException exception = assertThrows(
+                        JavetExecutionException.class,
+                        () -> v8Runtime.getExecutor("throw new Error('Expected JS failure.');").executeVoid());
+                assertNull(exception.getCause());
+                v8Runtime.getGlobalObject().delete("throwFromJava");
+            }
+        }
+    }
+
+    @Test
+    public void testCloseWithLiveNativeReferences() throws JavetException {
+        long[] countersBefore = v8Host.getInternalStatistic();
+        V8Runtime v8Runtime = v8Host.createV8Runtime();
+        try {
+            IJavetDirectCallable.NoThisAndNoResult<RuntimeException> callback = v8Values -> {
+            };
+            V8ValueFunction v8ValueFunction = v8Runtime.createV8ValueFunction(new JavetCallbackContext(
+                    "noop",
+                    JavetCallbackType.DirectCallNoThisAndNoResult,
+                    callback));
+            V8ValueObject weakObject = v8Runtime.createV8ValueObject();
+            weakObject.setWeak();
+            assertEquals(1, v8Runtime.getCallbackContextCount());
+            assertEquals(2, v8Runtime.getReferenceCount());
+        } finally {
+            v8Runtime.close();
+        }
+        assertTrue(v8Runtime.isClosed());
+        long[] countersAfter = v8Host.getInternalStatistic();
+        if (countersBefore != null && countersAfter != null) {
+            for (int newCounterIndex = 1; newCounterIndex <= 7; ++newCounterIndex) {
+                assertEquals(
+                        countersAfter[newCounterIndex] - countersBefore[newCounterIndex],
+                        countersAfter[newCounterIndex + 7] - countersBefore[newCounterIndex + 7]);
+            }
+        }
+    }
+
+    @Test
     public void testCompileV8ValueFunction() throws JavetException {
         String codeString = "return a + b";
         IV8Executor iV8Executor = v8Runtime.getExecutor(codeString).setResourceName("./test.js");

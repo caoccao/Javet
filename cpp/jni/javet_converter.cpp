@@ -15,6 +15,10 @@
  *   limitations under the License.
  */
 
+#include <limits>
+#include <new>
+#include <utility>
+
 #include "javet_converter.h"
 #include "javet_enums.h"
 #include "javet_exceptions.h"
@@ -91,104 +95,80 @@ namespace Javet {
 
         jclass jclassV8ValueArguments;
         jmethodID jmethodIDV8ValueArgumentsConstructor;
-        jmethodID jmethodIDV8ValueArgumentsGetHandle;
 
         jclass jclassV8ValueArray;
         jmethodID jmethodIDV8ValueArrayConstructor;
-        jmethodID jmethodIDV8ValueArrayGetHandle;
 
         jclass jclassV8ValueArrayBuffer;
         jmethodID jmethodIDV8ValueArrayBufferConstructor;
-        jmethodID jmethodIDV8ValueArrayBufferGetHandle;
 
         jclass jclassV8ValueBooleanObject;
         jmethodID jmethodIDV8ValueBooleanObjectConstructor;
-        jmethodID jmethodIDV8ValueBooleanObjectGetHandle;
 
         jclass jclassV8ValueDataView;
         jmethodID jmethodIDV8ValueDataViewConstructor;
-        jmethodID jmethodIDV8ValueDataViewGetHandle;
 
         jclass jclassV8ValueDoubleObject;
         jmethodID jmethodIDV8ValueDoubleObjectConstructor;
-        jmethodID jmethodIDV8ValueDoubleObjectGetHandle;
 
         jclass jclassV8ValueFunction;
         jmethodID jmethodIDV8ValueFunctionConstructor;
-        jmethodID jmethodIDV8ValueFunctionGetHandle;
 
         jclass jclassV8ValueError;
         jmethodID jmethodIDV8ValueErrorConstructor;
-        jmethodID jmethodIDV8ValueErrorGetHandle;
 
         jclass jclassV8ValueGlobalObject;
         jmethodID jmethodIDV8ValueGlobalObjectConstructor;
-        jmethodID jmethodIDV8ValueGlobalObjectGetHandle;
 
         jclass jclassV8ValueIntegerObject;
         jmethodID jmethodIDV8ValueIntegerObjectConstructor;
-        jmethodID jmethodIDV8ValueIntegerObjectGetHandle;
 
         jclass jclassV8ValueIterator;
         jmethodID jmethodIDV8ValueIteratorConstructor;
-        jmethodID jmethodIDV8ValueIteratorGetHandle;
 
         jclass jclassV8ValueLongObject;
         jmethodID jmethodIDV8ValueLongObjectConstructor;
-        jmethodID jmethodIDV8ValueLongObjectGetHandle;
 
         jclass jclassV8ValueMap;
         jmethodID jmethodIDV8ValueMapConstructor;
-        jmethodID jmethodIDV8ValueMapGetHandle;
 
         jclass jclassV8ValueObject;
         jmethodID jmethodIDV8ValueObjectConstructor;
-        jmethodID jmethodIDV8ValueObjectGetHandle;
 
         jclass jclassV8ValuePromise;
         jmethodID jmethodIDV8ValuePromiseConstructor;
-        jmethodID jmethodIDV8ValuePromiseGetHandle;
 
         jclass jclassV8ValueProxy;
         jmethodID jmethodIDV8ValueProxyConstructor;
-        jmethodID jmethodIDV8ValueProxyGetHandle;
 
         jclass jclassV8ValueReference;
+        jmethodID jmethodIDV8ValueReferenceGetHandle;
 
         jclass jclassV8ValueRegExp;
         jmethodID jmethodIDV8ValueRegExpConstructor;
-        jmethodID jmethodIDV8ValueRegExpGetHandle;
 
         jclass jclassV8ValueSet;
         jmethodID jmethodIDV8ValueSetConstructor;
-        jmethodID jmethodIDV8ValueSetGetHandle;
 
         jclass jclassV8ValueSharedArrayBuffer;
         jmethodID jmethodIDV8ValueSharedArrayBufferConstructor;
-        jmethodID jmethodIDV8ValueSharedArrayBufferGetHandle;
 
         jclass jclassV8ValueStringObject;
         jmethodID jmethodIDV8ValueStringObjectConstructor;
-        jmethodID jmethodIDV8ValueStringObjectGetHandle;
 
         jmethodID jmethodIDV8ValueSymbolConstructor;
-        jmethodID jmethodIDV8ValueSymbolGetHandle;
 
         jclass jclassV8ValueSymbolObject;
         jmethodID jmethodIDV8ValueSymbolObjectConstructor;
-        jmethodID jmethodIDV8ValueSymbolObjectGetHandle;
 
         jclass jclassV8ValueTypedArray;
         jmethodID jmethodIDV8ValueTypedArrayConstructor;
-        jmethodID jmethodIDV8ValueTypedArrayGetHandle;
 
         jclass jclassV8ValueWeakMap;
         jmethodID jmethodIDV8ValueWeakMapConstructor;
-        jmethodID jmethodIDV8ValueWeakMapGetHandle;
 
         jclass jclassV8ValueWeakSet;
         jmethodID jmethodIDV8ValueWeakSetConstructor;
-        jmethodID jmethodIDV8ValueWeakSetGetHandle;
 
         // Misc
 
@@ -203,347 +183,458 @@ namespace Javet {
 
         constexpr auto JAVA_METHOD_TO_PRIMITIVE = "toPrimitive";
 
-        // Primitive
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueBigInteger(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueBigInteger);
+        static inline void AppendCodePointToUtf8(
+            std::string& utf8String,
+            uint32_t codePoint) {
+            if (codePoint <= 0x7F) {
+                utf8String.push_back(static_cast<char>(codePoint));
+            }
+            else if (codePoint <= 0x7FF) {
+                utf8String.push_back(static_cast<char>(0xC0 | (codePoint >> 6)));
+                utf8String.push_back(static_cast<char>(0x80 | (codePoint & 0x3F)));
+            }
+            else if (codePoint <= 0xFFFF) {
+                utf8String.push_back(static_cast<char>(0xE0 | (codePoint >> 12)));
+                utf8String.push_back(static_cast<char>(0x80 | ((codePoint >> 6) & 0x3F)));
+                utf8String.push_back(static_cast<char>(0x80 | (codePoint & 0x3F)));
+            }
+            else {
+                utf8String.push_back(static_cast<char>(0xF0 | (codePoint >> 18)));
+                utf8String.push_back(static_cast<char>(0x80 | ((codePoint >> 12) & 0x3F)));
+                utf8String.push_back(static_cast<char>(0x80 | ((codePoint >> 6) & 0x3F)));
+                utf8String.push_back(static_cast<char>(0x80 | (codePoint & 0x3F)));
+            }
         }
 
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueBoolean(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueBoolean);
+        static inline void AppendCodePointToUtf16(
+            std::u16string& utf16String,
+            uint32_t codePoint) {
+            if (codePoint <= 0xFFFF) {
+                utf16String.push_back(static_cast<char16_t>(codePoint));
+            }
+            else {
+                codePoint -= 0x10000;
+                utf16String.push_back(static_cast<char16_t>(0xD800 | (codePoint >> 10)));
+                utf16String.push_back(static_cast<char16_t>(0xDC00 | (codePoint & 0x3FF)));
+            }
         }
 
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueDouble(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueDouble);
+        jstring ToJavaStringFromUtf8(
+            JNIEnv* jniEnv,
+            const char* utf8String) noexcept {
+            if (utf8String == nullptr) {
+                return nullptr;
+            }
+            return ToJavaStringFromUtf8(
+                jniEnv,
+                std::string_view(utf8String));
         }
 
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueLong(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueLong);
+        jstring ToJavaStringFromUtf8(
+            JNIEnv* jniEnv,
+            std::string_view utf8String) noexcept {
+            std::u16string utf16String;
+            utf16String.reserve(utf8String.length());
+            size_t index = 0;
+            while (index < utf8String.length()) {
+                const auto firstByte = static_cast<uint8_t>(utf8String[index]);
+                uint32_t codePoint = 0;
+                uint32_t minimumCodePoint = 0;
+                size_t sequenceLength = 0;
+                if (firstByte <= 0x7F) {
+                    codePoint = firstByte;
+                    sequenceLength = 1;
+                }
+                else if ((firstByte & 0xE0) == 0xC0) {
+                    codePoint = firstByte & 0x1F;
+                    minimumCodePoint = 0x80;
+                    sequenceLength = 2;
+                }
+                else if ((firstByte & 0xF0) == 0xE0) {
+                    codePoint = firstByte & 0x0F;
+                    minimumCodePoint = 0x800;
+                    sequenceLength = 3;
+                }
+                else if ((firstByte & 0xF8) == 0xF0) {
+                    codePoint = firstByte & 0x07;
+                    minimumCodePoint = 0x10000;
+                    sequenceLength = 4;
+                }
+                bool valid = sequenceLength > 0 && index + sequenceLength <= utf8String.length();
+                for (size_t offset = 1; valid && offset < sequenceLength; ++offset) {
+                    const auto continuationByte = static_cast<uint8_t>(utf8String[index + offset]);
+                    if ((continuationByte & 0xC0) != 0x80) {
+                        valid = false;
+                    }
+                    else {
+                        codePoint = (codePoint << 6) | (continuationByte & 0x3F);
+                    }
+                }
+                valid = valid &&
+                    codePoint >= minimumCodePoint &&
+                    codePoint <= 0x10FFFF &&
+                    (codePoint < 0xD800 || codePoint > 0xDFFF);
+                if (!valid) {
+                    codePoint = 0xFFFD;
+                    sequenceLength = 1;
+                }
+                AppendCodePointToUtf16(utf16String, codePoint);
+                index += sequenceLength;
+            }
+            return ToJavaStringFromUtf16(jniEnv, utf16String);
         }
 
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueNull(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueNull);
+        jstring ToJavaStringFromUtf8(
+            JNIEnv* jniEnv,
+            const std::string& utf8String) noexcept {
+            return ToJavaStringFromUtf8(jniEnv, std::string_view(utf8String));
         }
 
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueUndefined(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueUndefined);
+        jstring ToJavaStringFromUtf16(
+            JNIEnv* jniEnv,
+            const std::u16string& utf16String) noexcept {
+            static_assert(sizeof(char16_t) == sizeof(jchar));
+            return jniEnv->NewString(
+                reinterpret_cast<const jchar*>(utf16String.data()),
+                static_cast<jsize>(utf16String.length()));
         }
 
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueZonedDateTime(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueZonedDateTime);
+        std::optional<std::string> ToUtf8String(
+            JNIEnv* jniEnv,
+            const jstring& mString) noexcept {
+            auto utf16String = ToUtf16String(jniEnv, mString);
+            if (!utf16String) {
+                return std::nullopt;
+            }
+            return ToUtf8String(*utf16String);
         }
 
-        // Reference
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueArguments(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueArguments);
+        std::string ToUtf8String(
+            const std::u16string& utf16String) noexcept {
+            std::string utf8String;
+            utf8String.reserve(utf16String.length() * 3);
+            for (size_t index = 0; index < utf16String.length(); ++index) {
+                uint32_t codePoint = utf16String[index];
+                if (codePoint >= 0xD800 && codePoint <= 0xDBFF &&
+                    index + 1 < utf16String.length()) {
+                    const uint32_t lowSurrogate = utf16String[index + 1];
+                    if (lowSurrogate >= 0xDC00 && lowSurrogate <= 0xDFFF) {
+                        codePoint = 0x10000 +
+                            ((codePoint - 0xD800) << 10) +
+                            (lowSurrogate - 0xDC00);
+                        ++index;
+                    }
+                    else {
+                        codePoint = 0xFFFD;
+                    }
+                }
+                else if (codePoint >= 0xD800 && codePoint <= 0xDFFF) {
+                    codePoint = 0xFFFD;
+                }
+                AppendCodePointToUtf8(utf8String, codePoint);
+            }
+            return utf8String;
         }
 
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueArray(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueArray);
+        std::optional<std::u16string> ToUtf16String(
+            JNIEnv* jniEnv,
+            const jstring& mString) noexcept {
+            JNIStringChars utf16Chars(jniEnv, mString);
+            if (!utf16Chars) {
+                return std::nullopt;
+            }
+            const jsize length = jniEnv->GetStringLength(mString);
+            std::u16string utf16String;
+            utf16String.resize(length);
+            for (jsize index = 0; index < length; ++index) {
+                utf16String[index] = static_cast<char16_t>(utf16Chars.Get()[index]);
+            }
+            return utf16String;
         }
 
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueArrayBuffer(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueArrayBuffer);
+        StringVectorResult ExtractStringVector(
+            JNIEnv* jniEnv,
+            const jobject source,
+            jmethodID stringArrayGetter,
+            StringArrayNullability nullability,
+            StringEncoding encoding) noexcept {
+            StringVectorResult result;
+            if (source == nullptr) {
+                result.success = nullability == StringArrayNullability::Nullable
+                    && !jniEnv->ExceptionCheck();
+                return result;
+            }
+            jobjectArray mStrings = (jobjectArray)jniEnv->CallObjectMethod(
+                source,
+                stringArrayGetter);
+            if (mStrings == nullptr) {
+                result.success = nullability == StringArrayNullability::Nullable
+                    && !jniEnv->ExceptionCheck();
+                return result;
+            }
+            result.present = true;
+            const jsize stringCount = jniEnv->GetArrayLength(mStrings);
+            if (jniEnv->ExceptionCheck()) {
+                DELETE_LOCAL_REF(jniEnv, mStrings);
+                return result;
+            }
+            result.strings.reserve(stringCount);
+            for (jsize i = 0; i < stringCount; ++i) {
+                jstring mString = (jstring)jniEnv->GetObjectArrayElement(mStrings, i);
+                if (mString == nullptr || jniEnv->ExceptionCheck()) {
+                    DELETE_LOCAL_REF(jniEnv, mString);
+                    DELETE_LOCAL_REF(jniEnv, mStrings);
+                    result.strings.clear();
+                    return result;
+                }
+                bool converted = false;
+                switch (encoding) {
+                case StringEncoding::ModifiedUtf8:
+                {
+                    const char* modifiedUtf8String = jniEnv->GetStringUTFChars(mString, nullptr);
+                    if (modifiedUtf8String != nullptr) {
+                        result.strings.emplace_back(modifiedUtf8String);
+                        jniEnv->ReleaseStringUTFChars(mString, modifiedUtf8String);
+                        converted = true;
+                    }
+                    break;
+                }
+                case StringEncoding::Utf8:
+                {
+                    auto utf8String = ToUtf8String(jniEnv, mString);
+                    if (utf8String) {
+                        result.strings.emplace_back(std::move(*utf8String));
+                        converted = true;
+                    }
+                    break;
+                }
+                }
+                DELETE_LOCAL_REF(jniEnv, mString);
+                if (!converted || jniEnv->ExceptionCheck()) {
+                    DELETE_LOCAL_REF(jniEnv, mStrings);
+                    result.strings.clear();
+                    return result;
+                }
+            }
+            DELETE_LOCAL_REF(jniEnv, mStrings);
+            result.success = true;
+            return result;
         }
 
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueContext(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8Context);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueDataView(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueDataView);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueFunction(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueFunction);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueError(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueError);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueGlobalObject(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueGlobalObject);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueMap(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueMap);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueIterator(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueIterator);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueObject(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueObject);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValuePromise(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValuePromise);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueProxy(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueProxy);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueReference(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueReference);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueRegExp(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueRegExp);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueSet(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueSet);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueSharedArrayBuffer(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueSharedArrayBuffer);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueSymbolObject(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueSymbolObject);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueWeakMap(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueWeakMap);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueWeakSet(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueWeakSet);
-        }
-
-        void Initialize(JNIEnv* jniEnv) noexcept {
+        bool Initialize(JNIEnv* jniEnv) noexcept {
             /*
              @see https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/types.html
              @see https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/functions.html
             */
 
+            JNIInitializer jniInitializer(jniEnv);
+
             // Runtime
 
-            jclassV8Runtime = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/V8Runtime");
-            jmethodIDV8RuntimeCreateV8ValueBoolean = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueBoolean", "(Z)Lcom/caoccao/javet/values/primitive/V8ValueBoolean;");
-            jmethodIDV8RuntimeCreateV8ValueDouble = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueDouble", "(D)Lcom/caoccao/javet/values/primitive/V8ValueDouble;");
-            jmethodIDV8RuntimeCreateV8ValueInteger = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueInteger", "(I)Lcom/caoccao/javet/values/primitive/V8ValueInteger;");
-            jmethodIDV8RuntimeCreateV8ValueLong = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueLong", "(J)Lcom/caoccao/javet/values/primitive/V8ValueLong;");
-            jmethodIDV8RuntimeCreateV8ValueNull = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueNull", "()Lcom/caoccao/javet/values/primitive/V8ValueNull;");
-            jmethodIDV8RuntimeCreateV8ValueUndefined = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueUndefined", "()Lcom/caoccao/javet/values/primitive/V8ValueUndefined;");
-            jmethodIDV8RuntimeCreateV8ValueZonedDateTime = jniEnv->GetMethodID(jclassV8Runtime, "createV8ValueZonedDateTime", "(J)Lcom/caoccao/javet/values/primitive/V8ValueZonedDateTime;");
+            jniInitializer.FindGlobalClass(jclassV8Runtime, "com/caoccao/javet/interop/V8Runtime");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeCreateV8ValueBoolean, jclassV8Runtime, "createV8ValueBoolean", "(Z)Lcom/caoccao/javet/values/primitive/V8ValueBoolean;");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeCreateV8ValueDouble, jclassV8Runtime, "createV8ValueDouble", "(D)Lcom/caoccao/javet/values/primitive/V8ValueDouble;");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeCreateV8ValueInteger, jclassV8Runtime, "createV8ValueInteger", "(I)Lcom/caoccao/javet/values/primitive/V8ValueInteger;");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeCreateV8ValueLong, jclassV8Runtime, "createV8ValueLong", "(J)Lcom/caoccao/javet/values/primitive/V8ValueLong;");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeCreateV8ValueNull, jclassV8Runtime, "createV8ValueNull", "()Lcom/caoccao/javet/values/primitive/V8ValueNull;");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeCreateV8ValueUndefined, jclassV8Runtime, "createV8ValueUndefined", "()Lcom/caoccao/javet/values/primitive/V8ValueUndefined;");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeCreateV8ValueZonedDateTime, jclassV8Runtime, "createV8ValueZonedDateTime", "(J)Lcom/caoccao/javet/values/primitive/V8ValueZonedDateTime;");
 
             // Primitive
 
-            jclassV8Value = FIND_CLASS(jniEnv, "com/caoccao/javet/values/V8Value");
+            jniInitializer.FindGlobalClass(jclassV8Value, "com/caoccao/javet/values/V8Value");
 
-            jclassV8ValueBigInteger = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueBigInteger");
-            jmethodIDV8ValueBigIntegerConstructor = jniEnv->GetMethodID(jclassV8ValueBigInteger, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;I[J)V");
-            jmethodIDV8ValueBigIntegerGetLongArray = jniEnv->GetMethodID(jclassV8ValueBigInteger, "getLongArray", "()[J");
-            jmethodIDV8ValueBigIntegerGetSignum = jniEnv->GetMethodID(jclassV8ValueBigInteger, "getSignum", "()I");
+            jniInitializer.FindGlobalClass(jclassV8ValueBigInteger, "com/caoccao/javet/values/primitive/V8ValueBigInteger");
+            jniInitializer.GetMethodID(jmethodIDV8ValueBigIntegerConstructor, jclassV8ValueBigInteger, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;I[J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueBigIntegerGetLongArray, jclassV8ValueBigInteger, "getLongArray", "()[J");
+            jniInitializer.GetMethodID(jmethodIDV8ValueBigIntegerGetSignum, jclassV8ValueBigInteger, "getSignum", "()I");
 
-            jclassV8ValueBoolean = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueBoolean");
-            jmethodIDV8ValueBooleanToPrimitive = jniEnv->GetMethodID(jclassV8ValueBoolean, JAVA_METHOD_TO_PRIMITIVE, "()Z");
+            jniInitializer.FindGlobalClass(jclassV8ValueBoolean, "com/caoccao/javet/values/primitive/V8ValueBoolean");
+            jniInitializer.GetMethodID(jmethodIDV8ValueBooleanToPrimitive, jclassV8ValueBoolean, JAVA_METHOD_TO_PRIMITIVE, "()Z");
 
-            jclassV8ValueDouble = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueDouble");
-            jmethodIDV8ValueDoubleToPrimitive = jniEnv->GetMethodID(jclassV8ValueDouble, JAVA_METHOD_TO_PRIMITIVE, "()D");
+            jniInitializer.FindGlobalClass(jclassV8ValueDouble, "com/caoccao/javet/values/primitive/V8ValueDouble");
+            jniInitializer.GetMethodID(jmethodIDV8ValueDoubleToPrimitive, jclassV8ValueDouble, JAVA_METHOD_TO_PRIMITIVE, "()D");
 
-            jclassV8ValueInteger = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueInteger");
-            jmethodIDV8ValueIntegerToPrimitive = jniEnv->GetMethodID(jclassV8ValueInteger, JAVA_METHOD_TO_PRIMITIVE, "()I");
+            jniInitializer.FindGlobalClass(jclassV8ValueInteger, "com/caoccao/javet/values/primitive/V8ValueInteger");
+            jniInitializer.GetMethodID(jmethodIDV8ValueIntegerToPrimitive, jclassV8ValueInteger, JAVA_METHOD_TO_PRIMITIVE, "()I");
 
-            jclassV8ValueLong = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueLong");
-            jmethodIDV8ValueLongToPrimitive = jniEnv->GetMethodID(jclassV8ValueLong, JAVA_METHOD_TO_PRIMITIVE, "()J");
+            jniInitializer.FindGlobalClass(jclassV8ValueLong, "com/caoccao/javet/values/primitive/V8ValueLong");
+            jniInitializer.GetMethodID(jmethodIDV8ValueLongToPrimitive, jclassV8ValueLong, JAVA_METHOD_TO_PRIMITIVE, "()J");
 
-            jclassV8ValueNull = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueNull");
+            jniInitializer.FindGlobalClass(jclassV8ValueNull, "com/caoccao/javet/values/primitive/V8ValueNull");
 
-            jclassV8ValueString = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueString");
-            jmethodIDV8ValueStringConstructor = jniEnv->GetMethodID(jclassV8ValueString, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;Ljava/lang/String;)V");
-            jmethodIDV8ValueStringToPrimitive = jniEnv->GetMethodID(jclassV8ValueString, JAVA_METHOD_TO_PRIMITIVE, "()Ljava/lang/String;");
+            jniInitializer.FindGlobalClass(jclassV8ValueString, "com/caoccao/javet/values/primitive/V8ValueString");
+            jniInitializer.GetMethodID(jmethodIDV8ValueStringConstructor, jclassV8ValueString, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;Ljava/lang/String;)V");
+            jniInitializer.GetMethodID(jmethodIDV8ValueStringToPrimitive, jclassV8ValueString, JAVA_METHOD_TO_PRIMITIVE, "()Ljava/lang/String;");
 
-            jclassV8ValueUndefined = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueUndefined");
+            jniInitializer.FindGlobalClass(jclassV8ValueUndefined, "com/caoccao/javet/values/primitive/V8ValueUndefined");
 
-            jclassV8ValueUnknown = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueUnknown");
-            jmethodIDV8ValueUnknownConstructor = jniEnv->GetMethodID(jclassV8ValueUnknown, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;Ljava/lang/String;)V");
+            jniInitializer.FindGlobalClass(jclassV8ValueUnknown, "com/caoccao/javet/values/primitive/V8ValueUnknown");
+            jniInitializer.GetMethodID(jmethodIDV8ValueUnknownConstructor, jclassV8ValueUnknown, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;Ljava/lang/String;)V");
 
-            jclassV8ValueZonedDateTime = FIND_CLASS(jniEnv, "com/caoccao/javet/values/primitive/V8ValueZonedDateTime");
-            jmethodIDV8ValueZonedDateTimeToPrimitive = jniEnv->GetMethodID(jclassV8ValueZonedDateTime, JAVA_METHOD_TO_PRIMITIVE, "()J");
+            jniInitializer.FindGlobalClass(jclassV8ValueZonedDateTime, "com/caoccao/javet/values/primitive/V8ValueZonedDateTime");
+            jniInitializer.GetMethodID(jmethodIDV8ValueZonedDateTimeToPrimitive, jclassV8ValueZonedDateTime, JAVA_METHOD_TO_PRIMITIVE, "()J");
 
             // Reference
 
-            jclassV8Context = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8Context");
-            jmethodIDV8ContextConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8Context);
-            jmethodIDV8ContextGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8Context);
+            jniInitializer.FindGlobalClass(jclassV8Context, "com/caoccao/javet/values/reference/V8Context");
+            jniInitializer.GetMethodID(jmethodIDV8ContextConstructor, jclassV8Context, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ContextGetHandle, jclassV8Context, "getHandle", "()J");
 
-            jclassV8Module = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8Module");
-            jmethodIDV8ModuleConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8Module);
-            jmethodIDV8ModuleGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8Module);
+            jniInitializer.FindGlobalClass(jclassV8Module, "com/caoccao/javet/values/reference/V8Module");
+            jniInitializer.GetMethodID(jmethodIDV8ModuleConstructor, jclassV8Module, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ModuleGetHandle, jclassV8Module, "getHandle", "()J");
 
-            jclassV8Script = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8Script");
-            jmethodIDV8ScriptConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8Script);
-            jmethodIDV8ScriptGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8Script);
+            jniInitializer.FindGlobalClass(jclassV8Script, "com/caoccao/javet/values/reference/V8Script");
+            jniInitializer.GetMethodID(jmethodIDV8ScriptConstructor, jclassV8Script, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
+            jniInitializer.GetMethodID(jmethodIDV8ScriptGetHandle, jclassV8Script, "getHandle", "()J");
 
-            jclassV8ValueArguments = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueArguments");
-            jmethodIDV8ValueArgumentsConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueArguments);
-            jmethodIDV8ValueArgumentsGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueArguments);
+            jniInitializer.FindGlobalClass(jclassV8ValueArguments, "com/caoccao/javet/values/reference/V8ValueArguments");
+            jniInitializer.GetMethodID(jmethodIDV8ValueArgumentsConstructor, jclassV8ValueArguments, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueArray = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueArray");
-            jmethodIDV8ValueArrayConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueArray);
-            jmethodIDV8ValueArrayGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueArray);
+            jniInitializer.FindGlobalClass(jclassV8ValueArray, "com/caoccao/javet/values/reference/V8ValueArray");
+            jniInitializer.GetMethodID(jmethodIDV8ValueArrayConstructor, jclassV8ValueArray, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueArrayBuffer = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueArrayBuffer");
-            jmethodIDV8ValueArrayBufferConstructor = jniEnv->GetMethodID(jclassV8ValueArrayBuffer, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;JLjava/nio/ByteBuffer;)V");
-            jmethodIDV8ValueArrayBufferGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueArrayBuffer);
+            jniInitializer.FindGlobalClass(jclassV8ValueArrayBuffer, "com/caoccao/javet/values/reference/V8ValueArrayBuffer");
+            jniInitializer.GetMethodID(jmethodIDV8ValueArrayBufferConstructor, jclassV8ValueArrayBuffer, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;JLjava/nio/ByteBuffer;)V");
 
-            jclassV8ValueBooleanObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueBooleanObject");
-            jmethodIDV8ValueBooleanObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueBooleanObject);
-            jmethodIDV8ValueBooleanObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueBooleanObject);
+            jniInitializer.FindGlobalClass(jclassV8ValueBooleanObject, "com/caoccao/javet/values/reference/V8ValueBooleanObject");
+            jniInitializer.GetMethodID(jmethodIDV8ValueBooleanObjectConstructor, jclassV8ValueBooleanObject, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueDataView = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueDataView");
-            jmethodIDV8ValueDataViewConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueDataView);
-            jmethodIDV8ValueDataViewGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueDataView);
+            jniInitializer.FindGlobalClass(jclassV8ValueDataView, "com/caoccao/javet/values/reference/V8ValueDataView");
+            jniInitializer.GetMethodID(jmethodIDV8ValueDataViewConstructor, jclassV8ValueDataView, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueDoubleObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueDoubleObject");
-            jmethodIDV8ValueDoubleObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueDoubleObject);
-            jmethodIDV8ValueDoubleObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueDoubleObject);
+            jniInitializer.FindGlobalClass(jclassV8ValueDoubleObject, "com/caoccao/javet/values/reference/V8ValueDoubleObject");
+            jniInitializer.GetMethodID(jmethodIDV8ValueDoubleObjectConstructor, jclassV8ValueDoubleObject, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueFunction = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueFunction");
-            jmethodIDV8ValueFunctionConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueFunction);
-            jmethodIDV8ValueFunctionGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueFunction);
+            jniInitializer.FindGlobalClass(jclassV8ValueFunction, "com/caoccao/javet/values/reference/V8ValueFunction");
+            jniInitializer.GetMethodID(jmethodIDV8ValueFunctionConstructor, jclassV8ValueFunction, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueError = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueError");
-            jmethodIDV8ValueErrorConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueError);
-            jmethodIDV8ValueErrorGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueError);
+            jniInitializer.FindGlobalClass(jclassV8ValueError, "com/caoccao/javet/values/reference/V8ValueError");
+            jniInitializer.GetMethodID(jmethodIDV8ValueErrorConstructor, jclassV8ValueError, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueGlobalObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueGlobalObject");
-            jmethodIDV8ValueGlobalObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueGlobalObject);
-            jmethodIDV8ValueGlobalObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueGlobalObject);
+            jniInitializer.FindGlobalClass(jclassV8ValueGlobalObject, "com/caoccao/javet/values/reference/V8ValueGlobalObject");
+            jniInitializer.GetMethodID(jmethodIDV8ValueGlobalObjectConstructor, jclassV8ValueGlobalObject, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueIntegerObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueIntegerObject");
-            jmethodIDV8ValueIntegerObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueIntegerObject);
-            jmethodIDV8ValueIntegerObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueIntegerObject);
+            jniInitializer.FindGlobalClass(jclassV8ValueIntegerObject, "com/caoccao/javet/values/reference/V8ValueIntegerObject");
+            jniInitializer.GetMethodID(jmethodIDV8ValueIntegerObjectConstructor, jclassV8ValueIntegerObject, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueIterator = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueIterator");
-            jmethodIDV8ValueIteratorConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueIterator);
-            jmethodIDV8ValueIteratorGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueIterator);
+            jniInitializer.FindGlobalClass(jclassV8ValueIterator, "com/caoccao/javet/values/reference/V8ValueIterator");
+            jniInitializer.GetMethodID(jmethodIDV8ValueIteratorConstructor, jclassV8ValueIterator, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueLongObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueLongObject");
-            jmethodIDV8ValueLongObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueLongObject);
-            jmethodIDV8ValueLongObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueLongObject);
+            jniInitializer.FindGlobalClass(jclassV8ValueLongObject, "com/caoccao/javet/values/reference/V8ValueLongObject");
+            jniInitializer.GetMethodID(jmethodIDV8ValueLongObjectConstructor, jclassV8ValueLongObject, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueMap = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueMap");
-            jmethodIDV8ValueMapConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueMap);
-            jmethodIDV8ValueMapGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueMap);
+            jniInitializer.FindGlobalClass(jclassV8ValueMap, "com/caoccao/javet/values/reference/V8ValueMap");
+            jniInitializer.GetMethodID(jmethodIDV8ValueMapConstructor, jclassV8ValueMap, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueObject");
-            jmethodIDV8ValueObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueObject);
-            jmethodIDV8ValueObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueObject);
+            jniInitializer.FindGlobalClass(jclassV8ValueObject, "com/caoccao/javet/values/reference/V8ValueObject");
+            jniInitializer.GetMethodID(jmethodIDV8ValueObjectConstructor, jclassV8ValueObject, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValuePromise = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValuePromise");
-            jmethodIDV8ValuePromiseConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValuePromise);
-            jmethodIDV8ValuePromiseGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValuePromise);
+            jniInitializer.FindGlobalClass(jclassV8ValuePromise, "com/caoccao/javet/values/reference/V8ValuePromise");
+            jniInitializer.GetMethodID(jmethodIDV8ValuePromiseConstructor, jclassV8ValuePromise, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueProxy = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueProxy");
-            jmethodIDV8ValueProxyConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueProxy);
-            jmethodIDV8ValueProxyGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueProxy);
+            jniInitializer.FindGlobalClass(jclassV8ValueProxy, "com/caoccao/javet/values/reference/V8ValueProxy");
+            jniInitializer.GetMethodID(jmethodIDV8ValueProxyConstructor, jclassV8ValueProxy, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueReference = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueReference");
+            jniInitializer.FindGlobalClass(jclassV8ValueReference, "com/caoccao/javet/values/reference/V8ValueReference");
+            jniInitializer.GetMethodID(jmethodIDV8ValueReferenceGetHandle, jclassV8ValueReference, "getHandle", "()J");
 
-            jclassV8ValueRegExp = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueRegExp");
-            jmethodIDV8ValueRegExpConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueRegExp);
-            jmethodIDV8ValueRegExpGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueRegExp);
+            jniInitializer.FindGlobalClass(jclassV8ValueRegExp, "com/caoccao/javet/values/reference/V8ValueRegExp");
+            jniInitializer.GetMethodID(jmethodIDV8ValueRegExpConstructor, jclassV8ValueRegExp, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueSet = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueSet");
-            jmethodIDV8ValueSetConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueSet);
-            jmethodIDV8ValueSetGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueSet);
+            jniInitializer.FindGlobalClass(jclassV8ValueSet, "com/caoccao/javet/values/reference/V8ValueSet");
+            jniInitializer.GetMethodID(jmethodIDV8ValueSetConstructor, jclassV8ValueSet, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueSharedArrayBuffer = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueSharedArrayBuffer");
-            jmethodIDV8ValueSharedArrayBufferConstructor = jniEnv->GetMethodID(jclassV8ValueSharedArrayBuffer, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;JLjava/nio/ByteBuffer;)V");
-            jmethodIDV8ValueSharedArrayBufferGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueSharedArrayBuffer);
+            jniInitializer.FindGlobalClass(jclassV8ValueSharedArrayBuffer, "com/caoccao/javet/values/reference/V8ValueSharedArrayBuffer");
+            jniInitializer.GetMethodID(jmethodIDV8ValueSharedArrayBufferConstructor, jclassV8ValueSharedArrayBuffer, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;JLjava/nio/ByteBuffer;)V");
 
-            jclassV8ValueStringObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueStringObject");
-            jmethodIDV8ValueStringObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueStringObject);
-            jmethodIDV8ValueStringObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueStringObject);
+            jniInitializer.FindGlobalClass(jclassV8ValueStringObject, "com/caoccao/javet/values/reference/V8ValueStringObject");
+            jniInitializer.GetMethodID(jmethodIDV8ValueStringObjectConstructor, jclassV8ValueStringObject, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueSymbol = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueSymbol");
-            jmethodIDV8ValueSymbolConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueSymbol);
-            jmethodIDV8ValueSymbolGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueSymbol);
+            jniInitializer.FindGlobalClass(jclassV8ValueSymbol, "com/caoccao/javet/values/reference/V8ValueSymbol");
+            jniInitializer.GetMethodID(jmethodIDV8ValueSymbolConstructor, jclassV8ValueSymbol, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueSymbolObject = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueSymbolObject");
-            jmethodIDV8ValueSymbolObjectConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueSymbolObject);
-            jmethodIDV8ValueSymbolObjectGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueSymbolObject);
+            jniInitializer.FindGlobalClass(jclassV8ValueSymbolObject, "com/caoccao/javet/values/reference/V8ValueSymbolObject");
+            jniInitializer.GetMethodID(jmethodIDV8ValueSymbolObjectConstructor, jclassV8ValueSymbolObject, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueTypedArray = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueTypedArray");
-            jmethodIDV8ValueTypedArrayConstructor = jniEnv->GetMethodID(jclassV8ValueTypedArray, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;JI)V");
-            jmethodIDV8ValueTypedArrayGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueTypedArray);
+            jniInitializer.FindGlobalClass(jclassV8ValueTypedArray, "com/caoccao/javet/values/reference/V8ValueTypedArray");
+            jniInitializer.GetMethodID(jmethodIDV8ValueTypedArrayConstructor, jclassV8ValueTypedArray, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;JI)V");
 
-            jclassV8ValueWeakMap = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueWeakMap");
-            jmethodIDV8ValueWeakMapConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueWeakMap);
-            jmethodIDV8ValueWeakMapGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueWeakMap);
+            jniInitializer.FindGlobalClass(jclassV8ValueWeakMap, "com/caoccao/javet/values/reference/V8ValueWeakMap");
+            jniInitializer.GetMethodID(jmethodIDV8ValueWeakMapConstructor, jclassV8ValueWeakMap, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
-            jclassV8ValueWeakSet = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/V8ValueWeakSet");
-            jmethodIDV8ValueWeakSetConstructor = GET_METHOD_CONSTRUCTOR(jniEnv, jclassV8ValueWeakSet);
-            jmethodIDV8ValueWeakSetGetHandle = GET_METHOD_GET_HANDLE(jniEnv, jclassV8ValueWeakSet);
+            jniInitializer.FindGlobalClass(jclassV8ValueWeakSet, "com/caoccao/javet/values/reference/V8ValueWeakSet");
+            jniInitializer.GetMethodID(jmethodIDV8ValueWeakSetConstructor, jclassV8ValueWeakSet, "<init>", "(Lcom/caoccao/javet/interop/V8Runtime;J)V");
 
             // Misc
-            jclassByteBuffer = FIND_CLASS(jniEnv, "java/nio/ByteBuffer");
-            jclassString = FIND_CLASS(jniEnv, "java/lang/String");
+            jniInitializer.FindGlobalClass(jclassByteBuffer, "java/nio/ByteBuffer");
+            jniInitializer.FindGlobalClass(jclassString, "java/lang/String");
 
-            jclassJavetScriptingError = FIND_CLASS(jniEnv, "com/caoccao/javet/exceptions/JavetScriptingError");
-            jmethodIDJavetScriptingErrorConstructor = jniEnv->GetMethodID(jclassJavetScriptingError, "<init>", "(Lcom/caoccao/javet/values/V8Value;Ljava/lang/String;Ljava/lang/String;IIIII)V");
+            jniInitializer.FindGlobalClass(jclassJavetScriptingError, "com/caoccao/javet/exceptions/JavetScriptingError");
+            jniInitializer.GetMethodID(jmethodIDJavetScriptingErrorConstructor, jclassJavetScriptingError, "<init>", "(Lcom/caoccao/javet/values/V8Value;Ljava/lang/String;Ljava/lang/String;IIIII)V");
 
-            jclassIV8ValueFunctionScriptSource = FIND_CLASS(jniEnv, "com/caoccao/javet/values/reference/IV8ValueFunction$ScriptSource");
-            jmethodIDIV8ValueFunctionScriptSourceConstructor = jniEnv->GetMethodID(jclassIV8ValueFunctionScriptSource, "<init>", "(Ljava/lang/String;II)V");
-            jmethodIDIV8ValueFunctionScriptGetCode = jniEnv->GetMethodID(jclassIV8ValueFunctionScriptSource, "getCode", "()Ljava/lang/String;");
-            jmethodIDIV8ValueFunctionScriptGetEndPosition = jniEnv->GetMethodID(jclassIV8ValueFunctionScriptSource, "getEndPosition", "()I");
-            jmethodIDIV8ValueFunctionScriptGetStartPosition = jniEnv->GetMethodID(jclassIV8ValueFunctionScriptSource, "getStartPosition", "()I");
+            jniInitializer.FindGlobalClass(jclassIV8ValueFunctionScriptSource, "com/caoccao/javet/values/reference/IV8ValueFunction$ScriptSource");
+            jniInitializer.GetMethodID(jmethodIDIV8ValueFunctionScriptSourceConstructor, jclassIV8ValueFunctionScriptSource, "<init>", "(Ljava/lang/String;II)V");
+            jniInitializer.GetMethodID(jmethodIDIV8ValueFunctionScriptGetCode, jclassIV8ValueFunctionScriptSource, "getCode", "()Ljava/lang/String;");
+            jniInitializer.GetMethodID(jmethodIDIV8ValueFunctionScriptGetEndPosition, jclassIV8ValueFunctionScriptSource, "getEndPosition", "()I");
+            jniInitializer.GetMethodID(jmethodIDIV8ValueFunctionScriptGetStartPosition, jclassIV8ValueFunctionScriptSource, "getStartPosition", "()I");
+            return jniInitializer.IsValid();
         }
 
         V8ScriptCompilerCachedData* ToCachedDataPointer(
             JNIEnv* jniEnv,
             const jbyteArray mCachedArray) noexcept {
+            if (mCachedArray == nullptr) {
+                return nullptr;
+            }
             jsize length = jniEnv->GetArrayLength(mCachedArray);
-            uint8_t* bytes = new uint8_t[length];
-            jboolean isCopy;
-            jbyte* bytePointer = jniEnv->GetByteArrayElements(mCachedArray, &isCopy);
-            memcpy(bytes, bytePointer, length);
-            jniEnv->ReleaseByteArrayElements(mCachedArray, bytePointer, JNI_ABORT);
-            return new V8ScriptCompilerCachedData(bytes, length, V8ScriptCompilerCachedDataBufferPolicy::BufferOwned);
+            std::unique_ptr<uint8_t[]> bytes(new (std::nothrow) uint8_t[length]);
+            if (!bytes) {
+                return nullptr;
+            }
+            if (length > 0) {
+                jniEnv->GetByteArrayRegion(
+                    mCachedArray,
+                    0,
+                    length,
+                    reinterpret_cast<jbyte*>(bytes.get()));
+                if (jniEnv->ExceptionCheck()) {
+                    return nullptr;
+                }
+            }
+            auto cachedDataPointer = new (std::nothrow) V8ScriptCompilerCachedData(
+                bytes.get(),
+                length,
+                V8ScriptCompilerCachedDataBufferPolicy::BufferOwned);
+            if (cachedDataPointer != nullptr) {
+                bytes.release();
+            }
+            return cachedDataPointer;
         }
 
         jbyteArray ToJavaByteArray(
             JNIEnv* jniEnv,
             const V8ScriptCompilerCachedData* cachedDataPointer) noexcept {
-            jbyteArray byteArray = jniEnv->NewByteArray((jsize)cachedDataPointer->length);
-            jboolean isCopy;
-            jbyte* bytePointer = jniEnv->GetByteArrayElements(byteArray, &isCopy);
-            memcpy(bytePointer, cachedDataPointer->data, cachedDataPointer->length);
-            jniEnv->ReleaseByteArrayElements(byteArray, bytePointer, JNI_COMMIT);
+            if (cachedDataPointer == nullptr ||
+                cachedDataPointer->length > static_cast<size_t>(std::numeric_limits<jsize>::max())) {
+                return nullptr;
+            }
+            jbyteArray byteArray = jniEnv->NewByteArray(static_cast<jsize>(cachedDataPointer->length));
+            if (byteArray == nullptr) {
+                return nullptr;
+            }
+            if (cachedDataPointer->length > 0) {
+                jniEnv->SetByteArrayRegion(
+                    byteArray,
+                    0,
+                    static_cast<jsize>(cachedDataPointer->length),
+                    reinterpret_cast<const jbyte*>(cachedDataPointer->data));
+                if (jniEnv->ExceptionCheck()) {
+                    DELETE_LOCAL_REF(jniEnv, byteArray);
+                    return nullptr;
+                }
+            }
             return byteArray;
         }
 
@@ -551,33 +642,36 @@ namespace Javet {
             JNIEnv* jniEnv,
             const V8Runtime* v8Runtime,
             const V8LocalContext& v8ContextValue) noexcept {
-            return jniEnv->NewObject(
+            return ToExternalV8Reference(
+                jniEnv,
                 jclassV8Context,
                 jmethodIDV8ContextConstructor,
-                v8Runtime->externalV8Runtime,
-                ToV8PersistentReference(v8Runtime->v8Isolate, v8ContextValue));
+                v8Runtime,
+                v8ContextValue);
         }
 
         jobject ToExternalV8Module(
             JNIEnv* jniEnv,
             const V8Runtime* v8Runtime,
             const V8LocalModule& v8Module) noexcept {
-            return jniEnv->NewObject(
+            return ToExternalV8Reference(
+                jniEnv,
                 jclassV8Module,
                 jmethodIDV8ModuleConstructor,
-                v8Runtime->externalV8Runtime,
-                ToV8PersistentReference(v8Runtime->v8Isolate, v8Module));
+                v8Runtime,
+                v8Module);
         }
 
         jobject ToExternalV8Script(
             JNIEnv* jniEnv,
             const V8Runtime* v8Runtime,
             const V8LocalScript& v8Script) noexcept {
-            return jniEnv->NewObject(
+            return ToExternalV8Reference(
+                jniEnv,
                 jclassV8Script,
                 jmethodIDV8ScriptConstructor,
-                v8Runtime->externalV8Runtime,
-                ToV8PersistentReference(v8Runtime->v8Isolate, v8Script));
+                v8Runtime,
+                v8Script);
         }
 
         jobject ToExternalV8Value(
@@ -614,87 +708,97 @@ namespace Javet {
             const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8LocalValue& v8Value) noexcept {
-            using V8ValueReferenceType = Javet::Enums::V8ValueReferenceType::V8ValueReferenceType;
+            using V8ValueType = Javet::Enums::V8ValueType;
             if (v8Value->IsUndefined()) {
                 return ToExternalV8ValueUndefined(jniEnv, v8Runtime);
             }
             if (v8Value->IsNull()) {
                 return ToExternalV8ValueNull(jniEnv, v8Runtime);
             }
-            auto v8Isolate = v8Runtime->v8Isolate;
             // Reference types
             if (v8Value->IsObject()) {
                 if (v8Value->IsArray()) {
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueArray,
                         jmethodIDV8ValueArrayConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
                 if (v8Value->IsTypedArray()) {
-                    int type = V8ValueReferenceType::Invalid;
+                    jint type = static_cast<jint>(V8ValueType::Invalid);
                     if (v8Value->IsBigInt64Array()) {
-                        type = V8ValueReferenceType::BigInt64Array;
+                        type = static_cast<jint>(V8ValueType::BigInt64Array);
                     }
                     else if (v8Value->IsBigUint64Array()) {
-                        type = V8ValueReferenceType::BigUint64Array;
+                        type = static_cast<jint>(V8ValueType::BigUint64Array);
                     }
                     else if (v8Value->IsFloat32Array()) {
-                        type = V8ValueReferenceType::Float32Array;
+                        type = static_cast<jint>(V8ValueType::Float32Array);
                     }
                     else if (v8Value->IsFloat64Array()) {
-                        type = V8ValueReferenceType::Float64Array;
+                        type = static_cast<jint>(V8ValueType::Float64Array);
                     }
                     else if (v8Value->IsInt16Array()) {
-                        type = V8ValueReferenceType::Int16Array;
+                        type = static_cast<jint>(V8ValueType::Int16Array);
                     }
                     else if (v8Value->IsInt32Array()) {
-                        type = V8ValueReferenceType::Int32Array;
+                        type = static_cast<jint>(V8ValueType::Int32Array);
                     }
                     else if (v8Value->IsInt8Array()) {
-                        type = V8ValueReferenceType::Int8Array;
+                        type = static_cast<jint>(V8ValueType::Int8Array);
                     }
                     else if (v8Value->IsUint16Array()) {
-                        type = V8ValueReferenceType::Uint16Array;
+                        type = static_cast<jint>(V8ValueType::Uint16Array);
                     }
                     else if (v8Value->IsUint32Array()) {
-                        type = V8ValueReferenceType::Uint32Array;
+                        type = static_cast<jint>(V8ValueType::Uint32Array);
                     }
                     else if (v8Value->IsUint8Array()) {
-                        type = V8ValueReferenceType::Uint8Array;
+                        type = static_cast<jint>(V8ValueType::Uint8Array);
                     }
                     else if (v8Value->IsUint8ClampedArray()) {
-                        type = V8ValueReferenceType::Uint8ClampedArray;
+                        type = static_cast<jint>(V8ValueType::Uint8ClampedArray);
                     }
                     else if (v8Value->IsFloat16Array()) {
-                        type = V8ValueReferenceType::Float16Array;
+                        type = static_cast<jint>(V8ValueType::Float16Array);
                     }
-                    if (type != V8ValueReferenceType::Invalid) {
-                        return jniEnv->NewObject(
+                    if (type != static_cast<jint>(V8ValueType::Invalid)) {
+                        return ToExternalV8Reference(
+                            jniEnv,
                             jclassV8ValueTypedArray,
                             jmethodIDV8ValueTypedArrayConstructor,
-                            v8Runtime->externalV8Runtime,
-                            ToV8PersistentReference(v8Isolate, v8Value),
+                            v8Runtime,
+                            v8Value,
                             type);
                     }
                 }
                 if (v8Value->IsDataView()) {
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueDataView,
                         jmethodIDV8ValueDataViewConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
                 if (v8Value->IsArrayBuffer()) {
                     auto v8ArrayBuffer = v8Value.As<v8::ArrayBuffer>();
                     jobject directByteBuffer = jniEnv->NewDirectByteBuffer(
                         v8ArrayBuffer->GetBackingStore()->Data(),
                         v8ArrayBuffer->ByteLength());
-                    jobject v8ValueArrayBuffer = jniEnv->NewObject(
+                    if (directByteBuffer == nullptr) {
+                        return nullptr;
+                    }
+                    if (jniEnv->ExceptionCheck()) {
+                        DELETE_LOCAL_REF(jniEnv, directByteBuffer);
+                        return nullptr;
+                    }
+                    jobject v8ValueArrayBuffer = ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueArrayBuffer,
                         jmethodIDV8ValueArrayBufferConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value),
+                        v8Runtime,
+                        v8Value,
                         directByteBuffer);
                     DELETE_LOCAL_REF(jniEnv, directByteBuffer);
                     return v8ValueArrayBuffer;
@@ -704,11 +808,19 @@ namespace Javet {
                     jobject directByteBuffer = jniEnv->NewDirectByteBuffer(
                         v8SharedArrayBuffer->GetBackingStore()->Data(),
                         v8SharedArrayBuffer->ByteLength());
-                    jobject v8ValueSharedArrayBuffer = jniEnv->NewObject(
+                    if (directByteBuffer == nullptr) {
+                        return nullptr;
+                    }
+                    if (jniEnv->ExceptionCheck()) {
+                        DELETE_LOCAL_REF(jniEnv, directByteBuffer);
+                        return nullptr;
+                    }
+                    jobject v8ValueSharedArrayBuffer = ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueSharedArrayBuffer,
                         jmethodIDV8ValueSharedArrayBufferConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value),
+                        v8Runtime,
+                        v8Value,
                         directByteBuffer);
                     DELETE_LOCAL_REF(jniEnv, directByteBuffer);
                     return v8ValueSharedArrayBuffer;
@@ -720,60 +832,68 @@ namespace Javet {
                      */
                 }
                 if (v8Value->IsWeakMap()) {
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueWeakMap,
                         jmethodIDV8ValueWeakMapConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
                 if (v8Value->IsWeakSet()) {
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueWeakSet,
                         jmethodIDV8ValueWeakSetConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
                 if (v8Value->IsMap()) {
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueMap,
                         jmethodIDV8ValueMapConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
                 if (v8Value->IsSet()) {
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueSet,
                         jmethodIDV8ValueSetConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
                 if (v8Value->IsMapIterator() || v8Value->IsSetIterator() || v8Value->IsGeneratorObject()) {
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueIterator,
                         jmethodIDV8ValueIteratorConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
                 if (v8Value->IsArgumentsObject()) {
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueArguments,
                         jmethodIDV8ValueArgumentsConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
                 if (v8Value->IsPromise()) {
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValuePromise,
                         jmethodIDV8ValuePromiseConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
                 if (v8Value->IsRegExp()) {
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueRegExp,
                         jmethodIDV8ValueRegExpConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
                 if (v8Value->IsAsyncFunction()) {
                     // It defaults to V8ValueFunction.
@@ -783,25 +903,28 @@ namespace Javet {
                 }
                 if (v8Value->IsProxy()) {
                     // Proxy is also a function. So, it needs to be tested before IsFunction().
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueProxy,
                         jmethodIDV8ValueProxyConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
                 if (v8Value->IsFunction()) {
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueFunction,
                         jmethodIDV8ValueFunctionConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
                 if (v8Value->IsNativeError()) {
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueError,
                         jmethodIDV8ValueErrorConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
                 if (v8Value->IsDate()) {
                     auto v8Date = v8Value->ToObject(v8Context).ToLocalChecked().As<v8::Date>();
@@ -811,39 +934,44 @@ namespace Javet {
                         static_cast<std::int64_t>(v8Date->ValueOf()));
                 }
                 if (v8Value->IsSymbolObject()) {
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueSymbolObject,
                         jmethodIDV8ValueSymbolObjectConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
                 if (v8Value->IsStringObject()) {
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueStringObject,
                         jmethodIDV8ValueStringObjectConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
                 if (v8Value->IsNumberObject()) {
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueDoubleObject,
                         jmethodIDV8ValueDoubleObjectConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
                 if (v8Value->IsBooleanObject()) {
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueBooleanObject,
                         jmethodIDV8ValueBooleanObjectConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
                 if (v8Value->IsBigIntObject()) {
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8ValueLongObject,
                         jmethodIDV8ValueLongObjectConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
                 if (v8Value->IsName()) {
                     /*
@@ -852,17 +980,19 @@ namespace Javet {
                      */
                 }
                 if (v8Value->IsModule()) {
-                    return jniEnv->NewObject(
+                    return ToExternalV8Reference(
+                        jniEnv,
                         jclassV8Module,
                         jmethodIDV8ModuleConstructor,
-                        v8Runtime->externalV8Runtime,
-                        ToV8PersistentReference(v8Isolate, v8Value));
+                        v8Runtime,
+                        v8Value);
                 }
-                return jniEnv->NewObject(
+                return ToExternalV8Reference(
+                    jniEnv,
                     jclassV8ValueObject,
                     jmethodIDV8ValueObjectConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Isolate, v8Value));
+                    v8Runtime,
+                    v8Value);
             }
             // Primitive types
             if (v8Value->IsBoolean()) {
@@ -893,11 +1023,12 @@ namespace Javet {
                     v8Value);
             }
             if (v8Value->IsSymbol()) {
-                return jniEnv->NewObject(
+                return ToExternalV8Reference(
+                    jniEnv,
                     jclassV8ValueSymbol,
                     jmethodIDV8ValueSymbolConstructor,
-                    v8Runtime->externalV8Runtime,
-                    ToV8PersistentReference(v8Isolate, v8Value));
+                    v8Runtime,
+                    v8Value);
             }
             if (v8Value->IsBigInt()) {
                 V8LocalBigInt v8LocalBigInt = v8Value->ToBigInt(v8Context).ToLocalChecked();
@@ -911,10 +1042,23 @@ namespace Javet {
                 else {
                     int signBit;
                     jlongArray mLongArray = jniEnv->NewLongArray(wordCount);
-                    jboolean isCopy;
-                    jlong* mLongArrayPointer = jniEnv->GetLongArrayElements(mLongArray, &isCopy);
-                    v8LocalBigInt->ToWordsArray(&signBit, &wordCount, reinterpret_cast<uint64_t*>(mLongArrayPointer));
-                    jniEnv->ReleaseLongArrayElements(mLongArray, mLongArrayPointer, 0);
+                    if (mLongArray == nullptr) {
+                        return nullptr;
+                    }
+                    auto words = std::unique_ptr<jlong[]>(new (std::nothrow) jlong[wordCount]);
+                    if (!words) {
+                        DELETE_LOCAL_REF(jniEnv, mLongArray);
+                        return nullptr;
+                    }
+                    v8LocalBigInt->ToWordsArray(
+                        &signBit,
+                        &wordCount,
+                        reinterpret_cast<uint64_t*>(words.get()));
+                    jniEnv->SetLongArrayRegion(mLongArray, 0, wordCount, words.get());
+                    if (jniEnv->ExceptionCheck()) {
+                        DELETE_LOCAL_REF(jniEnv, mLongArray);
+                        return nullptr;
+                    }
                     jint signum = signBit == 0 ? 1 : -1;
                     jobject v8ValueBigInteger = jniEnv->NewObject(
                         jclassV8ValueBigInteger,
@@ -944,12 +1088,23 @@ namespace Javet {
             jobjectArray v8ValueArray = nullptr;
             int argLength = args.Length();
             if (argLength > 0) {
-                // TODO: Memory leak might take place.
                 v8ValueArray = jniEnv->NewObjectArray(argLength, jclassV8Value, nullptr);
+                if (v8ValueArray == nullptr) {
+                    return nullptr;
+                }
                 for (int i = 0; i < argLength; ++i) {
                     jobject v8Value = ToExternalV8Value(jniEnv, v8Runtime, v8Context, args[i]);
+                    if (jniEnv->ExceptionCheck()) {
+                        DELETE_LOCAL_REF(jniEnv, v8Value);
+                        DELETE_LOCAL_REF(jniEnv, v8ValueArray);
+                        return nullptr;
+                    }
                     jniEnv->SetObjectArrayElement(v8ValueArray, i, v8Value);
                     DELETE_LOCAL_REF(jniEnv, v8Value);
+                    if (jniEnv->ExceptionCheck()) {
+                        DELETE_LOCAL_REF(jniEnv, v8ValueArray);
+                        return nullptr;
+                    }
                 }
             }
             return v8ValueArray;
@@ -961,16 +1116,23 @@ namespace Javet {
             const V8LocalContext& v8Context,
             const V8LocalArray& v8LocalArray) noexcept {
             int length = v8LocalArray->Length();
-            // TODO: Memory leak might take place.
             auto v8ValueArray = jniEnv->NewObjectArray(length, jclassV8Value, nullptr);
+            if (v8ValueArray == nullptr) {
+                return nullptr;
+            }
             ToExternalV8ValueArray(
                 jniEnv,
                 v8Runtime,
                 v8Context,
                 v8LocalArray,
+                length,
                 v8ValueArray,
                 0,
                 length);
+            if (jniEnv->ExceptionCheck()) {
+                DELETE_LOCAL_REF(jniEnv, v8ValueArray);
+                return nullptr;
+            }
             return v8ValueArray;
         }
 
@@ -978,16 +1140,21 @@ namespace Javet {
             JNIEnv* jniEnv,
             V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
-            const V8LocalArray& v8LocalArray,
+            const V8LocalObject& v8LocalObject,
+            const int arrayLength,
             jobjectArray v8Values,
             const int startIndex,
             const int endIndex) noexcept {
-            int arrayLength = v8LocalArray->Length();
+            if (v8Values == nullptr) {
+                return 0;
+            }
+            int v8ValueLength = jniEnv->GetArrayLength(v8Values);
             int actualEndIndex = endIndex > arrayLength ? arrayLength : endIndex;
             int actualLength = actualEndIndex - startIndex;
+            actualLength = actualLength > v8ValueLength ? v8ValueLength : actualLength;
             if (startIndex >= 0 && actualLength > 0) {
                 for (int i = 0; i < actualLength; ++i) {
-                    auto v8MaybeLocalValue = v8LocalArray->Get(v8Context, i + startIndex);
+                    auto v8MaybeLocalValue = v8LocalObject->Get(v8Context, i + startIndex);
                     V8LocalValue v8LocalValue;
                     if (v8MaybeLocalValue.IsEmpty()) {
                         if (Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context)) {
@@ -998,8 +1165,13 @@ namespace Javet {
                         v8LocalValue = v8MaybeLocalValue.ToLocalChecked();
                     }
                     jobject v8Value = ToExternalV8Value(jniEnv, v8Runtime, v8Context, v8LocalValue);
-                    jniEnv->SetObjectArrayElement(v8Values, i, v8Value);
+                    if (!jniEnv->ExceptionCheck()) {
+                        jniEnv->SetObjectArrayElement(v8Values, i, v8Value);
+                    }
                     DELETE_LOCAL_REF(jniEnv, v8Value);
+                    if (jniEnv->ExceptionCheck()) {
+                        return i;
+                    }
                 }
                 return actualLength;
             }
@@ -1042,8 +1214,10 @@ namespace Javet {
             int lineNumber = 0, startColumn = 0, endColumn = 0, startPosition = 0, endPosition = 0;
             auto v8LocalMessage = v8TryCatch.Message();
             if (!v8LocalMessage.IsEmpty()) {
-                jStringScriptResourceName = ToJavaString(jniEnv, v8Runtime->v8Isolate, v8LocalMessage->GetScriptResourceName());
-                jStringSourceLine = ToJavaString(jniEnv, v8Runtime->v8Isolate, v8LocalMessage->GetSourceLine(v8Context).FromMaybe(V8LocalString()));
+                jStringScriptResourceName = ToJavaStringFromV8String(
+                    jniEnv, v8Runtime->v8Isolate, v8LocalMessage->GetScriptResourceName());
+                jStringSourceLine = ToJavaStringFromV8String(
+                    jniEnv, v8Runtime->v8Isolate, v8LocalMessage->GetSourceLine(v8Context).FromMaybe(V8LocalString()));
                 lineNumber = v8LocalMessage->GetLineNumber(v8Context).FromMaybe(0);
                 startColumn = v8LocalMessage->GetStartColumn();
                 endColumn = v8LocalMessage->GetEndColumn();
@@ -1071,17 +1245,28 @@ namespace Javet {
                 return v8::BigInt::New(v8Isolate, 0);
             }
             else {
+                if (mLongArray == nullptr) {
+                    return v8::BigInt::New(v8Isolate, 0);
+                }
                 jsize wordCount = jniEnv->GetArrayLength(mLongArray);
                 if (wordCount == 0) {
                     return v8::BigInt::New(v8Isolate, 0);
                 }
                 else {
-                    jboolean isCopy;
-                    jlong* mLongArrayPointer = jniEnv->GetLongArrayElements(mLongArray, &isCopy);
+                    auto words = std::unique_ptr<jlong[]>(new (std::nothrow) jlong[wordCount]);
+                    if (!words) {
+                        return v8::BigInt::New(v8Isolate, 0);
+                    }
+                    jniEnv->GetLongArrayRegion(mLongArray, 0, wordCount, words.get());
+                    if (jniEnv->ExceptionCheck()) {
+                        return v8::BigInt::New(v8Isolate, 0);
+                    }
                     int signBit = mSignum > 0 ? 0 : 1;
                     V8LocalBigInt v8LocalBigInt = v8::BigInt::NewFromWords(
-                        v8Context, signBit, wordCount, reinterpret_cast<uint64_t*>(mLongArrayPointer)).ToLocalChecked();
-                    jniEnv->ReleaseLongArrayElements(mLongArray, mLongArrayPointer, 0);
+                        v8Context,
+                        signBit,
+                        wordCount,
+                        reinterpret_cast<uint64_t*>(words.get())).ToLocalChecked();
                     return v8LocalBigInt;
                 }
             }
@@ -1090,15 +1275,16 @@ namespace Javet {
         V8LocalContext ToV8Context(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
-            const jobject obj) noexcept {
-            if (IsV8ValueContext(jniEnv, obj)) {
+            const jobject obj,
+            const jint valueType) noexcept {
+            if (IS_V8_CONTEXT(valueType)) {
                 auto v8PersistentContext = TO_V8_PERSISTENT_CONTEXT_POINTER(jniEnv->CallLongMethod(obj, jmethodIDV8ContextGetHandle));
                 return v8PersistentContext->Get(v8Isolate);
             }
             return V8LocalContext();
         }
 
-        std::unique_ptr<v8::ScriptOrigin> ToV8ScriptOringinPointer(
+        v8::ScriptOrigin ToV8ScriptOrigin(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const jstring mResourceName,
@@ -1107,7 +1293,7 @@ namespace Javet {
             const jint mScriptId,
             const jboolean mIsWASM,
             const jboolean mIsModule) noexcept {
-            return std::make_unique<v8::ScriptOrigin>(
+            return v8::ScriptOrigin(
                 ToV8String(jniEnv, v8Isolate, mResourceName),
                 (int)mResourceLineOffset,
                 (int)mResourceColumnOffset,
@@ -1127,11 +1313,16 @@ namespace Javet {
             if (mString == nullptr) {
                 return V8LocalString();
             }
-            const uint16_t* unmanagedString = jniEnv->GetStringChars(mString, nullptr);
+            JNIStringChars unmanagedString(jniEnv, mString);
+            if (!unmanagedString) {
+                return V8LocalString();
+            }
             int length = jniEnv->GetStringLength(mString);
             auto twoByteString = v8::String::NewFromTwoByte(
-                v8Isolate, unmanagedString, v8::NewStringType::kNormal, length);
-            jniEnv->ReleaseStringChars(mString, unmanagedString);
+                v8Isolate,
+                reinterpret_cast<const uint16_t*>(unmanagedString.Get()),
+                v8::NewStringType::kNormal,
+                length);
             if (twoByteString.IsEmpty()) {
                 return V8LocalString();
             }
@@ -1142,144 +1333,201 @@ namespace Javet {
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const V8LocalContext& v8Context,
-            const jobject obj) noexcept {
-            if (obj == nullptr || IsV8ValueNull(jniEnv, obj)) {
+            const jobject obj,
+            const jint valueType) noexcept {
+            using V8ValueType = Javet::Enums::V8ValueType;
+            if (obj == nullptr) {
                 return ToV8Null(v8Isolate);
             }
-            else if (IsV8ValueInteger(jniEnv, obj)) {
+            const auto v8ValueType = static_cast<V8ValueType>(valueType);
+            switch (v8ValueType) {
+            case V8ValueType::Invalid:
+                return ToV8Undefined(v8Isolate);
+            case V8ValueType::Null:
+                return ToV8Null(v8Isolate);
+            case V8ValueType::Undefined:
+                return ToV8Undefined(v8Isolate);
+            case V8ValueType::Integer: {
                 jint integerObject = ToJavaIntegerFromV8ValueInteger(jniEnv, obj);
                 return ToV8Integer(v8Isolate, integerObject);
             }
-            else if (IsV8ValueString(jniEnv, obj)) {
+            case V8ValueType::String: {
                 jstring stringObject = ToJavaStringFromV8ValueString(jniEnv, obj);
                 auto v8String = ToV8String(jniEnv, v8Isolate, stringObject);
                 DELETE_LOCAL_REF(jniEnv, stringObject);
                 return v8String;
             }
-            else if (IsV8ValueBoolean(jniEnv, obj)) {
+            case V8ValueType::Boolean: {
                 jboolean booleanObject = jniEnv->CallBooleanMethod(obj, jmethodIDV8ValueBooleanToPrimitive);
                 return ToV8Boolean(v8Isolate, booleanObject);
             }
-            else if (IsV8ValueDouble(jniEnv, obj)) {
+            case V8ValueType::Double: {
                 jdouble doubleObject = jniEnv->CallDoubleMethod(obj, jmethodIDV8ValueDoubleToPrimitive);
                 return ToV8Double(v8Isolate, doubleObject);
             }
-            else if (IsV8ValueLong(jniEnv, obj)) {
+            case V8ValueType::Long: {
                 jlong longObject = jniEnv->CallLongMethod(obj, jmethodIDV8ValueLongToPrimitive);
                 return ToV8Long(v8Isolate, longObject);
             }
-            else if (IsV8ValueZonedDateTime(jniEnv, obj)) {
+            case V8ValueType::ZonedDateTime: {
                 jlong longObject = (jlong)jniEnv->CallLongMethod(obj, jmethodIDV8ValueZonedDateTimeToPrimitive);
                 return ToV8Date(v8Context, longObject);
             }
-            else if (IsV8ValueBigInteger(jniEnv, obj)) {
+            case V8ValueType::BigInteger: {
                 jint signum = jniEnv->CallIntMethod(obj, jmethodIDV8ValueBigIntegerGetSignum);
                 jlongArray longArray = (jlongArray)jniEnv->CallObjectMethod(obj, jmethodIDV8ValueBigIntegerGetLongArray);
-                return ToV8BigInt(jniEnv, v8Isolate, v8Context, signum, longArray);
+                V8LocalBigInt v8BigInt = ToV8BigInt(
+                    jniEnv, v8Isolate, v8Context, signum, longArray);
+                DELETE_LOCAL_REF(jniEnv, longArray);
+                return v8BigInt;
             }
-            else if (IsV8ValueReference(jniEnv, obj)) {
-                if (IsV8ValueArray(jniEnv, obj)) {
-                    return V8LocalArray::New(v8Isolate, TO_V8_PERSISTENT_ARRAY(
-                        jniEnv->CallLongMethod(obj, jmethodIDV8ValueArrayGetHandle)));
-                }
-                else if (IsV8ValueGlobalObject(jniEnv, obj)) {
-                    // Global object is a tricky one. 
-                    return V8LocalObject::New(v8Isolate, TO_V8_PERSISTENT_OBJECT(
-                        jniEnv->CallLongMethod(obj, jmethodIDV8ValueGlobalObjectGetHandle)));
-                }
-                else if (IsV8ValueMap(jniEnv, obj)) {
-                    return V8LocalMap::New(v8Isolate, TO_V8_PERSISTENT_MAP(
-                        jniEnv->CallLongMethod(obj, jmethodIDV8ValueMapGetHandle)));
-                }
-                else if (IsV8ValuePromise(jniEnv, obj)) {
-                    return V8LocalPromise::New(v8Isolate, TO_V8_PERSISTENT_PROMISE(
-                        jniEnv->CallLongMethod(obj, jmethodIDV8ValuePromiseGetHandle)));
-                }
-                else if (IsV8ValueProxy(jniEnv, obj)) {
-                    return V8LocalProxy::New(v8Isolate, TO_V8_PERSISTENT_PROXY(
-                        jniEnv->CallLongMethod(obj, jmethodIDV8ValueProxyGetHandle)));
-                }
-                else if (IsV8ValueRegExp(jniEnv, obj)) {
-                    return V8LocalRegExp::New(v8Isolate, TO_V8_PERSISTENT_REG_EXP(
-                        jniEnv->CallLongMethod(obj, jmethodIDV8ValueRegExpGetHandle)));
-                }
-                else if (IsV8ValueSet(jniEnv, obj)) {
-                    return V8LocalSet::New(v8Isolate, TO_V8_PERSISTENT_SET(
-                        jniEnv->CallLongMethod(obj, jmethodIDV8ValueSetGetHandle)));
-                }
-                else if (IsV8ValueSymbol(jniEnv, obj)) {
-                    return V8LocalSymbol::New(v8Isolate, TO_V8_PERSISTENT_SYMBOL(
-                        jniEnv->CallLongMethod(obj, jmethodIDV8ValueSymbolGetHandle)));
-                }
-                else if (IsV8ValueSymbolObject(jniEnv, obj)) {
-                    return V8LocalSymbolObject::New(v8Isolate, TO_V8_PERSISTENT_SYMBOL_OBJECT(
-                        jniEnv->CallLongMethod(obj, jmethodIDV8ValueSymbolObjectGetHandle)));
-                }
-                else if (
-                    IsV8ValueArguments(jniEnv, obj) ||
-                    IsV8ValueError(jniEnv, obj) ||
-                    IsV8ValueIterator(jniEnv, obj) ||
-                    IsV8ValueObject(jniEnv, obj) ||
-                    IsV8ValueWeakMap(jniEnv, obj) ||
-                    IsV8ValueWeakSet(jniEnv, obj)) {
-                    return V8LocalObject::New(v8Isolate, TO_V8_PERSISTENT_OBJECT(
-                        jniEnv->CallLongMethod(obj, jmethodIDV8ValueObjectGetHandle)));
-                }
+            default:
+                break;
             }
-            return ToV8Undefined(v8Isolate);
+            const jlong v8ValueHandle = jniEnv->CallLongMethod(
+                obj,
+                jmethodIDV8ValueReferenceGetHandle);
+            switch (v8ValueType) {
+            case V8ValueType::Arguments:
+            case V8ValueType::Array:
+                return V8LocalArray::New(
+                    v8Isolate,
+                    TO_V8_PERSISTENT_ARRAY(v8ValueHandle));
+            case V8ValueType::Map:
+                return V8LocalMap::New(
+                    v8Isolate,
+                    TO_V8_PERSISTENT_MAP(v8ValueHandle));
+            case V8ValueType::Promise:
+                return V8LocalPromise::New(
+                    v8Isolate,
+                    TO_V8_PERSISTENT_PROMISE(v8ValueHandle));
+            case V8ValueType::Proxy:
+                return V8LocalProxy::New(
+                    v8Isolate,
+                    TO_V8_PERSISTENT_PROXY(v8ValueHandle));
+            case V8ValueType::RegExp:
+                return V8LocalRegExp::New(
+                    v8Isolate,
+                    TO_V8_PERSISTENT_REG_EXP(v8ValueHandle));
+            case V8ValueType::Set:
+                return V8LocalSet::New(
+                    v8Isolate,
+                    TO_V8_PERSISTENT_SET(v8ValueHandle));
+            case V8ValueType::Symbol:
+                return V8LocalSymbol::New(
+                    v8Isolate,
+                    TO_V8_PERSISTENT_SYMBOL(v8ValueHandle));
+            case V8ValueType::SymbolObject:
+                return V8LocalSymbolObject::New(
+                    v8Isolate,
+                    TO_V8_PERSISTENT_SYMBOL_OBJECT(v8ValueHandle));
+            case V8ValueType::Object:
+            case V8ValueType::Error:
+            case V8ValueType::Function:
+            case V8ValueType::Iterator:
+            case V8ValueType::WeakMap:
+            case V8ValueType::WeakSet:
+            case V8ValueType::BigIntObject:
+            case V8ValueType::BooleanObject:
+            case V8ValueType::IntegerObject:
+            case V8ValueType::DoubleObject:
+            case V8ValueType::StringObject:
+            case V8ValueType::DataView:
+            case V8ValueType::ArrayBuffer:
+            case V8ValueType::SharedArrayBuffer:
+            case V8ValueType::Int8Array:
+            case V8ValueType::Uint8Array:
+            case V8ValueType::Uint8ClampedArray:
+            case V8ValueType::Int16Array:
+            case V8ValueType::Uint16Array:
+            case V8ValueType::Int32Array:
+            case V8ValueType::Uint32Array:
+            case V8ValueType::Float16Array:
+            case V8ValueType::Float32Array:
+            case V8ValueType::Float64Array:
+            case V8ValueType::BigInt64Array:
+            case V8ValueType::BigUint64Array:
+                return V8LocalObject::New(
+                    v8Isolate,
+                    TO_V8_PERSISTENT_OBJECT(v8ValueHandle));
+            default:
+                return ToV8Undefined(v8Isolate);
+            }
         }
 
-        std::unique_ptr<V8LocalObject[]> ToV8Objects(
+        std::vector<V8LocalObject> ToV8Objects(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const V8LocalContext& v8Context,
-            const jobjectArray mObjects) noexcept {
-            std::unique_ptr<V8LocalObject[]> umObjectsPointer;
+            const jobjectArray mObjects,
+            const jintArray mObjectTypes) noexcept {
+            std::vector<V8LocalObject> objects;
             uint32_t count = mObjects == nullptr ? 0 : jniEnv->GetArrayLength(mObjects);
             if (count > 0) {
-                umObjectsPointer.reset(new V8LocalObject[count]);
+                jint* objectTypes = jniEnv->GetIntArrayElements(mObjectTypes, nullptr);
+                if (objectTypes == nullptr) {
+                    return objects;
+                }
+                objects.reserve(count);
                 for (uint32_t i = 0; i < count; ++i) {
                     jobject element = jniEnv->GetObjectArrayElement(mObjects, i);
-                    umObjectsPointer.get()[i] = ToV8Value(jniEnv, v8Isolate, v8Context, element).As<v8::Object>();
+                    objects.emplace_back(ToV8Value(
+                        jniEnv,
+                        v8Isolate,
+                        v8Context,
+                        element,
+                        objectTypes[i]).As<v8::Object>());
                     DELETE_LOCAL_REF(jniEnv, element);
                 }
+                jniEnv->ReleaseIntArrayElements(mObjectTypes, objectTypes, JNI_ABORT);
             }
-            return umObjectsPointer;
+            return objects;
         }
 
-        std::unique_ptr<V8LocalString[]> ToV8Strings(
+        std::vector<V8LocalString> ToV8Strings(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const jobjectArray mStrings) noexcept {
-            std::unique_ptr<V8LocalString[]> umStringsPointer;
+            std::vector<V8LocalString> strings;
             uint32_t count = mStrings == nullptr ? 0 : jniEnv->GetArrayLength(mStrings);
             if (count > 0) {
-                umStringsPointer.reset(new V8LocalString[count]);
+                strings.reserve(count);
                 for (uint32_t i = 0; i < count; ++i) {
                     jstring element = (jstring)jniEnv->GetObjectArrayElement(mStrings, i);
-                    umStringsPointer.get()[i] = ToV8String(jniEnv, v8Isolate, element);
+                    strings.emplace_back(ToV8String(jniEnv, v8Isolate, element));
                     DELETE_LOCAL_REF(jniEnv, element);
                 }
             }
-            return umStringsPointer;
+            return strings;
         }
 
-        std::unique_ptr<V8LocalValue[]> ToV8Values(
+        std::vector<V8LocalValue> ToV8Values(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const V8LocalContext& v8Context,
-            const jobjectArray mValues) noexcept {
-            std::unique_ptr<V8LocalValue[]> umValuesPointer;
+            const jobjectArray mValues,
+            const jintArray mValueTypes) noexcept {
+            std::vector<V8LocalValue> values;
             uint32_t count = mValues == nullptr ? 0 : jniEnv->GetArrayLength(mValues);
             if (count > 0) {
-                umValuesPointer.reset(new V8LocalValue[count]);
+                jint* valueTypes = jniEnv->GetIntArrayElements(mValueTypes, nullptr);
+                if (valueTypes == nullptr) {
+                    return values;
+                }
+                values.reserve(count);
                 for (uint32_t i = 0; i < count; ++i) {
                     jobject element = jniEnv->GetObjectArrayElement(mValues, i);
-                    umValuesPointer.get()[i] = ToV8Value(jniEnv, v8Isolate, v8Context, element);
+                    values.emplace_back(ToV8Value(
+                        jniEnv,
+                        v8Isolate,
+                        v8Context,
+                        element,
+                        valueTypes[i]));
                     DELETE_LOCAL_REF(jniEnv, element);
                 }
+                jniEnv->ReleaseIntArrayElements(mValueTypes, valueTypes, JNI_ABORT);
             }
-            return umValuesPointer;
+            return values;
         }
     }
 }

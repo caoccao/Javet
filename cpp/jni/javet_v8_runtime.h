@@ -17,7 +17,10 @@
 
 #pragma once
 
+#include <atomic>
 #include <mutex>
+#include <optional>
+#include <unordered_set>
 #include "javet_enums.h"
 #include "javet_logging.h"
 #include "javet_native.h"
@@ -26,11 +29,36 @@ namespace Javet {
     class V8Runtime;
     class V8Scope;
 
+    class V8LockerScope final {
+    public:
+        explicit V8LockerScope(V8Isolate* v8Isolate) noexcept
+            : ownedV8Locker(std::in_place, v8Isolate) {
+        }
+
+        // Keep the explicit locker alive if Unlock() is called re-entrantly.
+        explicit V8LockerScope(const std::shared_ptr<v8::Locker>& sharedV8Locker) noexcept
+            : sharedV8Locker(sharedV8Locker) {
+        }
+
+        V8LockerScope(const V8LockerScope&) = delete;
+        V8LockerScope(V8LockerScope&&) = delete;
+        V8LockerScope& operator=(const V8LockerScope&) = delete;
+        V8LockerScope& operator=(V8LockerScope&&) = delete;
+
+    private:
+        std::shared_ptr<v8::Locker> sharedV8Locker;
+        std::optional<v8::Locker> ownedV8Locker;
+    };
+
     namespace Inspector {
         class JavetInspector;
     }
 
-    void Initialize(JNIEnv* jniEnv) noexcept;
+    namespace Callback {
+        class JavetCallbackContextReference;
+    }
+
+    [[nodiscard]] bool Initialize(JNIEnv* jniEnv) noexcept;
 
     class V8Runtime {
     public:
@@ -57,6 +85,8 @@ namespace Javet {
 
         bool Await(const Javet::Enums::V8AwaitMode::V8AwaitMode awaitMode) noexcept;
 
+        bool Close(JNIEnv* jniEnv) noexcept;
+
         inline bool ClearExternalException(JNIEnv* jniEnv) noexcept {
             if (HasExternalException()) {
                 jniEnv->DeleteGlobalRef(externalException);
@@ -80,6 +110,8 @@ namespace Javet {
         void CloseV8Context() noexcept;
         void CloseV8Isolate() noexcept;
 
+        void CloseCallbackContextReferences() noexcept;
+
         jbyteArray CreateSnapshot(JNIEnv* jniEnv) noexcept;
 
         void CreateV8Context(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept;
@@ -99,28 +131,31 @@ namespace Javet {
          * Shared V8 locker is for implicit mode.
          * Javet manages the lock automatically.
          */
-        inline auto GetSharedV8Locker() const noexcept {
-            return v8Locker ? v8Locker : std::make_shared<v8::Locker>(v8Isolate);
+        inline V8LockerScope GetSharedV8Locker() const noexcept {
+            if (v8Locker) {
+                return V8LockerScope(v8Locker);
+            }
+            return V8LockerScope(v8Isolate);
         }
 
         /*
          * Unique V8 locker is for explicit mode.
          * Application manages the lock.
          */
-        inline auto GetUniqueV8Locker() const noexcept {
-            return std::make_unique<v8::Locker>(v8Isolate);
+        inline V8LockerScope GetUniqueV8Locker() const noexcept {
+            return V8LockerScope(v8Isolate);
         }
 
-        inline auto GetV8ContextScope(const V8LocalContext& v8LocalContext) const noexcept {
-            return std::make_unique<V8ContextScope>(v8LocalContext);
+        inline V8ContextScope GetV8ContextScope(const V8LocalContext& v8LocalContext) const noexcept {
+            return V8ContextScope(v8LocalContext);
         }
 
         inline V8LocalContext GetV8LocalContext() const noexcept {
             return v8GlobalContext.Get(v8Isolate);
         }
 
-        inline auto GetV8IsolateScope() const noexcept {
-            return std::make_unique<V8IsolateScope>(v8Isolate);
+        inline V8IsolateScope GetV8IsolateScope() const noexcept {
+            return V8IsolateScope(v8Isolate);
         }
 
         inline bool HasExternalException() const noexcept {
@@ -134,6 +169,12 @@ namespace Javet {
         inline bool IsLocked() const noexcept {
             return (bool)v8Locker;
         }
+
+        void RegisterCallbackContextReference(
+            Callback::JavetCallbackContextReference* callbackContextReference) noexcept;
+
+        void UnregisterCallbackContextReference(
+            Callback::JavetCallbackContextReference* callbackContextReference) noexcept;
 
 #ifdef ENABLE_NODE
         bool IsBuiltInModuleResolution(JNIEnv* jniEnv) const noexcept;
@@ -180,6 +221,13 @@ namespace Javet {
         virtual ~V8Runtime();
 
     private:
+        enum class V8RuntimeState {
+            Open,
+            Closing,
+            Closed,
+        };
+
+        std::atomic<V8RuntimeState> closeState;
 #ifdef ENABLE_NODE
         // The following Node objects must be live as long as V8 context lives.
         std::shared_ptr<node::ArrayBufferAllocator> nodeArrayBufferAllocator;
@@ -187,6 +235,7 @@ namespace Javet {
         std::unique_ptr<node::IsolateData, decltype(&node::FreeIsolateData)> nodeIsolateData;
         std::atomic_bool nodeStopping;
         uv_loop_t uvLoop;
+        bool uvLoopInitialized;
         // CommonEnvironmentSetup manages the full lifecycle for snapshot
         // creation (CreateForSnapshotting) and restoration (CreateFromSnapshot).
         // When set, nodeEnvironment/nodeIsolateData/uvLoop are NOT used;
@@ -200,6 +249,11 @@ namespace Javet {
         std::unique_ptr<v8::StartupData, std::function<void(v8::StartupData*)>> v8StartupData;
         std::shared_ptr<v8::Locker> v8Locker;
         V8GlobalContext v8GlobalContext;
+        std::mutex callbackContextReferencesMutex;
+        std::unordered_set<Callback::JavetCallbackContextReference*> callbackContextReferences;
+
+#ifdef ENABLE_NODE
+        void CloseUVLoop() noexcept;
+#endif
     };
 }
-

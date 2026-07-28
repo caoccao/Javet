@@ -22,28 +22,32 @@
 
 namespace Javet {
     namespace Exceptions {
-        void Initialize(JNIEnv* jniEnv) noexcept {
+        static jclass jclassJavetConverterException;
+
+        bool Initialize(JNIEnv* jniEnv) noexcept {
             /*
              @see https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/types.html
              @see https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/functions.html
             */
 
-            jclassJavetCompilationException = FIND_CLASS(jniEnv, "com/caoccao/javet/exceptions/JavetCompilationException");
-            jmethodIDJavetCompilationExceptionConstructor = jniEnv->GetMethodID(jclassJavetCompilationException, "<init>", "(Lcom/caoccao/javet/exceptions/JavetScriptingError;Ljava/lang/Throwable;)V");
+            JNIInitializer jniInitializer(jniEnv);
+            jniInitializer.FindGlobalClass(jclassJavetCompilationException, "com/caoccao/javet/exceptions/JavetCompilationException");
+            jniInitializer.GetMethodID(jmethodIDJavetCompilationExceptionConstructor, jclassJavetCompilationException, "<init>", "(Lcom/caoccao/javet/exceptions/JavetScriptingError;Ljava/lang/Throwable;)V");
 
-            jclassJavetConverterException = FIND_CLASS(jniEnv, "com/caoccao/javet/exceptions/JavetConverterException");
+            jniInitializer.FindGlobalClass(jclassJavetConverterException, "com/caoccao/javet/exceptions/JavetConverterException");
 
-            jclassJavetExecutionException = FIND_CLASS(jniEnv, "com/caoccao/javet/exceptions/JavetExecutionException");
-            jmethodIDJavetExecutionExceptionConstructor = jniEnv->GetMethodID(jclassJavetExecutionException, "<init>", "(Lcom/caoccao/javet/exceptions/JavetScriptingError;Ljava/lang/Throwable;)V");
+            jniInitializer.FindGlobalClass(jclassJavetExecutionException, "com/caoccao/javet/exceptions/JavetExecutionException");
+            jniInitializer.GetMethodID(jmethodIDJavetExecutionExceptionConstructor, jclassJavetExecutionException, "<init>", "(Lcom/caoccao/javet/exceptions/JavetScriptingError;Ljava/lang/Throwable;)V");
 
-            jclassJavetOutOfMemoryException = FIND_CLASS(jniEnv, "com/caoccao/javet/exceptions/JavetOutOfMemoryException");
-            jmethodIDJavetOutOfMemoryExceptionConstructor = jniEnv->GetMethodID(jclassJavetOutOfMemoryException, "<init>", "(Ljava/lang/String;Lcom/caoccao/javet/interop/monitoring/V8HeapStatistics;)V");
+            jniInitializer.FindGlobalClass(jclassJavetOutOfMemoryException, "com/caoccao/javet/exceptions/JavetOutOfMemoryException");
+            jniInitializer.GetMethodID(jmethodIDJavetOutOfMemoryExceptionConstructor, jclassJavetOutOfMemoryException, "<init>", "(Ljava/lang/String;Lcom/caoccao/javet/interop/monitoring/V8HeapStatistics;)V");
 
-            jclassJavetTerminatedException = FIND_CLASS(jniEnv, "com/caoccao/javet/exceptions/JavetTerminatedException");
-            jmethodIDJavetTerminatedExceptionConstructor = jniEnv->GetMethodID(jclassJavetTerminatedException, "<init>", "(Z)V");
+            jniInitializer.FindGlobalClass(jclassJavetTerminatedException, "com/caoccao/javet/exceptions/JavetTerminatedException");
+            jniInitializer.GetMethodID(jmethodIDJavetTerminatedExceptionConstructor, jclassJavetTerminatedException, "<init>", "(Z)V");
 
-            jclassThrowable = FIND_CLASS(jniEnv, "java/lang/Throwable");
-            jmethodIDThrowableGetMessage = jniEnv->GetMethodID(jclassThrowable, "getMessage", "()Ljava/lang/String;");
+            jniInitializer.FindGlobalClass(jclassThrowable, "java/lang/Throwable");
+            jniInitializer.GetMethodID(jmethodIDThrowableGetMessage, jclassThrowable, "getMessage", "()Ljava/lang/String;");
+            return jniInitializer.IsValid();
         }
 
         bool HandlePendingException(
@@ -114,6 +118,14 @@ namespace Javet {
             return nullptr;
         }
 
+        jobject ThrowJavetConverterException(
+            JNIEnv* jniEnv,
+            const char* message) noexcept {
+            LOG_ERROR(message);
+            jniEnv->ThrowNew(jclassJavetConverterException, message);
+            return nullptr;
+        }
+
         jobject ThrowJavetExecutionException(
             JNIEnv* jniEnv,
             V8Runtime* v8Runtime,
@@ -165,8 +177,8 @@ namespace Javet {
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const char* message) noexcept {
-            LOG_ERROR(*message);
-            jstring jStringExceptionMessage = Javet::Converter::ToJavaString(jniEnv, message);
+            LOG_ERROR(message);
+            jstring jStringExceptionMessage = Javet::Converter::ToJavaStringFromUtf8(jniEnv, message);
             jobject jObjectHeapStatistics = Javet::Monitor::GetHeapStatistics(jniEnv, v8Isolate);
             jthrowable javetOutOfMemoryException = (jthrowable)jniEnv->NewObject(
                 jclassJavetOutOfMemoryException,
@@ -176,6 +188,7 @@ namespace Javet {
             jniEnv->DeleteLocalRef(jStringExceptionMessage);
             jniEnv->DeleteLocalRef(jObjectHeapStatistics);
             jniEnv->Throw(javetOutOfMemoryException);
+            jniEnv->DeleteLocalRef(javetOutOfMemoryException);
             return nullptr;
         }
 
@@ -187,6 +200,7 @@ namespace Javet {
                 jmethodIDJavetTerminatedExceptionConstructor,
                 canContinue);
             jniEnv->Throw(javetTerminatedException);
+            jniEnv->DeleteLocalRef(javetTerminatedException);
             return nullptr;
         }
 
@@ -198,9 +212,11 @@ namespace Javet {
             auto v8Isolate = v8Runtime->v8Isolate;
             jstring externalErrorMessage = nullptr;
             if (jniEnv->ExceptionCheck()) {
-                jthrowable externalException = jniEnv->ExceptionOccurred();
+                jthrowable localExternalException = jniEnv->ExceptionOccurred();
                 jniEnv->ExceptionClear();
-                externalException = (jthrowable)jniEnv->NewGlobalRef(externalException);
+                jthrowable externalException =
+                    (jthrowable)jniEnv->NewGlobalRef(localExternalException);
+                jniEnv->DeleteLocalRef(localExternalException);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::NewGlobalRef);
                 v8Runtime->ClearExternalException(jniEnv);
                 v8Runtime->externalException = externalException;

@@ -43,12 +43,26 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_batchArrayGet
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType,
     jobjectArray v8Values, jint startIndex, jint endIndex) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
-    if (IS_V8_ARRAY(v8ValueType) || IS_V8_ARGUMENTS(v8ValueType) || v8LocalValue->IsTypedArray()) {
+    if (IS_V8_ARRAY(v8ValueType) || IS_V8_ARGUMENTS(v8ValueType)) {
+        auto v8LocalArray = v8LocalValue.As<v8::Array>();
         return Javet::Converter::ToExternalV8ValueArray(
             jniEnv,
             v8Runtime,
             v8Context,
-            v8LocalValue.As<v8::Array>(),
+            v8LocalArray,
+            v8LocalArray->Length(),
+            v8Values,
+            startIndex,
+            endIndex);
+    }
+    if (v8LocalValue->IsTypedArray()) {
+        auto v8LocalTypedArray = v8LocalValue.As<v8::TypedArray>();
+        return Javet::Converter::ToExternalV8ValueArray(
+            jniEnv,
+            v8Runtime,
+            v8Context,
+            v8LocalTypedArray,
+            (int)v8LocalTypedArray->Length(),
             v8Values,
             startIndex,
             endIndex);

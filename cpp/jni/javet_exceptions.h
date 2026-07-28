@@ -28,8 +28,6 @@ namespace Javet {
         static jclass jclassJavetCompilationException;
         static jmethodID jmethodIDJavetCompilationExceptionConstructor;
 
-        static jclass jclassJavetConverterException;
-
         static jclass jclassJavetExecutionException;
         static jmethodID jmethodIDJavetExecutionExceptionConstructor;
 
@@ -42,7 +40,7 @@ namespace Javet {
         static jclass jclassThrowable;
         static jmethodID jmethodIDThrowableGetMessage;
 
-        void Initialize(JNIEnv* jniEnv) noexcept;
+        [[nodiscard]] bool Initialize(JNIEnv* jniEnv) noexcept;
 
         static inline void ClearJNIException(JNIEnv* jniEnv) noexcept {
             if (jniEnv->ExceptionCheck()) {
@@ -63,13 +61,9 @@ namespace Javet {
             const V8LocalContext& v8Context,
             const V8TryCatch& v8TryCatch) noexcept;
 
-        static inline jobject ThrowJavetConverterException(
+        jobject ThrowJavetConverterException(
             JNIEnv* jniEnv,
-            const char* message) noexcept {
-            LOG_ERROR(*message);
-            jniEnv->ThrowNew(jclassJavetConverterException, message);
-            return nullptr;
-        }
+            const char* message) noexcept;
 
         jobject ThrowJavetExecutionException(
             JNIEnv* jniEnv,

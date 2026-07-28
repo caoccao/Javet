@@ -19,7 +19,7 @@ package com.caoccao.javet.values.reference;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.enums.JSFunctionType;
 import com.caoccao.javet.enums.JSScopeType;
-import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Internal;
 import com.caoccao.javet.interop.V8Runtime;
@@ -186,8 +186,8 @@ public class V8ValueFunction extends V8ValueObject implements IV8ValueFunction {
     }
 
     @Override
-    public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.Function;
+    public V8ValueType getType() {
+        return V8ValueType.Function;
     }
 
     @Override

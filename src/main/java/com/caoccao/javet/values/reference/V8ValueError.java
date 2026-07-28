@@ -17,7 +17,7 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.enums.V8ValueErrorType;
-import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.StringUtils;
@@ -117,8 +117,8 @@ public class V8ValueError extends V8ValueObject {
     }
 
     @Override
-    public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.Error;
+    public V8ValueType getType() {
+        return V8ValueType.Error;
     }
 
     /**

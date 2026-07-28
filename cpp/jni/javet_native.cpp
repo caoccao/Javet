@@ -24,38 +24,75 @@
 #include "javet_logging.h"
 #include "javet_native.h"
 #include "javet_v8_runtime.h"
+#include <utility>
+#include <vector>
 
 JavaVM* GlobalJavaVM;
+
+namespace {
+    std::vector<jclass> GlobalClassRefs;
+}
+
+jclass FIND_CLASS(JNIEnv* jniEnv, const char* className) noexcept {
+    jclass localClass = jniEnv->FindClass(className);
+    if (localClass == nullptr || jniEnv->ExceptionCheck()) {
+        DELETE_LOCAL_REF(jniEnv, localClass);
+        return nullptr;
+    }
+    jclass globalClass = static_cast<jclass>(jniEnv->NewGlobalRef(localClass));
+    jniEnv->DeleteLocalRef(localClass);
+    if (globalClass == nullptr || jniEnv->ExceptionCheck()) {
+        if (globalClass != nullptr) {
+            jniEnv->DeleteGlobalRef(globalClass);
+        }
+        return nullptr;
+    }
+    GlobalClassRefs.push_back(globalClass);
+    return globalClass;
+}
+
+void DELETE_GLOBAL_CLASS_REFS(JNIEnv* jniEnv) noexcept {
+    for (auto iterator = GlobalClassRefs.rbegin(); iterator != GlobalClassRefs.rend(); ++iterator) {
+        jniEnv->DeleteGlobalRef(*iterator);
+    }
+    GlobalClassRefs.clear();
+}
 
 jint JNI_OnLoad(JavaVM* javaVM, void* reserved) {
     LOG_INFO("JNI_Onload() begins.");
     JNIEnv* jniEnv;
     if (javaVM->GetEnv((void**)&jniEnv, SUPPORTED_JNI_VERSION) != JNI_OK) {
         LOG_ERROR("Failed to call JavaVM.GetEnv().");
-        return ERROR_JNI_ON_LOAD;
+        return JNI_ERR;
     }
     if (jniEnv == nullptr) {
         LOG_ERROR("Failed to get JNIEnv.");
-        return ERROR_JNI_ON_LOAD;
+        return JNI_ERR;
     }
     GlobalJavaVM = javaVM;
-    Javet::Initialize(jniEnv);
-    Javet::V8Native::Initialize(jniEnv);
+    const bool initialized = Javet::Initialize(jniEnv)
 #ifdef ENABLE_NODE
-    Javet::NodeNative::Initialize(jniEnv);
+        && Javet::NodeNative::Initialize(jniEnv)
 #endif
-    Javet::Callback::Initialize(jniEnv);
-    Javet::Converter::Initialize(jniEnv);
-    Javet::Exceptions::Initialize(jniEnv);
-    Javet::Inspector::Initialize(jniEnv);
-    Javet::Monitor::Initialize(jniEnv);
-    LOG_INFO("JNI_Onload() ends.");
-    return SUPPORTED_JNI_VERSION;
+        && Javet::Callback::Initialize(jniEnv)
+        && Javet::Converter::Initialize(jniEnv)
+        && Javet::Exceptions::Initialize(jniEnv)
+        && Javet::Inspector::Initialize(jniEnv)
+        && Javet::Monitor::Initialize(jniEnv)
+        && Javet::V8Native::Initialize(jniEnv);
+    if (initialized) {
+        LOG_INFO("JNI_Onload() ends.");
+        return SUPPORTED_JNI_VERSION;
+    }
+    DELETE_GLOBAL_CLASS_REFS(jniEnv);
+    GlobalJavaVM = nullptr;
+    LOG_ERROR("JNI_OnLoad() failed.");
+    return JNI_ERR;
 }
 
 void JNI_OnUnload(JavaVM* javaVM, void* reserved) {
     LOG_INFO("JNI_OnUnload() begins.");
-    JNIEnv* jniEnv;
+    JNIEnv* jniEnv = nullptr;
     if (javaVM->GetEnv((void**)&jniEnv, SUPPORTED_JNI_VERSION) != JNI_OK) {
         LOG_ERROR("Failed to call JavaVM.GetEnv().");
     }
@@ -67,7 +104,9 @@ void JNI_OnUnload(JavaVM* javaVM, void* reserved) {
         Javet::NodeNative::Dispose(jniEnv);
 #endif
         Javet::V8Native::Dispose(jniEnv);
+        DELETE_GLOBAL_CLASS_REFS(jniEnv);
     }
+    GlobalJavaVM = nullptr;
     LOG_INFO("JNI_OnUnload() ends.");
 }
 
@@ -85,13 +124,18 @@ namespace Javet {
             }
         }
 
-        void Initialize(JNIEnv* jniEnv) noexcept {
-            jclassV8Host = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/V8Host");
-            jmethodIDV8HostIsLibraryReloadable = jniEnv->GetStaticMethodID(jclassV8Host, "isLibraryReloadable", "()Z");
+        bool Initialize(JNIEnv* jniEnv) noexcept {
+            JNIInitializer jniInitializer(jniEnv);
+            jniInitializer.FindGlobalClass(jclassV8Host, "com/caoccao/javet/interop/V8Host");
+            jniInitializer.GetStaticMethodID(jmethodIDV8HostIsLibraryReloadable, jclassV8Host, "isLibraryReloadable", "()Z");
+            if (!jniInitializer.IsValid()) {
+                return false;
+            }
 
             if (!GlobalNodeArrayBufferAllocator) {
                 GlobalNodeArrayBufferAllocator = node::ArrayBufferAllocator::Create();
             }
+            return GlobalNodeArrayBufferAllocator != nullptr;
         }
     }
 #endif
@@ -130,24 +174,49 @@ namespace Javet {
         because the memory address probed changes in another file,
         or runtime memory corruption will take place.
         */
-        void Initialize(JNIEnv* jniEnv) noexcept {
-            jclassV8Host = FIND_CLASS(jniEnv, "com/caoccao/javet/interop/V8Host");
-            jmethodIDV8HostIsLibraryReloadable = jniEnv->GetStaticMethodID(jclassV8Host, "isLibraryReloadable", "()Z");
+        bool Initialize(JNIEnv* jniEnv) noexcept {
+            JNIInitializer jniInitializer(jniEnv);
+            jniInitializer.FindGlobalClass(jclassV8Host, "com/caoccao/javet/interop/V8Host");
+            jniInitializer.GetStaticMethodID(jmethodIDV8HostIsLibraryReloadable, jclassV8Host, "isLibraryReloadable", "()Z");
+            if (!jniInitializer.IsValid()) {
+                return false;
+            }
 
             LOG_INFO("V8::Initialize() begins.");
 #ifndef ENABLE_NODE
 #ifdef ENABLE_I18N
-            jclass jclassV8RuntimeOptions = jniEnv->FindClass("com/caoccao/javet/interop/options/V8RuntimeOptions");
-            jfieldID jfieldIDV8RuntimeOptionsV8Flags = jniEnv->GetStaticFieldID(jclassV8RuntimeOptions, "V8_FLAGS", "Lcom/caoccao/javet/interop/options/V8Flags;");
-            jclass jclassV8Flags = jniEnv->FindClass("com/caoccao/javet/interop/options/V8Flags");
-            jmethodID jmethodIDV8FlagsGetIcuDataFile = jniEnv->GetMethodID(jclassV8Flags, "getIcuDataFile", "()Ljava/lang/String;");
+            jclass jclassV8RuntimeOptions = nullptr;
+            jfieldID jfieldIDV8RuntimeOptionsV8Flags = nullptr;
+            jclass jclassV8Flags = nullptr;
+            jmethodID jmethodIDV8FlagsGetIcuDataFile = nullptr;
+            jniInitializer.FindLocalClass(jclassV8RuntimeOptions, "com/caoccao/javet/interop/options/V8RuntimeOptions");
+            jniInitializer.GetStaticFieldID(jfieldIDV8RuntimeOptionsV8Flags, jclassV8RuntimeOptions, "V8_FLAGS", "Lcom/caoccao/javet/interop/options/V8Flags;");
+            jniInitializer.FindLocalClass(jclassV8Flags, "com/caoccao/javet/interop/options/V8Flags");
+            jniInitializer.GetMethodID(jmethodIDV8FlagsGetIcuDataFile, jclassV8Flags, "getIcuDataFile", "()Ljava/lang/String;");
+            if (!jniInitializer.IsValid()) {
+                DELETE_LOCAL_REF(jniEnv, jclassV8Flags);
+                DELETE_LOCAL_REF(jniEnv, jclassV8RuntimeOptions);
+                return false;
+            }
             jobject mV8Flags = jniEnv->GetStaticObjectField(jclassV8RuntimeOptions, jfieldIDV8RuntimeOptionsV8Flags);
             jstring mIcuDataFile = (jstring)jniEnv->CallObjectMethod(mV8Flags, jmethodIDV8FlagsGetIcuDataFile);
-            auto umIcuDataFile = Javet::Converter::ToStdString(jniEnv, mIcuDataFile);
-            LOG_INFO("Calling v8::V8::InitializeICU(\"" << *umIcuDataFile << "\").");
-            v8::V8::InitializeICU(umIcuDataFile->c_str());
+            auto icuDataFile = Javet::Converter::ToUtf8String(jniEnv, mIcuDataFile);
+            if (!icuDataFile) {
+                DELETE_LOCAL_REF(jniEnv, mIcuDataFile);
+                DELETE_LOCAL_REF(jniEnv, mV8Flags);
+                DELETE_LOCAL_REF(jniEnv, jclassV8Flags);
+                DELETE_LOCAL_REF(jniEnv, jclassV8RuntimeOptions);
+                return false;
+            }
+            LOG_INFO("Calling v8::V8::InitializeICU(\"" << *icuDataFile << "\").");
+            v8::V8::InitializeICU(icuDataFile->c_str());
             jniEnv->DeleteLocalRef(mIcuDataFile);
             jniEnv->DeleteLocalRef(mV8Flags);
+            jniEnv->DeleteLocalRef(jclassV8Flags);
+            jniEnv->DeleteLocalRef(jclassV8RuntimeOptions);
+            if (jniEnv->ExceptionCheck()) {
+                return false;
+            }
 #endif
 #endif
             if (Javet::V8Native::GlobalV8Platform) {
@@ -157,27 +226,47 @@ namespace Javet {
 #ifdef ENABLE_NODE
                 uv_setup_args(0, nullptr);
                 std::vector<std::string> args{ DEFAULT_SCRIPT_NAME };
-                jclass jclassNodeRuntimeOptions = jniEnv->FindClass("com/caoccao/javet/interop/options/NodeRuntimeOptions");
-                jfieldID jfieldIDNodeRuntimeOptionsNodeFlags = jniEnv->GetStaticFieldID(jclassNodeRuntimeOptions, "NODE_FLAGS", "Lcom/caoccao/javet/interop/options/NodeFlags;");
-                jclass jclassNodeFlags = jniEnv->FindClass("com/caoccao/javet/interop/options/NodeFlags");
-                jmethodID jmethodIDNodeFlagsSeal = jniEnv->GetMethodID(jclassNodeFlags, "seal", "()Lcom/caoccao/javet/interop/options/NodeFlags;");
-                jmethodID jmethodIDNodeFlagsToArray = jniEnv->GetMethodID(jclassNodeFlags, "toArray", "()[Ljava/lang/String;");
+                jclass jclassNodeRuntimeOptions = nullptr;
+                jfieldID jfieldIDNodeRuntimeOptionsNodeFlags = nullptr;
+                jclass jclassNodeFlags = nullptr;
+                jmethodID jmethodIDNodeFlagsSeal = nullptr;
+                jmethodID jmethodIDNodeFlagsToArray = nullptr;
+                jniInitializer.FindLocalClass(jclassNodeRuntimeOptions, "com/caoccao/javet/interop/options/NodeRuntimeOptions");
+                jniInitializer.GetStaticFieldID(jfieldIDNodeRuntimeOptionsNodeFlags, jclassNodeRuntimeOptions, "NODE_FLAGS", "Lcom/caoccao/javet/interop/options/NodeFlags;");
+                jniInitializer.FindLocalClass(jclassNodeFlags, "com/caoccao/javet/interop/options/NodeFlags");
+                jniInitializer.GetMethodID(jmethodIDNodeFlagsSeal, jclassNodeFlags, "seal", "()Lcom/caoccao/javet/interop/options/NodeFlags;");
+                jniInitializer.GetMethodID(jmethodIDNodeFlagsToArray, jclassNodeFlags, "toArray", "()[Ljava/lang/String;");
+                if (!jniInitializer.IsValid()) {
+                    DELETE_LOCAL_REF(jniEnv, jclassNodeFlags);
+                    DELETE_LOCAL_REF(jniEnv, jclassNodeRuntimeOptions);
+                    return false;
+                }
                 jobject mNodeFlags = jniEnv->GetStaticObjectField(jclassNodeRuntimeOptions, jfieldIDNodeRuntimeOptionsNodeFlags);
-                jobjectArray mNodeFlagsStringArray = (jobjectArray)jniEnv->CallObjectMethod(mNodeFlags, jmethodIDNodeFlagsToArray);
-                if (mNodeFlagsStringArray != nullptr) {
-                    const int nodeFlagCount = jniEnv->GetArrayLength(mNodeFlagsStringArray);
-                    LOG_DEBUG("Node.js flag count is " << nodeFlagCount);
-                    for (int i = 0; i < nodeFlagCount; ++i) {
-                        jstring mFlagString = (jstring)jniEnv->GetObjectArrayElement(mNodeFlagsStringArray, i);
-                        auto umFlagString = Javet::Converter::ToStdString(jniEnv, mFlagString);
-                        LOG_DEBUG("    " << i << ": " << *umFlagString);
-                        args.push_back(*umFlagString);
-                        jniEnv->DeleteLocalRef(mFlagString);
-                    }
-                    jniEnv->DeleteLocalRef(mNodeFlagsStringArray);
+                auto nodeFlagsResult = Javet::Converter::ExtractStringVector(
+                    jniEnv,
+                    mNodeFlags,
+                    jmethodIDNodeFlagsToArray,
+                    Javet::Converter::StringArrayNullability::NonNullable,
+                    Javet::Converter::StringEncoding::Utf8);
+                if (!nodeFlagsResult.success || jniEnv->ExceptionCheck()) {
+                    DELETE_LOCAL_REF(jniEnv, mNodeFlags);
+                    DELETE_LOCAL_REF(jniEnv, jclassNodeFlags);
+                    DELETE_LOCAL_REF(jniEnv, jclassNodeRuntimeOptions);
+                    return false;
+                }
+                LOG_DEBUG("Node.js flag count is " << nodeFlagsResult.strings.size());
+                args.reserve(args.size() + nodeFlagsResult.strings.size());
+                for (size_t i = 0; i < nodeFlagsResult.strings.size(); ++i) {
+                    LOG_DEBUG("    " << i << ": " << nodeFlagsResult.strings[i]);
+                    args.emplace_back(std::move(nodeFlagsResult.strings[i]));
                 }
                 jniEnv->DeleteLocalRef(jniEnv->CallObjectMethod(mNodeFlags, jmethodIDNodeFlagsSeal));
                 jniEnv->DeleteLocalRef(mNodeFlags);
+                jniEnv->DeleteLocalRef(jclassNodeFlags);
+                jniEnv->DeleteLocalRef(jclassNodeRuntimeOptions);
+                if (jniEnv->ExceptionCheck()) {
+                    return false;
+                }
                 std::shared_ptr<node::InitializationResult> result = node::InitializeOncePerProcess(
                     args, {
                         node::ProcessInitializationFlags::kNoFlags,
@@ -212,7 +301,7 @@ namespace Javet {
             }
 #endif
             LOG_INFO("V8::Initialize() ends.");
+            return true;
         }
     }
 }
-

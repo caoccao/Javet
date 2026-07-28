@@ -21,11 +21,13 @@
 #include "javet_v8.h"
 
 namespace Javet {
+    class V8Runtime;
+
     namespace Callback {
         class JavetCallbackContextReference;
         class V8ValueReference;
 
-        void Initialize(JNIEnv* jniEnv) noexcept;
+        [[nodiscard]] bool Initialize(JNIEnv* jniEnv) noexcept;
 
         void JavetCloseWeakCallbackContextHandle(const v8::WeakCallbackInfo<JavetCallbackContextReference>& info) noexcept;
         void JavetCloseWeakDataReference(const v8::WeakCallbackInfo<V8ValueReference>& info) noexcept;
@@ -61,8 +63,9 @@ namespace Javet {
 
         class JavetCallbackContextReference {
         public:
+            V8Runtime* v8Runtime;
             V8PersistentBigInt* v8PersistentCallbackContextHandlePointer;
-            JavetCallbackContextReference(JNIEnv* jniEnv, const jobject callbackContext) noexcept;
+            explicit JavetCallbackContextReference(V8Runtime* v8Runtime) noexcept;
             void CallFunction(const v8::FunctionCallbackInfo<v8::Value>& args) noexcept;
             void CallPropertyGetter(
                 const V8LocalName& propertyName,
@@ -72,6 +75,7 @@ namespace Javet {
                 const V8LocalValue& propertyValue,
                 const v8::PropertyCallbackInfo<void>& args) noexcept;
             void RemoveCallbackContext(const jobject externalV8Runtime) noexcept;
+            void SetHandle(JNIEnv* jniEnv, const jobject callbackContext) noexcept;
             virtual ~JavetCallbackContextReference();
         };
 

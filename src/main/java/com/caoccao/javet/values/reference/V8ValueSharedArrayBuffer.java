@@ -16,7 +16,7 @@
 
 package com.caoccao.javet.values.reference;
 
-import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 
@@ -31,7 +31,7 @@ public class V8ValueSharedArrayBuffer extends V8ValueArrayBuffer {
     }
 
     @Override
-    public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.SharedArrayBuffer;
+    public V8ValueType getType() {
+        return V8ValueType.SharedArrayBuffer;
     }
 }

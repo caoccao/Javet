@@ -138,11 +138,13 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_promiseGetProm
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promiseReject
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject value) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject value, jint valueType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE_WITH_UNIQUE_LOCKER(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_PROMISE(v8ValueType)) {
         auto v8LocalPromiseResolver = v8LocalValue.As<v8::Promise::Resolver>();
-        auto v8MaybeBool = v8LocalPromiseResolver->Reject(v8Context, Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, value));
+        auto v8MaybeBool = v8LocalPromiseResolver->Reject(
+            v8Context,
+            Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, value, valueType));
         if (v8MaybeBool.IsNothing()) {
             Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context);
         }
@@ -152,11 +154,13 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promiseReject
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_promiseResolve
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject value) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jlong v8ValueHandle, jint v8ValueType, jobject value, jint valueType) {
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE_WITH_UNIQUE_LOCKER(v8RuntimeHandle, v8ValueHandle);
     if (IS_V8_PROMISE(v8ValueType)) {
         auto v8LocalPromiseResolver = v8LocalValue.As<v8::Promise::Resolver>();
-        auto v8MaybeBool = v8LocalPromiseResolver->Resolve(v8Context, Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, value));
+        auto v8MaybeBool = v8LocalPromiseResolver->Resolve(
+            v8Context,
+            Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, value, valueType));
         if (v8MaybeBool.IsNothing()) {
             Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context);
         }

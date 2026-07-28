@@ -20,7 +20,7 @@
  * Key enums:
  * <ul>
  *   <li>{@link com.caoccao.javet.enums.JSRuntimeType} - Choose between Node.js and V8 runtime modes.</li>
- *   <li>{@link com.caoccao.javet.enums.V8ValueReferenceType} - V8 reference types (Object, Function, Array, Promise, etc.).</li>
+ *   <li>{@link com.caoccao.javet.enums.V8ValueType} - V8 value types (Null, Integer, Object, Function, etc.).</li>
  *   <li>{@link com.caoccao.javet.enums.V8ValueInternalType} - Comprehensive V8 internal value type enumeration.</li>
  *   <li>{@link com.caoccao.javet.enums.V8ConversionMode} - Converter strategies: Transparent, AllowOnly, BlockOnly.</li>
  *   <li>{@link com.caoccao.javet.enums.V8ProxyMode} - Proxy handler modes: Class, Function, Object.</li>

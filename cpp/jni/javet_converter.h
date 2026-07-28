@@ -18,7 +18,13 @@
 
 #pragma once
 
+#include <cstddef>
 #include <jni.h>
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <vector>
 #include "javet_constants.h"
 #include "javet_monitor.h"
 #include "javet_native.h"
@@ -28,14 +34,26 @@
 
 namespace Javet {
     namespace Converter {
+        enum class StringArrayNullability {
+            NonNullable,
+            Nullable,
+        };
+
+        enum class StringEncoding {
+            ModifiedUtf8,
+            Utf8,
+        };
+
+        struct StringVectorResult final {
+            std::vector<std::string> strings;
+            bool present = false;
+            bool success = false;
+        };
+
         // extern
-        extern jclass jclassV8ValueInteger;
         extern jmethodID jmethodIDV8ValueIntegerToPrimitive;
 
-        extern jclass jclassV8ValueString;
         extern jmethodID jmethodIDV8ValueStringToPrimitive;
-
-        extern jclass jclassV8ValueSymbol;
 
         extern jclass jclassByteBuffer;
         extern jclass jclassString;
@@ -52,21 +70,6 @@ namespace Javet {
         }
 
         template<typename T1, typename T2>
-        constexpr auto IsV8ValueInteger(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueInteger);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueString(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueString);
-        }
-
-        template<typename T1, typename T2>
-        constexpr auto IsV8ValueSymbol(T1 jniEnv, T2 obj) {
-            return jniEnv->IsInstanceOf(obj, jclassV8ValueSymbol);
-        }
-
-        template<typename T1, typename T2>
         constexpr auto ToJavaIntegerFromV8ValueInteger(T1 jniEnv, T2 obj) {
             return jniEnv->CallIntMethod(obj, jmethodIDV8ValueIntegerToPrimitive);
         }
@@ -76,7 +79,7 @@ namespace Javet {
             return (jstring)jniEnv->CallObjectMethod(obj, jmethodIDV8ValueStringToPrimitive);
         }
 
-        void Initialize(JNIEnv* jniEnv) noexcept;
+        [[nodiscard]] bool Initialize(JNIEnv* jniEnv) noexcept;
 
         V8ScriptCompilerCachedData* ToCachedDataPointer(
             JNIEnv* jniEnv,
@@ -86,19 +89,37 @@ namespace Javet {
             JNIEnv* jniEnv,
             const V8ScriptCompilerCachedData* cachedDataPointer) noexcept;
 
-        static inline jstring ToJavaString(
-            JNIEnv* jniEnv,
-            const char* utfString) noexcept {
-            return jniEnv->NewStringUTF(utfString);
+        static inline bool ToJavaBoolean(
+            const V8LocalValue& v8LocalValue,
+            jboolean& booleanValue) noexcept {
+            if (v8LocalValue->IsBoolean()) {
+                booleanValue = v8LocalValue.As<v8::Boolean>()->Value();
+                return true;
+            }
+            if (v8LocalValue->IsBooleanObject()) {
+                booleanValue = v8LocalValue.As<v8::BooleanObject>()->ValueOf();
+                return true;
+            }
+            return false;
         }
 
-        static inline jstring ToJavaString(
+        jstring ToJavaStringFromUtf8(
             JNIEnv* jniEnv,
-            const std::string& stdString) noexcept {
-            return jniEnv->NewStringUTF(stdString.c_str());
-        }
+            const char* utf8String) noexcept;
 
-        static inline jstring ToJavaString(
+        jstring ToJavaStringFromUtf8(
+            JNIEnv* jniEnv,
+            std::string_view utf8String) noexcept;
+
+        jstring ToJavaStringFromUtf8(
+            JNIEnv* jniEnv,
+            const std::string& utf8String) noexcept;
+
+        jstring ToJavaStringFromUtf16(
+            JNIEnv* jniEnv,
+            const std::u16string& utf16String) noexcept;
+
+        static inline jstring ToJavaStringFromV8String(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const V8LocalString& v8LocalString) noexcept {
@@ -106,28 +127,37 @@ namespace Javet {
             return jniEnv->NewString(*v8StringValue, v8StringValue.length());
         }
 
-        static inline jstring ToJavaString(
+        static inline jstring ToJavaStringFromV8String(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const V8LocalValue& v8LocalValue) noexcept {
-            V8StringUtf8Value v8StringUtf8Value(v8Isolate, v8LocalValue);
-            return jniEnv->NewStringUTF(*v8StringUtf8Value);
+            V8StringValue v8StringValue(v8Isolate, v8LocalValue);
+            return jniEnv->NewString(*v8StringValue, v8StringValue.length());
         }
 
-        static inline std::unique_ptr<std::string> ToStdString(
+        std::optional<std::string> ToUtf8String(
             JNIEnv* jniEnv,
-            const jstring& mString) noexcept {
-            const char* utfChars = jniEnv->GetStringUTFChars(mString, nullptr);
-            auto stdStringPointer = std::make_unique<std::string>(utfChars, jniEnv->GetStringUTFLength(mString));
-            jniEnv->ReleaseStringUTFChars(mString, utfChars);
-            return stdStringPointer;
-        }
+            const jstring& mString) noexcept;
 
-        static inline std::unique_ptr<std::string> ToStdString(
+        std::string ToUtf8String(
+            const std::u16string& utf16String) noexcept;
+
+        std::optional<std::u16string> ToUtf16String(
+            JNIEnv* jniEnv,
+            const jstring& mString) noexcept;
+
+        [[nodiscard]] StringVectorResult ExtractStringVector(
+            JNIEnv* jniEnv,
+            const jobject source,
+            jmethodID stringArrayGetter,
+            StringArrayNullability nullability,
+            StringEncoding encoding) noexcept;
+
+        static inline std::string ToUtf8String(
             V8Isolate* v8Isolate,
             const V8LocalString& v8LocalString) noexcept {
             V8StringUtf8Value v8StringUtf8Value(v8Isolate, v8LocalString);
-            return std::make_unique<std::string>(*v8StringUtf8Value, v8StringUtf8Value.length());
+            return std::string(*v8StringUtf8Value, v8StringUtf8Value.length());
         }
 
         jobject ToExternalV8Context(
@@ -173,7 +203,8 @@ namespace Javet {
             JNIEnv* jniEnv,
             V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
-            const V8LocalArray& v8LocalArray,
+            const V8LocalObject& v8LocalObject,
+            const int arrayLength,
             jobjectArray v8Values,
             const int startIndex,
             const int endIndex) noexcept;
@@ -193,7 +224,10 @@ namespace Javet {
             const V8Runtime* v8Runtime,
             const V8LocalContext& v8Context,
             const V8LocalValue& v8Value) noexcept {
-            jstring mStringValue = ToJavaString(jniEnv, v8Runtime->v8Isolate, v8Value->ToString(v8Context).ToLocalChecked());
+            jstring mStringValue = ToJavaStringFromV8String(
+                jniEnv,
+                v8Runtime->v8Isolate,
+                v8Value->ToString(v8Context).ToLocalChecked());
             jobject mV8ValuePrimitive = jniEnv->NewObject(
                 jclassV8ValuePrimitive,
                 jmethodIDV8ValuePrimitiveConstructor,
@@ -228,7 +262,8 @@ namespace Javet {
         V8LocalContext ToV8Context(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
-            const jobject obj) noexcept;
+            const jobject obj,
+            const jint valueType) noexcept;
 
         static inline V8LocalValue ToV8Date(
             const V8LocalContext& v8Context,
@@ -264,16 +299,34 @@ namespace Javet {
             return v8::Undefined(v8Isolate);
         }
 
-        template<class T>
-        static inline jlong ToV8PersistentReference(
-            V8Isolate* v8Isolate,
-            const v8::Local<T>& v8Data) noexcept {
-            v8::Persistent<T>* v8PersistentDataPointer = new v8::Persistent<T>(v8Isolate, v8Data);
+        template<class T, class... Args>
+        static inline jobject ToExternalV8Reference(
+            JNIEnv* jniEnv,
+            jclass objectClass,
+            jmethodID constructor,
+            const V8Runtime* v8Runtime,
+            const v8::Local<T>& v8Data,
+            Args... args) noexcept {
+            auto v8PersistentDataPointer =
+                std::make_unique<v8::Persistent<T>>(v8Runtime->v8Isolate, v8Data);
             INCREASE_COUNTER(Javet::Monitor::CounterType::NewPersistentReference);
-            return TO_JAVA_LONG(v8PersistentDataPointer);
+            jobject externalV8Reference = jniEnv->NewObject(
+                objectClass,
+                constructor,
+                v8Runtime->externalV8Runtime,
+                TO_JAVA_LONG(v8PersistentDataPointer.get()),
+                args...);
+            if (externalV8Reference != nullptr) {
+                v8PersistentDataPointer.release();
+            }
+            else {
+                v8PersistentDataPointer->Reset();
+                INCREASE_COUNTER(Javet::Monitor::CounterType::DeletePersistentReference);
+            }
+            return externalV8Reference;
         }
 
-        std::unique_ptr<v8::ScriptOrigin> ToV8ScriptOringinPointer(
+        v8::ScriptOrigin ToV8ScriptOrigin(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const jstring mResourceName,
@@ -304,24 +357,27 @@ namespace Javet {
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const V8LocalContext& v8Context,
-            const jobject obj) noexcept;
+            const jobject obj,
+            const jint valueType) noexcept;
 
-        std::unique_ptr<V8LocalObject[]> ToV8Objects(
+        std::vector<V8LocalObject> ToV8Objects(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const V8LocalContext& v8Context,
-            const jobjectArray mObjects) noexcept;
+            const jobjectArray mObjects,
+            const jintArray mObjectTypes) noexcept;
 
-        std::unique_ptr<V8LocalString[]> ToV8Strings(
+        std::vector<V8LocalString> ToV8Strings(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const jobjectArray mStrings) noexcept;
 
-        std::unique_ptr<V8LocalValue[]> ToV8Values(
+        std::vector<V8LocalValue> ToV8Values(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
             const V8LocalContext& v8Context,
-            const jobjectArray mValues) noexcept;
+            const jobjectArray mValues,
+            const jintArray mValueTypes) noexcept;
 
 #ifdef ENABLE_NODE
         static inline V8InternalNativeContext ToV8InternalContext(

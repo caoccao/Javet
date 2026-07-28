@@ -18,11 +18,16 @@
 #include "javet_jni.h"
 
 JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_proxyCreate
-(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mTarget) {
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mTarget, jint targetType) {
     RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
     V8LocalObject v8LocalObjectTaget;
     if (mTarget != nullptr) {
-        auto v8LocalValue = Javet::Converter::ToV8Value(jniEnv, v8Isolate, v8Context, mTarget);
+        auto v8LocalValue = Javet::Converter::ToV8Value(
+            jniEnv,
+            v8Isolate,
+            v8Context,
+            mTarget,
+            targetType);
         if (v8LocalValue->IsObject()) {
             v8LocalObjectTaget = v8LocalValue.As<v8::Object>();
         }

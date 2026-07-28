@@ -21,7 +21,7 @@ import com.caoccao.javet.entities.JavetEntityError;
 import com.caoccao.javet.entities.JavetEntityFunction;
 import com.caoccao.javet.entities.JavetEntityMap;
 import com.caoccao.javet.entities.JavetEntitySymbol;
-import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interfaces.*;
 import com.caoccao.javet.interop.V8Runtime;
@@ -510,7 +510,7 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 } else if (object instanceof byte[]) {
                     byte[] bytes = (byte[]) object;
                     V8ValueTypedArray v8ValueTypedArray = v8Scope.createV8ValueTypedArray(
-                            V8ValueReferenceType.Int8Array, bytes.length);
+                            V8ValueType.Int8Array, bytes.length);
                     v8ValueTypedArray.fromBytes(bytes);
                     v8Value = v8ValueTypedArray;
                 } else if (object instanceof char[]) {
@@ -536,31 +536,31 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 } else if (object instanceof double[]) {
                     double[] doubles = (double[]) object;
                     V8ValueTypedArray v8ValueTypedArray = v8Scope.createV8ValueTypedArray(
-                            V8ValueReferenceType.Float64Array, doubles.length);
+                            V8ValueType.Float64Array, doubles.length);
                     v8ValueTypedArray.fromDoubles(doubles);
                     v8Value = v8ValueTypedArray;
                 } else if (object instanceof float[]) {
                     float[] floats = (float[]) object;
                     V8ValueTypedArray v8ValueTypedArray = v8Scope.createV8ValueTypedArray(
-                            V8ValueReferenceType.Float32Array, floats.length);
+                            V8ValueType.Float32Array, floats.length);
                     v8ValueTypedArray.fromFloats(floats);
                     v8Value = v8ValueTypedArray;
                 } else if (object instanceof int[]) {
                     int[] integers = (int[]) object;
                     V8ValueTypedArray v8ValueTypedArray = v8Scope.createV8ValueTypedArray(
-                            V8ValueReferenceType.Int32Array, integers.length);
+                            V8ValueType.Int32Array, integers.length);
                     v8ValueTypedArray.fromIntegers(integers);
                     v8Value = v8ValueTypedArray;
                 } else if (object instanceof long[]) {
                     long[] longs = (long[]) object;
                     V8ValueTypedArray v8ValueTypedArray = v8Scope.createV8ValueTypedArray(
-                            V8ValueReferenceType.BigInt64Array, longs.length);
+                            V8ValueType.BigInt64Array, longs.length);
                     v8ValueTypedArray.fromLongs(longs);
                     v8Value = v8ValueTypedArray;
                 } else if (object instanceof short[]) {
                     short[] shorts = (short[]) object;
                     V8ValueTypedArray v8ValueTypedArray = v8Scope.createV8ValueTypedArray(
-                            V8ValueReferenceType.Int16Array, shorts.length);
+                            V8ValueType.Int16Array, shorts.length);
                     v8ValueTypedArray.fromShorts(shorts);
                     v8Value = v8ValueTypedArray;
                 } else {

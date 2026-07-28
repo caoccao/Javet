@@ -100,13 +100,14 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param v8ValueKeys     the V8 value keys
+     * @param v8ValueKeyTypes the V8 value key types
      * @param v8ValueValues   the V8 value values
      * @param length          the length
      * @return the number of items processed
      */
     int batchObjectGet(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
-            Object[] v8ValueKeys, Object[] v8ValueValues, int length);
+            Object[] v8ValueKeys, int[] v8ValueKeyTypes, Object[] v8ValueValues, int length);
 
     /**
      * Create a Boolean object wrapper.
@@ -163,8 +164,9 @@ public interface IV8Native {
      * Close and dispose a V8 runtime.
      *
      * @param v8RuntimeHandle the V8 runtime handle
+     * @return true if the runtime is closed, false if it is already closing or closed
      */
-    void closeV8Runtime(long v8RuntimeHandle);
+    boolean closeV8Runtime(long v8RuntimeHandle);
 
     /**
      * Get a value from a Context at the given index.
@@ -252,10 +254,14 @@ public interface IV8Native {
      *
      * @param v8RuntimeHandle the V8 runtime handle
      * @param v8ValueHandle1  the first V8 value handle
+     * @param v8ValueType1    the first V8 value type
      * @param v8ValueHandle2  the second V8 value handle
+     * @param v8ValueType2    the second V8 value type
      * @return true if the values are equal
      */
-    boolean equals(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);
+    boolean equals(
+            long v8RuntimeHandle, long v8ValueHandle1, int v8ValueType1,
+            long v8ValueHandle2, int v8ValueType2);
 
     /**
      * Create a new Error object with the given type and message.
@@ -274,13 +280,15 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param receiver        the receiver object
+     * @param receiverType    the receiver type
      * @param returnResult    whether to return the result
      * @param values          the argument values
+     * @param valueTypes      the value types
      * @return the result
      */
     Object functionCall(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
-            Object receiver, boolean returnResult, Object[] values);
+            Object receiver, int receiverType, boolean returnResult, Object[] values, int[] valueTypes);
 
     /**
      * Call a Function as a constructor with the given arguments.
@@ -289,9 +297,12 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param values          the argument values
+     * @param valueTypes      the value types
      * @return the result
      */
-    Object functionCallAsConstructor(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] values);
+    Object functionCallAsConstructor(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object[] values, int[] valueTypes);
 
     /**
      * Check if a Function's compiled code can be discarded.
@@ -306,23 +317,24 @@ public interface IV8Native {
     /**
      * Compile a Function from source code with optional cached data.
      *
-     * @param v8RuntimeHandle      the V8 runtime handle
-     * @param script               the script source code
-     * @param cachedData           the cached data
-     * @param resourceName         the resource name
-     * @param resourceLineOffset   the resource line offset
-     * @param resourceColumnOffset the resource column offset
-     * @param scriptId             the script ID
-     * @param wasm                 whether the script is WebAssembly
-     * @param arguments            the argument names
-     * @param contextExtensions    the context extensions
+     * @param v8RuntimeHandle       the V8 runtime handle
+     * @param script                the script source code
+     * @param cachedData            the cached data
+     * @param resourceName          the resource name
+     * @param resourceLineOffset    the resource line offset
+     * @param resourceColumnOffset  the resource column offset
+     * @param scriptId              the script ID
+     * @param wasm                  whether the script is WebAssembly
+     * @param arguments             the argument names
+     * @param contextExtensions     the context extensions
+     * @param contextExtensionTypes the context extension types
      * @return the result
      */
     Object functionCompile(
             long v8RuntimeHandle, String script, byte[] cachedData,
             String resourceName, int resourceLineOffset, int resourceColumnOffset,
             int scriptId, boolean wasm,
-            String[] arguments, Object[] contextExtensions);
+            String[] arguments, Object[] contextExtensions, int[] contextExtensionTypes);
 
     /**
      * Copy scope info from a source Function to a target Function.
@@ -479,9 +491,12 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param v8Context       the V8 context
+     * @param v8ContextType   the V8 context type
      * @return true if successful
      */
-    boolean functionSetContext(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object v8Context);
+    boolean functionSetContext(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object v8Context, int v8ContextType);
 
     /**
      * Set the script source object of a Function.
@@ -744,9 +759,10 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @return true if successful
      */
-    boolean mapDelete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    boolean mapDelete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     /**
      * Get a value from a Map by key.
@@ -755,9 +771,10 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @return the result
      */
-    Object mapGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    Object mapGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     /**
      * Get a boolean value from a Map by key.
@@ -766,10 +783,13 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param primitiveFlags  the primitive flags
      * @return the boolean value
      */
-    boolean mapGetBoolean(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+    boolean mapGetBoolean(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, boolean[] primitiveFlags);
 
     /**
      * Get a double value from a Map by key.
@@ -778,10 +798,13 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param primitiveFlags  the primitive flags
      * @return the double value
      */
-    double mapGetDouble(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+    double mapGetDouble(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, boolean[] primitiveFlags);
 
     /**
      * Get an integer value from a Map by key.
@@ -790,10 +813,13 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param primitiveFlags  the primitive flags
      * @return the integer value
      */
-    int mapGetInteger(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+    int mapGetInteger(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, boolean[] primitiveFlags);
 
     /**
      * Get a long value from a Map by key.
@@ -802,10 +828,13 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param primitiveFlags  the primitive flags
      * @return the long value
      */
-    long mapGetLong(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+    long mapGetLong(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, boolean[] primitiveFlags);
 
     /**
      * Get the number of entries in a Map.
@@ -824,9 +853,10 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @return the string value
      */
-    String mapGetString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    String mapGetString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     /**
      * Check if a Map contains the given key.
@@ -835,9 +865,10 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param value           the value
+     * @param valueType       the value type
      * @return true if the key or value exists
      */
-    boolean mapHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+    boolean mapHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value, int valueType);
 
     /**
      * Set multiple key-value pairs in a Map.
@@ -846,9 +877,12 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param keysAndValues   the keys and values array
+     * @param valueTypes      the value types
      * @return true if successful
      */
-    boolean mapSet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] keysAndValues);
+    boolean mapSet(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object[] keysAndValues, int[] valueTypes);
 
     /**
      * Set a boolean value in a Map by key.
@@ -857,10 +891,13 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param value           the value
      * @return true if successful
      */
-    boolean mapSetBoolean(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean value);
+    boolean mapSetBoolean(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, boolean value);
 
     /**
      * Set a double value in a Map by key.
@@ -869,10 +906,13 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param value           the value
      * @return true if successful
      */
-    boolean mapSetDouble(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, double value);
+    boolean mapSetDouble(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, double value);
 
     /**
      * Set an integer value in a Map by key.
@@ -881,10 +921,13 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param value           the value
      * @return true if successful
      */
-    boolean mapSetInteger(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int value);
+    boolean mapSetInteger(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, int value);
 
     /**
      * Set a long value in a Map by key.
@@ -893,10 +936,13 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param value           the value
      * @return true if successful
      */
-    boolean mapSetLong(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, long value);
+    boolean mapSetLong(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, long value);
 
     /**
      * Set a null value in a Map by key.
@@ -905,9 +951,10 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @return true if successful
      */
-    boolean mapSetNull(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    boolean mapSetNull(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     /**
      * Set a string value in a Map by key.
@@ -916,10 +963,13 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param value           the value
      * @return true if successful
      */
-    boolean mapSetString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, String value);
+    boolean mapSetString(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, String value);
 
     /**
      * Set an undefined value in a Map by key.
@@ -928,9 +978,10 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @return true if successful
      */
-    boolean mapSetUndefined(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    boolean mapSetUndefined(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     /**
      * Compile a Module from source code with optional cached data.
@@ -1108,9 +1159,10 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @return true if successful
      */
-    boolean objectDelete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    boolean objectDelete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     /**
      * Delete a private property from an Object by key.
@@ -1130,9 +1182,10 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @return the result
      */
-    Object objectGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    Object objectGet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     /**
      * Get a boolean property value from an Object by key.
@@ -1141,10 +1194,13 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param primitiveFlags  the primitive flags
      * @return the boolean value
      */
-    boolean objectGetBoolean(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+    boolean objectGetBoolean(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, boolean[] primitiveFlags);
 
     /**
      * Get a double property value from an Object by key.
@@ -1153,10 +1209,13 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param primitiveFlags  the primitive flags
      * @return the double value
      */
-    double objectGetDouble(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+    double objectGetDouble(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, boolean[] primitiveFlags);
 
     /**
      * Get the identity hash of an Object.
@@ -1175,10 +1234,13 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param primitiveFlags  the primitive flags
      * @return the integer value
      */
-    int objectGetInteger(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+    int objectGetInteger(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, boolean[] primitiveFlags);
 
     /**
      * Get a long property value from an Object by key.
@@ -1187,10 +1249,13 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param primitiveFlags  the primitive flags
      * @return the long value
      */
-    long objectGetLong(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean[] primitiveFlags);
+    long objectGetLong(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, boolean[] primitiveFlags);
 
     /**
      * Get the own property names of an Object.
@@ -1220,9 +1285,10 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @return the result
      */
-    Object objectGetProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    Object objectGetProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     /**
      * Get all property names of an Object including inherited ones.
@@ -1251,9 +1317,10 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @return the string value
      */
-    String objectGetString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    String objectGetString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     /**
      * Check if an Object has the given key.
@@ -1262,9 +1329,10 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param value           the value
+     * @param valueType       the value type
      * @return true if the key or value exists
      */
-    boolean objectHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+    boolean objectHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value, int valueType);
 
     /**
      * Check if an Object has the given own property.
@@ -1273,9 +1341,10 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param type            the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @return true if the key or value exists
      */
-    boolean objectHasOwnProperty(long v8RuntimeHandle, long v8ValueHandle, int type, Object key);
+    boolean objectHasOwnProperty(long v8RuntimeHandle, long v8ValueHandle, int type, Object key, int keyType);
 
     /**
      * Check if an Object has the given private property.
@@ -1297,11 +1366,12 @@ public interface IV8Native {
      * @param functionName    the function name
      * @param returnResult    whether to return the result
      * @param values          the argument values
+     * @param valueTypes      the value types
      * @return the result
      */
     Object objectInvoke(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
-            String functionName, boolean returnResult, Object[] values);
+            String functionName, boolean returnResult, Object[] values, int[] valueTypes);
 
     /**
      * Check if an Object is frozen.
@@ -1328,24 +1398,28 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param keysAndValues   the keys and values array
+     * @param valueTypes      the value types
      * @return true if successful
      */
-    boolean objectSet(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object[] keysAndValues);
+    boolean objectSet(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object[] keysAndValues, int[] valueTypes);
 
     /**
      * Set a property accessor (getter/setter) on an Object.
      *
-     * @param v8RuntimeHandle the V8 runtime handle
-     * @param v8ValueHandle   the V8 value handle
-     * @param v8ValueType     the V8 value type
-     * @param propertyName    the property name
-     * @param getter          the getter callback
-     * @param setter          the setter callback
+     * @param v8RuntimeHandle  the V8 runtime handle
+     * @param v8ValueHandle    the V8 value handle
+     * @param v8ValueType      the V8 value type
+     * @param propertyName     the property name
+     * @param propertyNameType the property name type
+     * @param getter           the getter callback
+     * @param setter           the setter callback
      * @return true if successful
      */
     boolean objectSetAccessor(
             long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
-            Object propertyName, Object getter, Object setter);
+            Object propertyName, int propertyNameType, Object getter, Object setter);
 
     /**
      * Set a boolean property on an Object by key.
@@ -1354,10 +1428,13 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param value           the value
      * @return true if successful
      */
-    boolean objectSetBoolean(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, boolean value);
+    boolean objectSetBoolean(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, boolean value);
 
     /**
      * Set a double property on an Object by key.
@@ -1366,10 +1443,13 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param value           the value
      * @return true if successful
      */
-    boolean objectSetDouble(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, double value);
+    boolean objectSetDouble(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, double value);
 
     /**
      * Set an integer property on an Object by key.
@@ -1378,10 +1458,13 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param value           the value
      * @return true if successful
      */
-    boolean objectSetInteger(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int value);
+    boolean objectSetInteger(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, int value);
 
     /**
      * Set a long property on an Object by key.
@@ -1390,10 +1473,13 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param value           the value
      * @return true if successful
      */
-    boolean objectSetLong(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, long value);
+    boolean objectSetLong(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, long value);
 
     /**
      * Set a null property on an Object by key.
@@ -1402,9 +1488,10 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @return true if successful
      */
-    boolean objectSetNull(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    boolean objectSetNull(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     /**
      * Set a private property on an Object by key.
@@ -1414,9 +1501,12 @@ public interface IV8Native {
      * @param v8ValueType     the V8 value type
      * @param key             the key
      * @param value           the value
+     * @param valueType       the value type
      * @return true if successful
      */
-    boolean objectSetPrivateProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, String key, Object value);
+    boolean objectSetPrivateProperty(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            String key, Object value, int valueType);
 
     /**
      * Set a property on an Object by key.
@@ -1425,10 +1515,14 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param value           the value
+     * @param valueType       the value type
      * @return true if successful
      */
-    boolean objectSetProperty(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, Object value);
+    boolean objectSetProperty(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, Object value, int valueType);
 
     /**
      * Set the prototype of an Object.
@@ -1448,10 +1542,13 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @param value           the value
      * @return true if successful
      */
-    boolean objectSetString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, String value);
+    boolean objectSetString(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object key, int keyType, String value);
 
     /**
      * Set an undefined property on an Object by key.
@@ -1460,9 +1557,10 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @return true if successful
      */
-    boolean objectSetUndefined(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    boolean objectSetUndefined(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     /**
      * Convert an Object to its proto string representation.
@@ -1549,9 +1647,12 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param value           the value
+     * @param valueType       the value type
      * @return true if successful
      */
-    boolean promiseReject(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+    boolean promiseReject(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object value, int valueType);
 
     /**
      * Resolve a Promise with the given value.
@@ -1560,9 +1661,12 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param value           the value
+     * @param valueType       the value type
      * @return true if successful
      */
-    boolean promiseResolve(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+    boolean promiseResolve(
+            long v8RuntimeHandle, long v8ValueHandle, int v8ValueType,
+            Object value, int valueType);
 
     /**
      * Register fulfilled and rejected handlers on a Promise.
@@ -1583,9 +1687,10 @@ public interface IV8Native {
      *
      * @param v8RuntimeHandle the V8 runtime handle
      * @param target          the target object
+     * @param targetType      the target type
      * @return the result
      */
-    Object proxyCreate(long v8RuntimeHandle, Object target);
+    Object proxyCreate(long v8RuntimeHandle, Object target, int targetType);
 
     /**
      * Get the handler of a Proxy.
@@ -1798,8 +1903,9 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param value           the value
+     * @param valueType       the value type
      */
-    void setAdd(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+    void setAdd(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value, int valueType);
 
     /**
      * Convert a Set to an Array.
@@ -1843,9 +1949,10 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param key             the key
+     * @param keyType         the key type
      * @return true if successful
      */
-    boolean setDelete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key);
+    boolean setDelete(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object key, int keyType);
 
     /**
      * Get the number of entries in a Set.
@@ -1864,9 +1971,10 @@ public interface IV8Native {
      * @param v8ValueHandle   the V8 value handle
      * @param v8ValueType     the V8 value type
      * @param value           the value
+     * @param valueType       the value type
      * @return true if the key or value exists
      */
-    boolean setHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value);
+    boolean setHas(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType, Object value, int valueType);
 
     /**
      * Enable or disable memory saver mode for the V8 runtime.
@@ -1992,9 +2100,10 @@ public interface IV8Native {
      *
      * @param v8RuntimeHandle the V8 runtime handle
      * @param v8Value         the V8 value to throw
+     * @param v8ValueType     the V8 value type
      * @return true if successful
      */
-    boolean throwError(long v8RuntimeHandle, Object v8Value);
+    boolean throwError(long v8RuntimeHandle, Object v8Value, int v8ValueType);
 
     /**
      * Convert a V8 value to its string representation.

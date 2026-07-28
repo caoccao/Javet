@@ -17,7 +17,7 @@
 package com.caoccao.javet.values.reference;
 
 import com.caoccao.javet.annotations.CheckReturnValue;
-import com.caoccao.javet.enums.V8ValueReferenceType;
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
@@ -65,8 +65,8 @@ public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
     }
 
     @Override
-    public V8ValueReferenceType getType() {
-        return V8ValueReferenceType.Promise;
+    public V8ValueType getType() {
+        return V8ValueType.Promise;
     }
 
     @Override
@@ -87,10 +87,10 @@ public class V8ValuePromise extends V8ValueObject implements IV8ValuePromise {
                     IListener.ON_CATCH, listener, JavetCallbackType.DirectCallNoThisAndNoResult,
                     (IJavetDirectCallable.NoThisAndNoResult<Exception>) (v8Values) -> listener.onCatch(v8Values[0]));
             JavetCallbackContext contextOnFulfilled = new JavetCallbackContext(
-                    IListener.ON_FULFILLED,listener, JavetCallbackType.DirectCallNoThisAndNoResult,
+                    IListener.ON_FULFILLED, listener, JavetCallbackType.DirectCallNoThisAndNoResult,
                     (IJavetDirectCallable.NoThisAndNoResult<Exception>) (v8Values) -> listener.onFulfilled(v8Values[0]));
             JavetCallbackContext contextOnRejected = new JavetCallbackContext(
-                    IListener.ON_REJECTED,listener, JavetCallbackType.DirectCallNoThisAndNoResult,
+                    IListener.ON_REJECTED, listener, JavetCallbackType.DirectCallNoThisAndNoResult,
                     (IJavetDirectCallable.NoThisAndNoResult<Exception>) (v8Values) -> listener.onRejected(v8Values[0]));
             try (V8ValueFunction functionOnCatch = v8Runtime.createV8ValueFunction(contextOnCatch);
                  V8ValueFunction functionOnFulfilled = v8Runtime.createV8ValueFunction(contextOnFulfilled);

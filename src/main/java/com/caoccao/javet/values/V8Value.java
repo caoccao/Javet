@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.values;
 
+import com.caoccao.javet.enums.V8ValueType;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
@@ -25,10 +26,14 @@ import com.caoccao.javet.interop.converters.JavetObjectConverter;
  * Base class for all V8 values. Each V8 value is associated with a {@link V8Runtime}.
  */
 public abstract class V8Value extends V8Data implements IV8Value {
-    /** Shared object converter for default type conversions. */
+    /**
+     * Shared object converter for default type conversions.
+     */
     protected static final JavetObjectConverter OBJECT_CONVERTER = new JavetObjectConverter();
 
-    /** The V8 runtime that owns this value. */
+    /**
+     * The V8 runtime that owns this value.
+     */
     protected V8Runtime v8Runtime;
 
     /**
@@ -62,6 +67,9 @@ public abstract class V8Value extends V8Data implements IV8Value {
 
     @Override
     public abstract boolean equals(V8Value v8Value) throws JavetException;
+
+    @Override
+    public abstract V8ValueType getType();
 
     /**
      * Gets the V8 runtime that owns this value.
