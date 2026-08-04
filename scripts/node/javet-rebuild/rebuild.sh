@@ -1,1 +1,1 @@
-patchelf --add-needed libjavet-node-linux-x86_64.v.5.0.10.so ${NODE_MODULE_FILE}
+patchelf --add-needed libjavet-node-linux-x86_64.v.5.0.11.so ${NODE_MODULE_FILE}
