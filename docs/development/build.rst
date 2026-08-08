@@ -48,8 +48,8 @@ Windows Environment
 -------------------
 
 * Latest Windows 10
-* Visual Studio 2022 Community v17.13+ with ClangCL
-* CMake 3.24+ (comes with Visual Studio 2022)
+* Visual Studio 2026 Community v18.4+ with ClangCL
+* CMake 3.24+ (comes with Visual Studio 2026)
 * Latest Windows 10 SDK with WinDbg
 * JDK 8
 * Gradle 8.5+

@@ -261,7 +261,7 @@ Build Node.js on Windows
 .. code-block:: shell
 
     cd %NODE_HOME%
-    vcbuild.bat static without-intl vs2022
+    vcbuild.bat static without-intl vs2026
 
 Build Javet JNI Library
 =======================

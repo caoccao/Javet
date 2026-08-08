@@ -78,7 +78,7 @@ if(DEFINED NODE_DIR)
     # mangled names. `#define private public` changes the reference to `SA`
     # while Node defines a non-public variant in module_wrap.obj.
     # Discover the actual symbol at configure time, then alias SA -> actual.
-    set(JAVET_NODE_MODULE_WRAP_OBJ "${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/libnode/src/module_wrap.obj")
+    set(JAVET_NODE_MODULE_WRAP_OBJ "${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/obj/node_base/src/module_wrap.obj")
     set(JAVET_NODE_MODULE_WRAP_RESOLVE_MODULE_CALLBACK_PRIVATE "")
     if(EXISTS "${JAVET_NODE_MODULE_WRAP_OBJ}")
         set(JAVET_NM_TOOL "${CMAKE_NM}")
