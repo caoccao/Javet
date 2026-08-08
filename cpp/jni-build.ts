@@ -190,15 +190,27 @@ function parseArgs(): BuildConfig {
   };
 }
 
+/**
+ * CMake re-parses some paths as CMake code. `CMAKE_C_COMPILER` for instance is
+ * written verbatim into `CMakeFiles/<version>/CMakeCCompiler.cmake`, where a
+ * backslash starts an escape sequence, so a Windows path like
+ * `D:\a\Javet\google\v8` fails with `Invalid character escape '\a'`.
+ * CMake accepts forward slashes on every platform, so normalize every path
+ * before handing it to cmake.
+ */
+function toCMakePath(filePath: string): string {
+  return filePath.replaceAll("\\", "/");
+}
+
 function buildCMakeArgs(config: BuildConfig): string[] {
   const args: string[] = [];
 
   // Add V8 or Node directory
   if (config.v8Dir) {
-    args.push(`-DV8_DIR=${config.v8Dir}`);
+    args.push(`-DV8_DIR=${toCMakePath(config.v8Dir)}`);
   }
   if (config.nodeDir) {
-    args.push(`-DNODE_DIR=${config.nodeDir}`);
+    args.push(`-DNODE_DIR=${toCMakePath(config.nodeDir)}`);
   }
 
   // Add i18n flag
@@ -336,7 +348,7 @@ async function buildLinux(config: BuildConfig): Promise<boolean> {
     // Run cmake
     const cmakeCmd = [
       "cmake",
-      SCRIPT_DIR,
+      toCMakePath(SCRIPT_DIR),
       `-DJAVET_VERSION=${JAVET_VERSION}`,
       ...cmakeArgs,
     ];
@@ -450,7 +462,7 @@ async function buildMacOS(config: BuildConfig): Promise<boolean> {
     // Run cmake
     const cmakeCmd = [
       "cmake",
-      SCRIPT_DIR,
+      toCMakePath(SCRIPT_DIR),
       `-DJAVET_VERSION=${JAVET_VERSION}`,
       ...cmakeArgs,
     ];
@@ -677,13 +689,13 @@ async function buildWindowsV8(config: BuildConfig, cmakeArgs: string[]): Promise
   try {
     const cmakeCmd = [
       "cmake",
-      SCRIPT_DIR,
+      toCMakePath(SCRIPT_DIR),
       "-G", "Ninja",
       "-DCMAKE_BUILD_TYPE=Release",
-      `-DCMAKE_MAKE_PROGRAM=${ninjaExe}`,
-      `-DCMAKE_C_COMPILER=${clangCl}`,
-      `-DCMAKE_CXX_COMPILER=${clangCl}`,
-      `-DCMAKE_LINKER=${lldLink}`,
+      `-DCMAKE_MAKE_PROGRAM=${toCMakePath(ninjaExe)}`,
+      `-DCMAKE_C_COMPILER=${toCMakePath(clangCl)}`,
+      `-DCMAKE_CXX_COMPILER=${toCMakePath(clangCl)}`,
+      `-DCMAKE_LINKER=${toCMakePath(lldLink)}`,
       `-DJAVET_VERSION=${JAVET_VERSION}`,
       ...cmakeArgs,
     ];
@@ -718,7 +730,7 @@ async function buildWindowsNode(config: BuildConfig, cmakeArgs: string[]): Promi
   // Run cmake with Visual Studio generator
   const cmakeCmd = [
     "cmake",
-    SCRIPT_DIR,
+    toCMakePath(SCRIPT_DIR),
     "-G", "Visual Studio 18 2026",
     "-A", "x64",
     `-DJAVET_VERSION=${JAVET_VERSION}`,
@@ -777,13 +789,13 @@ async function buildAndroid(config: BuildConfig): Promise<boolean> {
 
     // Add Android NDK path if provided
     if (config.androidNdk) {
-      androidArgs.push(`-DCMAKE_ANDROID_NDK=${config.androidNdk}`);
+      androidArgs.push(`-DCMAKE_ANDROID_NDK=${toCMakePath(config.androidNdk)}`);
     }
 
     // Run cmake with Android settings
     const cmakeCmd = [
       "cmake",
-      SCRIPT_DIR,
+      toCMakePath(SCRIPT_DIR),
       ...androidArgs,
       `-DJAVET_VERSION=${JAVET_VERSION}`,
       ...cmakeArgs,

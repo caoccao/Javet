@@ -108,7 +108,7 @@ jobs:
     - name: Setup Cmake
       uses: jwlawson/actions-setup-cmake@v2.2
       with:
-        cmake-version: '3.23.x'
+        cmake-version: '4.2.x'
 
     - name: Build Javet JNI
       env:
@@ -205,7 +205,7 @@ jobs:
     - name: Setup Cmake
       uses: jwlawson/actions-setup-cmake@v2.2
       with:
-        cmake-version: '3.23.x'
+        cmake-version: '4.2.x'
 
     - name: Build Javet JNI
       env:

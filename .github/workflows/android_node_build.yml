@@ -99,7 +99,7 @@ jobs:
     - name: Setup Cmake
       uses: jwlawson/actions-setup-cmake@v2.2
       with:
-        cmake-version: '3.23.x'
+        cmake-version: '4.2.x'
 
     - name: Setup Deno
       uses: denoland/setup-deno@v2
