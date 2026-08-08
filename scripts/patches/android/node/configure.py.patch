@@ -1,8 +1,8 @@
 diff --git a/configure.py b/configure.py
-index 11c0df4554..b230caafd2 100755
+index a9910d038f0..bc8f548b807 100755
 --- a/configure.py
 +++ b/configure.py
-@@ -1287,7 +1287,7 @@ def configure_node(o):
+@@ -1673,7 +1673,7 @@ def configure_node(o):
    o['variables']['want_separate_host_toolset'] = int(cross_compiling)
  
    if target_arch == 'arm64':
@@ -10,4 +10,4 @@ index 11c0df4554..b230caafd2 100755
 +    pass
  
    if options.node_snapshot_main is not None:
-     if options.shared:
+     if options.without_node_snapshot:

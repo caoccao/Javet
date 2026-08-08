@@ -184,7 +184,9 @@ jobs:
         sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' deps/v8/src/heap/local-heap.h
         deno --allow-all ${{ env.ROOT }}/Javet/scripts/deno/patch_node_build.ts -p ./
         ./configure --enable-static ${{ matrix.node_flag }}
-        deno --allow-all ${{ env.ROOT }}/Javet/scripts/deno/patch_node_build.ts -p ./
+        export CFLAGS="-fPIC -ftls-model=global-dynamic -Wno-return-type"
+        export CXXFLAGS="${CFLAGS}"
+        export LDFLAGS="${CFLAGS}"
         make -j4
         mv out out.${{ matrix.name }}
 
