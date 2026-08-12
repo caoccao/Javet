@@ -7,6 +7,7 @@ Release Notes 5.0.x
 
 * Upgraded Node.js to ``v24.19.0`` `(2026-08-03) <https://nodejs.org/en/blog/release/v24.19.0>`_
 * Switched to Visual Studio 2026 for Node.js mode on Windows
+* Fixed unexpected dependency `libm.so` for V8 mode on Linux
 
 5.0.10
 ------
