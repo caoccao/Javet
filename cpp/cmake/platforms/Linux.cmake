@@ -50,32 +50,18 @@ if(DEFINED V8_DIR)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -nostdinc++ -fno-exceptions -fno-modules -fno-implicit-modules -fno-builtin-module-map ")
     find_library(LIBCXX_STATIC NAMES libc++.a c++ PATHS ${V8_RELEASE_DIR}/obj/buildtools/third_party/libc++/ NO_DEFAULT_PATH REQUIRED)
     find_library(LIBCXXABI_STATIC NAMES libc++abi.a c++abi PATHS ${V8_RELEASE_DIR}/obj/buildtools/third_party/libc++abi/ NO_DEFAULT_PATH REQUIRED)
-    # jni/javet_libm.cpp defines the math symbols V8 and ICU would otherwise
-    # take from libm, forwarding to the llvm-libc that V8 already vendors. It
-    # needs that header tree plus the namespace V8 builds it under, and
-    # -fno-builtin so clang cannot fold a definition into a call to itself.
-    # See the file header for why libm cannot simply be linked statically.
-    set_source_files_properties(${CMAKE_SOURCE_DIR}/jni/javet_libm.cpp PROPERTIES COMPILE_OPTIONS
-        "-DJAVET_STATIC_LIBM;-DLIBC_NAMESPACE=__llvm_libc_cr;-I${V8_DIR}/third_party/llvm-libc/src;-fno-builtin")
-    # clang's driver appends an implicit -lm that -nostdlib++ does not remove,
-    # and it precedes -lc, so symbols carried by both libraries would still be
-    # taken from libm and keep it in DT_NEEDED. --as-needed drops it once
-    # javet_libm.cpp leaves nothing for it to resolve. Verify after building:
-    # readelf -d libjavet-v8-linux-*.so | grep NEEDED
     target_link_libraries(Javet PUBLIC
         -Wl,-Bstatic -latomic -Wl,-Bdynamic
         -Wl,--compress-sections=.text=none
         -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
         ${LIBCXX_STATIC} ${LIBCXXABI_STATIC}
-        debug "-lrt" -static-libgcc -nostdlib++ optimized "-lrt" "${libgcc}"
-        -Wl,--as-needed)
+        debug "-lrt" -static-libgcc -nostdlib++ optimized "-lrt" "${libgcc}")
     target_link_libraries(JavetStatic PUBLIC
         -Wl,-Bstatic -latomic -Wl,-Bdynamic
         -Wl,--compress-sections=.text=none
         -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
         ${LIBCXX_STATIC} ${LIBCXXABI_STATIC}
-        debug "-lrt" -static-libgcc -nostdlib++ optimized "-lrt" "${libgcc}"
-        -Wl,--as-needed)
+        debug "-lrt" -static-libgcc -nostdlib++ optimized "-lrt" "${libgcc}")
 endif()
 if(DEFINED NODE_DIR)
     # We use clang/LLVM for Node.js mode on Linux. Set CC/CXX to clang/clang++
