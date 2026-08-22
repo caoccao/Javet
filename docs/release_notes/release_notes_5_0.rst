@@ -6,6 +6,7 @@ Release Notes 5.0.x
 ------
 
 * Upgraded Node.js to ``v24.19.0`` `(2026-08-03) <https://nodejs.org/en/blog/release/v24.19.0>`_
+* Upgraded V8 to ``v15.2.124.17`` (2026-08-21)
 * Switched to Visual Studio 2026 for Node.js mode on Windows
 
 5.0.10
