@@ -20,20 +20,19 @@
 #ifdef ENABLE_NODE
 
 /*
- * This file is a polyfill to Node.js.
- * libnode is built with few symbols not properly linked.
- * Those missing symbols are declared in this file.
+ * This file hosts the Node.js helpers that the public embedder API
+ * does not expose.
+ *
+ * Node.js v24.19.0 split the former libnode target into node_base plus
+ * libnode and moved node_snapshot.cc (or src/node_snapshot_stub.cc when
+ * node_use_node_snapshot is false) from the node executable target to the
+ * libnode target. node::SnapshotBuilder::GetEmbeddedSnapshotData() is
+ * therefore defined by libnode on every platform. Do not polyfill it here
+ * again or the link fails with a duplicate symbol because libnode is linked
+ * with whole archive.
  */
 
 #include "node_snapshot_builder.h"
-
-namespace node {
-
-    const SnapshotData* SnapshotBuilder::GetEmbeddedSnapshotData() {
-        return nullptr;
-    }
-
-}
 
 namespace Javet {
 

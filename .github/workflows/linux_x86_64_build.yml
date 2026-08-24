@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 24.18.0
-  JAVET_V8_VERSION: 15.1.206.11
-  JAVET_VERSION: 5.0.10
+  JAVET_NODE_VERSION: 24.19.0
+  JAVET_V8_VERSION: 15.2.124.17
+  JAVET_VERSION: 5.0.11
   TEMPORAL_VERSION: 0.2.3
   ROOT: /home/runner/work/Javet
 
@@ -108,7 +108,7 @@ jobs:
     - name: Setup Cmake
       uses: jwlawson/actions-setup-cmake@v2.2
       with:
-        cmake-version: '3.23.x'
+        cmake-version: '4.2.x'
 
     - name: Build Javet JNI
       env:
@@ -184,7 +184,9 @@ jobs:
         sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' deps/v8/src/heap/local-heap.h
         deno --allow-all ${{ env.ROOT }}/Javet/scripts/deno/patch_node_build.ts -p ./
         ./configure --enable-static ${{ matrix.node_flag }}
-        deno --allow-all ${{ env.ROOT }}/Javet/scripts/deno/patch_node_build.ts -p ./
+        export CFLAGS="-fPIC -ftls-model=global-dynamic -Wno-return-type"
+        export CXXFLAGS="${CFLAGS}"
+        export LDFLAGS="${CFLAGS}"
         make -j4
         mv out out.${{ matrix.name }}
 
@@ -203,7 +205,7 @@ jobs:
     - name: Setup Cmake
       uses: jwlawson/actions-setup-cmake@v2.2
       with:
-        cmake-version: '3.23.x'
+        cmake-version: '4.2.x'
 
     - name: Build Javet JNI
       env:

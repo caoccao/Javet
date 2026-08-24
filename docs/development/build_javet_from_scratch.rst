@@ -232,14 +232,16 @@ Build Node.js on Linux
     cd ${NODE_HOME}
     deno --allow-all ${JAVET_HOME}/scripts/deno/patch_node_build.ts -p ${NODE_HOME}
     ./configure --enable-static --without-intl
-    deno --allow-all ${JAVET_HOME}/scripts/deno/patch_node_build.ts -p ${NODE_HOME}
+    export CFLAGS="-fPIC -ftls-model=global-dynamic -Wno-return-type"
+    export CXXFLAGS="${CFLAGS}"
+    export LDFLAGS="${CFLAGS}"
     make -j4
 
 Why Patching Node.js?
 ---------------------
 
-* First patch: All static node libraries are ``<thin>`` libraries. The patch is to disable ``<thin>``.
-* Second patch: Many static node libraries are not compiled to `position independent code <https://en.wikipedia.org/wiki/Position-independent_code>`_ and link phase is broken with the following error. The patch is to set ``-fPIC`` to those make files.
+* The patch: All static node libraries are ``<thin>`` libraries. The patch is to disable ``<thin>``.
+* The flags: Many static node libraries are not compiled to `position independent code <https://en.wikipedia.org/wiki/Position-independent_code>`_ and link phase is broken with the following error. ``CFLAGS``, ``CXXFLAGS`` and ``LDFLAGS`` set ``-fPIC`` for every target. GYP appends them to each target of the target toolset via ``CFLAGS.target``, ``CXXFLAGS.target`` and ``LDFLAGS.target``.
 
     /usr/bin/ld: /....../out/Release/libnode.a(node_binding.o): 
     relocation R_X86_64_TPOFF32 against ``_ZN4nodeL23thread_local_modpendingE`` 
@@ -261,7 +263,7 @@ Build Node.js on Windows
 .. code-block:: shell
 
     cd %NODE_HOME%
-    vcbuild.bat static without-intl vs2022
+    vcbuild.bat static without-intl vs2026
 
 Build Javet JNI Library
 =======================

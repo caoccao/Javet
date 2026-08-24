@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 24.18.0
-  JAVET_V8_VERSION: 15.1.206.11
-  JAVET_VERSION: 5.0.10
+  JAVET_NODE_VERSION: 24.19.0
+  JAVET_V8_VERSION: 15.2.124.17
+  JAVET_VERSION: 5.0.11
   TEMPORAL_VERSION: 0.2.3
   ROOT: D:\a\Javet
 
@@ -26,7 +26,7 @@ jobs:
             v8_flag: v8_enable_i18n_support=false
 
     name: Build Javet V8 ${{ matrix.name }}
-    runs-on: windows-2025-vs2026
+    runs-on: windows-latest
 
     steps:
 
@@ -106,7 +106,7 @@ jobs:
     - name: Setup Cmake
       uses: jwlawson/actions-setup-cmake@v2.2
       with:
-        cmake-version: '3.23.x'
+        cmake-version: '4.2.x'
 
     - name: Build Javet JNI
       run: |
@@ -153,6 +153,11 @@ jobs:
     - name: Install NASM
       run: choco install nasm
 
+    - name: Setup NASM Path
+      shell: bash
+      run: |
+        echo "C:\Program Files\NASM" >> $GITHUB_PATH
+
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
@@ -169,7 +174,7 @@ jobs:
         git clone https://github.com/nodejs/node.git
         cd node
         git checkout v${{ env.JAVET_NODE_VERSION }}
-        .\vcbuild.bat static ${{ matrix.node_flag }} vs2022
+        .\vcbuild.bat static ${{ matrix.node_flag }} vs2026
         move out out.${{ matrix.name }}
 
     - name: Copy the i18n
@@ -187,7 +192,7 @@ jobs:
     - name: Setup Cmake
       uses: jwlawson/actions-setup-cmake@v2.2
       with:
-        cmake-version: '3.23.x'
+        cmake-version: '4.2.x'
 
     - name: Build Javet JNI
       run: |
