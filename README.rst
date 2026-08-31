@@ -223,6 +223,7 @@ Blog
 * `Is TypeScript a Good Choice for a Script Engine? <https://blog.caoccao.com/is-typescript-a-good-choice-for-a-script-engine-01fe69921ace>`_
 * `Run TypeScript Directly in Java <https://blog.caoccao.com/run-typescript-directly-in-java-82b7003b44b8>`_
 * `SSR — React + Spring Boot with Javet <https://blog.caoccao.com/ssr-react-spring-boot-with-javet-536282ff0edb>`_
+* `What does V8 Sandbox Really Mean in Javet <https://blog.caoccao.com/what-does-v8-sandbox-really-mean-in-javet-dc0072846b8b>`_
 
 Documents
 =========
