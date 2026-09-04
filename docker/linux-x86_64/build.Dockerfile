@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet-linux-x86_64:5.0.11 -f docker/linux-x86_64/build.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-linux-x86_64:6.0.0 -f docker/linux-x86_64/build.Dockerfile .
 
 # Multi-stage Dockerfile for building Javet on Linux x86_64
 # Based on .github/workflows/linux_x86_64_build.yml
@@ -21,7 +21,7 @@
 # Build arguments
 ARG JAVET_NODE_VERSION=24.19.0
 ARG JAVET_V8_VERSION=15.2.124.17
-ARG JAVET_VERSION=5.0.11
+ARG JAVET_VERSION=6.0.0
 ARG TEMPORAL_VERSION=0.1.2
 
 ###########################################
