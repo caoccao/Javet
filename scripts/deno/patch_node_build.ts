@@ -140,7 +140,12 @@ const V8_GYP_TEMPORAL_ZONEINFO: Patch = {
               'actions': [
                 {
                   'action_name': 'make_temporal_zoneinfo_cpp',
+                  # The first input is the file the MSBuild CustomBuild item is
+                  # attached to, and MSBuild passes a .res item on to the
+                  # librarian, which rejects it as \`not a COFF object\`. Keep the
+                  # script first so that the resource stays an extra input.
                   'inputs': [
+                    '<(V8_ROOT)/tools/include-file-as-bytes.py',
                     '../../deps/crates/vendor/zoneinfo64-v0_3/src/data/zoneinfo64.res',
                   ],
                   'outputs': [
@@ -149,7 +154,7 @@ const V8_GYP_TEMPORAL_ZONEINFO: Patch = {
                   'action': [
                     '<(python)',
                     '<(V8_ROOT)/tools/include-file-as-bytes.py',
-                    '<@(_inputs)',
+                    '../../deps/crates/vendor/zoneinfo64-v0_3/src/data/zoneinfo64.res',
                     '<@(_outputs)',
                     'zoneinfo64_static_data',
                   ],

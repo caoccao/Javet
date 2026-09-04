@@ -35,12 +35,14 @@
 #include <env-inl.h>
 #include <crypto/crypto_util.h>
 #include <node_snapshot_builder.h>
-// Bypass private access to use ModuleWrap::ResolveModuleCallback directly.
-// This avoids modifying Node.js source code while allowing Javet to pass
-// Node.js's own module resolver callback to InstantiateModule().
-#define private public
+// ModuleWrap::ResolveModuleCallback and ModuleWrap::ResolveSourceCallback are
+// private. javet_node.cpp takes their addresses through an explicit template
+// instantiation, which the standard exempts from access checking, so this
+// include stays untouched. Do not wrap it in `#define private public`: MSVC
+// encodes the access specifier in the mangled name (`SA` for a public static
+// member, `CA` for a private one), so that hack emits references that Node.js's
+// own objects never define and lld-link fails with `undefined symbol`.
 #include <module_wrap.h>
-#undef private
  // Hack Begins (The hack is for resolving the conflicts between Node.js and V8)
 #define BASE_TRACE_EVENT_COMMON_TRACE_EVENT_COMMON_H_
 #define V8_TRACING_TRACE_EVENT_H_
@@ -161,6 +163,12 @@ constexpr auto INIT_SCRIPT_WITH_SNAPSHOT = "globalThis.require = require;";
 constexpr auto INIT_SCRIPT_WITHOUT_SNAPSHOT = "globalThis.require = require('module').createRequire(process.cwd() + '/');";
 
 namespace Javet {
+    // Hand out Node.js's own index-based module resolvers so that
+    // v8::Module::InstantiateModule() can delegate module resolution to
+    // Node.js. @see javet_node.cpp
+    v8::Module::ResolveModuleByIndexCallback GetNodeResolveModuleCallback();
+    v8::Module::ResolveSourceByIndexCallback GetNodeResolveSourceCallback();
+
     // Creates a V8 isolate initialized from snapshot data, bypassing
     // node::NewIsolate's static variable that forces all isolates
     // to use the first-ever snapshot blob (shared-readonly-heap).

@@ -36,6 +36,48 @@
 
 namespace Javet {
 
+    /*
+     * Node.js declares ModuleWrap's index-based resolvers private, and Javet
+     * needs their addresses to let v8::Module::InstantiateModule() delegate
+     * module resolution to Node.js. The usual access checking rules do not
+     * apply to the names in an explicit instantiation, so the thief below takes
+     * both addresses without patching Node.js.
+     *
+     * `#define private public` around <module_wrap.h> compiles just as well,
+     * but MSVC encodes the access specifier in the mangled name (`SA` for a
+     * public static member, `CA` for a private one), so the references it emits
+     * are never defined by Node.js's own objects and lld-link fails with
+     * `undefined symbol`. The Itanium ABI leaves access out of the mangling,
+     * which is why that hack only ever broke Windows.
+     */
+    namespace ModuleWrapAccess {
+        template <typename Tag, typename Tag::Type kCallback>
+        struct Thief {
+            friend typename Tag::Type Steal(Tag) { return kCallback; }
+        };
+
+        struct ResolveModuleTag {
+            using Type = v8::Module::ResolveModuleByIndexCallback;
+            friend Type Steal(ResolveModuleTag);
+        };
+
+        struct ResolveSourceTag {
+            using Type = v8::Module::ResolveSourceByIndexCallback;
+            friend Type Steal(ResolveSourceTag);
+        };
+
+        template struct Thief<ResolveModuleTag, &node::loader::ModuleWrap::ResolveModuleCallback>;
+        template struct Thief<ResolveSourceTag, &node::loader::ModuleWrap::ResolveSourceCallback>;
+    }
+
+    v8::Module::ResolveModuleByIndexCallback GetNodeResolveModuleCallback() {
+        return Steal(ModuleWrapAccess::ResolveModuleTag{});
+    }
+
+    v8::Module::ResolveSourceByIndexCallback GetNodeResolveSourceCallback() {
+        return Steal(ModuleWrapAccess::ResolveSourceTag{});
+    }
+
     v8::Isolate* NewIsolateForSnapshotRestore(
         node::MultiIsolatePlatform* platform,
         uv_loop_t* event_loop,

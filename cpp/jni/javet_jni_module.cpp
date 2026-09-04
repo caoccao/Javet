@@ -140,8 +140,8 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleExecute
         if (v8Runtime->IsBuiltInModuleResolution(jniEnv)) {
             v8MaybeBool = compliedModule->InstantiateModule(
                 v8Context,
-                node::loader::ModuleWrap::ResolveModuleCallback,
-                node::loader::ModuleWrap::ResolveSourceCallback);
+                Javet::GetNodeResolveModuleCallback(),
+                Javet::GetNodeResolveSourceCallback());
         }
         else
 #endif
@@ -256,8 +256,8 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_moduleInstant
         if (v8Runtime->IsBuiltInModuleResolution(jniEnv)) {
             v8MaybeBool = v8LocalModule->InstantiateModule(
                 v8Context,
-                node::loader::ModuleWrap::ResolveModuleCallback,
-                node::loader::ModuleWrap::ResolveSourceCallback);
+                Javet::GetNodeResolveModuleCallback(),
+                Javet::GetNodeResolveSourceCallback());
         }
         else
 #endif

@@ -59,20 +59,22 @@ else()
     message(STATUS "Node.js is built without V8 Temporal support.")
 endif()
 list(APPEND importLibraries
-    abseil ada brotli cares crdtp ffi highway histogram llhttp merve nbytes ncrypto ncrypto_engine nghttp2 node_base openssl simdjson simdutf sqlite torque_base uvwasi
+    abseil ada brotli cares crdtp highway histogram llhttp merve nbytes ncrypto ncrypto_engine nghttp2 node_base openssl simdjson simdutf sqlite torque_base uvwasi
     v8_base_without_compiler v8_compiler v8_init v8_initializers
     v8_libbase v8_libplatform v8_snapshot v8_zlib zlib zstd)
 # lief
 # LIEF backs single executable applications, which Node.js only builds for
 # macOS, Linux and Windows (node_use_lief in configure.py).
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    list(APPEND importLibraries liblief)
+elseif(NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
     list(APPEND importLibraries lief)
 endif()
-# node, uv
+# ffi, node, uv
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    list(APPEND importLibraries libnode libuv)
+    list(APPEND importLibraries libffi libnode libuv)
 else()
-    list(APPEND importLibraries node uv)
+    list(APPEND importLibraries ffi node uv)
 endif()
 # node_text_start
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
