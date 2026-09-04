@@ -44,12 +44,6 @@ public final class NodeFlags {
      */
     public static final String ALLOW_FS_WRITE = "--allow-fs-write";
     /**
-     * The constant HARMONY_TEMPORAL.
-     *
-     * @since 5.0.3
-     */
-    public static final String HARMONY_TEMPORAL = "--harmony-temporal";
-    /**
      * The constant ICU_DATA_DIR.
      *
      * @since 4.0.0
@@ -84,7 +78,6 @@ public final class NodeFlags {
     private String[] allowFsRead;
     private String[] allowFsWrite;
     private String[] customFlags;
-    private boolean harmonyTemporal;
     private String icuDataDir;
     private boolean jsFloat16Array;
     private boolean noRequireModule;
@@ -158,16 +151,6 @@ public final class NodeFlags {
      */
     public String getIcuDataDir() {
         return icuDataDir;
-    }
-
-    /**
-     * Is temporal supported.
-     *
-     * @return true : yes, false: no
-     * @since 5.0.3
-     */
-    public boolean isHarmonyTemporal() {
-        return harmonyTemporal;
     }
 
     /**
@@ -301,18 +284,6 @@ public final class NodeFlags {
     }
 
     /**
-     * Sets if temporal is supported.
-     *
-     * @param harmonyTemporal the temporal supported
-     * @return the temporal supported
-     * @since 5.0.3
-     */
-    public NodeFlags setHarmonyTemporal(boolean harmonyTemporal) {
-        this.harmonyTemporal = harmonyTemporal;
-        return this;
-    }
-
-    /**
      * Sets icu data dir.
      *
      * @param icuDataDir the icu data dir
@@ -400,9 +371,6 @@ public final class NodeFlags {
                     .filter(StringUtils::isNotBlank)
                     .map(path -> ALLOW_FS_WRITE + EQUAL + path.trim())
                     .forEach(tokens::add);
-        }
-        if (harmonyTemporal) {
-            tokens.add(HARMONY_TEMPORAL);
         }
         if (StringUtils.isNotBlank(icuDataDir)) {
             tokens.add(ICU_DATA_DIR + EQUAL + icuDataDir.trim());

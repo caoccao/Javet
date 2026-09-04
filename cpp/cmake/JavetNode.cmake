@@ -28,10 +28,46 @@ if(DEFINED ENABLE_I18N)
     list(APPEND includeDirs
         ${NODE_DIR}/deps/icu-small/source/common)
 endif()
+# temporal
+# V8's Temporal builtins call into temporal_capi, the Rust crate that cargo
+# archives as node_crates. Whether they are compiled in at all is a Node.js
+# build option (v8_enable_temporal_support), independent of i18n, and Javet's
+# headers have to declare the same JSTemporal* types as the V8 that was built
+# or they stop matching the Torque-generated instance types. So detect it from
+# the build output rather than assume. The archive lands under gyp's
+# intermediate directory instead of next to the other Node.js static libraries,
+# so the platforms link it by path rather than through importLibraries. cargo
+# nests it under the Rust target triple whenever Node.js pins one (Windows,
+# macOS x86-64, Android) and writes it straight under the profile when it
+# doesn't, so search for it rather than spell out every layout.
+# @see: deps/crates/crates.gyp, tools/v8_gypfiles/v8.gyp
+if(CMAKE_SYSTEM_NAME STREQUAL "Android")
+    set(nodeReleaseDir ${NODE_DIR}/out.${CMAKE_ANDROID_ARCH}.${OUT_DIR_SUFFIX}/Release)
+else()
+    set(nodeReleaseDir ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release)
+endif()
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    file(GLOB_RECURSE nodeCratesLibraries ${nodeReleaseDir}/obj/global_intermediate/node_crates.lib)
+else()
+    file(GLOB_RECURSE nodeCratesLibraries ${nodeReleaseDir}/obj/gen/libnode_crates.a)
+endif()
+if(nodeCratesLibraries)
+    list(GET nodeCratesLibraries 0 NODE_CRATES_LIBRARY)
+    message(STATUS "Node.js is built with V8 Temporal support: ${NODE_CRATES_LIBRARY}")
+    add_definitions(-DV8_TEMPORAL_SUPPORT)
+else()
+    message(STATUS "Node.js is built without V8 Temporal support.")
+endif()
 list(APPEND importLibraries
-    abseil ada brotli cares crdtp highway histogram llhttp merve nbytes ncrypto nghttp2 node_base openssl simdjson simdutf sqlite torque_base uvwasi
-    v8_base_without_compiler v8_compiler v8_init v8_initializers v8_initializers_slow
+    abseil ada brotli cares crdtp ffi highway histogram llhttp merve nbytes ncrypto ncrypto_engine nghttp2 node_base openssl simdjson simdutf sqlite torque_base uvwasi
+    v8_base_without_compiler v8_compiler v8_init v8_initializers
     v8_libbase v8_libplatform v8_snapshot v8_zlib zlib zstd)
+# lief
+# LIEF backs single executable applications, which Node.js only builds for
+# macOS, Linux and Windows (node_use_lief in configure.py).
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
+    list(APPEND importLibraries lief)
+endif()
 # node, uv
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     list(APPEND importLibraries libnode libuv)

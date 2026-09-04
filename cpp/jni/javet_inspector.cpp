@@ -522,21 +522,12 @@ namespace Javet {
             auto pauseState = waitForDebugger
                 ? v8_inspector::V8Inspector::kWaitingForDebugger
                 : v8_inspector::V8Inspector::kNotWaitingForDebugger;
-#ifdef ENABLE_NODE
-            v8InspectorSession.reset(v8Inspector->connect(
-                CONTEXT_GROUP_ID,
-                channel.get(),
-                v8_inspector::StringView(),
-                v8_inspector::V8Inspector::kFullyTrusted,
-                pauseState).release());
-#else
             v8InspectorSession = v8Inspector->connectShared(
                 CONTEXT_GROUP_ID,
                 channel.get(),
                 v8_inspector::StringView(),
                 v8_inspector::V8Inspector::kFullyTrusted,
                 pauseState);
-#endif
         }
 
         int JavetInspectorSession::getSessionId() const noexcept {

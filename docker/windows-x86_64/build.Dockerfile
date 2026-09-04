@@ -31,7 +31,7 @@
 # Based on .github/workflows/windows_x86_64_build.yml
 
 # Build arguments
-ARG JAVET_NODE_VERSION=24.19.0
+ARG JAVET_NODE_VERSION=26.8.1
 ARG JAVET_V8_VERSION=15.2.124.17
 ARG JAVET_VERSION=6.0.0
 ARG TEMPORAL_VERSION=0.1.2
@@ -196,11 +196,12 @@ RUN choco install -y nasm
 # Clone Node.js
 RUN git clone https://github.com/nodejs/node.git && \
     cd node && \
-    git checkout v%JAVET_NODE_VERSION%
+    git checkout v%JAVET_NODE_VERSION% && \
+    deno run --allow-all C:\Javet\scripts\deno\patch_node_build.ts -p .\ --os windows
 
 # Build Node.js non-i18n
 RUN cd node && \
-    vcbuild.bat static without-intl vs2022 && \
+    vcbuild.bat static without-intl v8temporal vs2022 && \
     move out out.non-i18n
 
 # Build Node.js i18n

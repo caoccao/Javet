@@ -219,9 +219,7 @@ Prepare Node.js
 
 * Clone the source code.
 * Checkout a proper version.
-
-Build Node.js on Linux
-----------------------
+* Patch the source tree. ``--os`` is the OS being built for, one of ``android``, ``linux``, ``macos`` or ``windows``. It is never detected because Android is cross compiled from Linux. Add ``--i18n`` for an i18n build: ``android-configure`` runs ``./configure`` itself, so on Android the ICU choice has to be patched in rather than passed on the command line. Every other OS takes it on its own configure command line and ignores the flag. Re-running the script is safe.
 
 .. caution::
 
@@ -229,9 +227,15 @@ Build Node.js on Linux
 
 .. code-block:: shell
 
+    deno --allow-all ${JAVET_HOME}/scripts/deno/patch_node_build.ts -p ${NODE_HOME} --os <os> [--i18n]
+
+Build Node.js on Linux
+----------------------
+
+.. code-block:: shell
+
     cd ${NODE_HOME}
-    deno --allow-all ${JAVET_HOME}/scripts/deno/patch_node_build.ts -p ${NODE_HOME}
-    ./configure --enable-static --without-intl
+    ./configure --enable-static --without-intl --v8-enable-temporal-support
     export CFLAGS="-fPIC -ftls-model=global-dynamic -Wno-return-type"
     export CXXFLAGS="${CFLAGS}"
     export LDFLAGS="${CFLAGS}"
@@ -240,7 +244,9 @@ Build Node.js on Linux
 Why Patching Node.js?
 ---------------------
 
-* The patch: All static node libraries are ``<thin>`` libraries. The patch is to disable ``<thin>``.
+* Static libraries: All static node libraries are ``<thin>`` libraries. The patch is to disable ``<thin>``.
+* Temporal: Node.js drops V8's Temporal whenever it is built without the bundled ICU, because V8 then links a baked-in copy of ``zoneinfo64.res`` that only V8's GN build knows how to generate (the ``make_temporal_zoneinfo_cpp`` action). The patch ports that action to ``gyp``, so ``--v8-enable-temporal-support`` also works for ``--without-intl``.
+* Thread local storage: V8's ``V8_TLS_MODEL`` attribute makes the linker reject the shared library, so the patch drops it in favour of ``-ftls-model=global-dynamic``.
 * The flags: Many static node libraries are not compiled to `position independent code <https://en.wikipedia.org/wiki/Position-independent_code>`_ and link phase is broken with the following error. ``CFLAGS``, ``CXXFLAGS`` and ``LDFLAGS`` set ``-fPIC`` for every target. GYP appends them to each target of the target toolset via ``CFLAGS.target``, ``CXXFLAGS.target`` and ``LDFLAGS.target``.
 
     /usr/bin/ld: /....../out/Release/libnode.a(node_binding.o): 
@@ -254,7 +260,7 @@ Build Node.js on Mac OS
 .. code-block:: shell
 
     cd ${NODE_HOME}
-    ./configure --enable-static --without-intl
+    ./configure --enable-static --without-intl --v8-enable-temporal-support
     make -j4
 
 Build Node.js on Windows
@@ -263,7 +269,7 @@ Build Node.js on Windows
 .. code-block:: shell
 
     cd %NODE_HOME%
-    vcbuild.bat static without-intl vs2026
+    vcbuild.bat static without-intl v8temporal vs2026
 
 Build Javet JNI Library
 =======================

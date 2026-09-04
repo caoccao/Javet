@@ -90,13 +90,9 @@ using V8InternalWriteBarrierMode = v8::internal::WriteBarrierMode;
 
 template<typename T>
 constexpr auto CONVERT_OFFSET_FOR_SCOPE_INFO(T offset) {
-#ifdef ENABLE_NODE
-    return (offset - V8InternalHeapObject::kHeaderSize) / v8::internal::kTaggedSize;
-#else
     // V8's new object model (V8_OBJECT) removed HeapObject::kHeaderSize.
     // HeapObject only holds the map word, so its header size equals kTaggedSize.
     return (offset - v8::internal::kTaggedSize) / v8::internal::kTaggedSize;
-#endif
 }
 
 template<typename T>

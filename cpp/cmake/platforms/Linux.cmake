@@ -87,6 +87,10 @@ if(DEFINED NODE_DIR)
         -Wl,--compress-sections=.text=none
         -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
         v8_init debug "-lrt" -static-libgcc -static-libstdc++ optimized "-lrt" "${libgcc}")
+    if(DEFINED NODE_CRATES_LIBRARY)
+        target_link_libraries(Javet PUBLIC ${NODE_CRATES_LIBRARY})
+        target_link_libraries(JavetStatic PUBLIC ${NODE_CRATES_LIBRARY})
+    endif()
 endif()
 # https://www.gnu.org/software/gnulib/manual/html_node/LD-Version-Scripts.html
 target_link_libraries(Javet PUBLIC -Wl,--version-script=${CMAKE_SOURCE_DIR}/jni/version_script.map)

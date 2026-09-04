@@ -19,18 +19,18 @@ In Node.js the CLI options consists of the following:
 Options
 =======
 
-Options are often used to turn on some Node.js specific features. Let's take Temporal for instance.
+Options are often used to turn on some Node.js specific features. Let's take the permission model for instance.
 
-Temporal is a stage-3 TC39 proposal exposed in Node.js behind ``--harmony-temporal``. Let's see how to enable it in Javet.
+The permission model restricts what a Node.js runtime is allowed to touch and is exposed in Node.js behind ``--permission``. Let's see how to enable it in Javet.
 
 Step 1: Set Options
 -------------------
 
-* Execute the following Java code before the first ``NodeRuntime`` is created.
+* Execute the following Java code before the first ``NodeRuntime`` is created. Granting a read path implies ``--permission``, so there is no need to set it separately.
 
 .. code-block:: java
 
-    NodeRuntimeOptions.NODE_FLAGS.setHarmonyTemporal(true);
+    NodeRuntimeOptions.NODE_FLAGS.setAllowFsRead(new String[]{"/tmp"});
 
 Step 2: Let's Go
 ----------------
@@ -39,13 +39,13 @@ Step 2: Let's Go
 
 .. code-block:: js
 
-    console.log(Temporal.Now.instant().toString());
+    console.log(process.permission.has('fs.read', '/tmp'));
 
 * It works!
 
 .. code-block:: js
 
-    2026-05-03T12:34:56.789Z
+    true
 
 .. note::
 

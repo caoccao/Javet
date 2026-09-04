@@ -1682,7 +1682,7 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                                 "global", "clearImmediate", "setImmediate", "clearInterval", "clearTimeout",
                                 "setInterval", "setTimeout", "queueMicrotask", "structuredClone", "atob",
                                 "btoa", "performance", "fetch", "navigator", "crypto",
-                                "require");
+                                "require", "sessionStorage");
                         assertEquals(globalVariables, keys);
                     } else {
                         assertEquals(0, keys.size());

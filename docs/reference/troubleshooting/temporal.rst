@@ -22,7 +22,7 @@ V8        ✓          ✓        ✓        ✓
 Key Points
 ==========
 
-* **Node.js Mode**: Temporal is fully supported on all operating systems, but it is disabled by default. You need to enable it explicitly by calling ``NodeFlags.setHarmonyTemporal(true)`` before creating the V8 runtime first time.
+* **Node.js Mode**: Temporal is fully supported on all operating systems, and it is enabled. Node.js ships it on by default since ``v26``, so ``--harmony-temporal`` is gone and no flag needs to be set.
 * **V8 Mode**: Temporal is currently supported on all operating systems, and it is enabled.
 
 Usage

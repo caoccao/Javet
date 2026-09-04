@@ -44,6 +44,78 @@
  // Hack Begins (The hack is for resolving the conflicts between Node.js and V8)
 #define BASE_TRACE_EVENT_COMMON_TRACE_EVENT_COMMON_H_
 #define V8_TRACING_TRACE_EVENT_H_
+// Node.js and V8 each ship their own copy of Chromium's trace_event_common.h
+// and both refuse to be included twice (`#error "Another copy of this file has
+// already been included."`). The defines above keep V8's copy out because
+// Node.js's copy is already in. V8 is built with v8_use_perfetto=0, so its
+// headers (src/heap/heap.h, src/heap/gc-tracer.h) still refer to the
+// perfetto stubs that V8's src/tracing/trace-event-no-perfetto.h declares.
+// Node.js has no equivalent, so mirror that stub here - the types are empty
+// placeholders, which keeps the layout identical to the compiled V8.
+#ifndef V8_TRACING_TRACE_EVENT_NO_PERFETTO_H_
+#define V8_TRACING_TRACE_EVENT_NO_PERFETTO_H_
+namespace perfetto {
+    class EventContext;
+
+    class StaticString {
+    public:
+        template <typename T>
+        StaticString(T) {}
+    };
+
+    class DynamicString {
+    public:
+        template <typename T>
+        explicit DynamicString(T) {}
+    };
+
+    struct Track {
+        Track() = default;
+        explicit Track(uint64_t id) {}
+    };
+
+    struct ThreadTrack : public Track {
+        static ThreadTrack Current() { return ThreadTrack(); }
+    };
+
+    struct NamedTrack : public Track {
+        NamedTrack() = default;
+
+        template <class T>
+        explicit NamedTrack(T name, uint64_t id = 0, Track parent = Track{ 0 }) {}
+
+        template <class T>
+        static NamedTrack FromPointer(T name, const void* ptr, Track parent = Track{ 0 }) {
+            return NamedTrack();
+        }
+
+        template <class T>
+        static NamedTrack ThreadScoped(T name, uint64_t id = 0, Track parent = Track{ 0 }) {
+            return NamedTrack();
+        }
+
+        template <class T>
+        static NamedTrack Global(T name, uint64_t id = 0) {
+            return NamedTrack();
+        }
+
+        NamedTrack disable_sibling_merge() { return *this; }
+    };
+
+    struct CounterTrack : public Track {
+        template <class T>
+        explicit CounterTrack(T name, Track parent = Track{ 0 }) {}
+        template <class T>
+        explicit CounterTrack(T name, uint64_t id = 0, Track parent = Track{ 0 }) {}
+    };
+
+    struct Flow {
+        static inline Flow ProcessScoped(uint64_t flow_id) { return Flow(); }
+        static inline Flow FromPointer(void* ptr) { return Flow(); }
+        static inline Flow Global(uint64_t flow_id) { return Flow(); }
+    };
+}
+#endif
 #undef CHECK
 #undef CHECK_EQ
 #undef CHECK_GE

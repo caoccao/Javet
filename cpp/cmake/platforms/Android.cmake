@@ -52,6 +52,10 @@ if(DEFINED NODE_DIR)
         -Wl,--whole-archive ${importLibraries} -Wl,--no-whole-archive
         -Wl,-z,max-page-size=16384
         v8_init -llog -static-libgcc -static-libstdc++ "${libgcc}")
+    if(DEFINED NODE_CRATES_LIBRARY)
+        target_link_libraries(Javet PUBLIC ${NODE_CRATES_LIBRARY})
+        target_link_libraries(JavetStatic PUBLIC ${NODE_CRATES_LIBRARY})
+    endif()
 endif()
 
 set_target_properties(JavetStatic PROPERTIES OUTPUT_NAME "${JAVET_LIB_PREFIX}-${JAVET_LIB_TYPE}-${JAVET_LIB_SYSTEM}${JAVET_LIB_ARCH}${JAVET_LIB_I18N}.v.${JAVET_VERSION}")

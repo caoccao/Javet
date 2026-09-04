@@ -132,13 +132,22 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_moduleExecute
     if (!compileResult.compiledValue.IsEmpty()) {
         V8TryCatch v8TryCatch(v8Isolate);
         auto compliedModule = compileResult.compiledValue.ToLocalChecked();
-        v8::Module::ResolveModuleCallback moduleResolveCallback = Javet::Callback::JavetModuleResolveCallback;
+        V8MaybeBool v8MaybeBool;
 #ifdef ENABLE_NODE
+        // Node.js resolves module requests by index (ResolveModuleByIndexCallback),
+        // whereas Javet's own resolver is keyed by specifier (ResolveModuleCallback),
+        // so the two take different InstantiateModule() overloads.
         if (v8Runtime->IsBuiltInModuleResolution(jniEnv)) {
-            moduleResolveCallback = node::loader::ModuleWrap::ResolveModuleCallback;
+            v8MaybeBool = compliedModule->InstantiateModule(
+                v8Context,
+                node::loader::ModuleWrap::ResolveModuleCallback,
+                node::loader::ModuleWrap::ResolveSourceCallback);
         }
+        else
 #endif
-        auto v8MaybeBool = compliedModule->InstantiateModule(v8Context, moduleResolveCallback);
+        {
+            v8MaybeBool = compliedModule->InstantiateModule(v8Context, Javet::Callback::JavetModuleResolveCallback);
+        }
         if (v8TryCatch.HasCaught()) {
             return Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
         }
@@ -202,25 +211,14 @@ JNIEXPORT jstring JNICALL Java_com_caoccao_javet_interop_V8Native_moduleGetResou
     auto v8InternalModule = Javet::Converter::ToV8InternalModule(v8LocalModule);
     V8LocalValue v8LocalObjectName;
     if (v8LocalModule->IsSourceTextModule()) {
-#ifdef ENABLE_NODE
-        auto v8InternalSourceTextModule = v8::internal::Cast<V8InternalSourceTextModule>(v8InternalModule);
-        auto v8InternalScript = *((*v8InternalSourceTextModule).GetScript());
-        auto v8InternalObjectNameOrSourceURL = v8InternalScript.GetNameOrSourceURL();
-#else
         auto v8InternalSourceTextModule = v8::internal::Cast<V8InternalSourceTextModule>(v8InternalModule);
         auto v8InternalScript = v8InternalSourceTextModule->GetScript();
         auto v8InternalObjectNameOrSourceURL = v8InternalScript->GetNameOrSourceURL();
-#endif
         v8LocalObjectName = v8::Utils::ToLocal(v8::internal::handle(v8InternalObjectNameOrSourceURL, v8InternalIsolate));
     }
     else if (v8LocalModule->IsSyntheticModule()) {
-#ifdef ENABLE_NODE
-        auto v8InternalSyntheticModule = *v8::internal::Cast<V8InternalSyntheticModule>(v8InternalModule);
-        auto v8InternalStringName = v8InternalSyntheticModule.name();
-#else
         auto v8InternalSyntheticModule = v8::internal::Cast<V8InternalSyntheticModule>(v8InternalModule);
         auto v8InternalStringName = v8InternalSyntheticModule->name();
-#endif
         v8LocalObjectName = v8::Utils::ToLocal(v8::internal::handle(v8InternalStringName, v8InternalIsolate));
 }
     if (!v8LocalObjectName.IsEmpty()) {
@@ -250,13 +248,22 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_moduleInstant
     RUNTIME_AND_MODULE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (v8LocalModule->GetStatus() == v8::Module::Status::kUninstantiated) {
         V8TryCatch v8TryCatch(v8Isolate);
-        v8::Module::ResolveModuleCallback moduleResolveCallback = Javet::Callback::JavetModuleResolveCallback;
+        V8MaybeBool v8MaybeBool;
 #ifdef ENABLE_NODE
+        // Node.js resolves module requests by index (ResolveModuleByIndexCallback),
+        // whereas Javet's own resolver is keyed by specifier (ResolveModuleCallback),
+        // so the two take different InstantiateModule() overloads.
         if (v8Runtime->IsBuiltInModuleResolution(jniEnv)) {
-            moduleResolveCallback = node::loader::ModuleWrap::ResolveModuleCallback;
+            v8MaybeBool = v8LocalModule->InstantiateModule(
+                v8Context,
+                node::loader::ModuleWrap::ResolveModuleCallback,
+                node::loader::ModuleWrap::ResolveSourceCallback);
         }
+        else
 #endif
-        auto v8MaybeBool = v8LocalModule->InstantiateModule(v8Context, moduleResolveCallback);
+        {
+            v8MaybeBool = v8LocalModule->InstantiateModule(v8Context, Javet::Callback::JavetModuleResolveCallback);
+        }
         if (v8TryCatch.HasCaught()) {
             Javet::Exceptions::ThrowJavetExecutionException(jniEnv, v8Runtime, v8Context, v8TryCatch);
         }

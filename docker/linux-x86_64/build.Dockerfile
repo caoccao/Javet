@@ -19,7 +19,7 @@
 # Based on .github/workflows/linux_x86_64_build.yml
 
 # Build arguments
-ARG JAVET_NODE_VERSION=24.19.0
+ARG JAVET_NODE_VERSION=26.8.1
 ARG JAVET_V8_VERSION=15.2.124.17
 ARG JAVET_VERSION=6.0.0
 ARG TEMPORAL_VERSION=0.1.2
@@ -185,23 +185,21 @@ ENV PATH="/usr/lib/llvm-21/bin:${PATH}"
 RUN cd ${ROOT} && \
     git clone https://github.com/nodejs/node.git && \
     cd node && \
-    git checkout v${JAVET_NODE_VERSION} && \
-    sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' deps/v8/src/execution/isolate.h && \
-    sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' deps/v8/src/heap/local-heap.h
+    git checkout v${JAVET_NODE_VERSION}
 
 # Build Node.js non-i18n
 RUN cd ${ROOT}/node && \
-    deno --allow-all ${ROOT}/Javet/scripts/deno/patch_node_build.ts -p ./ && \
-    ./configure --enable-static --without-intl && \
-    deno --allow-all ${ROOT}/Javet/scripts/deno/patch_node_build.ts -p ./ && \
+    deno --allow-all ${ROOT}/Javet/scripts/deno/patch_node_build.ts -p ./ --os linux && \
+    ./configure --enable-static --without-intl --v8-enable-temporal-support && \
+    deno --allow-all ${ROOT}/Javet/scripts/deno/patch_node_build.ts -p ./ --os linux && \
     make -j$(nproc) && \
     mv out out.non-i18n
 
 # Build Node.js i18n
 RUN cd ${ROOT}/node && \
-    deno --allow-all ${ROOT}/Javet/scripts/deno/patch_node_build.ts -p ./ && \
+    deno --allow-all ${ROOT}/Javet/scripts/deno/patch_node_build.ts -p ./ --os linux && \
     ./configure --enable-static --with-intl=full-icu && \
-    deno --allow-all ${ROOT}/Javet/scripts/deno/patch_node_build.ts -p ./ && \
+    deno --allow-all ${ROOT}/Javet/scripts/deno/patch_node_build.ts -p ./ --os linux && \
     make -j$(nproc) && \
     mv out out.i18n
 

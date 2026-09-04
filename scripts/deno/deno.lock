@@ -3,6 +3,7 @@
   "specifiers": {
     "jsr:@std/assert@1": "1.0.15",
     "jsr:@std/cli@^1.0.6": "1.0.6",
+    "jsr:@std/fmt@^1.0.8": "1.0.9",
     "jsr:@std/fs@^1.0.4": "1.0.4",
     "jsr:@std/internal@^1.0.10": "1.0.12",
     "jsr:@std/internal@^1.0.12": "1.0.12",
@@ -18,6 +19,9 @@
     },
     "@std/cli@1.0.6": {
       "integrity": "d22d8b38c66c666d7ad1f2a66c5b122da1704f985d3c47f01129f05abb6c5d3d"
+    },
+    "@std/fmt@1.0.9": {
+      "integrity": "2487343e8899fb2be5d0e3d35013e54477ada198854e52dd05ed0422eddcabe0"
     },
     "@std/fs@1.0.4": {
       "integrity": "2907d32d8d1d9e540588fd5fe0ec21ee638134bd51df327ad4e443aaef07123c",
@@ -39,6 +43,7 @@
     "dependencies": [
       "jsr:@std/assert@1",
       "jsr:@std/cli@^1.0.6",
+      "jsr:@std/fmt@^1.0.8",
       "jsr:@std/fs@^1.0.4",
       "jsr:@std/path@^1.0.8"
     ]

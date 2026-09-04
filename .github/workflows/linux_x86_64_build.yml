@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 24.19.0
+  JAVET_NODE_VERSION: 26.8.1
   JAVET_V8_VERSION: 15.2.124.17
   JAVET_VERSION: 6.0.0
   TEMPORAL_VERSION: 0.2.3
@@ -140,7 +140,7 @@ jobs:
             node_flag: --with-intl=full-icu
           - name: non-i18n
             i18n_flag:
-            node_flag: --without-intl
+            node_flag: --without-intl --v8-enable-temporal-support
 
     name: Build Javet Node ${{ matrix.name }}
     runs-on: ubuntu-latest
@@ -180,9 +180,7 @@ jobs:
         git clone https://github.com/nodejs/node.git
         cd node
         git checkout v${{ env.JAVET_NODE_VERSION }}
-        sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' deps/v8/src/execution/isolate.h
-        sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' deps/v8/src/heap/local-heap.h
-        deno --allow-all ${{ env.ROOT }}/Javet/scripts/deno/patch_node_build.ts -p ./
+        deno --allow-all ${{ env.ROOT }}/Javet/scripts/deno/patch_node_build.ts -p ./ --os linux
         ./configure --enable-static ${{ matrix.node_flag }}
         export CFLAGS="-fPIC -ftls-model=global-dynamic -Wno-return-type"
         export CXXFLAGS="${CFLAGS}"

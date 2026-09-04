@@ -148,11 +148,7 @@ namespace Javet {
             V8Runtime* v8Runtime;
             jobject mV8Inspector;
             std::unique_ptr<JavetInspectorChannel> channel;
-#ifdef ENABLE_NODE
-            std::unique_ptr<v8_inspector::V8InspectorSession> v8InspectorSession;
-#else
             std::shared_ptr<v8_inspector::V8InspectorSession> v8InspectorSession;
-#endif
             std::queue<std::u16string> messageQueue;
             std::mutex& sharedMutex;
         };

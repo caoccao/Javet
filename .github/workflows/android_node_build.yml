@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 24.19.0
+  JAVET_NODE_VERSION: 26.8.1
   JAVET_VERSION: 6.0.0
   ROOT: /home/runner/work/Javet
 
@@ -19,24 +19,24 @@ jobs:
         include:
           - android_arch: arm64
             android_abi: arm64-v8a
+            rust_target: aarch64-linux-android
             i18n_name: non-i18n
             i18n_flag:
-            config_patch:
           - android_arch: x86_64
             android_abi: x86_64
+            rust_target: x86_64-linux-android
             i18n_name: non-i18n
             i18n_flag:
-            config_patch:
           - android_arch: arm64
             android_abi: arm64-v8a
+            rust_target: aarch64-linux-android
             i18n_name: i18n
             i18n_flag: --i18n
-            config_patch: sed -i 's/--with-intl=none/--with-intl=full-icu/g' android_configure.py
           - android_arch: x86_64
             android_abi: x86_64
+            rust_target: x86_64-linux-android
             i18n_name: i18n
             i18n_flag: --i18n
-            config_patch: sed -i 's/--with-intl=none/--with-intl=full-icu/g' android_configure.py
 
     name: Build Javet ${{ matrix.android_arch }} ${{ matrix.i18n_name }}
     runs-on: ubuntu-latest
@@ -66,20 +66,24 @@ jobs:
       run: |
         echo "${{ env.ROOT }}/google/depot_tools" >> $GITHUB_PATH
 
+    - name: Setup Deno
+      uses: denoland/setup-deno@v2
+      with:
+        deno-version: v2.x
+
+    - name: Setup Rust
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: stable
+        target: ${{ matrix.rust_target }}
+
     - name: Build Node.js
       run: |
         cd ${{ env.ROOT }}
         git clone https://github.com/nodejs/node.git
         cd node
         git checkout v${{ env.JAVET_NODE_VERSION }}
-        git apply ../Javet/scripts/patches/android/node/android_configure.py.patch
-        git apply ../Javet/scripts/patches/android/node/common.gypi.patch
-        git apply ../Javet/scripts/patches/android/node/configure.py.patch
-        git apply ../Javet/scripts/patches/android/node/constants-arm.h.patch
-        git apply ../Javet/scripts/patches/android/node/push_registers_asm.cc.patch
-        git apply ../Javet/scripts/patches/android/node/trap-handler.h.patch
-        git apply ../Javet/scripts/patches/android/node/test_crypto_clienthello.cc.patch
-        ${{ matrix.config_patch }}
+        deno --allow-all ${{ env.ROOT }}/Javet/scripts/deno/patch_node_build.ts -p ./ --os android ${{ matrix.i18n_flag }}
         ./android-configure ${{ steps.setup-ndk.outputs.ndk-path }} 24 ${{ matrix.android_arch }}
         make -j4
         mv out out.${{ matrix.android_arch }}.${{ matrix.i18n_name }}
@@ -100,11 +104,6 @@ jobs:
       uses: jwlawson/actions-setup-cmake@v2.2
       with:
         cmake-version: '4.2.x'
-
-    - name: Setup Deno
-      uses: denoland/setup-deno@v2
-      with:
-        deno-version: v2.x
 
     - name: Build Javet JNI
       run: |
