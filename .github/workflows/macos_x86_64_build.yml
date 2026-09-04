@@ -72,7 +72,6 @@ jobs:
         cd ..
         gclient sync -D
         cd v8
-        sed -i '' 's/max\.value_or({})/max.value_or(uint8_t{})/' src/compiler/turboshaft/wasm-shuffle-reducer.cc
         mkdir -p out.gn.macos.${{ matrix.name }}/x64.release
         cp ../../Javet/scripts/v8/gn/macos-x86_64-${{ matrix.name }}-args.gn out.gn.macos.${{ matrix.name }}/x64.release/args.gn
         gn gen out.gn.macos.${{ matrix.name }}/x64.release
@@ -145,6 +144,11 @@ jobs:
     - name: Checkout the code
       uses: actions/checkout@v5
 
+    - name: Setup Deno
+      uses: denoland/setup-deno@v2
+      with:
+        deno-version: v2.x
+
     - name: Setup XCode
       uses: maxim-lobanov/setup-xcode@v1
       with:
@@ -177,11 +181,6 @@ jobs:
       uses: jwlawson/actions-setup-cmake@v2.2
       with:
         cmake-version: '4.2.x'
-
-    - name: Setup Deno
-      uses: denoland/setup-deno@v2
-      with:
-        deno-version: v2.x
 
     - name: Build Javet JNI
       run: |
