@@ -48,6 +48,10 @@
  *            OS takes the ICU choice on its own configure command line and
  *            ignores the flag.
  *
+ *            Temporal's node_crates is cross compiled with cargo, so the Rust
+ *            standard library for the Android triple has to be installed
+ *            first, e.g. `rustup target add aarch64-linux-android`.
+ *
  * `--os` is the OS being built for, not the host: Android is cross compiled
  * from Linux, so it has to be told rather than detected.
  *
@@ -230,20 +234,15 @@ const V8_TLS_MODEL_LOCAL_HEAP: Patch = {
 
 /*
  * The Android NDK toolchain only provides a cross compiler, so the host
- * toolchain has to be pointed at the system GCC. v8_target_arch has to be the
+ * toolchain has to be pointed at the system GCC. CC_host carries a second
+ * meaning: gyp's CrossCompileRequested() keys off it, and that is what splits
+ * the build into a host and a target toolset. v8_target_arch has to be the
  * Node.js CPU name rather than the Android one, and Javet needs a static
  * non-i18n build.
- *
- * Temporal needs more than --v8-enable-temporal-support here. Its Rust half,
- * node_crates, is built by cargo, and configure.py only pins cargo_rust_target
- * for Windows and macOS x86-64, so an Android build would compile the crate for
- * the Linux host and fail to link. Pass the Android triple and point cargo at
- * the NDK linker for it. The Rust standard library for that triple has to be
- * installed too, e.g. `rustup target add aarch64-linux-android`.
  */
 const ANDROID_CONFIGURE_PY: Patch = {
   file: "android_configure.py",
-  reason: "Set the host toolchain, the Rust target, v8_target_arch and Javet's configure flags",
+  reason: "Set the host toolchain, v8_target_arch and Javet's configure flags",
   os: [OS.Android],
   replacements: [
     {
@@ -253,9 +252,6 @@ const ANDROID_CONFIGURE_PY: Patch = {
 import shutil
 os.environ['CC_host'] = shutil.which("gcc")
 os.environ['CXX_host'] = shutil.which("g++")
-# Rust spells armv7 without the trailing 'a' that the NDK uses.
-RUST_TARGET = TOOLCHAIN_PREFIX.replace("armv7a-", "armv7-")
-os.environ['CARGO_TARGET_' + RUST_TARGET.upper().replace('-', '_') + '_LINKER'] = os.environ['CC']
 `,
       applied: `os.environ['CC_host'] = shutil.which("gcc")`,
     },
@@ -263,13 +259,237 @@ os.environ['CARGO_TARGET_' + RUST_TARGET.upper().replace('-', '_') + '_LINKER'] 
       from: `GYP_DEFINES += " v8_target_arch=" + arch`,
       to: `GYP_DEFINES += " v8_target_arch=" + DEST_CPU`,
     },
+  ],
+};
+
+/*
+ * Temporal needs more than --v8-enable-temporal-support here. Its Rust half,
+ * node_crates, is built by cargo, and configure.py pins cargo_rust_target for
+ * Windows and macOS x86-64 only. Android keeps the empty default, so cargo
+ * builds the crate for the Linux host and the target link rejects it with
+ *
+ *   ld.lld: error: .../libnode_crates.a(...rcgu.o) is incompatible with
+ *   aarch64linux
+ *
+ * aarch64linux there is the emulation ld is producing rather than anything
+ * about the host: the link is right and the objects in the archive are the
+ * x86-64 ones. The empty triple shows up in the path as well, as the doubled
+ * separator in obj/gen//release.
+ *
+ * android_configure.py cannot supply the triple through GYP_DEFINES, which is
+ * where it would naturally go. configure.py writes cargo_rust_target into
+ * config.gypi as a plain assignment, gyp pulls config.gypi in with -I, and an
+ * included file's variables overwrite a -D from the command line. So the triple
+ * has to come from configure.py itself.
+ *
+ * rustc needs no linker on top of this: node_crates is a staticlib, so it
+ * archives its objects instead of linking them, and none of the vendored crates
+ * compiles C. Only the Rust standard library for the triple is required.
+ */
+const ANDROID_CONFIGURE_PY_CARGO_RUST_TARGET: Patch = {
+  file: "configure.py",
+  reason: "Point cargo at the Android triple so that node_crates is cross compiled",
+  os: [OS.Android],
+  replacements: [
     {
-      from: `GYP_DEFINES += " android_ndk_path=" + android_ndk_path
+      from: `  # Always set the Rust target for x64 macOS in case we will be building
+  # under Rosetta 2.
+  if flavor == 'mac' and target_arch == 'x64':
+    o['variables']['cargo_rust_target'] = 'x86_64-apple-darwin'
 `,
-      to: `GYP_DEFINES += " android_ndk_path=" + android_ndk_path
-GYP_DEFINES += " cargo_rust_target=" + RUST_TARGET
+      to: `  # Always set the Rust target for x64 macOS in case we will be building
+  # under Rosetta 2.
+  if flavor == 'mac' and target_arch == 'x64':
+    o['variables']['cargo_rust_target'] = 'x86_64-apple-darwin'
+  # Android is always cross compiled, so cargo has to be told the triple.
+  if flavor == 'android':
+    o['variables']['cargo_rust_target'] = {
+      'arm': 'armv7-linux-androideabi',
+      'arm64': 'aarch64-linux-android',
+      'ia32': 'i686-linux-android',
+      'x64': 'x86_64-linux-android',
+    }[target_arch]
 `,
-      applied: `GYP_DEFINES += " cargo_rust_target=" + RUST_TARGET`,
+      applied: `if flavor == 'android':`,
+    },
+  ],
+};
+
+/*
+ * crates.gyp derives a single archive path from cargo_rust_target and hands it
+ * to both toolsets of node_crates. That holds until the build cross compiles:
+ * --cross-compiling turns on want_separate_host_toolset, and the host tools
+ * that link the archive -- mksnapshot, by way of v8_base_without_compiler and
+ * v8_initializers -- run on the build machine. Pinning the triple on its own
+ * therefore only moves the failure from the target link to the host one.
+ *
+ * Build the crate once per toolset instead. The target toolset cross compiles
+ * to cargo_rust_target while the host toolset keeps the native build, and cargo
+ * already files those under <target-dir>/<triple>/ and <target-dir>/, so the
+ * two archives never collide.
+ *
+ * _toolset can be read this early because gyp splits the toolsets before the
+ * early phase, and reading it early is what the fix needs: link_settings are
+ * published to the dependents before target_conditions are evaluated, so the
+ * usual target_conditions form would leave the reference unresolved in
+ * mksnapshot. A conditions block nested inside variables lands the value in
+ * time for both link_settings and the action.
+ */
+const ANDROID_CRATES_GYP_TOOLSET: Patch = {
+  file: "deps/crates/crates.gyp",
+  reason: "Build node_crates per toolset so that the host tools keep a native archive",
+  os: [OS.Android],
+  replacements: [
+    {
+      from: `        ['cargo_rust_target!=""', {
+          'variables': {
+            'cargo_build_flags': ['--target', '<(cargo_rust_target)'],
+          }
+        }],
+        ['OS=="win"', {
+          'variables': {
+            'node_crates_libpath': '<(SHARED_INTERMEDIATE_DIR)/$(Platform)/release/node_crates.lib',
+          },
+        }, {
+          'variables': {
+            'node_crates_libpath': '<(SHARED_INTERMEDIATE_DIR)/<(cargo_rust_target)/release/<(STATIC_LIB_PREFIX)node_crates<(STATIC_LIB_SUFFIX)',
+          },
+        }],
+`,
+      to: `        ['cargo_rust_target!=""', {
+          'variables': {
+            'cargo_target_flags': ['--target', '<(cargo_rust_target)'],
+          }
+        }, {
+          'variables': {
+            'cargo_target_flags': [],
+          }
+        }],
+        ['OS=="win"', {
+          'variables': {
+            'node_crates_libpath': '<(SHARED_INTERMEDIATE_DIR)/$(Platform)/release/node_crates.lib',
+            'node_crates_libpath_host': '<(SHARED_INTERMEDIATE_DIR)/$(Platform)/release/node_crates.lib',
+          },
+        }, {
+          'variables': {
+            'node_crates_libpath': '<(SHARED_INTERMEDIATE_DIR)/<(cargo_rust_target)/release/<(STATIC_LIB_PREFIX)node_crates<(STATIC_LIB_SUFFIX)',
+            'node_crates_libpath_host': '<(SHARED_INTERMEDIATE_DIR)/release/<(STATIC_LIB_PREFIX)node_crates<(STATIC_LIB_SUFFIX)',
+          },
+        }],
+`,
+    },
+    {
+      from: `        ['OS=="win"', {
+          'variables': {
+            'node_crates_libpath': '<(SHARED_INTERMEDIATE_DIR)/$(Platform)/debug/node_crates.lib',
+          },
+        }, {
+          'variables': {
+            'node_crates_libpath': '<(SHARED_INTERMEDIATE_DIR)/<(cargo_rust_target)/debug/<(STATIC_LIB_PREFIX)node_crates<(STATIC_LIB_SUFFIX)',
+          },
+        }],
+`,
+      to: `        ['cargo_rust_target!=""', {
+          'variables': {
+            'cargo_target_flags': ['--target', '<(cargo_rust_target)'],
+          }
+        }, {
+          'variables': {
+            'cargo_target_flags': [],
+          }
+        }],
+        ['OS=="win"', {
+          'variables': {
+            'node_crates_libpath': '<(SHARED_INTERMEDIATE_DIR)/$(Platform)/debug/node_crates.lib',
+            'node_crates_libpath_host': '<(SHARED_INTERMEDIATE_DIR)/$(Platform)/debug/node_crates.lib',
+          },
+        }, {
+          'variables': {
+            'node_crates_libpath': '<(SHARED_INTERMEDIATE_DIR)/<(cargo_rust_target)/debug/<(STATIC_LIB_PREFIX)node_crates<(STATIC_LIB_SUFFIX)',
+            'node_crates_libpath_host': '<(SHARED_INTERMEDIATE_DIR)/debug/<(STATIC_LIB_PREFIX)node_crates<(STATIC_LIB_SUFFIX)',
+          },
+        }],
+`,
+    },
+    {
+      from: `      'target_name': 'node_crates',
+      'type': 'none',
+      'toolsets': ['host', 'target'],
+      'hard_dependency': 1,
+      'sources': [
+`,
+      to: `      'target_name': 'node_crates',
+      'type': 'none',
+      'toolsets': ['host', 'target'],
+      'hard_dependency': 1,
+      'variables': {
+        'conditions': [
+          ['_toolset=="host"', {
+            'node_crates_lib': '<(node_crates_libpath_host)',
+            'node_crates_target_flags': [],
+          }, {
+            'node_crates_lib': '<(node_crates_libpath)',
+            'node_crates_target_flags': ['<@(cargo_target_flags)'],
+          }],
+        ],
+      },
+      'sources': [
+`,
+      applied: `'node_crates_lib': '<(node_crates_libpath_host)',`,
+    },
+    {
+      from: `      'link_settings': {
+        'libraries': [
+          '<(node_crates_libpath)',
+        ],
+`,
+      to: `      'link_settings': {
+        'libraries': [
+          '<(node_crates_lib)',
+        ],
+`,
+    },
+    {
+      from: `              'action': [
+                '<(python)',
+                'cargo_build.py',
+                '$(Platform)',
+                '<(SHARED_INTERMEDIATE_DIR)',
+                '<@(cargo_build_flags)',
+                '--frozen',
+              ],
+`,
+      to: `              'action': [
+                '<(python)',
+                'cargo_build.py',
+                '$(Platform)',
+                '<(SHARED_INTERMEDIATE_DIR)',
+                '<@(cargo_build_flags)',
+                '<@(node_crates_target_flags)',
+                '--frozen',
+              ],
+`,
+    },
+    {
+      from: `              'outputs': [
+                '<(node_crates_libpath)'
+              ],
+              'action': [
+                '<(cargo)',
+                'rustc',
+                '<@(cargo_build_flags)',
+                '--frozen',
+`,
+      to: `              'outputs': [
+                '<(node_crates_lib)'
+              ],
+              'action': [
+                '<(cargo)',
+                'rustc',
+                '<@(cargo_build_flags)',
+                '<@(node_crates_target_flags)',
+                '--frozen',
+`,
     },
   ],
 };
@@ -422,6 +642,8 @@ const PATCHES: readonly Patch[] = [
   V8_TLS_MODEL,
   V8_TLS_MODEL_LOCAL_HEAP,
   ANDROID_CONFIGURE_PY,
+  ANDROID_CONFIGURE_PY_CARGO_RUST_TARGET,
+  ANDROID_CRATES_GYP_TOOLSET,
   androidConfigurePyIntl(false),
   androidConfigurePyIntl(true),
   ANDROID_CONFIGURE_PY_ARM_FPU,

@@ -48,6 +48,16 @@ else()
 endif()
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     file(GLOB_RECURSE nodeCratesLibraries ${nodeReleaseDir}/obj/global_intermediate/node_crates.lib)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
+    # Android is always cross compiled, so Node.js builds node_crates twice into
+    # the same shared intermediate directory: once natively for the host toolset
+    # that mksnapshot links against, and once for the Android triple. Only the
+    # latter can be linked here, and the host one is the copy without a triple
+    # directory, so drop it. The glob is sorted, so leaving it in would pick the
+    # host archive for x86_64 alone (release sorts before x86_64-linux-android)
+    # while every other CPU arch kept working.
+    file(GLOB_RECURSE nodeCratesLibraries ${nodeReleaseDir}/obj/gen/libnode_crates.a)
+    list(FILTER nodeCratesLibraries EXCLUDE REGEX "/obj/gen/release/")
 else()
     file(GLOB_RECURSE nodeCratesLibraries ${nodeReleaseDir}/obj/gen/libnode_crates.a)
 endif()
