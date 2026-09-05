@@ -51,7 +51,7 @@ jobs:
         sudo apt-get install -y execstack gcc-multilib g++-multilib
 
     - name: Setup Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: '3.11' 
 
@@ -140,12 +140,12 @@ jobs:
         java-version: 17
 
     - name: Setup Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: '3.11' 
 
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v4
+      uses: gradle/actions/setup-gradle@v5
       with:
         gradle-version: 8.10.2
 
@@ -155,25 +155,25 @@ jobs:
         mkdir -p android/javet-android/src/main/jniLibs/x86_64
 
     - name: Download Javet arm64 i18n
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: javet-android-node-arm64-${{ env.JAVET_VERSION }}-i18n
         path: android/javet-android/src/main/jniLibs/arm64-v8a
 
     - name: Download Javet x86_64 i18n
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: javet-android-node-x86_64-${{ env.JAVET_VERSION }}-i18n
         path: android/javet-android/src/main/jniLibs/x86_64
 
     - name: Download Javet arm64 non-i18n
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: javet-android-node-arm64-${{ env.JAVET_VERSION }}-non-i18n
         path: android/javet-android/src/main/jniLibs/arm64-v8a
 
     - name: Download Javet x86_64 non-i18n
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: javet-android-node-x86_64-${{ env.JAVET_VERSION }}-non-i18n
         path: android/javet-android/src/main/jniLibs/x86_64
@@ -192,21 +192,21 @@ jobs:
         path: android/javet-android/build/outputs/aar/javet*release.aar
 
     - name: Delete Javet arm64 i18n
-      uses: geekyeggo/delete-artifact@v4
+      uses: geekyeggo/delete-artifact@v6
       with:
         name: javet-android-node-arm64-${{ env.JAVET_VERSION }}-i18n
 
     - name: Delete Javet x86_64 i18n
-      uses: geekyeggo/delete-artifact@v4
+      uses: geekyeggo/delete-artifact@v6
       with:
         name: javet-android-node-x86_64-${{ env.JAVET_VERSION }}-i18n
 
     - name: Delete Javet arm64 non-i18n
-      uses: geekyeggo/delete-artifact@v4
+      uses: geekyeggo/delete-artifact@v6
       with:
         name: javet-android-node-arm64-${{ env.JAVET_VERSION }}-non-i18n
 
     - name: Delete Javet x86_64 non-i18n
-      uses: geekyeggo/delete-artifact@v4
+      uses: geekyeggo/delete-artifact@v6
       with:
         name: javet-android-node-x86_64-${{ env.JAVET_VERSION }}-non-i18n

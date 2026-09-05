@@ -34,7 +34,7 @@ jobs:
       uses: actions/checkout@v5
 
     - name: Setup Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: '3.11' 
 
@@ -217,30 +217,30 @@ jobs:
         java-version: 8
 
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v4
+      uses: gradle/actions/setup-gradle@v5
       with:
         gradle-version: 8.10.2
 
     - name: Download Javet Node i18n
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: javet-macos-node-arm64-${{ env.JAVET_VERSION }}-i18n
         path: src/main/resources/
 
     - name: Download Javet Node non-i18n
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: javet-macos-node-arm64-${{ env.JAVET_VERSION }}-non-i18n
         path: src/main/resources/
 
     - name: Download Javet V8 i18n
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: javet-macos-v8-arm64-${{ env.JAVET_VERSION }}-i18n
         path: src/main/resources/
 
     - name: Download Javet V8 non-i18n
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: javet-macos-v8-arm64-${{ env.JAVET_VERSION }}-non-i18n
         path: src/main/resources/
@@ -251,13 +251,13 @@ jobs:
         mkdir -p icu-v8
 
     - name: Download i18n node
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: icu-node
         path: icu-node
 
     - name: Download i18n V8
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: icu-v8
         path: icu-v8
@@ -292,21 +292,21 @@ jobs:
           build/libs/*.pom
 
     - name: Delete Javet Node i18n
-      uses: geekyeggo/delete-artifact@v4
+      uses: geekyeggo/delete-artifact@v6
       with:
         name: javet-macos-node-arm64-${{ env.JAVET_VERSION }}-i18n
 
     - name: Delete Javet Node non-i18n
-      uses: geekyeggo/delete-artifact@v4
+      uses: geekyeggo/delete-artifact@v6
       with:
         name: javet-macos-node-arm64-${{ env.JAVET_VERSION }}-non-i18n
 
     - name: Delete Javet V8 i18n
-      uses: geekyeggo/delete-artifact@v4
+      uses: geekyeggo/delete-artifact@v6
       with:
         name: javet-macos-v8-arm64-${{ env.JAVET_VERSION }}-i18n
 
     - name: Delete Javet V8 non-i18n
-      uses: geekyeggo/delete-artifact@v4
+      uses: geekyeggo/delete-artifact@v6
       with:
         name: javet-macos-v8-arm64-${{ env.JAVET_VERSION }}-non-i18n
