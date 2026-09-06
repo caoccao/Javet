@@ -311,7 +311,11 @@ JNIEXPORT jobject JNICALL Java_com_caoccao_javet_interop_V8Native_objectGetProto
     RUNTIME_AND_VALUE_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle, v8ValueHandle);
     if (v8LocalValue->IsObject()) {
         auto v8LocalObject = v8LocalValue.As<v8::Object>();
+#ifdef ENABLE_NODE
         V8LocalValue v8LocalValueResult = v8LocalObject->GetPrototypeV2();
+#else
+        V8LocalValue v8LocalValueResult = v8LocalObject->GetPrototype();
+#endif
         return v8Runtime->SafeToExternalV8Value(jniEnv, v8Isolate, v8Context, v8LocalValueResult);
     }
     return Javet::Converter::ToExternalV8ValueUndefined(jniEnv, v8Runtime);
@@ -611,7 +615,11 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectSetAcce
                 getterCallbackContextReference, Javet::Callback::JavetCloseWeakCallbackContextHandle, v8::WeakCallbackType::kParameter);
             auto maybeResult = v8LocalArrayContext->Set(v8Context, 0, v8LocalContextGetterHandle);
             v8::AccessorNameGetterCallback getter = Javet::Callback::JavetPropertyGetterCallback;
+#ifdef ENABLE_NODE
             v8::AccessorNameSetterCallback setter = nullptr;
+#else
+            v8::AccessorNameSetterCallbackV2 setter = nullptr;
+#endif
             if (mContextSetter != nullptr) {
                 setterCallbackContextReference = new Javet::Callback::JavetCallbackContextReference(v8Runtime);
                 INCREASE_COUNTER(Javet::Monitor::CounterType::NewJavetCallbackContextReference);
@@ -763,7 +771,11 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_objectSetProt
         auto v8LocalObject = v8LocalValue.As<v8::Object>();
         auto v8PersistentObjectPrototypePointer = TO_V8_PERSISTENT_VALUE_POINTER(v8ValueHandlePrototype);
         auto v8LocalObjectPrototype = v8PersistentObjectPrototypePointer->Get(v8Isolate);
+#ifdef ENABLE_NODE
         auto v8MaybeBool = v8LocalObject->SetPrototypeV2(v8Context, v8LocalObjectPrototype);
+#else
+        auto v8MaybeBool = v8LocalObject->SetPrototype(v8Context, v8LocalObjectPrototype);
+#endif
         if (v8MaybeBool.IsNothing()) {
             Javet::Exceptions::HandlePendingException(jniEnv, v8Runtime, v8Context);
         }

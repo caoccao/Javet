@@ -51,13 +51,21 @@ namespace Javet {
         void JavetPropertySetterCallback(
             V8LocalName propertyName,
             V8LocalValue propertyValue,
+#ifdef ENABLE_NODE
             const v8::PropertyCallbackInfo<void>& info) noexcept;
+#else
+            const v8::PropertyCallbackInfo<v8::Boolean>& info) noexcept;
+#endif
 #ifndef ENABLE_NODE
         void OOMErrorCallback(const char* location, const v8::OOMDetails& oomDetails) noexcept;
 #endif
         size_t JavetNearHeapLimitCallback(void* data, size_t currentHeapLimit, size_t initialHeapLimit) noexcept;
         void JavetPromiseRejectCallback(v8::PromiseRejectMessage message) noexcept;
+#ifdef ENABLE_NODE
         V8MaybeLocalValue JavetSyntheticModuleEvaluationStepsCallback(
+#else
+        V8MaybeLocalPromise JavetSyntheticModuleEvaluationStepsCallback(
+#endif
             V8LocalContext v8Context,
             V8LocalModule v8LocalModule);
 
@@ -73,7 +81,11 @@ namespace Javet {
             void CallPropertySetter(
                 const V8LocalName& propertyName,
                 const V8LocalValue& propertyValue,
+#ifdef ENABLE_NODE
                 const v8::PropertyCallbackInfo<void>& args) noexcept;
+#else
+                const v8::PropertyCallbackInfo<v8::Boolean>& args) noexcept;
+#endif
             void RemoveCallbackContext(const jobject externalV8Runtime) noexcept;
             void SetHandle(JNIEnv* jniEnv, const jobject callbackContext) noexcept;
             virtual ~JavetCallbackContextReference();

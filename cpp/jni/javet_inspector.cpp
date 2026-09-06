@@ -186,7 +186,7 @@ namespace Javet {
             this->name = name;
             auto v8Context = v8Runtime->GetV8LocalContext();
             v8Inspector.reset(v8_inspector::V8Inspector::create(v8Runtime->v8Isolate, this).release());
-            v8Context->SetAlignedPointerInEmbedderData(EMBEDDER_DATA_INDEX, this);
+            v8Context->SetAlignedPointerInEmbedderData(EMBEDDER_DATA_INDEX, this, v8::kEmbedderDataTypeTagDefault);
             auto humanReadableName = ConvertFromUtf16StringToStringView(name);
             v8_inspector::V8ContextInfo contextInfo(v8Context, CONTEXT_GROUP_ID, humanReadableName);
             contextInfo.origin = humanReadableName;
@@ -239,7 +239,7 @@ namespace Javet {
         }
 
         void JavetInspectorClient::contextCreated(const V8LocalContext& v8Context) noexcept {
-            v8Context->SetAlignedPointerInEmbedderData(EMBEDDER_DATA_INDEX, this);
+            v8Context->SetAlignedPointerInEmbedderData(EMBEDDER_DATA_INDEX, this, v8::kEmbedderDataTypeTagDefault);
             auto humanReadableName = ConvertFromUtf16StringToStringView(name);
             v8_inspector::V8ContextInfo contextInfo(v8Context, CONTEXT_GROUP_ID, humanReadableName);
             contextInfo.origin = humanReadableName;

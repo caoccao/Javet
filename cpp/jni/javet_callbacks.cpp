@@ -186,7 +186,11 @@ namespace Javet {
         void JavetPropertySetterCallback(
             V8LocalName propertyName,
             V8LocalValue propertyValue,
+#ifdef ENABLE_NODE
             const v8::PropertyCallbackInfo<void>& info) noexcept {
+#else
+            const v8::PropertyCallbackInfo<v8::Boolean>& info) noexcept {
+#endif
             reinterpret_cast<Javet::Callback::JavetCallbackContextReference*>(
                 info.Data().As<v8::Array>()->Get(info.GetIsolate()->GetCurrentContext(), 1).ToLocalChecked().As<v8::BigInt>()->Int64Value())
                 ->CallPropertySetter(propertyName, propertyValue, info);
@@ -355,13 +359,21 @@ namespace Javet {
             }
         }
 
+#ifdef ENABLE_NODE
         V8MaybeLocalValue JavetSyntheticModuleEvaluationStepsCallback(
+#else
+        V8MaybeLocalPromise JavetSyntheticModuleEvaluationStepsCallback(
+#endif
             V8LocalContext v8Context,
             V8LocalModule v8LocalModule) {
             auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
             if (!jniEnvScope) {
                 LOG_ERROR("JavetSyntheticModuleEvaluationStepsCallback: JNI environment is unavailable.");
+#ifdef ENABLE_NODE
                 return V8MaybeLocalValue();
+#else
+                return V8MaybeLocalPromise();
+#endif
             }
             JNIEnv* jniEnv = jniEnvScope.Get();
             Javet::Exceptions::ClearJNIException(jniEnv);
@@ -414,10 +426,29 @@ namespace Javet {
                             }
                         }
                     }
-                    return v8::Undefined(v8Isolate);
+#ifdef ENABLE_NODE
+                    return Javet::Converter::ToV8Undefined(v8Isolate);
+#else
+                    // V8 dropped the fallback that wrapped a non-promise result
+                    // and now CHECKs that the evaluation steps return a promise,
+                    // so hand back a resolved one.
+                    auto v8MaybeLocalPromiseResolver = v8::Promise::Resolver::New(v8Context);
+                    if (v8MaybeLocalPromiseResolver.IsEmpty()) {
+                        LOG_ERROR("JavetSyntheticModuleEvaluationStepsCallback: Promise resolver cannot be created.");
+                    }
+                    else {
+                        auto v8LocalPromiseResolver = v8MaybeLocalPromiseResolver.ToLocalChecked();
+                        v8LocalPromiseResolver->Resolve(v8Context, Javet::Converter::ToV8Undefined(v8Isolate)).FromMaybe(false);
+                        return v8LocalPromiseResolver->GetPromise();
+                    }
+#endif
                 }
             }
+#ifdef ENABLE_NODE
             return V8MaybeLocalValue();
+#else
+            return V8MaybeLocalPromise();
+#endif
         }
 
         JavetCallbackContextReference::JavetCallbackContextReference(V8Runtime* v8Runtime) noexcept
@@ -534,7 +565,11 @@ namespace Javet {
                     V8ContextScope v8ContextScope(v8Context);
                     jobject callbackContext = jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeGetCallbackContext, TO_JAVA_LONG(this));
                     jboolean isThisObjectRequired = jniEnv->CallBooleanMethod(callbackContext, jmethodIDJavetCallbackContextIsThisObjectRequired);
+#ifdef ENABLE_NODE
                     jobject thisObject = isThisObjectRequired ? Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, args.HolderV2()) : nullptr;
+#else
+                    jobject thisObject = isThisObjectRequired ? Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, args.Holder()) : nullptr;
+#endif
                     jintArray resultType = jniEnv->NewIntArray(1);
                     jobject mResult = jniEnv->CallStaticObjectMethod(
                         jclassV8FunctionCallback,
@@ -581,7 +616,11 @@ namespace Javet {
         void JavetCallbackContextReference::CallPropertySetter(
             const V8LocalName& propertyName,
             const V8LocalValue& propertyValue,
+#ifdef ENABLE_NODE
             const v8::PropertyCallbackInfo<void>& args) noexcept {
+#else
+            const v8::PropertyCallbackInfo<v8::Boolean>& args) noexcept {
+#endif
             auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
             if (!jniEnvScope) {
                 LOG_ERROR("CallPropertySetter: JNI environment is unavailable.");
@@ -612,7 +651,11 @@ namespace Javet {
                         jobject externalV8Runtime = v8Runtime->externalV8Runtime;
                         jobject callbackContext = jniEnv->CallObjectMethod(externalV8Runtime, jmethodIDV8RuntimeGetCallbackContext, TO_JAVA_LONG(this));
                         jboolean isThisObjectRequired = jniEnv->CallBooleanMethod(callbackContext, jmethodIDJavetCallbackContextIsThisObjectRequired);
+#ifdef ENABLE_NODE
                         jobject thisObject = isThisObjectRequired ? Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, args.HolderV2()) : nullptr;
+#else
+                        jobject thisObject = isThisObjectRequired ? Javet::Converter::ToExternalV8Value(jniEnv, v8Runtime, v8Context, args.Holder()) : nullptr;
+#endif
                         jobjectArray mArguments = Javet::Converter::ToExternalV8ValueArray(jniEnv, v8Runtime, v8Context, v8LocalArray);
                         jobject mResult = jniEnv->CallStaticObjectMethod(
                             jclassV8FunctionCallback,
