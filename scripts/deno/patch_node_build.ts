@@ -497,20 +497,40 @@ const ANDROID_CRATES_GYP_TOOLSET: Patch = {
 /*
  * android-configure runs ./configure itself, so unlike every other OS the ICU
  * choice has to be baked into android_configure.py rather than passed on a
- * command line. Hence one variant per build.
+ * command line. Write the line once with a placeholder ICU and let
+ * androidConfigurePyIntl flip it, so that the same tree can be rebuilt in
+ * either mode. Baking the choice straight into this replacement would strand a
+ * tree that was patched the other way round: the pristine line is gone, so the
+ * other mode can never match it, and the build silently keeps the ICU of the
+ * previous run.
+ */
+const ANDROID_CONFIGURE_PY_CONFIGURE: Patch = {
+  file: "android_configure.py",
+  reason: "Configure a static build with Temporal",
+  os: [OS.Android],
+  replacements: [
+    {
+      from: `    os.system("./configure --dest-cpu=" + DEST_CPU + " --dest-os=android --openssl-no-asm --cross-compiling")`,
+      to: `    os.system("./configure --dest-cpu=" + DEST_CPU + " --dest-os=android --openssl-no-asm --cross-compiling --enable-static --with-intl=none --v8-enable-temporal-support")`,
+      applied: `--cross-compiling --enable-static --with-intl=`,
+    },
+  ],
+};
+
+/*
+ * Flip the ICU that ANDROID_CONFIGURE_PY_CONFIGURE left behind. Both directions
+ * are a replaceAll, so a tree carries no memory of the mode it was patched for
+ * and re-running the script is enough to switch between them.
  */
 function androidConfigurePyIntl(i18n: boolean): Patch {
-  const intl = i18n ? "full-icu" : "none";
+  const [from, to] = i18n ? ["none", "full-icu"] : ["full-icu", "none"];
   return {
     file: "android_configure.py",
-    reason: `Configure a static --with-intl=${intl} build with Temporal`,
+    reason: `Configure --with-intl=${to}`,
     os: [OS.Android],
     i18n,
     replacements: [
-      {
-        from: `    os.system("./configure --dest-cpu=" + DEST_CPU + " --dest-os=android --openssl-no-asm --cross-compiling")`,
-        to: `    os.system("./configure --dest-cpu=" + DEST_CPU + " --dest-os=android --openssl-no-asm --cross-compiling --enable-static --with-intl=${intl} --v8-enable-temporal-support")`,
-      },
+      { from: `--with-intl=${from}`, to: `--with-intl=${to}`, all: true },
     ],
   };
 }
@@ -644,6 +664,7 @@ const PATCHES: readonly Patch[] = [
   ANDROID_CONFIGURE_PY,
   ANDROID_CONFIGURE_PY_CARGO_RUST_TARGET,
   ANDROID_CRATES_GYP_TOOLSET,
+  ANDROID_CONFIGURE_PY_CONFIGURE,
   androidConfigurePyIntl(false),
   androidConfigurePyIntl(true),
   ANDROID_CONFIGURE_PY_ARM_FPU,
