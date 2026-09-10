@@ -1,0 +1,175 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 884" width="960" height="884" role="img" aria-labelledby="title desc">
+<title id="title">Javet Architecture</title>
+<desc id="desc">Javet maps V8 primitive types to JVM primitive types by value and V8 reference types to Javet V8Value classes by reference through the JNI layer.</desc>
+<rect x="0" y="0" width="960" height="884" fill="#ffffff"/>
+<rect x="6" y="6" width="948" height="872" rx="8" fill="none" stroke="#3f3f3f" stroke-width="1.5"/>
+<text x="480.0" y="42.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="24" font-weight="600" fill="#1f1f1f" text-anchor="middle">Javet Architecture</text>
+<rect x="20" y="64" width="352" height="648" rx="14" fill="#fdf0e2" stroke="#d79b48" stroke-width="1.6"/>
+<rect x="384" y="64" width="168" height="648" rx="14" fill="#e6eefb" stroke="#6c8ebf" stroke-width="1.6"/>
+<rect x="564" y="64" width="376" height="648" rx="14" fill="#e5f0e0" stroke="#82b366" stroke-width="1.6"/>
+<text x="196.0" y="92.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="18" font-weight="600" fill="#1f1f1f" text-anchor="middle">V8</text>
+<text x="196.0" y="110.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="11" fill="#5c5c5c" text-anchor="middle">JavaScript types</text>
+<text x="468.0" y="92.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="18" font-weight="600" fill="#1f1f1f" text-anchor="middle">JNI</text>
+<text x="468.0" y="110.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="10.5" fill="#5c5c5c" text-anchor="middle">V8Native / NodeNative</text>
+<text x="752.0" y="92.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="18" font-weight="600" fill="#1f1f1f" text-anchor="middle">JVM</text>
+<text x="752.0" y="110.0" font-family="'JetBrains Mono',Consolas,'SF Mono',Menlo,monospace" font-size="10.5" fill="#5c5c5c" text-anchor="middle">com.caoccao.javet.values</text>
+<rect x="34.0" y="124.0" width="101.3" height="30.0" rx="5" fill="#e2e2e2" stroke="#7a7a7a" stroke-width="1.2"/>
+<text x="84.7" y="139.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="middle" dominant-baseline="central">undefined</text>
+<rect x="145.3" y="124.0" width="101.3" height="30.0" rx="5" fill="#e2e2e2" stroke="#7a7a7a" stroke-width="1.2"/>
+<text x="196.0" y="139.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="middle" dominant-baseline="central">null</text>
+<rect x="256.7" y="124.0" width="101.3" height="30.0" rx="5" fill="#e2e2e2" stroke="#7a7a7a" stroke-width="1.2"/>
+<text x="307.3" y="139.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="middle" dominant-baseline="central">boolean</text>
+<rect x="34.0" y="162.0" width="101.3" height="30.0" rx="5" fill="#e2e2e2" stroke="#7a7a7a" stroke-width="1.2"/>
+<text x="84.7" y="177.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="middle" dominant-baseline="central">number</text>
+<rect x="145.3" y="162.0" width="101.3" height="30.0" rx="5" fill="#e2e2e2" stroke="#7a7a7a" stroke-width="1.2"/>
+<text x="196.0" y="177.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="middle" dominant-baseline="central">bigint</text>
+<rect x="256.7" y="162.0" width="101.3" height="30.0" rx="5" fill="#e2e2e2" stroke="#7a7a7a" stroke-width="1.2"/>
+<text x="307.3" y="177.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="middle" dominant-baseline="central">string</text>
+<rect x="145.3" y="200.0" width="101.3" height="30.0" rx="5" fill="#e2e2e2" stroke="#7a7a7a" stroke-width="1.2"/>
+<text x="196.0" y="215.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="middle" dominant-baseline="central">Date</text>
+<rect x="578.0" y="124.0" width="109.3" height="30.0" rx="5" fill="#e2e2e2" stroke="#7a7a7a" stroke-width="1.2"/>
+<text x="632.7" y="139.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="middle" dominant-baseline="central">Boolean</text>
+<rect x="697.3" y="124.0" width="109.3" height="30.0" rx="5" fill="#e2e2e2" stroke="#7a7a7a" stroke-width="1.2"/>
+<text x="752.0" y="139.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="middle" dominant-baseline="central">Integer</text>
+<rect x="816.7" y="124.0" width="109.3" height="30.0" rx="5" fill="#e2e2e2" stroke="#7a7a7a" stroke-width="1.2"/>
+<text x="871.3" y="139.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="middle" dominant-baseline="central">Long</text>
+<rect x="578.0" y="162.0" width="109.3" height="30.0" rx="5" fill="#e2e2e2" stroke="#7a7a7a" stroke-width="1.2"/>
+<text x="632.7" y="177.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="middle" dominant-baseline="central">Double</text>
+<rect x="697.3" y="162.0" width="109.3" height="30.0" rx="5" fill="#e2e2e2" stroke="#7a7a7a" stroke-width="1.2"/>
+<text x="752.0" y="177.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="middle" dominant-baseline="central">BigInteger</text>
+<rect x="816.7" y="162.0" width="109.3" height="30.0" rx="5" fill="#e2e2e2" stroke="#7a7a7a" stroke-width="1.2"/>
+<text x="871.3" y="177.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="middle" dominant-baseline="central">String</text>
+<rect x="578.0" y="200.0" width="169.0" height="30.0" rx="5" fill="#e2e2e2" stroke="#7a7a7a" stroke-width="1.2"/>
+<text x="662.5" y="215.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="middle" dominant-baseline="central">ZonedDateTime</text>
+<rect x="757.0" y="200.0" width="169.0" height="30.0" rx="5" fill="#e2e2e2" stroke="#7a7a7a" stroke-width="1.2"/>
+<text x="841.5" y="215.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="middle" dominant-baseline="central">null</text>
+<line x1="16" y1="291" x2="944" y2="291" stroke="#1f1f1f" stroke-width="2" stroke-dasharray="2 6" stroke-linecap="round"/>
+<text x="196.0" y="281.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="15" font-weight="600" fill="#1f1f1f" text-anchor="middle">Primitive</text>
+<text x="196.0" y="315.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="15" font-weight="600" fill="#1f1f1f" text-anchor="middle">Reference</text>
+<line x1="752.0" y1="238" x2="752.0" y2="344" stroke="#5c5c5c" stroke-width="1.2"/>
+<rect x="645.0" y="238.0" width="214.0" height="28.0" rx="5" fill="#e2e2e2" stroke="#7a7a7a" stroke-width="1.2"/>
+<text x="752.0" y="252.0" font-family="'JetBrains Mono',Consolas,'SF Mono',Menlo,monospace" font-size="12" fill="#1f1f1f" text-anchor="middle" dominant-baseline="central">V8ValuePrimitive</text>
+<rect x="645.0" y="276.0" width="214.0" height="30.0" rx="5" fill="#e3d6ea" stroke="#9673a6" stroke-width="1.2"/>
+<text x="752.0" y="291.0" font-family="'JetBrains Mono',Consolas,'SF Mono',Menlo,monospace" font-size="12" fill="#2a1832" text-anchor="middle" dominant-baseline="central">V8Data → V8Value</text>
+<rect x="645.0" y="316.0" width="214.0" height="28.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="752.0" y="330.0" font-family="'JetBrains Mono',Consolas,'SF Mono',Menlo,monospace" font-size="12" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">V8ValueReference</text>
+<path d="M 394 252 L 420 230 L 420 242.83333333333334 L 516 242.83333333333334 L 516 230 L 542 252 L 516 274 L 516 261.1666666666667 L 420 261.1666666666667 L 420 274 Z" fill="#e2e2e2" stroke="#7a7a7a" stroke-width="1.2" stroke-linejoin="round"/>
+<text x="468.0" y="224.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" font-weight="600" fill="#333333" text-anchor="middle">Copy by Value</text>
+<path d="M 394 338 L 420 316 L 420 328.8333333333333 L 516 328.8333333333333 L 516 316 L 542 338 L 516 360 L 516 347.1666666666667 L 420 347.1666666666667 L 420 360 Z" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2" stroke-linejoin="round"/>
+<text x="468.0" y="374.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" font-weight="600" fill="#8c3b38" text-anchor="middle">Copy by Reference</text>
+<text x="468.0" y="486.0" font-family="'JetBrains Mono',Consolas,'SF Mono',Menlo,monospace" font-size="12" fill="#5c5c5c" text-anchor="middle">cpp/jni</text>
+<rect x="398.0" y="500.0" width="140.0" height="28.0" rx="5" fill="#d3e0f4" stroke="#6c8ebf" stroke-width="1.2"/>
+<text x="468.0" y="514.0" font-family="'JetBrains Mono',Consolas,'SF Mono',Menlo,monospace" font-size="11.5" fill="#12283f" text-anchor="middle" dominant-baseline="central">javet_converter</text>
+<text x="468.0" y="543.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="10.5" fill="#5c5c5c" text-anchor="middle">Type conversion</text>
+<rect x="398.0" y="552.0" width="140.0" height="28.0" rx="5" fill="#d3e0f4" stroke="#6c8ebf" stroke-width="1.2"/>
+<text x="468.0" y="566.0" font-family="'JetBrains Mono',Consolas,'SF Mono',Menlo,monospace" font-size="11.5" fill="#12283f" text-anchor="middle" dominant-baseline="central">javet_callbacks</text>
+<text x="468.0" y="595.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="10.5" fill="#5c5c5c" text-anchor="middle">JS ↔ Java calls</text>
+<rect x="398.0" y="604.0" width="140.0" height="28.0" rx="5" fill="#d3e0f4" stroke="#6c8ebf" stroke-width="1.2"/>
+<text x="468.0" y="618.0" font-family="'JetBrains Mono',Consolas,'SF Mono',Menlo,monospace" font-size="11.5" fill="#12283f" text-anchor="middle" dominant-baseline="central">javet_inspector</text>
+<text x="468.0" y="647.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="10.5" fill="#5c5c5c" text-anchor="middle">Chrome DevTools</text>
+<rect x="398.0" y="656.0" width="140.0" height="28.0" rx="5" fill="#d3e0f4" stroke="#6c8ebf" stroke-width="1.2"/>
+<text x="468.0" y="670.0" font-family="'JetBrains Mono',Consolas,'SF Mono',Menlo,monospace" font-size="11.5" fill="#12283f" text-anchor="middle" dominant-baseline="central">javet_monitor</text>
+<text x="468.0" y="699.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="10.5" fill="#5c5c5c" text-anchor="middle">new / delete tracking</text>
+<rect x="34.0" y="360.0" width="101.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="84.7" y="375.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Object</text>
+<rect x="145.3" y="360.0" width="101.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="196.0" y="375.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Function</text>
+<rect x="256.7" y="360.0" width="101.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="307.3" y="375.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Array</text>
+<rect x="34.0" y="398.0" width="101.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="84.7" y="413.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Arguments</text>
+<rect x="145.3" y="398.0" width="101.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="196.0" y="413.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Map</text>
+<rect x="256.7" y="398.0" width="101.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="307.3" y="413.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Set</text>
+<rect x="34.0" y="436.0" width="101.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="84.7" y="451.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">WeakMap</text>
+<rect x="145.3" y="436.0" width="101.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="196.0" y="451.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">WeakSet</text>
+<rect x="256.7" y="436.0" width="101.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="307.3" y="451.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Iterator</text>
+<rect x="34.0" y="474.0" width="101.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="84.7" y="489.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Symbol</text>
+<rect x="145.3" y="474.0" width="101.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="196.0" y="489.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Promise</text>
+<rect x="256.7" y="474.0" width="101.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="307.3" y="489.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Proxy</text>
+<rect x="34.0" y="512.0" width="101.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="84.7" y="527.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">RegExp</text>
+<rect x="145.3" y="512.0" width="101.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="196.0" y="527.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Error</text>
+<rect x="256.7" y="512.0" width="101.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="307.3" y="527.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">DataView</text>
+<rect x="34.0" y="550.0" width="157.0" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="112.5" y="565.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">ArrayBuffer</text>
+<rect x="201.0" y="550.0" width="157.0" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="279.5" y="565.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">SharedArrayBuffer</text>
+<rect x="34.0" y="588.0" width="324.0" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="196.0" y="603.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">TypedArray (Int8Array … BigUint64Array)</text>
+<rect x="34.0" y="626.0" width="324.0" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="196.0" y="641.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Boolean / Number / String / Symbol objects</text>
+<rect x="34.0" y="664.0" width="73.5" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="70.8" y="679.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Script</text>
+<rect x="117.5" y="664.0" width="73.5" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="154.2" y="679.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Module</text>
+<rect x="201.0" y="664.0" width="73.5" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="237.8" y="679.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Context</text>
+<rect x="284.5" y="664.0" width="73.5" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="321.2" y="679.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="11.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">globalThis</text>
+<rect x="578.0" y="360.0" width="109.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="632.7" y="375.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Object</text>
+<rect x="697.3" y="360.0" width="109.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="752.0" y="375.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Function</text>
+<rect x="816.7" y="360.0" width="109.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="871.3" y="375.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Array</text>
+<rect x="578.0" y="398.0" width="109.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="632.7" y="413.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Arguments</text>
+<rect x="697.3" y="398.0" width="109.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="752.0" y="413.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Map</text>
+<rect x="816.7" y="398.0" width="109.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="871.3" y="413.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Set</text>
+<rect x="578.0" y="436.0" width="109.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="632.7" y="451.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">WeakMap</text>
+<rect x="697.3" y="436.0" width="109.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="752.0" y="451.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">WeakSet</text>
+<rect x="816.7" y="436.0" width="109.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="871.3" y="451.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Iterator</text>
+<rect x="578.0" y="474.0" width="109.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="632.7" y="489.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Symbol</text>
+<rect x="697.3" y="474.0" width="109.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="752.0" y="489.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Promise</text>
+<rect x="816.7" y="474.0" width="109.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="871.3" y="489.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Proxy</text>
+<rect x="578.0" y="512.0" width="109.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="632.7" y="527.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">RegExp</text>
+<rect x="697.3" y="512.0" width="109.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="752.0" y="527.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Error</text>
+<rect x="816.7" y="512.0" width="109.3" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="871.3" y="527.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">DataView</text>
+<rect x="578.0" y="550.0" width="169.0" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="662.5" y="565.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">ArrayBuffer</text>
+<rect x="757.0" y="550.0" width="169.0" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="841.5" y="565.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">SharedArrayBuffer</text>
+<rect x="578.0" y="588.0" width="348.0" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="752.0" y="603.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">TypedArray (Int8Array … BigUint64Array)</text>
+<rect x="578.0" y="626.0" width="348.0" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="752.0" y="641.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="11" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">…Object (Boolean, Integer, Long, Double, String, Symbol)</text>
+<rect x="578.0" y="664.0" width="79.5" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="617.8" y="679.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">V8Script</text>
+<rect x="667.5" y="664.0" width="79.5" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="707.2" y="679.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">V8Module</text>
+<rect x="757.0" y="664.0" width="79.5" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="796.8" y="679.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">V8Context</text>
+<rect x="846.5" y="664.0" width="79.5" height="30.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="886.2" y="679.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="10.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">GlobalObject</text>
+<rect x="20.0" y="736.0" width="132.0" height="28.0" rx="5" fill="#e2e2e2" stroke="#7a7a7a" stroke-width="1.2"/>
+<text x="86.0" y="750.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="middle" dominant-baseline="central">Local</text>
+<text x="166.0" y="755.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="start">Lifecycle is at JNI function level and managed by V8.</text>
+<rect x="20.0" y="772.0" width="132.0" height="28.0" rx="5" fill="#f6b0ae" stroke="#b85450" stroke-width="1.2"/>
+<text x="86.0" y="786.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2c0f0e" text-anchor="middle" dominant-baseline="central">Persistent</text>
+<text x="166.0" y="791.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="start">Lifecycle is managed by Javet in JVM and released by close() or try-with-resources.</text>
+<rect x="20.0" y="808.0" width="132.0" height="28.0" rx="5" fill="#e3d6ea" stroke="#9673a6" stroke-width="1.2"/>
+<text x="86.0" y="822.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#2a1832" text-anchor="middle" dominant-baseline="central">Base class</text>
+<text x="166.0" y="827.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="12.5" fill="#1f1f1f" text-anchor="start">V8Data → V8Value → V8ValuePrimitive / V8ValueReference.</text>
+<text x="20.0" y="854.0" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif" font-size="11.5" fill="#5c5c5c" text-anchor="start">JVM reference names omit the V8Value prefix, e.g. Object is V8ValueObject; V8Script, V8Module and V8Context are the exceptions.</text>
+</svg>

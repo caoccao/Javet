@@ -5,7 +5,7 @@ Javet Design
 Architecture
 ============
 
-.. image:: ../resources/images/javet_architecture.png
+.. image:: ../resources/images/javet_architecture.svg
     :alt: Javet Architecture
 
 Primitive and Reference Types in Javet
