@@ -9,7 +9,7 @@ on:
 env:
   JAVET_NODE_VERSION: 26.8.1
   JAVET_V8_VERSION: 15.3.76.9
-  JAVET_VERSION: 6.0.0
+  JAVET_VERSION: 6.0.1
   TEMPORAL_VERSION: 0.2.3
   ROOT: /Users/runner/work/Javet
 
