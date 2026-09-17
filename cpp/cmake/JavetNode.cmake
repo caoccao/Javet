@@ -86,12 +86,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 else()
     list(APPEND importLibraries ffi node uv)
 endif()
-# node_text_start
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
-        list(APPEND importLibraries node_text_start)
-    endif()
-endif()
 # zlib
 if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     if(CMAKE_ANDROID_ARCH MATCHES "(x86|x86_64)")
