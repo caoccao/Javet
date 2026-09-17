@@ -5,7 +5,7 @@ Release Notes 6.0.x
 6.0.1
 -----
 
-* Upgraded Node.js to ``v26.8.2`` `(2026-09-09) <https://nodejs.org/en/blog/release/v26.8.2>`_
+* Upgraded Node.js to ``v26.9.0`` `(2026-09-16) <https://nodejs.org/en/blog/release/v26.9.0>`_
 
 6.0.0
 -----

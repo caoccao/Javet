@@ -27,6 +27,7 @@
 #pragma warning(disable: 4996)
 #define NODE_WANT_INTERNALS 1
 #define HAVE_AMARO 1
+#define HAVE_FFI 1
 #define HAVE_INSPECTOR 1
 #define HAVE_OPENSSL 1
 #define HAVE_SQLITE 1
