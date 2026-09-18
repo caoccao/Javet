@@ -47,14 +47,15 @@ Play with Float16Array
 
 Javet borrows ``Float16`` from the `Android FP16 implementation <https://android.googlesource.com/platform/libcore/+/master/luni/src/main/java/libcore/util/FP16.java>`_ (copyright preserved) to allow easy translation between ``short`` and ``float``. Just call ``short toHalf(float f)`` or ``float toFloat(short h)`` to complete the translation.
 
-``Float16Array`` is not enabled by default. Please make sure the following code is executed before the first ``NodeRuntime`` or ``V8Runtime`` is created.
+``Float16Array`` has been enabled by default since V8 v13.8 (Chrome M138), so it no longer has to be turned on explicitly.
+
+In V8 mode, V8 has removed the ``--js-float16array`` flag altogether and rejects it with ``unrecognized flag --js-float16array``, so ``V8Flags.setJsFloat16Array()`` has been removed as well.
+
+In Node.js mode, ``NodeFlags.setJsFloat16Array()`` is kept for backward compatibility. Node.js still accepts the flag, but it no longer has any effect.
 
 .. code-block:: java
 
     // Node.js mode
     NodeRuntimeOptions.NODE_FLAGS.setJsFloat16Array(true);
-
-    // V8 mode
-    V8RuntimeOptions.V8_FLAGS.setJsFloat16Array(true);
 
 Please review the :extsource3:`test cases <../../../src/test/java/com/caoccao/javet/values/reference/TestV8ValueTypedArray.java>` for more detail.

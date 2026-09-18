@@ -59,8 +59,6 @@ Options:
         type: bool  default: --js-regexp-escape
   --js-explicit-resource-management (enable "explicit resource management")
         type: bool  default: --js-explicit-resource-management
-  --js-float16array (enable "Float16Array, Math.f16round, DataView.getFloat16, DataView.setFloat16")
-        type: bool  default: --js-float16array
   --builtin-subclassing (subclassing support in built-in methods)
         type: bool  default: --builtin-subclassing
   --enable-sharedarraybuffer-per-context (enable the SharedArrayBuffer constructor per context)

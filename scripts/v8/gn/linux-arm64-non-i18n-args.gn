@@ -11,6 +11,7 @@ use_clang_modules = false
 use_custom_libcxx = true
 use_custom_libunwind = true
 use_safe_libstdcxx = false
+v8_cppgc_microtask_queue = true
 v8_enable_external_code_space = true
 v8_enable_i18n_support = false
 v8_enable_pointer_compression = true

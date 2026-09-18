@@ -6,6 +6,8 @@ Release Notes 6.0.x
 -----
 
 * Upgraded Node.js to ``v26.9.0`` `(2026-09-16) <https://nodejs.org/en/blog/release/v26.9.0>`_
+* Upgraded V8 to ``v15.4.80.9`` (2026-09-17)
+* Removed ``isJsFloat16Array()``, ``setJsFloat16Array()`` from ``V8Flags`` because V8 has removed the ``--js-float16array`` flag
 
 6.0.0
 -----

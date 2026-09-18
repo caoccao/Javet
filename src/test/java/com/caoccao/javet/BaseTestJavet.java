@@ -110,7 +110,6 @@ public abstract class BaseTestJavet {
             if (icuDataFile.exists() && icuDataFile.isFile()) {
                 V8RuntimeOptions.V8_FLAGS.setIcuDataFile(icuDataFile.getAbsolutePath());
             }
-            V8RuntimeOptions.V8_FLAGS.setJsFloat16Array(true);
         }
         if (!NodeRuntimeOptions.NODE_FLAGS.isSealed()) {
             File icuDataDir = new File(JavetOSUtils.WORKING_DIRECTORY)

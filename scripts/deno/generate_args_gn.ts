@@ -54,6 +54,7 @@ interface GnConfig {
   use_custom_libcxx: boolean;
   use_custom_libunwind?: boolean;
   use_safe_libstdcxx?: boolean;
+  v8_cppgc_microtask_queue: boolean;
   v8_enable_external_code_space?: boolean;
   v8_enable_i18n_support: boolean;
   v8_enable_pointer_compression: boolean;
@@ -162,6 +163,7 @@ class GnArgsGenerator {
       target_cpu: targetCpu,
       use_blink: false,
       use_custom_libcxx: platformConfig.customLibCxx === true,
+      v8_cppgc_microtask_queue: true,
       v8_enable_i18n_support: i18n,
       v8_enable_pointer_compression: enablePointerCompression,
       v8_enable_sandbox: this.shouldEnableSandbox(os, arch),
@@ -232,6 +234,7 @@ class GnArgsGenerator {
       "use_custom_libcxx",
       "use_custom_libunwind",
       "use_safe_libstdcxx",
+      "v8_cppgc_microtask_queue",
       "v8_enable_external_code_space",
       "v8_enable_i18n_support",
       "v8_enable_pointer_compression",
