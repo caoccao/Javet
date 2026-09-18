@@ -40,6 +40,7 @@ namespace Javet {
             v8::Isolate* v8Isolate,
             v8::GCType v8GCType,
             v8::GCCallbackFlags v8GCCallbackFlags) noexcept;
+        void JavetMicrotasksCompletedCallback(v8::Isolate* v8Isolate, void* data) noexcept;
         V8MaybeLocalModule JavetModuleResolveCallback(
             V8LocalContext v8Context,
             V8LocalString specifier,

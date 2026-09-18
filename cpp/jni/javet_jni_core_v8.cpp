@@ -365,6 +365,12 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerGCPrologu
     v8Runtime->v8Isolate->AddGCPrologueCallback(Javet::Callback::JavetGCPrologueCallback);
 }
 
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerMicrotasksCompletedCallback
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    v8Runtime->v8Isolate->AddMicrotasksCompletedCallback(Javet::Callback::JavetMicrotasksCompletedCallback, v8Runtime);
+}
+
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerNearHeapLimitCallback
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     LOG_DEBUG("registerNearHeapLimitCallback");
@@ -542,6 +548,13 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterGCProlo
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     v8Runtime->v8Isolate->RemoveGCPrologueCallback(Javet::Callback::JavetGCPrologueCallback);
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterMicrotasksCompletedCallback
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    // The data has to match the one passed to AddMicrotasksCompletedCallback.
+    v8Runtime->v8Isolate->RemoveMicrotasksCompletedCallback(Javet::Callback::JavetMicrotasksCompletedCallback, v8Runtime);
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterNearHeapLimitCallback

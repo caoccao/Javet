@@ -595,6 +595,9 @@ class V8Native implements IV8Native {
     public native void registerGCPrologueCallback(long v8RuntimeHandle);
 
     @Override
+    public native void registerMicrotasksCompletedCallback(long v8RuntimeHandle);
+
+    @Override
     public native void registerNearHeapLimitCallback(long v8RuntimeHandle);
 
     @Override
@@ -728,6 +731,9 @@ class V8Native implements IV8Native {
 
     @Override
     public native void unregisterGCPrologueCallback(long v8RuntimeHandle);
+
+    @Override
+    public native void unregisterMicrotasksCompletedCallback(long v8RuntimeHandle);
 
     @Override
     public native void unregisterNearHeapLimitCallback(long v8RuntimeHandle, long heapLimit);

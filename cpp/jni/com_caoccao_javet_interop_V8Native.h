@@ -1265,6 +1265,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerGCPrologu
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    registerMicrotasksCompletedCallback
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerMicrotasksCompletedCallback
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    registerNearHeapLimitCallback
  * Signature: (J)V
  */
@@ -1597,6 +1605,14 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterGCEpilo
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterGCPrologueCallback
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    unregisterMicrotasksCompletedCallback
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_unregisterMicrotasksCompletedCallback
   (JNIEnv *, jobject, jlong);
 
 /*

@@ -9,6 +9,7 @@ Release Notes 6.0.x
 * Upgraded V8 to ``v15.4.80.9`` (2026-09-17)
 * Removed ``isJsFloat16Array()``, ``setJsFloat16Array()`` from ``V8Flags`` because V8 has removed the ``--js-float16array`` flag
 * Added ``performMicrotaskCheckpoint()``, ``getMicrotasksPolicy()``, ``setMicrotasksPolicy()`` to ``V8Runtime``
+* Added ``IJavetMicrotasksCompletedCallback`` with ``addMicrotasksCompletedCallback()``, ``removeMicrotasksCompletedCallback()`` in ``V8Runtime``
 * Fixed ``await()`` not draining the microtask queue in the V8 mode, which silently dropped the promise reaction jobs registered by ``V8ValuePromise.register()``
 
 6.0.0

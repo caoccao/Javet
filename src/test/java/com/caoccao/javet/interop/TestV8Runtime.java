@@ -25,6 +25,7 @@ import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.interop.callback.IJavetGCCallback;
+import com.caoccao.javet.interop.callback.IJavetMicrotasksCompletedCallback;
 import com.caoccao.javet.interop.callback.IJavetNearHeapLimitCallback;
 import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -156,6 +158,73 @@ public class TestV8Runtime extends BaseTestJavet {
     public void testLowMemoryNotification() throws JavetException {
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testMicrotasksCompletedCallback() throws JavetException {
+        final String pendJob = "globalThis.a = 0; Promise.resolve().then(() => { globalThis.a = 1; });";
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            AtomicInteger counter1 = new AtomicInteger();
+            AtomicInteger counter2 = new AtomicInteger();
+            IJavetMicrotasksCompletedCallback callback1 = counter1::incrementAndGet;
+            IJavetMicrotasksCompletedCallback callback2 = counter2::incrementAndGet;
+            if (isV8()) {
+                // Explicit makes the checkpoints, and therefore the callbacks, deterministic.
+                v8Runtime.setMicrotasksPolicy(V8MicrotasksPolicy.Explicit);
+                v8Runtime.addMicrotasksCompletedCallback(callback1);
+                assertEquals(0, counter1.get());
+
+                // The callback is triggered even if the microtask queue is empty.
+                v8Runtime.performMicrotaskCheckpoint();
+                assertEquals(1, counter1.get());
+
+                v8Runtime.getExecutor(pendJob).executeVoid();
+                assertEquals(
+                        1, counter1.get(),
+                        "The script execution is not supposed to trigger a checkpoint under Explicit.");
+                v8Runtime.performMicrotaskCheckpoint();
+                assertEquals(2, counter1.get());
+                assertEquals(1, v8Runtime.getExecutor("globalThis.a").executeInteger());
+
+                // await() performs a checkpoint in the V8 mode.
+                v8Runtime.await();
+                assertEquals(3, counter1.get());
+
+                // Every registered callback is invoked.
+                v8Runtime.addMicrotasksCompletedCallback(callback2);
+                v8Runtime.performMicrotaskCheckpoint();
+                assertEquals(4, counter1.get());
+                assertEquals(1, counter2.get());
+
+                // Removing one callback leaves the other one registered.
+                v8Runtime.removeMicrotasksCompletedCallback(callback1);
+                v8Runtime.performMicrotaskCheckpoint();
+                assertEquals(4, counter1.get());
+                assertEquals(2, counter2.get());
+
+                // Removing the last callback unregisters the native callback.
+                v8Runtime.removeMicrotasksCompletedCallback(callback2);
+                v8Runtime.performMicrotaskCheckpoint();
+                assertEquals(4, counter1.get());
+                assertEquals(2, counter2.get());
+
+                v8Runtime.setMicrotasksPolicy(V8MicrotasksPolicy.Auto);
+            } else {
+                // Node.js drives the checkpoints itself, so only the invocation is asserted.
+                v8Runtime.addMicrotasksCompletedCallback(callback1);
+                v8Runtime.getExecutor(pendJob).executeVoid();
+                v8Runtime.await();
+                assertEquals(1, v8Runtime.getExecutor("globalThis.a").executeInteger());
+                assertTrue(counter1.get() > 0, "The callback is supposed to be invoked.");
+                v8Runtime.removeMicrotasksCompletedCallback(callback1);
+                final int count = counter1.get();
+                v8Runtime.getExecutor(pendJob).executeVoid();
+                v8Runtime.await();
+                assertEquals(count, counter1.get(), "The callback is supposed to be removed.");
+            }
+            assertThrows(NullPointerException.class, () -> v8Runtime.addMicrotasksCompletedCallback(null));
+            assertThrows(NullPointerException.class, () -> v8Runtime.removeMicrotasksCompletedCallback(null));
         }
     }
 

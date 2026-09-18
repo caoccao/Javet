@@ -194,6 +194,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     final JSRuntimeType jsRuntimeType;
     /**
+     * The microtasks completed callbacks.
+     *
+     * @since 6.0.1
+     */
+    final List<IJavetMicrotasksCompletedCallback> microtasksCompletedCallbacks;
+    /**
      * The Primitive flags is for passing the calling succession in JNI calls.
      * Its length is 1. True: success. False: failure.
      *
@@ -362,6 +368,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         this.runtimeOptions = Objects.requireNonNull(runtimeOptions);
         this.handle = handle;
         logger = new JavetDefaultLogger(getClass().getName());
+        microtasksCompletedCallbacks = new CopyOnWriteArrayList<>();
         this.pooled = pooled;
         primitiveFlags = new boolean[1];
         promiseRejectCallback = new JavetPromiseRejectCallback(logger);
@@ -408,6 +415,30 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 gcPrologueCallbacks.add(Objects.requireNonNull(iJavetGCCallback));
                 if (!registered) {
                     v8Native.registerGCPrologueCallback(handle);
+                }
+            }
+        }
+    }
+
+    /**
+     * Add microtasks completed callback.
+     * <p>
+     * Registering a callback makes V8 skip the fast path that bails out of an empty microtask
+     * queue, so the callback is invoked on every checkpoint. Under
+     * {@link V8MicrotasksPolicy#Auto} that is every call against this runtime that lowers the
+     * JavaScript call depth to zero, hence the callback is supposed to be cheap.
+     *
+     * @param iJavetMicrotasksCompletedCallback the javet microtasks completed callback
+     * @since 6.0.1
+     */
+    public void addMicrotasksCompletedCallback(
+            IJavetMicrotasksCompletedCallback iJavetMicrotasksCompletedCallback) {
+        if (!isClosed()) {
+            synchronized (microtasksCompletedCallbacks) {
+                boolean registered = !microtasksCompletedCallbacks.isEmpty();
+                microtasksCompletedCallbacks.add(Objects.requireNonNull(iJavetMicrotasksCompletedCallback));
+                if (!registered) {
+                    v8Native.registerMicrotasksCompletedCallback(handle);
                 }
             }
         }
@@ -3496,6 +3527,17 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Receives the microtasks completed callback from JNI.
+     *
+     * @since 6.0.1
+     */
+    void receiveMicrotasksCompletedCallback() {
+        for (IJavetMicrotasksCompletedCallback iJavetMicrotasksCompletedCallback : microtasksCompletedCallbacks) {
+            iJavetMicrotasksCompletedCallback.callback();
+        }
+    }
+
+    /**
      * Receives the near heap limit callback from JNI.
      *
      * @param currentHeapLimit the current heap limit in bytes
@@ -3615,6 +3657,24 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     void removeJNIGlobalRef(long handle) {
         if (!isClosed()) {
             v8Native.removeJNIGlobalRef(handle);
+        }
+    }
+
+    /**
+     * Remove a microtasks completed callback.
+     *
+     * @param iJavetMicrotasksCompletedCallback the javet microtasks completed callback
+     * @since 6.0.1
+     */
+    public void removeMicrotasksCompletedCallback(
+            IJavetMicrotasksCompletedCallback iJavetMicrotasksCompletedCallback) {
+        if (!isClosed()) {
+            synchronized (microtasksCompletedCallbacks) {
+                microtasksCompletedCallbacks.remove(Objects.requireNonNull(iJavetMicrotasksCompletedCallback));
+                if (microtasksCompletedCallbacks.isEmpty()) {
+                    v8Native.unregisterMicrotasksCompletedCallback(handle);
+                }
+            }
         }
     }
 

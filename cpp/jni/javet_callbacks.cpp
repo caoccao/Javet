@@ -49,6 +49,7 @@ namespace Javet {
         jmethodID jmethodIDV8RuntimeGetV8Module;
         jmethodID jmethodIDV8RuntimeReceiveGCEpilogueCallback;
         jmethodID jmethodIDV8RuntimeReceiveGCPrologueCallback;
+        jmethodID jmethodIDV8RuntimeReceiveMicrotasksCompletedCallback;
         jmethodID jmethodIDV8RuntimeReceiveNearHeapLimitCallback;
         jmethodID jmethodIDV8RuntimeReceivePromiseRejectCallback;
         jmethodID jmethodIDV8RuntimeRemoveCallbackContext;
@@ -85,6 +86,7 @@ namespace Javet {
             jniInitializer.GetMethodID(jmethodIDV8RuntimeGetV8Module, jclassV8Runtime, "getV8Module", "(Ljava/lang/String;Lcom/caoccao/javet/values/reference/IV8Module;)Lcom/caoccao/javet/values/reference/IV8Module;");
             jniInitializer.GetMethodID(jmethodIDV8RuntimeReceiveGCEpilogueCallback, jclassV8Runtime, "receiveGCEpilogueCallback", "(II)V");
             jniInitializer.GetMethodID(jmethodIDV8RuntimeReceiveGCPrologueCallback, jclassV8Runtime, "receiveGCPrologueCallback", "(II)V");
+            jniInitializer.GetMethodID(jmethodIDV8RuntimeReceiveMicrotasksCompletedCallback, jclassV8Runtime, "receiveMicrotasksCompletedCallback", "()V");
             jniInitializer.GetMethodID(jmethodIDV8RuntimeReceiveNearHeapLimitCallback, jclassV8Runtime, "receiveNearHeapLimitCallback", "(JJ)J");
             jniInitializer.GetMethodID(jmethodIDV8RuntimeReceivePromiseRejectCallback, jclassV8Runtime, "receivePromiseRejectCallback", "(ILcom/caoccao/javet/values/reference/V8ValuePromise;Lcom/caoccao/javet/values/V8Value;)V");
             jniInitializer.GetMethodID(jmethodIDV8RuntimeRemoveCallbackContext, jclassV8Runtime, "removeCallbackContext", "(J)V");
@@ -172,6 +174,29 @@ namespace Javet {
                         (jint)v8GCType,
                         (jint)v8GCCallbackFlags);
                 }
+            }
+        }
+
+        void JavetMicrotasksCompletedCallback(v8::Isolate* v8Isolate, void* data) noexcept {
+            auto v8Runtime = reinterpret_cast<Javet::V8Runtime*>(data);
+            if (v8Runtime == nullptr || !v8Runtime->HasExternalV8Runtime()) {
+                LOG_ERROR("JavetMicrotasksCompletedCallback: V8 runtime is empty.");
+                return;
+            }
+            auto jniEnvScope = JNIEnvScope::Acquire(GlobalJavaVM);
+            if (!jniEnvScope) {
+                LOG_ERROR("JavetMicrotasksCompletedCallback: JNI environment is unavailable.");
+                return;
+            }
+            JNIEnv* jniEnv = jniEnvScope.Get();
+            jniEnv->CallVoidMethod(
+                v8Runtime->externalV8Runtime,
+                jmethodIDV8RuntimeReceiveMicrotasksCompletedCallback);
+            // V8 is in the middle of a microtask checkpoint, so a pending Java exception
+            // would surface at an arbitrary later point. Clear it here instead.
+            if (jniEnv->ExceptionCheck()) {
+                jniEnv->ExceptionClear();
+                LOG_ERROR("JavetMicrotasksCompletedCallback: Exception occurred in Java callback.");
             }
         }
 

@@ -1761,6 +1761,13 @@ public interface IV8Native {
     void registerGCPrologueCallback(long v8RuntimeHandle);
 
     /**
+     * Register a microtasks completed callback for the V8 runtime.
+     *
+     * @param v8RuntimeHandle the V8 runtime handle
+     */
+    void registerMicrotasksCompletedCallback(long v8RuntimeHandle);
+
+    /**
      * Register a near-heap-limit callback for the V8 runtime.
      *
      * @param v8RuntimeHandle the V8 runtime handle
@@ -2159,6 +2166,13 @@ public interface IV8Native {
      * @param v8RuntimeHandle the V8 runtime handle
      */
     void unregisterGCPrologueCallback(long v8RuntimeHandle);
+
+    /**
+     * Unregister the microtasks completed callback from the V8 runtime.
+     *
+     * @param v8RuntimeHandle the V8 runtime handle
+     */
+    void unregisterMicrotasksCompletedCallback(long v8RuntimeHandle);
 
     /**
      * Unregister the near-heap-limit callback from the V8 runtime.
