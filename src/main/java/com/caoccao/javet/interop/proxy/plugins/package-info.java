@@ -40,7 +40,7 @@
  *   <li>{@link com.caoccao.javet.interop.proxy.plugins.BaseJavetProxyPluginMultiple} - For plugins targeting multiple Java types.</li>
  * </ul>
  *
- * @since 3.0.4
  * @author Sam Cao
+ * @since 3.0.4
  */
 package com.caoccao.javet.interop.proxy.plugins;

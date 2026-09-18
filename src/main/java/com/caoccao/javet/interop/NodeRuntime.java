@@ -19,18 +19,22 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.annotations.CheckReturnValue;
 import com.caoccao.javet.annotations.NodeModule;
 import com.caoccao.javet.enums.JSRuntimeType;
+import com.caoccao.javet.enums.V8MicrotasksPolicy;
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.node.modules.INodeModule;
 import com.caoccao.javet.node.modules.NodeModuleProcess;
 import com.caoccao.javet.utils.JavetResourceUtils;
-import com.caoccao.javet.values.reference.V8ValueFunction;
+import com.caoccao.javet.utils.SimpleMap;
 import com.caoccao.javet.values.reference.V8ValueObject;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.caoccao.javet.exceptions.JavetError.PARAMETER_FEATURE;
 
 /**
  * Node runtime is a thin wrapper over V8 runtime.
@@ -196,6 +200,24 @@ public class NodeRuntime extends V8Runtime {
             JavetResourceUtils.safeClose(nodeModuleMap.values());
             nodeModuleMap.clear();
         }
+    }
+
+    /**
+     * Sets the microtasks policy of the V8 isolate.
+     * <p>
+     * Node.js owns the microtasks policy and drains the microtask queue as part of its own
+     * callback scopes, so changing it is not supported in the Node.js mode.
+     *
+     * @param microtasksPolicy the V8 microtasks policy
+     * @throws JavetException the javet exception
+     * @since 6.0.1
+     */
+    @Override
+    public void setMicrotasksPolicy(V8MicrotasksPolicy microtasksPolicy) throws JavetException {
+        Objects.requireNonNull(microtasksPolicy);
+        throw new JavetException(
+                JavetError.NotSupported,
+                SimpleMap.of(PARAMETER_FEATURE, "Setting the microtasks policy in the Node.js mode"));
     }
 
     /**

@@ -31,12 +31,6 @@ import com.caoccao.javet.values.reference.V8ValueObject;
  */
 public class JavetBuiltInModuleResolver implements IV8ModuleResolver {
     /**
-     * Constructs a new Javet built-in module resolver with default settings.
-     */
-    public JavetBuiltInModuleResolver() {
-    }
-
-    /**
      * The constant PREFIX_NODE.
      *
      * @since 3.0.1
@@ -48,6 +42,11 @@ public class JavetBuiltInModuleResolver implements IV8ModuleResolver {
      * @since 3.1.0
      */
     public static final String DEFAULT = "default";
+    /**
+     * Constructs a new Javet built-in module resolver with default settings.
+     */
+    public JavetBuiltInModuleResolver() {
+    }
 
     @Override
     public IV8Module resolve(V8Runtime v8Runtime, String resourceName, IV8Module v8ModuleReferrer)

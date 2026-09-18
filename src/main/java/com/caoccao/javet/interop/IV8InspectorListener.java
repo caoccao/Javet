@@ -42,7 +42,9 @@ public interface IV8InspectorListener {
             String url, int lineNumber, int columnNumber) {
     }
 
-    /** Flush pending protocol notifications to the client. */
+    /**
+     * Flush pending protocol notifications to the client.
+     */
     void flushProtocolNotifications();
 
     /**

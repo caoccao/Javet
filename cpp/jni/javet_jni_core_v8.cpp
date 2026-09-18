@@ -165,6 +165,12 @@ JNIEXPORT jlongArray JNICALL Java_com_caoccao_javet_interop_V8Native_getInternal
 #endif
 }
 
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getMicrotasksPolicy
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    return static_cast<jint>(v8Runtime->v8Isolate->GetMicrotasksPolicy());
+}
+
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getPriority
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
@@ -338,6 +344,15 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_lowMemoryNotifica
     v8Isolate->LowMemoryNotification();
 }
 
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_performMicrotaskCheckpoint
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    RUNTIME_HANDLES_TO_OBJECTS_WITH_SCOPE(v8RuntimeHandle);
+    // The microtasks may call back into Java, hence the full scope above.
+    // V8 asserts the policy is not kScoped. Javet never creates a v8::MicrotasksScope
+    // and setMicrotasksPolicy() rejects Scoped, so the policy is kAuto or kExplicit here.
+    v8Isolate->PerformMicrotaskCheckpoint();
+}
+
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_registerGCEpilogueCallback
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
@@ -438,6 +453,12 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setMemorySaverMod
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
     v8InternalIsolate->set_memory_saver_mode_enabled(enabled);
+}
+
+JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setMicrotasksPolicy
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jint mMicrotasksPolicy) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    v8Runtime->v8Isolate->SetMicrotasksPolicy(static_cast<v8::MicrotasksPolicy>(mMicrotasksPolicy));
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_setPriority

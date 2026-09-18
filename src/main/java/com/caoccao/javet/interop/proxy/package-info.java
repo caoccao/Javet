@@ -32,7 +32,7 @@
  * {@link com.caoccao.javet.interop.proxy.IJavetNonProxy} is a marker interface for types that should
  * not be automatically proxied by the converter.
  *
- * @since 0.7.0
  * @author Sam Cao
+ * @since 0.7.0
  */
 package com.caoccao.javet.interop.proxy;

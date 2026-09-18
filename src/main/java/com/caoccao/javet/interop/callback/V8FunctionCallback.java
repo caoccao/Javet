@@ -40,16 +40,9 @@ import java.util.stream.Stream;
  * @since 0.8.3
  */
 public final class V8FunctionCallback {
-    private V8FunctionCallback() {
-    }
-
     private static final String NULL = "null";
 
-    private static V8Value setResultType(V8Value v8Value, int[] resultType) {
-        if (resultType != null && resultType.length > 0) {
-            resultType[0] = V8ValueUtils.getV8ValueTypeId(v8Value);
-        }
-        return v8Value;
+    private V8FunctionCallback() {
     }
 
     private static Object convert(IJavetConverter converter, Class<?> expectedClass, V8Value v8Value)
@@ -487,5 +480,12 @@ public final class V8FunctionCallback {
             }
         }
         return setResultType(v8Runtime.createV8ValueUndefined(), resultType);
+    }
+
+    private static V8Value setResultType(V8Value v8Value, int[] resultType) {
+        if (resultType != null && resultType.length > 0) {
+            resultType[0] = V8ValueUtils.getV8ValueTypeId(v8Value);
+        }
+        return v8Value;
     }
 }

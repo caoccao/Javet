@@ -540,6 +540,14 @@ public interface IV8Native {
     long[] getInternalStatistic();
 
     /**
+     * Get the microtasks policy of the V8 runtime.
+     *
+     * @param v8RuntimeHandle the V8 runtime handle
+     * @return the microtasks policy
+     */
+    int getMicrotasksPolicy(long v8RuntimeHandle);
+
+    /**
      * Get the priority of the V8 runtime.
      *
      * @param v8RuntimeHandle the V8 runtime handle
@@ -1573,6 +1581,13 @@ public interface IV8Native {
     String objectToProtoString(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);
 
     /**
+     * Drain the microtask queue of the V8 runtime.
+     *
+     * @param v8RuntimeHandle the V8 runtime handle
+     */
+    void performMicrotaskCheckpoint(long v8RuntimeHandle);
+
+    /**
      * Register a catch handler on a Promise.
      *
      * @param v8RuntimeHandle       the V8 runtime handle
@@ -1983,6 +1998,14 @@ public interface IV8Native {
      * @param enabled         whether to enable the mode
      */
     void setMemorySaverModeEnabled(long v8RuntimeHandle, boolean enabled);
+
+    /**
+     * Set the microtasks policy of the V8 runtime.
+     *
+     * @param v8RuntimeHandle  the V8 runtime handle
+     * @param microtasksPolicy the microtasks policy value
+     */
+    void setMicrotasksPolicy(long v8RuntimeHandle, int microtasksPolicy);
 
     /**
      * Set the priority of the V8 runtime.

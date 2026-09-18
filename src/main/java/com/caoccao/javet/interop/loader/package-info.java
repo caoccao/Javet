@@ -25,7 +25,7 @@
  *   <li>{@link com.caoccao.javet.interop.loader.JavetLibLoadingListener} - Default listener that locates libraries from the classpath resources.</li>
  * </ul>
  *
- * @since 1.0.1
  * @author Sam Cao
+ * @since 1.0.1
  */
 package com.caoccao.javet.interop.loader;

@@ -16,13 +16,8 @@
 
 package com.caoccao.javet.interop.executors;
 
-import com.caoccao.javet.annotations.CheckReturnValue;
-import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.V8ScriptOrigin;
-import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.reference.V8Module;
-import com.caoccao.javet.values.reference.V8Script;
 
 import java.util.Objects;
 

@@ -93,10 +93,7 @@ public final class JavetLibLoadingListener implements IJavetLibLoadingListener {
         if (JAVET_LIB_LOADING_TYPE_SYSTEM.equals(javetLibLoadingType)) {
             return false;
         }
-        if (JAVET_LIB_LOADING_TYPE_CUSTOM.equals(javetLibLoadingType)) {
-            return false;
-        }
-        return true;
+        return !JAVET_LIB_LOADING_TYPE_CUSTOM.equals(javetLibLoadingType);
     }
 
     @Override
@@ -104,10 +101,7 @@ public final class JavetLibLoadingListener implements IJavetLibLoadingListener {
         if (JavetOSUtils.IS_ANDROID) {
             return true;
         }
-        if (JAVET_LIB_LOADING_TYPE_SYSTEM.equals(javetLibLoadingType)) {
-            return true;
-        }
-        return false;
+        return JAVET_LIB_LOADING_TYPE_SYSTEM.equals(javetLibLoadingType);
     }
 
     @Override

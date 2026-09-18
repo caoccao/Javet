@@ -27,7 +27,7 @@
  * All executors implement {@link com.caoccao.javet.interop.executors.IV8Executor} which provides
  * methods for script execution, module compilation, resource naming, and cached data support.
  *
- * @since 0.7.0
  * @author Sam Cao
+ * @since 0.7.0
  */
 package com.caoccao.javet.interop.executors;

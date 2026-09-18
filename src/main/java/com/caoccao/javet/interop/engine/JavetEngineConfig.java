@@ -96,7 +96,7 @@ public final class JavetEngineConfig {
      *
      * @since 1.0.5
      */
-    protected static final int[] DEFAULT_WAIT_FOR_ENGINE_SLEEP_INTERVAL_MILLIS = new int[]{5, 6, 7, 8, 9, 10};
+    private static final int[] DEFAULT_WAIT_FOR_ENGINE_SLEEP_INTERVAL_MILLIS = new int[]{5, 6, 7, 8, 9, 10};
     /**
      * The constant DEFAULT_JAVET_LOGGER.
      *
@@ -118,10 +118,10 @@ public final class JavetEngineConfig {
     private int poolShutdownTimeoutSeconds;
     private boolean poolSizeFrozen;
     private int resetEngineTimeoutSeconds;
+    private byte[] snapshotBlob;
     private int waitForEngineLogIntervalMillis;
     private int waitForEngineMaxRetryCount;
     private int[] waitForEngineSleepIntervalMillis;
-    private byte[] snapshotBlob;
 
     /**
      * Instantiates a new Javet engine config.
@@ -181,14 +181,6 @@ public final class JavetEngineConfig {
     public String getGlobalName() {
         return globalName;
     }
-
-    /**
-     * Gets the snapshot blob
-     *
-     * @return the snapshot blob
-     * @since 5.0.5
-     */
-    public byte[] getSnapshotBlob() { return snapshotBlob; }
 
     /**
      * Gets JS runtime type.
@@ -278,6 +270,16 @@ public final class JavetEngineConfig {
      */
     public int getResetEngineTimeoutSeconds() {
         return resetEngineTimeoutSeconds;
+    }
+
+    /**
+     * Gets the snapshot blob
+     *
+     * @return the snapshot blob
+     * @since 5.0.5
+     */
+    public byte[] getSnapshotBlob() {
+        return snapshotBlob;
     }
 
     /**
@@ -402,18 +404,6 @@ public final class JavetEngineConfig {
     @SuppressWarnings("UnusedReturnValue")
     public JavetEngineConfig setGlobalName(String globalName) {
         this.globalName = globalName;
-        return this;
-    }
-
-    /**
-     * Sets the snapshot blob
-     *
-     * @param snapshotBlob the snapshot blob
-     * @return the self
-     * @since 5.0.5
-     */
-    public JavetEngineConfig setSnapshotBlob(byte[] snapshotBlob) {
-        this.snapshotBlob = snapshotBlob;
         return this;
     }
 
@@ -544,6 +534,18 @@ public final class JavetEngineConfig {
     public JavetEngineConfig setResetEngineTimeoutSeconds(int resetEngineTimeoutSeconds) {
         assert resetEngineTimeoutSeconds > 0 : "The reset engine timeout seconds must be greater than 0.";
         this.resetEngineTimeoutSeconds = resetEngineTimeoutSeconds;
+        return this;
+    }
+
+    /**
+     * Sets the snapshot blob
+     *
+     * @param snapshotBlob the snapshot blob
+     * @return the self
+     * @since 5.0.5
+     */
+    public JavetEngineConfig setSnapshotBlob(byte[] snapshotBlob) {
+        this.snapshotBlob = snapshotBlob;
         return this;
     }
 

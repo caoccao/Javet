@@ -202,6 +202,12 @@ namespace Javet {
     bool V8Runtime::Await(const Javet::Enums::V8AwaitMode::V8AwaitMode awaitMode) noexcept {
         // It has to be v8::platform::MessageLoopBehavior::kDoNotWait, otherwise it blockes;
         v8::platform::PumpMessageLoop(v8PlatformPointer, v8Isolate);
+        // There is no event loop in the V8 mode, so the microtask queue is the only queue
+        // left to drain. Even under the default kAuto policy the queue is not necessarily
+        // empty here: V8 only drains it when the JS call depth drops to zero out of an Api
+        // call that fires the call completed callback, and Promise::Then() / Promise::Catch()
+        // do not, so the reaction jobs they enqueue would otherwise stay pending forever.
+        v8Isolate->PerformMicrotaskCheckpoint();
         return false;
     }
 #endif

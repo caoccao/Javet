@@ -19,6 +19,7 @@ package com.caoccao.javet.interop;
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.enums.V8GCCallbackFlags;
 import com.caoccao.javet.enums.V8GCType;
+import com.caoccao.javet.enums.V8MicrotasksPolicy;
 import com.caoccao.javet.enums.V8RuntimeTerminationMode;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
@@ -30,6 +31,7 @@ import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.mock.MockNearHeapLimitCallback;
 import com.caoccao.javet.utils.SimpleList;
 import com.caoccao.javet.values.reference.V8ValueObject;
+import com.caoccao.javet.values.reference.V8ValuePromise;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -154,6 +156,77 @@ public class TestV8Runtime extends BaseTestJavet {
     public void testLowMemoryNotification() throws JavetException {
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             v8Runtime.lowMemoryNotification();
+        }
+    }
+
+    @Test
+    public void testMicrotasksPolicy() throws JavetException {
+        final String codeString = "globalThis.a = 0; Promise.resolve().then(() => { globalThis.a = 1; });";
+        if (isV8()) {
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+                assertEquals(V8MicrotasksPolicy.Auto, v8Runtime.getMicrotasksPolicy());
+                // Under Auto, V8 drains the queue when the JS call depth drops to zero.
+                v8Runtime.getExecutor(codeString).executeVoid();
+                assertEquals(1, v8Runtime.getExecutor("globalThis.a").executeInteger());
+
+                v8Runtime.setMicrotasksPolicy(V8MicrotasksPolicy.Explicit);
+                assertEquals(V8MicrotasksPolicy.Explicit, v8Runtime.getMicrotasksPolicy());
+                v8Runtime.getExecutor(codeString).executeVoid();
+                assertEquals(
+                        0, v8Runtime.getExecutor("globalThis.a").executeInteger(),
+                        "The promise job is supposed to stay pending under Explicit.");
+                v8Runtime.performMicrotaskCheckpoint();
+                assertEquals(1, v8Runtime.getExecutor("globalThis.a").executeInteger());
+
+                // await() drains the microtask queue in the V8 mode as well.
+                v8Runtime.getExecutor(codeString).executeVoid();
+                assertEquals(0, v8Runtime.getExecutor("globalThis.a").executeInteger());
+                assertFalse(v8Runtime.await());
+                assertEquals(1, v8Runtime.getExecutor("globalThis.a").executeInteger());
+
+                // A promise resolved from Java stays pending under Explicit too.
+                try (V8ValuePromise v8ValuePromiseResolver = v8Runtime.createV8ValuePromise();
+                     V8ValuePromise v8ValuePromise = v8ValuePromiseResolver.getPromise();
+                     V8ValueObject v8ValueGlobalObject = v8Runtime.getGlobalObject()) {
+                    v8ValueGlobalObject.set("p", v8ValuePromise);
+                    v8Runtime.getExecutor("globalThis.b = 0; p.then(() => { globalThis.b = 1; });").executeVoid();
+                    assertTrue(v8ValuePromiseResolver.resolve(1));
+                    assertEquals(0, v8Runtime.getExecutor("globalThis.b").executeInteger());
+                    v8Runtime.performMicrotaskCheckpoint();
+                    assertEquals(1, v8Runtime.getExecutor("globalThis.b").executeInteger());
+                    v8ValueGlobalObject.delete("p");
+                }
+
+                v8Runtime.setMicrotasksPolicy(V8MicrotasksPolicy.Auto);
+                assertEquals(V8MicrotasksPolicy.Auto, v8Runtime.getMicrotasksPolicy());
+            }
+        } else {
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+                // Node.js sets the policy to Explicit and drains the queue by itself.
+                assertEquals(V8MicrotasksPolicy.Explicit, v8Runtime.getMicrotasksPolicy());
+                v8Runtime.getExecutor(codeString).executeVoid();
+                v8Runtime.await();
+                assertEquals(1, v8Runtime.getExecutor("globalThis.a").executeInteger());
+            }
+        }
+    }
+
+    @Test
+    public void testMicrotasksPolicyNotSupported() throws JavetException {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            // Scoped requires a v8::MicrotasksScope which Javet never creates.
+            // In the Node.js mode the policy belongs to Node.js, so every value is rejected.
+            List<V8MicrotasksPolicy> rejectedPolicies = isV8()
+                    ? SimpleList.of(V8MicrotasksPolicy.Scoped)
+                    : SimpleList.of(V8MicrotasksPolicy.values());
+            for (V8MicrotasksPolicy microtasksPolicy : rejectedPolicies) {
+                JavetException javetException = assertThrows(
+                        JavetException.class,
+                        () -> v8Runtime.setMicrotasksPolicy(microtasksPolicy),
+                        microtasksPolicy.getName() + " is supposed to be rejected.");
+                assertEquals(JavetError.NotSupported.getCode(), javetException.getError().getCode());
+            }
+            assertThrows(NullPointerException.class, () -> v8Runtime.setMicrotasksPolicy(null));
         }
     }
 

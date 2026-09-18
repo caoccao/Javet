@@ -29,7 +29,7 @@
  *   <li>{@link com.caoccao.javet.interop.V8Locker} - Explicit V8 isolate lock for multi-threaded access.</li>
  * </ul>
  *
- * @since 0.7.0
  * @author Sam Cao
+ * @since 0.7.0
  */
 package com.caoccao.javet.interop;

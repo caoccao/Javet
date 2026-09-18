@@ -29,7 +29,7 @@
  * {@link com.caoccao.javet.interop.converters.BaseJavetConverter} to create custom converters.
  * Use {@link com.caoccao.javet.interop.converters.JavetConverterConfig} to configure converter plugins.
  *
- * @since 0.7.0
  * @author Sam Cao
+ * @since 0.7.0
  */
 package com.caoccao.javet.interop.converters;

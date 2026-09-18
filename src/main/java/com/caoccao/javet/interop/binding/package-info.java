@@ -26,7 +26,7 @@
  *   <li>{@link com.caoccao.javet.interop.binding.IClassProxyPlugin} - Interface for customizing proxy behavior of Java classes.</li>
  * </ul>
  *
- * @since 0.7.0
  * @author Sam Cao
+ * @since 0.7.0
  */
 package com.caoccao.javet.interop.binding;

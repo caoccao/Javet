@@ -183,9 +183,10 @@ public class TestV8ValuePromise extends BaseTestJavetRuntime {
                 "globalThis.a = new Promise((resolve, reject) => { throw new Error('error') }); globalThis.a;").execute()) {
             v8ValuePromise.register(callback);
             v8Runtime.await();
-            assertEquals(
-                    isNode(),
-                    callback.getClass().getMethod("isOnCatchCalled").invoke(callback));
+            // Promise.then() and Promise.catch() do not trigger V8's automatic microtask
+            // checkpoint, so the reaction job of an already settled promise stays queued.
+            // In the V8 mode await() is what drains it.
+            assertTrue((Boolean) callback.getClass().getMethod("isOnCatchCalled").invoke(callback));
             v8Runtime.getExecutor("globalThis.a = undefined;").executeVoid();
         } finally {
             v8Runtime.lowMemoryNotification();

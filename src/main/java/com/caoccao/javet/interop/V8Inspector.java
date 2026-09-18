@@ -99,6 +99,18 @@ public final class V8Inspector implements IJavetClosable {
     }
 
     /**
+     * Cancels a previously scheduled pause on the next statement.
+     *
+     * @see #schedulePauseOnNextStatement(String, String)
+     * @since 5.0.5
+     */
+    public void cancelPauseOnNextStatement() {
+        if (!closed && !v8Runtime.isClosed()) {
+            v8Native.v8InspectorCancelPauseOnNextStatement(v8Runtime.getHandle(), sessionId);
+        }
+    }
+
+    /**
      * Closes this inspector session, disconnecting it from the V8 runtime.
      * After closing, calls to {@link #sendRequest(String)} are silently ignored.
      * Other sessions on the same runtime are not affected.
@@ -112,18 +124,6 @@ public final class V8Inspector implements IJavetClosable {
             if (!v8Runtime.isClosed()) {
                 v8Native.v8InspectorCloseSession(v8Runtime.getHandle(), sessionId);
             }
-        }
-    }
-
-    /**
-     * Cancels a previously scheduled pause on the next statement.
-     *
-     * @see #schedulePauseOnNextStatement(String, String)
-     * @since 5.0.5
-     */
-    public void cancelPauseOnNextStatement() {
-        if (!closed && !v8Runtime.isClosed()) {
-            v8Native.v8InspectorCancelPauseOnNextStatement(v8Runtime.getHandle(), sessionId);
         }
     }
 
@@ -159,10 +159,10 @@ public final class V8Inspector implements IJavetClosable {
      * V8 value that must be closed when no longer needed (if it is a reference type).
      *
      * @param <T>                   the expected V8 value type
-     * @param expression           the JavaScript expression to evaluate
+     * @param expression            the JavaScript expression to evaluate
      * @param includeCommandLineAPI whether to include the command-line API scope
      * @return the evaluation result as a V8 value, or {@code null} if the session
-     *         is closed, the expression could not be run, or the result is empty
+     * is closed, the expression could not be run, or the result is empty
      * @since 5.0.5
      */
     @SuppressWarnings("unchecked")
@@ -185,26 +185,6 @@ public final class V8Inspector implements IJavetClosable {
             } catch (Throwable t) {
                 logger.logError(t, t.getMessage());
             }
-        }
-    }
-
-    /**
-     * Called by V8 to install additional command-line API objects. Dispatches to all registered listeners.
-     *
-     * @param commandLineAPI the command-line API object provided by V8
-     */
-    public void installAdditionalCommandLineAPI(IV8ValueObject commandLineAPI) {
-        logger.logDebug("Receiving installAdditionalCommandLineAPI");
-        try (IV8ValueObject api = commandLineAPI) {
-            for (IV8InspectorListener listener : listeners) {
-                try {
-                    listener.installAdditionalCommandLineAPI(api);
-                } catch (Throwable t) {
-                    logger.logError(t, t.getMessage());
-                }
-            }
-        } catch (Throwable t) {
-            logger.logError(t, t.getMessage());
         }
     }
 
@@ -234,6 +214,26 @@ public final class V8Inspector implements IJavetClosable {
      */
     public int getSessionId() {
         return sessionId;
+    }
+
+    /**
+     * Called by V8 to install additional command-line API objects. Dispatches to all registered listeners.
+     *
+     * @param commandLineAPI the command-line API object provided by V8
+     */
+    public void installAdditionalCommandLineAPI(IV8ValueObject commandLineAPI) {
+        logger.logDebug("Receiving installAdditionalCommandLineAPI");
+        try (IV8ValueObject api = commandLineAPI) {
+            for (IV8InspectorListener listener : listeners) {
+                try {
+                    listener.installAdditionalCommandLineAPI(api);
+                } catch (Throwable t) {
+                    logger.logError(t, t.getMessage());
+                }
+            }
+        } catch (Throwable t) {
+            logger.logError(t, t.getMessage());
+        }
     }
 
     /**

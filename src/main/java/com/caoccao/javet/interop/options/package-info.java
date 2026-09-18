@@ -26,7 +26,7 @@
  * Flags are set globally before creating the first runtime and are sealed after V8 initialization.
  * Runtime options are per-runtime and passed to {@code V8Host.createV8Runtime(runtimeOptions)}.
  *
- * @since 1.0.0
  * @author Sam Cao
+ * @since 1.0.0
  */
 package com.caoccao.javet.interop.options;

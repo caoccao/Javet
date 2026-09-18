@@ -497,6 +497,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * <p>
      * In the Node.js mode, the V8 await mode takes effect.
      * In the V8 mode, the V8 await mode takes no effect and the return is always false.
+     * There is no event loop in the V8 mode, so the pending microtasks are drained instead,
+     * the same way {@link #performMicrotaskCheckpoint()} does.
      *
      * @param v8AwaitMode the V8 await mode
      * @return true : there are more tasks, false : there are no more tasks
@@ -1708,6 +1710,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public IJavetLogger getLogger() {
         return logger;
+    }
+
+    /**
+     * Gets the microtasks policy of the V8 isolate.
+     * <p>
+     * The policy controls when the pending promise jobs are drained.
+     * It is {@link V8MicrotasksPolicy#Auto} by default in the V8 mode and
+     * {@link V8MicrotasksPolicy#Explicit} in the Node.js mode.
+     *
+     * @return the V8 microtasks policy
+     * @since 6.0.1
+     */
+    public V8MicrotasksPolicy getMicrotasksPolicy() {
+        if (!isClosed()) {
+            return V8MicrotasksPolicy.parse(v8Native.getMicrotasksPolicy(handle));
+        }
+        return V8MicrotasksPolicy.Auto;
     }
 
     /**
@@ -3239,6 +3258,26 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Perform a microtask checkpoint, draining the pending promise jobs.
+     * <p>
+     * It is required under {@link V8MicrotasksPolicy#Explicit} where nothing drains the queue
+     * automatically. It is also meaningful under {@link V8MicrotasksPolicy#Auto} because V8
+     * only drains the queue when the JavaScript call depth drops to zero out of a call that
+     * fires the call completed callback, which <code>Promise.then()</code> and
+     * <code>Promise.catch()</code> do not.
+     * <p>
+     * It is a no-op when the microtask queue is empty.
+     * Any exception thrown by a microtask is swallowed by V8.
+     *
+     * @since 6.0.1
+     */
+    public void performMicrotaskCheckpoint() {
+        if (!isClosed()) {
+            v8Native.performMicrotaskCheckpoint(handle);
+        }
+    }
+
+    /**
      * Call Promise.catch().
      *
      * @param <T>             the type parameter
@@ -3981,6 +4020,31 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public void setMemorySaverModeEnabled(boolean enabled) {
         if (!isClosed()) {
             v8Native.setMemorySaverModeEnabled(handle, enabled);
+        }
+    }
+
+    /**
+     * Sets the microtasks policy of the V8 isolate.
+     * <p>
+     * Switching to {@link V8MicrotasksPolicy#Explicit} stops V8 from draining the microtask
+     * queue on its own, so {@link #performMicrotaskCheckpoint()} (or {@link #await()}) has to
+     * be called for the pending promise jobs to run.
+     * <p>
+     * {@link V8MicrotasksPolicy#Scoped} is not supported because Javet never creates a
+     * <code>v8::MicrotasksScope</code>.
+     *
+     * @param microtasksPolicy the V8 microtasks policy
+     * @throws JavetException the javet exception
+     * @since 6.0.1
+     */
+    public void setMicrotasksPolicy(V8MicrotasksPolicy microtasksPolicy) throws JavetException {
+        if (Objects.requireNonNull(microtasksPolicy) == V8MicrotasksPolicy.Scoped) {
+            throw new JavetException(
+                    JavetError.NotSupported,
+                    SimpleMap.of(PARAMETER_FEATURE, "Microtasks policy " + microtasksPolicy.getName()));
+        }
+        if (!isClosed()) {
+            v8Native.setMicrotasksPolicy(handle, microtasksPolicy.getId());
         }
     }
 

@@ -25,7 +25,7 @@
  *   <li>{@link com.caoccao.javet.interop.monitoring.V8StatisticsFuture} - Asynchronous future for collecting statistics from the engine pool daemon.</li>
  * </ul>
  *
- * @since 1.0.0
  * @author Sam Cao
+ * @since 1.0.0
  */
 package com.caoccao.javet.interop.monitoring;

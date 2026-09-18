@@ -28,7 +28,7 @@
  *   <li>{@link com.caoccao.javet.interop.callback.IJavetGCCallback} - Receive V8 garbage collection events.</li>
  * </ul>
  *
- * @since 0.7.0
  * @author Sam Cao
+ * @since 0.7.0
  */
 package com.caoccao.javet.interop.callback;

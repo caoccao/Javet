@@ -311,21 +311,37 @@ public class ClassDescriptor {
      * @since 5.0.2
      */
     public enum GetPriority {
-        /** Built-in method priority. */
+        /**
+         * Built-in method priority.
+         */
         BuiltInMethod,
-        /** Field priority. */
+        /**
+         * Field priority.
+         */
         Field,
-        /** Get method priority. */
+        /**
+         * Get method priority.
+         */
         GetMethod,
-        /** Generic getter priority. */
+        /**
+         * Generic getter priority.
+         */
         GenericGetter,
-        /** Index priority. */
+        /**
+         * Index priority.
+         */
         Index,
-        /** Method priority. */
+        /**
+         * Method priority.
+         */
         Method,
-        /** Polyfill priority. */
+        /**
+         * Polyfill priority.
+         */
         Polyfill,
-        /** Set method priority. */
+        /**
+         * Set method priority.
+         */
         SetMethod,
     }
 
@@ -335,13 +351,21 @@ public class ClassDescriptor {
      * @since 5.0.2
      */
     public enum SetPriority {
-        /** Field priority. */
+        /**
+         * Field priority.
+         */
         Field,
-        /** Generic setter priority. */
+        /**
+         * Generic setter priority.
+         */
         GenericSetter,
-        /** Index priority. */
+        /**
+         * Index priority.
+         */
         Index,
-        /** Set method priority. */
+        /**
+         * Set method priority.
+         */
         SetMethod,
     }
 }
