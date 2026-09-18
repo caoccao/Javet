@@ -38,7 +38,7 @@ if(DEFINED V8_DIR)
     # /clang: passthroughs differ from a direct clang-cl invocation. Use
     # clang-native warning flags here; jni-build.ts drives Ninja + V8's
     # clang-cl for V8 mode on Windows.
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wno-invalid-offsetof -Wno-nullability-completeness")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wno-invalid-offsetof -Wno-nullability-completeness -Wno-unused-template")
     # Place libc++ ahead of MSVC's STL include paths so <vector>, <string>
     # etc. resolve to V8's libc++.
     include_directories(BEFORE
