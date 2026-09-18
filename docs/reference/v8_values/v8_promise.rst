@@ -28,14 +28,14 @@ The lifecycle is as the following chart shows.
 .. image:: ../../resources/images/v8_promise_lifecycle.png
     :alt: V8 Promise Lifecycle
 
-Register a Callback
+Register a Listener
 ===================
 
-``V8ValuePromise`` accepts a ``IV8ValuePromise.ICallback`` to receive the callback from the V8 when the promise is resolved or rejected. The caller is supposed to call the ``register`` with a subclass of ``IV8ValuePromise.ICallback``.
+``V8ValuePromise`` accepts an ``IV8ValuePromise.IListener`` to receive the callback from V8 when the promise is fulfilled, rejected or caught. The caller is supposed to call ``register()`` with an implementation of ``IV8ValuePromise.IListener``. ``register()`` returns ``true`` if the listener has been attached to the promise.
 
 .. code-block:: java
 
-    IV8ValuePromise.ICallback callback = new IV8ValuePromise.ICallback() {
+    IV8ValuePromise.IListener listener = new IV8ValuePromise.IListener() {
         @Override
         public void onCatch(V8Value v8Value) {
             assertTrue(v8Value instanceof V8ValueError);
@@ -55,12 +55,135 @@ Register a Callback
 
     try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
             "new Promise((resolve, reject) => { /* Do whatever you want. */ })").execute()) {
-        v8ValuePromise.register(callback);
+        v8ValuePromise.register(listener);
         v8Runtime.await();
         // The callback happens.
     } finally {
         v8Runtime.lowMemoryNotification();
     }
+
+.. caution::
+
+    ``register()`` is backed by ``Promise.then()`` and ``Promise.catch()`` which only queue the reaction jobs. The listener is not necessarily called by the time ``register()`` or ``resolve()`` returns. Calling ``await()`` afterwards is what guarantees the pending jobs have run in both the Node.js mode and the V8 mode. Please refer to `Microtask Queue`_ for detail.
+
+Microtask Queue
+===============
+
+A promise reaction job, that is the function passed to ``then()`` or ``catch()``, is not executed at once. V8 puts it in the microtask queue and runs the whole queue at a microtask checkpoint. Since v6.0.1, Javet exposes that machinery on ``V8Runtime`` so that applications no longer have to guess when the promise jobs run.
+
+Microtasks Policy
+-----------------
+
+The microtasks policy tells V8 when to drain the queue.
+
+=========================================== ========================================================================================
+Policy                                      Description
+=========================================== ========================================================================================
+``V8MicrotasksPolicy.Auto``                 V8 drains the queue when the JavaScript call depth drops to zero.
+``V8MicrotasksPolicy.Explicit``             V8 never drains the queue. The application performs the checkpoints.
+``V8MicrotasksPolicy.Scoped``               V8 drains the queue when a ``v8::MicrotasksScope`` exits. Not supported by Javet.
+=========================================== ========================================================================================
+
+.. code-block:: java
+
+    // The V8 mode is Auto by default.
+    assertEquals(V8MicrotasksPolicy.Auto, v8Runtime.getMicrotasksPolicy());
+    v8Runtime.setMicrotasksPolicy(V8MicrotasksPolicy.Explicit);
+
+.. note::
+
+    * ``V8MicrotasksPolicy.Scoped`` is rejected with ``JavetError.NotSupported`` because Javet never creates a ``v8::MicrotasksScope``.
+    * In the Node.js mode the policy is ``Explicit`` because Node.js drives the checkpoints from its own event loop. ``setMicrotasksPolicy()`` throws ``JavetError.NotSupported`` there. ``getMicrotasksPolicy()`` works in both modes.
+
+Microtask Checkpoint
+--------------------
+
+``performMicrotaskCheckpoint()`` drains the pending promise jobs.
+
+.. code-block:: java
+
+    v8Runtime.setMicrotasksPolicy(V8MicrotasksPolicy.Explicit);
+    v8Runtime.getExecutor("globalThis.a = 0; Promise.resolve().then(() => { globalThis.a = 1; });").executeVoid();
+    // The promise job stays pending under Explicit.
+    assertEquals(0, v8Runtime.getExecutor("globalThis.a").executeInteger());
+    v8Runtime.performMicrotaskCheckpoint();
+    assertEquals(1, v8Runtime.getExecutor("globalThis.a").executeInteger());
+
+It is a no-op when the queue is empty and it is always safe to call because V8 skips the checkpoint when one is already in progress.
+
+.. caution::
+
+    Any exception thrown by a microtask is swallowed by V8.
+
+    In the Node.js mode, Node.js owns the checkpoints, so ``await()`` is the right call rather than ``performMicrotaskCheckpoint()``.
+
+Why Auto Is Not Enough
+----------------------
+
+Under ``Auto``, V8 drains the queue when the JavaScript call depth drops to zero out of an API call that fires the call completed callback. ``Promise.then()`` and ``Promise.catch()`` do **not** fire it. That means attaching a reaction to an already settled promise from Java queues a job that nothing runs.
+
+.. code-block:: java
+
+    try (V8ValuePromise v8ValuePromise = v8Runtime.getExecutor(
+            "new Promise((resolve, reject) => { throw new Error('error'); });").execute()) {
+        // The promise has already been rejected. register() calls Promise.catch() which
+        // queues the reaction job without draining the queue.
+        v8ValuePromise.register(listener);
+        // This is what drains the queue. Without it onCatch() is never called.
+        v8Runtime.await();
+    } finally {
+        v8Runtime.lowMemoryNotification();
+    }
+
+In the V8 mode ``await()`` performs a microtask checkpoint because there is no event loop to pump. In the Node.js mode ``await()`` pumps the Node.js event loop and Node.js performs its own checkpoints while doing so. So ``await()`` is the portable way of saying "run the pending promise jobs now".
+
+Microtasks Completed Callback
+-----------------------------
+
+``IJavetMicrotasksCompletedCallback`` is called by V8 at the end of every microtask checkpoint. It is the hook for "the promise drain turn has finished".
+
+.. code-block:: java
+
+    IJavetMicrotasksCompletedCallback callback = () -> {
+        // The promise jobs of this turn have all been executed.
+    };
+    v8Runtime.addMicrotasksCompletedCallback(callback);
+    try {
+        // Do whatever you want.
+    } finally {
+        v8Runtime.removeMicrotasksCompletedCallback(callback);
+    }
+
+.. caution::
+
+    * Registering a callback makes V8 skip the fast path that bails out on an empty microtask queue, so the callback is called on every checkpoint, even the ones with nothing to run. Under ``Auto`` that is every call against the runtime that lowers the JavaScript call depth to zero. The callback is supposed to be cheap.
+    * The callbacks are called in the order of registration. The native callback is registered on the first ``addMicrotasksCompletedCallback()`` and unregistered on the last ``removeMicrotasksCompletedCallback()``.
+
+Diagnostics
+-----------
+
+=================================== =========================================================================================
+API                                 Description
+=================================== =========================================================================================
+``isRunningMicrotasks()``           Returns true while a checkpoint is draining the queue.
+``getMicrotasksScopeDepth()``       Returns the number of nested ``v8::MicrotasksScope`` that are set to run the microtasks.
+=================================== =========================================================================================
+
+Both are cheap because they do not enter the V8 isolate, so they are safe to be called from inside a callback. ``isRunningMicrotasks()`` allows a Java callback to tell whether it has been called from a promise job or from a regular call.
+
+.. code-block:: java
+
+    @V8Function
+    public void log(String message) {
+        if (v8Runtime.isRunningMicrotasks()) {
+            // This call comes from a promise job.
+        }
+    }
+
+.. note::
+
+    * ``isRunningMicrotasks()`` is also true inside ``IJavetMicrotasksCompletedCallback`` because V8 fires that callback before leaving the checkpoint.
+    * ``getMicrotasksScopeDepth()`` stays 0 because Javet never creates a ``v8::MicrotasksScope``. It is only non-zero if V8 itself runs the microtasks from such a scope.
 
 Example fs.readFileAsync()
 ==========================
@@ -105,7 +228,7 @@ The pseudo code is as following.
 .. note::
 
     * Java application needs to have background thread(s) process async calls from V8.
-    * Node.js mode has its own event loop. So, sometimes, Java application has to call ``await()`` after ``resolve()`` or ``reject()``.
+    * ``resolve()`` and ``reject()`` only settle the promise. The reaction jobs are executed at a microtask checkpoint, so calling ``await()`` afterwards is what guarantees they have run.
     * Please refer to project `Javenode <https://github.com/caoccao/Javenode>`_ for details.
 
 Unhandled Rejection
@@ -128,4 +251,4 @@ In Node.js mode, event ``unhandledRejection`` is recommended to be listened.
 
 Be careful, the ``V8Runtime.setPromiseRejectCallback()`` in V8 mode also works in Node.js mode and it can disable the built-in Node.js event ``unhandledRejection``. Sometimes, this is a handy feature.
 
-Please review the :extsource3:`test cases <../../../src/test/java/com/caoccao/javet/values/reference/TestV8ValuePromise.java>` for more detail.
+Please review the :extsource3:`promise test cases <../../../src/test/java/com/caoccao/javet/values/reference/TestV8ValuePromise.java>` and the :extsource3:`microtask test cases <../../../src/test/java/com/caoccao/javet/interop/TestV8Runtime.java>` for more detail.
