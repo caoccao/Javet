@@ -401,6 +401,14 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getMicrotasksPoli
 
 /*
  * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    getMicrotasksScopeDepth
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getMicrotasksScopeDepth
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
  * Method:    getPriority
  * Signature: (J)I
  */
@@ -533,6 +541,14 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isInUse
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isMemorySaverModeEnabled
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_caoccao_javet_interop_V8Native
+ * Method:    isRunningMicrotasks
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isRunningMicrotasks
   (JNIEnv *, jobject, jlong);
 
 /*

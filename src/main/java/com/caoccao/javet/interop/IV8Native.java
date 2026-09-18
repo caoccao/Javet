@@ -548,6 +548,14 @@ public interface IV8Native {
     int getMicrotasksPolicy(long v8RuntimeHandle);
 
     /**
+     * Get the microtasks scope depth of the V8 runtime.
+     *
+     * @param v8RuntimeHandle the V8 runtime handle
+     * @return the microtasks scope depth
+     */
+    int getMicrotasksScopeDepth(long v8RuntimeHandle);
+
+    /**
      * Get the priority of the V8 runtime.
      *
      * @param v8RuntimeHandle the V8 runtime handle
@@ -688,6 +696,14 @@ public interface IV8Native {
      * @return true if memory saver mode is enabled
      */
     boolean isMemorySaverModeEnabled(long v8RuntimeHandle);
+
+    /**
+     * Check if the V8 runtime is running microtasks.
+     *
+     * @param v8RuntimeHandle the V8 runtime handle
+     * @return true if the microtasks are being run
+     */
+    boolean isRunningMicrotasks(long v8RuntimeHandle);
 
     /**
      * Check if a V8 value is a weak reference.

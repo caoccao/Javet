@@ -31,6 +31,8 @@ import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.mock.MockNearHeapLimitCallback;
 import com.caoccao.javet.utils.SimpleList;
+import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.reference.IV8ValuePromise;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.reference.V8ValuePromise;
 import org.junit.jupiter.api.Test;
@@ -225,6 +227,58 @@ public class TestV8Runtime extends BaseTestJavet {
             }
             assertThrows(NullPointerException.class, () -> v8Runtime.addMicrotasksCompletedCallback(null));
             assertThrows(NullPointerException.class, () -> v8Runtime.removeMicrotasksCompletedCallback(null));
+        }
+    }
+
+    @Test
+    public void testMicrotasksDiagnostics() throws JavetException {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            // Nothing is running outside a checkpoint.
+            assertFalse(v8Runtime.isRunningMicrotasks());
+            assertEquals(0, v8Runtime.getMicrotasksScopeDepth());
+
+            // V8 fires the microtasks completed callback before it leaves the checkpoint.
+            AtomicBoolean runningInCallback = new AtomicBoolean();
+            AtomicInteger depthInCallback = new AtomicInteger(-1);
+            IJavetMicrotasksCompletedCallback callback = () -> {
+                runningInCallback.set(v8Runtime.isRunningMicrotasks());
+                depthInCallback.set(v8Runtime.getMicrotasksScopeDepth());
+            };
+            v8Runtime.addMicrotasksCompletedCallback(callback);
+            try {
+                v8Runtime.performMicrotaskCheckpoint();
+            } finally {
+                v8Runtime.removeMicrotasksCompletedCallback(callback);
+            }
+            assertTrue(runningInCallback.get(), "The microtasks are supposed to be running in the callback.");
+            assertEquals(0, depthInCallback.get(), "Javet never creates a v8::MicrotasksScope.");
+            assertFalse(v8Runtime.isRunningMicrotasks());
+
+            // A promise job that calls back into Java observes the same state.
+            AtomicBoolean runningInJob = new AtomicBoolean();
+            try (V8ValuePromise v8ValuePromiseResolver = v8Runtime.createV8ValuePromise();
+                 V8ValuePromise v8ValuePromise = v8ValuePromiseResolver.getPromise()) {
+                assertTrue(v8ValuePromise.register(new IV8ValuePromise.IListener() {
+                    @Override
+                    public void onCatch(V8Value v8Value) {
+                    }
+
+                    @Override
+                    public void onFulfilled(V8Value v8Value) {
+                        runningInJob.set(v8Runtime.isRunningMicrotasks());
+                    }
+
+                    @Override
+                    public void onRejected(V8Value v8Value) {
+                    }
+                }));
+                assertTrue(v8ValuePromiseResolver.resolve(1));
+                v8Runtime.await();
+                assertTrue(runningInJob.get(), "The microtasks are supposed to be running in the promise job.");
+            } finally {
+                v8Runtime.lowMemoryNotification();
+            }
+            assertFalse(v8Runtime.isRunningMicrotasks());
         }
     }
 

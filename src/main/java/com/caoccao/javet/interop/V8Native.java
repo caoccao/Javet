@@ -205,6 +205,9 @@ class V8Native implements IV8Native {
     public native int getMicrotasksPolicy(long v8RuntimeHandle);
 
     @Override
+    public native int getMicrotasksScopeDepth(long v8RuntimeHandle);
+
+    @Override
     public native int getPriority(long v8RuntimeHandle);
 
     @Override
@@ -254,6 +257,9 @@ class V8Native implements IV8Native {
 
     @Override
     public native boolean isMemorySaverModeEnabled(long v8RuntimeHandle);
+
+    @Override
+    public native boolean isRunningMicrotasks(long v8RuntimeHandle);
 
     @Override
     public native boolean isWeak(long v8RuntimeHandle, long v8ValueHandle, int v8ValueType);

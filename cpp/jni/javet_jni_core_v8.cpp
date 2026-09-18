@@ -171,6 +171,14 @@ JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getMicrotasksPoli
     return static_cast<jint>(v8Runtime->v8Isolate->GetMicrotasksPolicy());
 }
 
+JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getMicrotasksScopeDepth
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    // The static helpers read the isolate's default microtask queue, which is the same
+    // queue that PerformMicrotaskCheckpoint() drains.
+    return (jint)v8::MicrotasksScope::GetCurrentDepth(v8Runtime->v8Isolate);
+}
+
 JNIEXPORT jint JNICALL Java_com_caoccao_javet_interop_V8Native_getPriority
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
@@ -314,6 +322,12 @@ JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isMemorySaver
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
     auto v8InternalIsolate = reinterpret_cast<V8InternalIsolate*>(v8Runtime->v8Isolate);
     return v8InternalIsolate->MemorySaverModeEnabled();
+}
+
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isRunningMicrotasks
+(JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle) {
+    auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
+    return (jboolean)v8::MicrotasksScope::IsRunningMicrotasks(v8Runtime->v8Isolate);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_isWeak

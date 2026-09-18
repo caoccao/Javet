@@ -1761,6 +1761,23 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Gets the microtasks scope depth of the V8 isolate.
+     * <p>
+     * The depth is the number of nested <code>v8::MicrotasksScope</code> objects that are set
+     * to run the microtasks. Javet never creates one, so the depth stays 0 unless the
+     * microtasks are being run from a scope that V8 itself has pushed.
+     *
+     * @return the microtasks scope depth
+     * @since 6.0.1
+     */
+    public int getMicrotasksScopeDepth() {
+        if (!isClosed()) {
+            return v8Native.getMicrotasksScopeDepth(handle);
+        }
+        return 0;
+    }
+
+    /**
      * Gets near heap limit callback.
      *
      * @return the near heap limit callback
@@ -2177,6 +2194,24 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public boolean isPooled() {
         return pooled;
+    }
+
+    /**
+     * Returns whether the V8 isolate is running microtasks or not.
+     * <p>
+     * It is true while a microtask checkpoint is draining the queue, so a Java callback can
+     * tell whether it has been invoked from a promise job or from a regular call. It is also
+     * true inside {@link com.caoccao.javet.interop.callback.IJavetMicrotasksCompletedCallback}
+     * because V8 fires that callback before leaving the checkpoint.
+     *
+     * @return true : the microtasks are being run, false : the microtasks are not being run
+     * @since 6.0.1
+     */
+    public boolean isRunningMicrotasks() {
+        if (!isClosed()) {
+            return v8Native.isRunningMicrotasks(handle);
+        }
+        return false;
     }
 
     /**
