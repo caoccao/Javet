@@ -65,6 +65,7 @@ jobs:
         git clone --depth=10 --branch=main https://chromium.googlesource.com/chromium/tools/depot_tools.git
         cd depot_tools
         git checkout remotes/origin/main
+        ./ensure_bootstrap
         cd ..
         fetch v8
         cd v8
