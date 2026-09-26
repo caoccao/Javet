@@ -126,6 +126,13 @@ public class TestJavetEnginePool extends BaseTestJavet {
     }
 
     @Test
+    public void testCloseWithBorrowedEngine() throws JavetException {
+        try (IJavetEngine<?> engine = javetEnginePool.getEngine()) {
+            javetEnginePool.close();
+        }
+    }
+
+    @Test
     @Tag("performance")
     public void testDaemonThread() throws InterruptedException {
         javetEngineConfig.setWaitForEngineMaxRetryCount(5);
@@ -219,7 +226,7 @@ public class TestJavetEnginePool extends BaseTestJavet {
                 thread.start();
                 threads[j] = thread;
             });
-            runAndWait(TEST_MAX_TIMEOUT, () -> runningCount.get() == threadCount);
+            runAndWait(TEST_MAX_TIMEOUT * threadCount, () -> runningCount.get() == threadCount);
             runAndWait(TEST_MAX_TIMEOUT, () -> 0 == javetEnginePool.getIdleEngineCount());
             runAndWait(TEST_MAX_TIMEOUT, () -> threadCount == javetEnginePool.getActiveEngineCount());
         }

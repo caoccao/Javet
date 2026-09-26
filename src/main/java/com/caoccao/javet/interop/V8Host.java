@@ -594,13 +594,13 @@ public final class V8Host {
         /* end if */
         private final PriorityBlockingQueue<V8Guard> v8GuardQueue;
 
-        private long sleepIntervalMillis;
+        private volatile long sleepIntervalMillis;
 
         public V8GuardDaemon() {
             sleepIntervalMillis = DEFAULT_SLEEP_INTERVAL_MILLIS;
             v8GuardQueue = new PriorityBlockingQueue<>(
                     INITIAL_CAPACITY,
-                    (g1, g2) -> (int) (g1.getEndTimeMillis() - g2.getEndTimeMillis()));
+                    (g1, g2) -> Long.compare(g1.getNextCheckTimeMillis(), g2.getNextCheckTimeMillis()));
         }
 
         public long getSleepIntervalMillis() {
@@ -611,33 +611,25 @@ public final class V8Host {
             return v8GuardQueue;
         }
 
+        /**
+         * Is in debug mode.
+         *
+         * @return true : yes, false : no
+         * @since 6.0.2
+         */
+        boolean isInDebugMode() {
+            return IS_IN_DEBUG_MODE;
+        }
+
         @Override
         public void run() {
             while (true) {
                 try {
-                    V8Guard v8Guard = v8GuardQueue.take();
-                    long now = System.currentTimeMillis();
-                    if (now > v8Guard.getEndTimeMillis()) {
-                        if (!(!v8Guard.isDebugModeEnabled() && IS_IN_DEBUG_MODE)) {
-                            V8Runtime v8Runtime = v8Guard.getV8Runtime();
-                            synchronized (v8Runtime.getCloseLock()) {
-                                if (!v8Guard.isClosed() && !v8Runtime.isClosed() && v8Runtime.isInUse()) {
-                                    v8Runtime.terminateExecution();
-                                    v8Runtime.getLogger().logWarn(
-                                            "Execution was terminated after {0}ms.",
-                                            now - v8Guard.getStartTimeMillis());
-                                }
-                            }
-                        }
-                    } else {
-                        V8Runtime v8Runtime = v8Guard.getV8Runtime();
-                        long sleepMillis = 0L;
-                        synchronized (v8Runtime.getCloseLock()) {
-                            if (!v8Guard.isClosed() && !v8Runtime.isClosed()) {
-                                v8GuardQueue.add(v8Guard);
-                                sleepMillis = Math.min(v8Guard.getEndTimeMillis() - now, sleepIntervalMillis);
-                            }
-                        }
+                    v8GuardQueue.take().check();
+                    V8Guard nextGuard = v8GuardQueue.peek();
+                    if (nextGuard != null) {
+                        long sleepMillis = Math.min(
+                                nextGuard.getNextCheckTimeMillis() - System.currentTimeMillis(), sleepIntervalMillis);
                         if (sleepMillis > 0) {
                             TimeUnit.MILLISECONDS.sleep(sleepMillis);
                         }

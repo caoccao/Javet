@@ -7,6 +7,10 @@ Release Notes 6.0.x
 
 * Upgraded Node.js to ``v26.10.0`` `(2026-09-22) <https://nodejs.org/en/blog/release/v26.10.0>`_
 * Fixed ``resetContext()`` for Node.js snapshot runtimes to recreate the environment and restore the original snapshot state
+* Fixed ``V8Guard`` losing expired guards while runtimes are idle
+* Fixed ``V8Guard`` timeout update and cancellation races
+* Fixed guard queue ordering for long timeouts
+* Fixed late engine returns corrupting pool counts after shutdown
 
 6.0.1
 -----

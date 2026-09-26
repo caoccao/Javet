@@ -36,6 +36,8 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  * The type Javet engine pool.
@@ -74,6 +76,12 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
      * @since 1.0.5
      */
     protected final ConcurrentLinkedQueue<Integer> releasedEngineIndexList;
+    /**
+     * The Releasing engine count.
+     *
+     * @since 6.0.2
+     */
+    protected final AtomicInteger releasingEngineCount;
     /**
      * The Active.
      *
@@ -137,6 +145,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         this.config = Objects.requireNonNull(config).freezePoolSize();
         idleEngineIndexList = new ConcurrentLinkedQueue<>();
         releasedEngineIndexList = new ConcurrentLinkedQueue<>();
+        releasingEngineCount = new AtomicInteger();
         engines = new JavetEngine[config.getPoolMaxSize()];
         externalLock = new Object();
         internalLock = new Object();
@@ -316,12 +325,20 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         IJavetLogger logger = config.getJavetLogger();
         logger.debug("JavetEnginePool.releaseEngine() begins.");
         JavetEngine<R> engine = (JavetEngine<R>) Objects.requireNonNull(iJavetEngine);
-        engine.setActive(false);
-        if (config.isAutoSendGCNotification()) {
-            engine.sendGCNotification();
+        releasingEngineCount.incrementAndGet();
+        try {
+            if (quitting || !active) {
+                return;
+            }
+            engine.setActive(false);
+            if (config.isAutoSendGCNotification()) {
+                engine.sendGCNotification();
+            }
+            idleEngineIndexList.add(engine.getIndex());
+            semaphore.release();
+        } finally {
+            releasingEngineCount.decrementAndGet();
         }
-        idleEngineIndexList.add(engine.getIndex());
-        semaphore.release();
         wakeUpDaemon();
         logger.debug("JavetEnginePool.releaseEngine() ends.");
     }
@@ -384,6 +401,10 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                             "Failed to sleep a while to wait for next round in Javet engine pool daemon.");
                 }
             }
+        }
+        // Let returns already in progress finish before disposing their runtimes.
+        while (releasingEngineCount.get() > 0) {
+            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(1));
         }
         logger.logDebug(
                 "JavetEnginePool daemon is quitting with {0}/{1}/{2} engines.",
