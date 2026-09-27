@@ -7,10 +7,14 @@ Release Notes 6.0.x
 
 * Upgraded Node.js to ``v26.10.0`` `(2026-09-22) <https://nodejs.org/en/blog/release/v26.10.0>`_
 * Fixed ``resetContext()`` for Node.js snapshot runtimes to recreate the environment and restore the original snapshot state
-* Fixed ``V8Guard`` losing expired guards while runtimes are idle
+* Fixed ``V8Guard`` losing expired guards while runtimes are idle or in calls that don't run scripts
 * Fixed ``V8Guard`` timeout update and cancellation races
-* Fixed guard queue ordering for long timeouts
+* Fixed guard queue ordering and end time overflow for long timeouts
+* Enhanced ``V8Guard`` to keep terminating scripts after it expires till it is closed, and to log the termination once
+* Enhanced the guard daemon to wait for the next due guard instead of polling the queue
 * Fixed late engine returns corrupting pool counts after shutdown
+* Fixed closing an engine twice corrupting pool counts
+* Fixed engine borrows racing with ``JavetEnginePool.close()``, which leaked the new engine or threw ``NullPointerException``
 
 6.0.1
 -----

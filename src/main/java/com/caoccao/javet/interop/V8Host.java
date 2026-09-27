@@ -35,7 +35,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.DelayQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -535,6 +535,8 @@ public final class V8Host {
 
     /**
      * Sets sleep interval millis.
+     * <p>
+     * It is the interval at which the guard daemon checks an expired guard again.
      *
      * @param sleepIntervalMillis the sleep interval millis
      * @since 3.1.3
@@ -584,7 +586,6 @@ public final class V8Host {
 
     static class V8GuardDaemon implements Runnable {
         private static final long DEFAULT_SLEEP_INTERVAL_MILLIS = 5;
-        private static final int INITIAL_CAPACITY = 64;
         private static final boolean IS_IN_DEBUG_MODE =
             /* if defined ANDROID
             false;
@@ -592,22 +593,20 @@ public final class V8Host {
                 /* if not defined ANDROID */
                 ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
         /* end if */
-        private final PriorityBlockingQueue<V8Guard> v8GuardQueue;
+        private final DelayQueue<V8Guard> v8GuardQueue;
 
         private volatile long sleepIntervalMillis;
 
         public V8GuardDaemon() {
             sleepIntervalMillis = DEFAULT_SLEEP_INTERVAL_MILLIS;
-            v8GuardQueue = new PriorityBlockingQueue<>(
-                    INITIAL_CAPACITY,
-                    (g1, g2) -> Long.compare(g1.getNextCheckTimeMillis(), g2.getNextCheckTimeMillis()));
+            v8GuardQueue = new DelayQueue<>();
         }
 
         public long getSleepIntervalMillis() {
             return sleepIntervalMillis;
         }
 
-        public PriorityBlockingQueue<V8Guard> getV8GuardQueue() {
+        public DelayQueue<V8Guard> getV8GuardQueue() {
             return v8GuardQueue;
         }
 
@@ -625,15 +624,8 @@ public final class V8Host {
         public void run() {
             while (true) {
                 try {
+                    // The queue only hands out a guard when it is due, so pending guards are left alone.
                     v8GuardQueue.take().check();
-                    V8Guard nextGuard = v8GuardQueue.peek();
-                    if (nextGuard != null) {
-                        long sleepMillis = Math.min(
-                                nextGuard.getNextCheckTimeMillis() - System.currentTimeMillis(), sleepIntervalMillis);
-                        if (sleepMillis > 0) {
-                            TimeUnit.MILLISECONDS.sleep(sleepMillis);
-                        }
-                    }
                 } catch (InterruptedException ignored) {
                     Thread.currentThread().interrupt();
                     break;

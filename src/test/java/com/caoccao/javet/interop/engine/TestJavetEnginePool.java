@@ -19,6 +19,7 @@ package com.caoccao.javet.interop.engine;
 import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.enums.V8AllocationSpace;
+import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
 import com.caoccao.javet.exceptions.JavetTerminatedException;
@@ -45,6 +46,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -100,6 +102,19 @@ public class TestJavetEnginePool extends BaseTestJavet {
     }
 
     @Test
+    public void testCloseEngineTwice() throws JavetException {
+        IJavetEngine<?> engine = javetEnginePool.getEngine();
+        engine.close();
+        // The second close must not return the same engine to the pool again.
+        engine.close();
+        assertEquals(1, javetEnginePool.getIdleEngineCount());
+        try (IJavetEngine<?> engine1 = javetEnginePool.getEngine();
+             IJavetEngine<?> engine2 = javetEnginePool.getEngine()) {
+            assertNotSame(engine1, engine2);
+        }
+    }
+
+    @Test
     public void testCloseWakesUpDaemon() throws Exception {
         // This pool intentionally keeps the default daemon check interval so that a
         // close() delegating to a sleeping daemon shows up as a ~1s pause.
@@ -123,6 +138,82 @@ public class TestJavetEnginePool extends BaseTestJavet {
                 closeDurationMillis < poolDaemonCheckIntervalMillis / 2,
                 "close() took " + closeDurationMillis + "ms. It is supposed to wake up the daemon"
                         + " instead of waiting out its " + poolDaemonCheckIntervalMillis + "ms check interval.");
+    }
+
+    @Test
+    public void testCloseWhileCreatingEngine() throws Exception {
+        final CountDownLatch creatingLatch = new CountDownLatch(1);
+        final CountDownLatch createLatch = new CountDownLatch(1);
+        final AtomicReference<IJavetEngine<V8Runtime>> engineReference = new AtomicReference<>();
+        JavetEnginePool<V8Runtime> pool = new JavetEnginePool<V8Runtime>() {
+            @Override
+            protected JavetEngine<V8Runtime> createEngine() throws JavetException {
+                creatingLatch.countDown();
+                try {
+                    createLatch.await(TEST_MAX_TIMEOUT, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                return super.createEngine();
+            }
+        };
+        pool.getConfig().setJSRuntimeType(v8Host.getJSRuntimeType());
+        Thread borrowThread = new Thread(() -> {
+            try {
+                engineReference.set(pool.getEngine());
+            } catch (JavetException e) {
+                logger.logError(e, "Failed to get an engine.");
+            }
+        });
+        borrowThread.start();
+        assertTrue(creatingLatch.await(TEST_MAX_TIMEOUT, TimeUnit.MILLISECONDS));
+        Thread closeThread = new Thread(() -> {
+            try {
+                pool.close();
+            } catch (JavetException e) {
+                logger.logError(e, "Failed to close the engine pool.");
+            }
+        });
+        closeThread.start();
+        // The pool must wait for the engine being created instead of leaving it behind.
+        closeThread.join(100);
+        assertTrue(closeThread.isAlive());
+        createLatch.countDown();
+        closeThread.join();
+        borrowThread.join();
+        IJavetEngine<V8Runtime> engine = engineReference.get();
+        assertNotNull(engine);
+        assertTrue(engine.isClosed(), "The engine created during the shutdown must be closed by the pool.");
+        engine.close();
+        assertEquals(0, pool.getActiveEngineCount());
+        assertEquals(0, pool.getIdleEngineCount());
+        assertEquals(pool.getConfig().getPoolMaxSize(), pool.getReleasedEngineCount());
+    }
+
+    @Test
+    public void testCloseWhileWaitingForEngine() throws Exception {
+        JavetEnginePool<V8Runtime> pool = new JavetEnginePool<>(new JavetEngineConfig()
+                .setJSRuntimeType(v8Host.getJSRuntimeType())
+                .setPoolMinSize(1)
+                .setPoolMaxSize(1));
+        final AtomicReference<Throwable> throwableReference = new AtomicReference<>();
+        try (IJavetEngine<V8Runtime> engine = pool.getEngine()) {
+            Thread waitThread = new Thread(() -> {
+                try {
+                    JavetResourceUtils.safeClose(pool.getEngine());
+                } catch (Throwable t) {
+                    throwableReference.set(t);
+                }
+            });
+            waitThread.start();
+            // Wait until the thread is sleeping for an idle engine.
+            runAndWait(TEST_MAX_TIMEOUT, () -> waitThread.getState() == Thread.State.TIMED_WAITING);
+            pool.close();
+            waitThread.join();
+        }
+        Throwable throwable = throwableReference.get();
+        assertInstanceOf(JavetException.class, throwable);
+        assertEquals(JavetError.EngineNotAvailable, ((JavetException) throwable).getError());
     }
 
     @Test
