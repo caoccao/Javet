@@ -55,6 +55,7 @@ list(APPEND includeDirs
     ${V8_DIR}/include
     ${V8_DIR}/third_party/abseil-cpp
     ${V8_DIR}/third_party/fp16/src/include
+    ${V8_DIR}/third_party/simdutf
     ${V8_RELEASE_DIR}/gen
     ${V8_RELEASE_DIR}/gen/include)
 if(DEFINED ENABLE_I18N)
@@ -62,10 +63,6 @@ if(DEFINED ENABLE_I18N)
     list(APPEND includeDirs
         ${V8_DIR}/third_party/icu/source/common)
 endif()
-# v8_cppgc_microtask_queue defaults to true in gni/v8.gni and none of
-# scripts/v8/gn/*-args.gn overrides it, so every V8 build exports
-# V8_CPPGC_MICROTASK_QUEUE, which makes v8::MicrotaskQueue a cppgc object.
-# v8-microtask-queue.h hard-errors without it.
-add_definitions(-DV8_TEMPORAL_SUPPORT -DV8_CPPGC_MICROTASK_QUEUE)
+add_definitions(-DV8_TEMPORAL_SUPPORT)
 list(APPEND importLibraries v8_monolith temporal_capi)
 set(JAVET_LIB_TYPE "v8")
