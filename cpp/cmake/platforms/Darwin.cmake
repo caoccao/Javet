@@ -92,8 +92,9 @@ if(DEFINED NODE_DIR)
     # This is a patch build.
     # https://github.com/abseil/abseil-cpp/blob/master/CMake/README.md
     add_subdirectory(${NODE_DIR}/deps/v8/third_party/abseil-cpp ${NODE_DIR}/out.${OUT_DIR_SUFFIX}/Release/third_party/abseil-cpp)
-    target_link_libraries(Javet PUBLIC v8_init absl::base absl::crc32c absl::time "-framework Security")
-    target_link_libraries(JavetStatic PUBLIC v8_init absl::base absl::crc32c absl::time "-framework Security")
+    # absl::time brings in absl::base transitively; listing it here duplicates the archive.
+    target_link_libraries(Javet PUBLIC v8_init absl::crc32c absl::time "-framework Security")
+    target_link_libraries(JavetStatic PUBLIC v8_init absl::crc32c absl::time "-framework Security")
     if(DEFINED NODE_CRATES_LIBRARY)
         target_link_libraries(Javet PUBLIC ${NODE_CRATES_LIBRARY})
         target_link_libraries(JavetStatic PUBLIC ${NODE_CRATES_LIBRARY})

@@ -36,6 +36,8 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  * The type Javet engine pool.
@@ -50,6 +52,12 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
      * @since 0.8.10
      */
     protected static final String JAVET_DAEMON_THREAD_NAME = "Javet Daemon";
+    /**
+     * The Borrowing engine count.
+     *
+     * @since 6.0.2
+     */
+    protected final AtomicInteger borrowingEngineCount;
     /**
      * The External lock.
      *
@@ -74,6 +82,12 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
      * @since 1.0.5
      */
     protected final ConcurrentLinkedQueue<Integer> releasedEngineIndexList;
+    /**
+     * The Releasing engine count.
+     *
+     * @since 6.0.2
+     */
+    protected final AtomicInteger releasingEngineCount;
     /**
      * The Active.
      *
@@ -135,8 +149,10 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
     @SuppressWarnings("unchecked")
     public JavetEnginePool(JavetEngineConfig config) {
         this.config = Objects.requireNonNull(config).freezePoolSize();
+        borrowingEngineCount = new AtomicInteger();
         idleEngineIndexList = new ConcurrentLinkedQueue<>();
         releasedEngineIndexList = new ConcurrentLinkedQueue<>();
+        releasingEngineCount = new AtomicInteger();
         engines = new JavetEngine[config.getPoolMaxSize()];
         externalLock = new Object();
         internalLock = new Object();
@@ -195,31 +211,41 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         long lastTime = startTime;
         int retryCount = 0;
         while (!quitting) {
-            if (semaphore.tryAcquire()) {
-                try {
-                    Integer index = idleEngineIndexList.poll();
-                    if (index == null) {
-                        index = releasedEngineIndexList.poll();
-                        if (index != null) {
-                            engine = createEngine();
-                            engine.setIndex(index);
-                            engines[index] = engine;
+            borrowingEngineCount.incrementAndGet();
+            try {
+                // Either the daemon waits for this borrow before disposing the engines,
+                // or this borrow sees the shutdown.
+                if (quitting || !active) {
+                    break;
+                }
+                if (semaphore.tryAcquire()) {
+                    try {
+                        Integer index = idleEngineIndexList.poll();
+                        if (index == null) {
+                            index = releasedEngineIndexList.poll();
+                            if (index != null) {
+                                engine = createEngine();
+                                engine.setIndex(index);
+                                engines[index] = engine;
+                                break;
+                            }
+                        } else {
+                            engine = engines[index];
+                            if (engine == null) {
+                                // The engine is either recycled or not created.
+                                engine = createEngine();
+                                engine.setIndex(index);
+                                engines[index] = engine;
+                            }
                             break;
                         }
-                    } else {
-                        engine = engines[index];
-                        if (engine == null) {
-                            // The engine is either recycled or not created.
-                            engine = createEngine();
-                            engine.setIndex(index);
-                            engines[index] = engine;
-                        }
-                        break;
+                        semaphore.release();
+                    } catch (Throwable t) {
+                        logger.logError(t, "Failed to create a new engine.");
                     }
-                    semaphore.release();
-                } catch (Throwable t) {
-                    logger.logError(t, "Failed to create a new engine.");
                 }
+            } finally {
+                borrowingEngineCount.decrementAndGet();
             }
             ++retryCount;
             if (retryCount >= config.getWaitForEngineMaxRetryCount()) {
@@ -243,7 +269,11 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                 logger.logError(t, "Failed to sleep a while to wait for an idle engine.");
             }
         }
-        Objects.requireNonNull(engine).setActive(true);
+        if (engine == null) {
+            logger.logError("Failed to get an engine because the engine pool is closed.");
+            throw new JavetException(JavetError.EngineNotAvailable);
+        }
+        engine.setActive(true);
         JavetEngineUsage usage = engine.getUsage();
         usage.increaseUsedCount();
         logger.debug("JavetEnginePool.getEngine() ends.");
@@ -316,12 +346,20 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         IJavetLogger logger = config.getJavetLogger();
         logger.debug("JavetEnginePool.releaseEngine() begins.");
         JavetEngine<R> engine = (JavetEngine<R>) Objects.requireNonNull(iJavetEngine);
-        engine.setActive(false);
-        if (config.isAutoSendGCNotification()) {
-            engine.sendGCNotification();
+        releasingEngineCount.incrementAndGet();
+        try {
+            if (quitting || !active) {
+                return;
+            }
+            engine.setActive(false);
+            if (config.isAutoSendGCNotification()) {
+                engine.sendGCNotification();
+            }
+            idleEngineIndexList.add(engine.getIndex());
+            semaphore.release();
+        } finally {
+            releasingEngineCount.decrementAndGet();
         }
-        idleEngineIndexList.add(engine.getIndex());
-        semaphore.release();
         wakeUpDaemon();
         logger.debug("JavetEnginePool.releaseEngine() ends.");
     }
@@ -384,6 +422,10 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                             "Failed to sleep a while to wait for next round in Javet engine pool daemon.");
                 }
             }
+        }
+        // Let borrows and returns already in progress finish before disposing their runtimes.
+        while (borrowingEngineCount.get() > 0 || releasingEngineCount.get() > 0) {
+            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(1));
         }
         logger.logDebug(
                 "JavetEnginePool daemon is quitting with {0}/{1}/{2} engines.",

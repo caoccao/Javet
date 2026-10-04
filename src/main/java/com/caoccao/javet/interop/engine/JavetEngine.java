@@ -90,13 +90,15 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
      * @since 0.7.0
      */
     protected void close(boolean forceClose) throws JavetException {
+        // An inactive engine has been released or closed already, so it must not be released again.
+        final boolean wasActive = active;
         setActive(false);
         if (forceClose) {
             if (iJavetEnginePool.getConfig().isGCBeforeEngineClose()) {
                 v8Runtime.lowMemoryNotification();
             }
             v8Runtime.close(true);
-        } else {
+        } else if (wasActive) {
             iJavetEnginePool.releaseEngine(this);
         }
     }

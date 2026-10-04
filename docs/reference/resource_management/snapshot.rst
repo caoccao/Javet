@@ -98,6 +98,8 @@ Node.js Mode
 
 Snapshot is also supported in Node.js mode via the ``NodeRuntimeOptions``. The usage is similar to V8 mode, but with one important difference: **snapshot creation is a destructive operation in Node.js mode**. The runtime must be closed after the snapshot is created and must not be used for further script execution.
 
+For Node.js runtimes configured for snapshot creation or restored from a snapshot, ``resetContext()`` recreates the entire isolate using the current runtime options. A snapshot-creation runtime starts with a fresh environment, while a restored runtime reloads its snapshot and discards changes made since restoration. This has the cost of ``resetIsolate()``.
+
 .. code-block:: java
 
     NodeRuntimeOptions options = new NodeRuntimeOptions();

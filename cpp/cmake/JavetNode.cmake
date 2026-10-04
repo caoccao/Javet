@@ -20,6 +20,7 @@ list(APPEND includeDirs
     ${NODE_DIR}/deps/v8/include
     ${NODE_DIR}/deps/v8/third_party/abseil-cpp
     ${NODE_DIR}/deps/v8/third_party/fp16/src/include
+    ${NODE_DIR}/deps/v8/third_party/simdutf
     ${NODE_DIR}/deps/ncrypto
     ${NODE_DIR}/deps/simdjson
     ${NODE_DIR}/src)

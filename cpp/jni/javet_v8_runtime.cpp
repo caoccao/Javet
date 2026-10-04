@@ -773,6 +773,19 @@ namespace Javet {
 #endif
     }
 
+    void V8Runtime::ResetV8Context(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept {
+        CloseV8Context();
+#ifdef ENABLE_NODE
+        if (nodeCommonSetup || nodeSnapshotData) {
+            // Snapshot creation owns the context through CommonEnvironmentSetup.
+            // Restoration needs a fresh isolate to deserialize the snapshot again.
+            CloseV8Isolate();
+            CreateV8Isolate(jniEnv, mRuntimeOptions);
+        }
+#endif
+        CreateV8Context(jniEnv, mRuntimeOptions);
+    }
+
     jobject V8Runtime::SafeToExternalV8Value(
         JNIEnv* jniEnv,
         V8Isolate* v8Isolate,

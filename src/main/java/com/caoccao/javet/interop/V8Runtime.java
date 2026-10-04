@@ -3891,6 +3891,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * Resets the V8 context.
      * <p>
      * This is a light-weight and recommended reset.
+     * In Node.js mode, runtimes configured for snapshot creation or restored
+     * from a snapshot require a full isolate reset using the current runtime options.
      *
      * @throws JavetException the javet exception
      * @since 0.7.0

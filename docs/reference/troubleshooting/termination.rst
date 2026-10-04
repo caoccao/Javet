@@ -53,10 +53,11 @@ Without Engine Pool
 
 Please refer to the :extsource3:`source code <../../../src/test/java/com/caoccao/javet/interop/TestV8Guard.java>` for more detail.
 
-How does ``V8Guard`` work internally? It adds itself to a priority queue held by ``V8Host`` which has a daemon thread doing the following:
+How does ``V8Guard`` work internally? It adds itself to a delay queue held by ``V8Host`` which has a daemon thread doing the following:
 
-* For each of the ``V8Runtime`` in the queue.
-* If the end time of a ``V8Runtime`` is before now, terminate that ``V8Runtime``.
+* Wait until the earliest guard in the queue is due.
+* If the end time of that guard is before now and its ``V8Runtime`` is in use, terminate that ``V8Runtime``.
+* Keep an expired guard in the queue and check it again every ``sleepIntervalMillis`` until it is closed, so that scripts running in its scope afterwards are terminated as well.
 
 There is only one daemon thread managing all the V8 runtime instances so that the overhead is fixed and the process is non-blocking.
 

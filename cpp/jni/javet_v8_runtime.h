@@ -192,6 +192,8 @@ namespace Javet {
             v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, TO_NATIVE_INT_64(this)));
         }
 
+        void ResetV8Context(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept;
+
         jobject SafeToExternalV8Value(
             JNIEnv* jniEnv,
             V8Isolate* v8Isolate,
@@ -237,7 +239,8 @@ namespace Javet {
         uv_loop_t uvLoop;
         bool uvLoopInitialized;
         // CommonEnvironmentSetup manages the full lifecycle for snapshot
-        // creation (CreateForSnapshotting) and restoration (CreateFromSnapshot).
+        // creation (CreateForSnapshotting). Restoration is managed separately
+        // through nodeEnvironment/nodeIsolateData/uvLoop and nodeSnapshotData.
         // When set, nodeEnvironment/nodeIsolateData/uvLoop are NOT used;
         // the setup owns the isolate, environment, and event loop internally.
         std::unique_ptr<node::CommonEnvironmentSetup> nodeCommonSetup;

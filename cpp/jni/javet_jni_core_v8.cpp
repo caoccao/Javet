@@ -442,8 +442,7 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_requestGarbageCol
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Context
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mRuntimeOptions) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
-    v8Runtime->CloseV8Context();
-    v8Runtime->CreateV8Context(jniEnv, mRuntimeOptions);
+    v8Runtime->ResetV8Context(jniEnv, mRuntimeOptions);
 }
 
 JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Isolate

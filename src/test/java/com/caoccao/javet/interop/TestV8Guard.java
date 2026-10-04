@@ -20,6 +20,7 @@ import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetTerminatedException;
+import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.values.reference.V8ValueGlobalObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -33,6 +34,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -49,9 +51,8 @@ public class TestV8Guard extends BaseTestJavet {
     public void testAutoTerminateExecution(boolean debugModeEnabled) throws JavetException {
         assertEquals(0, v8Host.getV8GuardDaemon().getV8GuardQueue().size());
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-            try (V8Guard v8Guard = v8Runtime.getGuard(3)) {
+            try (V8Guard v8Guard = v8Runtime.getGuard(100)) {
                 v8Guard.setDebugModeEnabled(debugModeEnabled);
-                assertEquals(1, v8Host.getV8GuardDaemon().getV8GuardQueue().size());
                 v8Runtime.getExecutor("var count = 0; while (true) { ++count; }").executeVoid();
                 fail("Failed to terminate execution.");
             } catch (JavetException e) {
@@ -102,6 +103,79 @@ public class TestV8Guard extends BaseTestJavet {
     }
 
     @Test
+    public void testExpiredGuardAfterNonScriptCalls() throws Exception {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+             V8Guard v8Guard = v8Runtime.getGuard(3, true)) {
+            V8ValueGlobalObject globalObject = v8Runtime.getGlobalObject();
+            globalObject.set("a", 1);
+            TimeUnit.MILLISECONDS.sleep(50);
+            // The expired guard may fire during these calls, but it must stay armed for the script afterwards.
+            final long endTimeMillis = System.currentTimeMillis() + 100;
+            while (System.currentTimeMillis() < endTimeMillis) {
+                assertEquals(1, globalObject.getInteger("a"));
+            }
+            assertThrows(JavetTerminatedException.class, () -> v8Runtime.getExecutor(
+                    "{ const end = Date.now() + 1000; while (Date.now() < end) {} }").executeVoid());
+        }
+    }
+
+    @Test
+    public void testExpiredGuardStaysArmed() throws JavetException {
+        final String codeString = "{ const end = Date.now() + 1000; while (Date.now() < end) {} }";
+        final AtomicInteger terminationCount = new AtomicInteger();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            v8Runtime.setLogger(new JavetDefaultLogger(getClass().getName()) {
+                @Override
+                public void warn(String message) {
+                    if (message.startsWith("Execution was terminated")) {
+                        terminationCount.incrementAndGet();
+                    }
+                    super.warn(message);
+                }
+            });
+            try (V8Guard v8Guard = v8Runtime.getGuard(10, true)) {
+                // The expired guard keeps terminating scripts till it is closed, but only logs once.
+                for (int i = 0; i < 3; ++i) {
+                    assertThrows(JavetTerminatedException.class,
+                            () -> v8Runtime.getExecutor(codeString).executeVoid());
+                }
+                assertEquals(1, terminationCount.get());
+                // Extending the timeout disarms the guard till it expires again.
+                v8Guard.setTimeoutMillis(60000);
+                assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
+                v8Guard.setTimeoutMillis(10);
+                for (int i = 0; i < 2; ++i) {
+                    assertThrows(JavetTerminatedException.class,
+                            () -> v8Runtime.getExecutor(codeString).executeVoid());
+                }
+                assertEquals(2, terminationCount.get());
+            }
+            assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
+        }
+    }
+
+    @Test
+    public void testExpiredIdleGuard() throws Exception {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+             V8Guard v8Guard = v8Runtime.getGuard(3, true)) {
+            TimeUnit.MILLISECONDS.sleep(50);
+            assertThrows(JavetTerminatedException.class, () -> v8Runtime.getExecutor(
+                    "const end = Date.now() + 1000; while (Date.now() < end) {}").executeVoid());
+        }
+    }
+
+    @Test
+    public void testHugeTimeout() throws JavetException {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+             V8Guard v8Guard = v8Runtime.getGuard(Long.MAX_VALUE, true)) {
+            // The end time saturates instead of overflowing into the past.
+            assertEquals(Long.MAX_VALUE, v8Guard.getEndTimeMillis());
+            assertEquals(2, v8Runtime.getExecutor(
+                    "{ const end = Date.now() + 100; while (Date.now() < end) {} } 1 + 1").executeInteger());
+        }
+    }
+
+    @Test
     public void testManualTerminateExecution() throws JavetException {
         final int maxCycle = 3;
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
@@ -146,6 +220,35 @@ public class TestV8Guard extends BaseTestJavet {
             assertTrue(count > 0, "Count should be greater than 0.");
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger(),
                     "V8 runtime should still be able to execute script after being terminated.");
+        }
+    }
+
+    @Test
+    public void testPendingGuardStaysQueued() throws Exception {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+             V8Guard v8Guard = v8Runtime.getGuard(10000, true)) {
+            synchronized (v8Runtime.getCloseLock()) {
+                // The daemon must not dequeue a guard before it is due, so it never waits for this lock.
+                TimeUnit.MILLISECONDS.sleep(50);
+                assertTrue(v8Host.getV8GuardDaemon().getV8GuardQueue().contains(v8Guard));
+            }
+        }
+    }
+
+    @Test
+    public void testSetTimeoutWhileDaemonChecking() throws Exception {
+        // The guard is due right away, but it doesn't terminate anything because the runtime is idle.
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+             V8Guard v8Guard = v8Runtime.getGuard(1, true)) {
+            synchronized (v8Runtime.getCloseLock()) {
+                // Wait until the daemon has dequeued the due guard and is waiting for this lock.
+                runAndWait(5000, 1, () -> v8Host.getV8GuardDaemon().getV8GuardQueue().isEmpty());
+                v8Guard.setTimeoutMillis(60000);
+                assertTrue(v8Host.getV8GuardDaemon().getV8GuardQueue().isEmpty());
+                v8Guard.cancel();
+                v8Guard.setTimeoutMillis(1);
+                assertTrue(v8Host.getV8GuardDaemon().getV8GuardQueue().isEmpty());
+            }
         }
     }
 

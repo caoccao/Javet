@@ -445,6 +445,76 @@ public class TestV8Runtime extends BaseTestJavet {
     }
 
     @Test
+    public void testResetContextWithNodeSnapshotCreation() throws JavetException {
+        if (isNode()) {
+            RuntimeOptions<?> options = v8Host.getJSRuntimeType().getRuntimeOptions();
+            options.setCreateSnapshotEnabled(true);
+            byte[] snapshotBlob;
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                for (int i = 0; i < 3; ++i) {
+                    v8Runtime.getExecutor(
+                            "globalThis.transientValue = 1; const transientBinding = 2;").executeVoid();
+                    v8Runtime.resetContext();
+                    assertEquals("undefined", v8Runtime.getExecutor("typeof transientValue").executeString());
+                    assertEquals("undefined", v8Runtime.getExecutor("typeof transientBinding").executeString());
+                    assertEquals("test.js", v8Runtime.getExecutor(
+                            "require('node:path').basename('/tmp/test.js')").executeString());
+                }
+                // The replacement setup must still be able to create a usable snapshot.
+                v8Runtime.getExecutor("const add = (a, b) => a + b;").executeVoid();
+                snapshotBlob = v8Runtime.createSnapshot();
+                assertNotNull(snapshotBlob);
+                assertTrue(snapshotBlob.length > 0);
+            }
+            options.setCreateSnapshotEnabled(false).setSnapshotBlob(snapshotBlob);
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+                assertEquals("undefined", v8Runtime.getExecutor("typeof transientValue").executeString());
+                assertEquals("undefined", v8Runtime.getExecutor("typeof transientBinding").executeString());
+            }
+            options.setSnapshotBlob(null);
+        }
+    }
+
+    @Test
+    public void testResetContextWithNodeSnapshotRestoration() throws JavetException {
+        if (isNode()) {
+            RuntimeOptions<?> options = v8Host.getJSRuntimeType().getRuntimeOptions();
+            options.setCreateSnapshotEnabled(true);
+            byte[] snapshotBlob;
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                v8Runtime.getExecutor(
+                        "globalThis.snapshotValue = 41; const add = (a, b) => a + b;").executeVoid();
+                snapshotBlob = v8Runtime.createSnapshot();
+                assertNotNull(snapshotBlob);
+                assertTrue(snapshotBlob.length > 0);
+            }
+            options.setCreateSnapshotEnabled(false).setSnapshotBlob(snapshotBlob);
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                assertEquals(41, v8Runtime.getExecutor("snapshotValue").executeInteger());
+                for (int i = 0; i < 3; ++i) {
+                    v8Runtime.getExecutor(
+                            "snapshotValue = 99; globalThis.transientValue = 1;").executeVoid();
+                    v8Runtime.resetContext();
+                    assertEquals(41, v8Runtime.getExecutor("snapshotValue").executeInteger());
+                    assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+                    assertEquals("undefined", v8Runtime.getExecutor("typeof transientValue").executeString());
+                    assertEquals("undefined", v8Runtime.getExecutor("typeof timerValue").executeString());
+                    assertEquals("test.js", v8Runtime.getExecutor(
+                            "require('node:path').basename('/tmp/test.js')").executeString());
+                    // Verify that the recreated Node environment and event loop work.
+                    v8Runtime.getExecutor(
+                            "globalThis.timerValue = 0;" +
+                                    "setTimeout(() => { globalThis.timerValue = add(40, 2); }, 0);").executeVoid();
+                    v8Runtime.await();
+                    assertEquals(42, v8Runtime.getExecutor("timerValue").executeInteger());
+                }
+            }
+            options.setSnapshotBlob(null);
+        }
+    }
+
+    @Test
     public void testResetIsolate() throws JavetException {
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
