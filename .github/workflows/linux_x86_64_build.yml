@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 26.10.0
+  JAVET_NODE_VERSION: 26.13.0
   JAVET_V8_VERSION: 15.5.35.14
   JAVET_VERSION: 6.0.3
   TEMPORAL_VERSION: 0.2.3
@@ -182,7 +182,7 @@ jobs:
         cd node
         git checkout v${{ env.JAVET_NODE_VERSION }}
         deno --allow-all ${{ env.ROOT }}/Javet/scripts/deno/patch_node_build.ts -p ./ --os linux
-        ./configure --enable-static ${{ matrix.node_flag }}
+        ./configure ${{ matrix.node_flag }}
         export CFLAGS="-fPIC -ftls-model=global-dynamic -Wno-return-type"
         export CXXFLAGS="${CFLAGS}"
         export LDFLAGS="${CFLAGS}"

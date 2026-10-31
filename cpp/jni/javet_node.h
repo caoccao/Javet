@@ -147,6 +147,7 @@ namespace perfetto {
 #pragma warning(default: 4996)
 
 #ifdef _WIN32
+#pragma comment(lib, "Bcrypt.lib")
 #pragma comment(lib, "Crypt32.lib")
 #pragma comment(lib, "Dbghelp.lib")
 #pragma comment(lib, "Iphlpapi.lib")
