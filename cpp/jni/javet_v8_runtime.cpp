@@ -284,6 +284,17 @@ namespace Javet {
             LOG_DEBUG("nodeEnvironment.reset() begin");
             nodeEnvironment.reset();
             LOG_DEBUG("nodeEnvironment.reset() end");
+            // A FinalizationRegistry cleanup task must not run the JavaScript finalizers
+            // after the Environment is freed. This removes the registries of this context
+            // from the dirty list so that a task that is still queued on the isolate, which
+            // outlives the context in resetContext(), finds nothing to do. It has to be
+            // called in the context because V8 only cleans up the current context.
+            if (!v8GlobalContext.IsEmpty()) {
+                V8HandleScope v8HandleScope(v8Isolate);
+                auto v8LocalContext = GetV8LocalContext();
+                auto v8ContextScope = GetV8ContextScope(v8LocalContext);
+                v8Isolate->ContextDisposedNotification(v8::ContextDependants::kNoDependants);
+            }
         }
 #endif
         v8GlobalContext.Reset();
@@ -316,13 +327,10 @@ namespace Javet {
             // Isolate must be the last one to be disposed.
             if (v8Isolate != nullptr) {
                 const auto shutdownDeadline = std::chrono::steady_clock::now() + isolateShutdownTimeout;
-                while (v8PlatformPointer->FlushForegroundTasks(v8Isolate)) {
-                    uv_run(&uvLoop, UV_RUN_NOWAIT);
-                    if (std::chrono::steady_clock::now() >= shutdownDeadline) {
-                        LOG_ERROR("Timed out draining Node.js isolate foreground tasks.");
-                        break;
-                    }
-                }
+                // The foreground tasks must not be flushed here. There is no isolate scope,
+                // the Environment is freed and the tasks may run JavaScript that never returns,
+                // e.g. FinalizationRegistry cleanup tasks. DisposeIsolate() discards them in
+                // the same way as node::CommonEnvironmentSetup does.
                 // node::FreeIsolateData is thread-safe.
                 nodeIsolateData.reset();
                 auto isIsolateFinished = std::make_shared<std::atomic_bool>(false);

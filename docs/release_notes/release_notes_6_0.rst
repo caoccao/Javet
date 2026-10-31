@@ -2,6 +2,12 @@
 Release Notes 6.0.x
 ===================
 
+6.0.3
+-----
+
+* Upgraded Node.js to ``v26.13.0`` `(2026-10-28) <https://nodejs.org/en/blog/release/v26.13.0>`_
+* Fixed the JVM crash when closing or resetting a Node.js runtime with pending ``FinalizationRegistry`` cleanup tasks
+
 6.0.2
 -----
 
