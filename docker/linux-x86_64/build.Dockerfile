@@ -13,15 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet-linux-x86_64:6.0.2 -f docker/linux-x86_64/build.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-linux-x86_64:6.0.3 -f docker/linux-x86_64/build.Dockerfile .
 
 # Multi-stage Dockerfile for building Javet on Linux x86_64
 # Based on .github/workflows/linux_x86_64_build.yml
 
 # Build arguments
-ARG JAVET_NODE_VERSION=26.10.0
-ARG JAVET_V8_VERSION=15.5.35.14
-ARG JAVET_VERSION=6.0.2
+ARG JAVET_NODE_VERSION=26.13.0
+ARG JAVET_V8_VERSION=15.7.112.19
+ARG JAVET_VERSION=6.0.3
 ARG TEMPORAL_VERSION=0.1.2
 
 ###########################################
@@ -190,7 +190,7 @@ RUN cd ${ROOT} && \
 # Build Node.js non-i18n
 RUN cd ${ROOT}/node && \
     deno --allow-all ${ROOT}/Javet/scripts/deno/patch_node_build.ts -p ./ --os linux && \
-    ./configure --enable-static --without-intl --v8-enable-temporal-support && \
+    ./configure --without-intl --v8-enable-temporal-support && \
     deno --allow-all ${ROOT}/Javet/scripts/deno/patch_node_build.ts -p ./ --os linux && \
     make -j$(nproc) && \
     mv out out.non-i18n
@@ -198,7 +198,7 @@ RUN cd ${ROOT}/node && \
 # Build Node.js i18n
 RUN cd ${ROOT}/node && \
     deno --allow-all ${ROOT}/Javet/scripts/deno/patch_node_build.ts -p ./ --os linux && \
-    ./configure --enable-static --with-intl=full-icu && \
+    ./configure --with-intl=full-icu && \
     deno --allow-all ${ROOT}/Javet/scripts/deno/patch_node_build.ts -p ./ --os linux && \
     make -j$(nproc) && \
     mv out out.i18n

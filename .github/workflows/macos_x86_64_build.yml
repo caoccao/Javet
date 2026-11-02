@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVET_NODE_VERSION: 26.10.0
-  JAVET_V8_VERSION: 15.5.35.14
-  JAVET_VERSION: 6.0.2
+  JAVET_NODE_VERSION: 26.13.0
+  JAVET_V8_VERSION: 15.7.112.19
+  JAVET_VERSION: 6.0.3
   TEMPORAL_VERSION: 0.2.3
   ROOT: /Users/runner/work/Javet
 
@@ -162,7 +162,7 @@ jobs:
         cd node
         git checkout v${{ env.JAVET_NODE_VERSION }}
         deno --allow-all ${{ env.ROOT }}/Javet/scripts/deno/patch_node_build.ts -p ./ --os macos
-        ./configure --enable-static ${{ matrix.node_flag }}
+        ./configure ${{ matrix.node_flag }}
         make -j4
         mv out out.${{ matrix.name }}
 

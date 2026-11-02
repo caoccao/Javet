@@ -86,6 +86,11 @@ public class TestNodeRuntime extends BaseTestJavet {
         }
     }
 
+    protected void registerFinalizers(NodeRuntime runtime, String finalizer) throws JavetException {
+        runtime.getExecutor("globalThis.registry = new FinalizationRegistry(" + finalizer + ");\n" +
+                "for (let i = 0; i < 1000; i++) registry.register({}, i);").executeVoid();
+    }
+
     @Test
     public void testAwaitRunNoWait() {
         try {
@@ -187,6 +192,103 @@ public class TestNodeRuntime extends BaseTestJavet {
         assertFalse(nodeRuntime.getGlobalObject().getBoolean("a"));
     }
 
+    /**
+     * Finalizers run when the event loop is drained.
+     */
+    @Test
+    public void testFinalizationRegistryAwait() throws JavetException {
+        try (NodeRuntime runtime = v8Host.createV8Runtime(new NodeRuntimeOptions().setBuiltInModuleResolution(true))) {
+            runtime.getExecutor("globalThis.finalized = 0;").executeVoid();
+            registerFinalizers(runtime, "() => { ++globalThis.finalized; }");
+            runtime.lowMemoryNotification();
+            runtime.await(V8AwaitMode.RunNoWait);
+            assertTrue(runtime.getExecutor("globalThis.finalized").executeInteger() > 0);
+        }
+    }
+
+    /**
+     * Issue 572: the GC is triggered by the allocation instead of lowMemoryNotification().
+     */
+    @Test
+    public void testFinalizationRegistryCloseAfterAllocationPressure() throws JavetException {
+        NodeRuntime closedRuntime;
+        try (NodeRuntime runtime = v8Host.createV8Runtime(new NodeRuntimeOptions().setBuiltInModuleResolution(true))) {
+            closedRuntime = runtime;
+            registerFinalizers(runtime, "() => {}");
+            runtime.getExecutor("let keep = [];\n" +
+                    "for (let i = 0; i < 400; i++) {\n" +
+                    "  keep.push(new Array(100000).fill({}));\n" +
+                    "  if (keep.length > 8) keep.shift();\n" +
+                    "}\n" +
+                    "keep = null;").executeVoid();
+            runtime.setStopping(true);
+        }
+        assertTrue(closedRuntime.isClosed());
+    }
+
+    /**
+     * Issue 572: terminating the execution doesn't remove the pending cleanup task.
+     */
+    @Test
+    public void testFinalizationRegistryCloseAfterTerminateExecution() throws JavetException {
+        NodeRuntime closedRuntime;
+        try (NodeRuntime runtime = v8Host.createV8Runtime(new NodeRuntimeOptions().setBuiltInModuleResolution(true))) {
+            closedRuntime = runtime;
+            registerFinalizers(runtime, "() => {}");
+            runtime.lowMemoryNotification();
+            runtime.terminateExecution();
+            runtime.setStopping(true);
+        }
+        assertTrue(closedRuntime.isClosed());
+    }
+
+    /**
+     * Issue 572: closing the runtime with a pending cleanup task and the event loop skipped crashes the JVM.
+     */
+    @Test
+    public void testFinalizationRegistryCloseWhileStopping() throws JavetException {
+        NodeRuntime closedRuntime;
+        try (NodeRuntime runtime = v8Host.createV8Runtime(new NodeRuntimeOptions().setBuiltInModuleResolution(true))) {
+            closedRuntime = runtime;
+            registerFinalizers(runtime, "() => {}");
+            runtime.lowMemoryNotification();
+            runtime.setStopping(true);
+        }
+        assertTrue(closedRuntime.isClosed());
+    }
+
+    /**
+     * Issue 572: a finalizer that never returns must not block the runtime from being closed.
+     */
+    @Test
+    public void testFinalizationRegistryCloseWithStuckFinalizer() throws JavetException {
+        NodeRuntime closedRuntime;
+        try (NodeRuntime runtime = v8Host.createV8Runtime(new NodeRuntimeOptions().setBuiltInModuleResolution(true))) {
+            closedRuntime = runtime;
+            registerFinalizers(runtime, "() => { while (true) {} }");
+            runtime.lowMemoryNotification();
+            runtime.setStopping(true);
+        }
+        assertTrue(closedRuntime.isClosed());
+    }
+
+    /**
+     * Issue 572: the cleanup task outlives the Environment on the same isolate,
+     * so it must not call Node.js API in the old context after the context is reset.
+     */
+    @Test
+    public void testFinalizationRegistryResetContext() throws JavetException {
+        try (NodeRuntime runtime = v8Host.createV8Runtime(new NodeRuntimeOptions().setBuiltInModuleResolution(true))) {
+            registerFinalizers(runtime, "() => { process.hrtime(); console.log('finalizer ran'); }");
+            runtime.lowMemoryNotification();
+            runtime.setStopping(true);
+            runtime.resetContext();
+            runtime.setStopping(false);
+            runtime.await(V8AwaitMode.RunNoWait);
+            assertEquals(2, runtime.getExecutor("1 + 1").executeInteger());
+        }
+    }
+
     @Test
     public void testModuleAny() throws JavetException {
         NodeModuleAny nodeModuleFS = nodeRuntime.getNodeModule("fs", NodeModuleAny.class);
@@ -212,7 +314,7 @@ public class TestNodeRuntime extends BaseTestJavet {
         Path path4 = nodeModuleProcess.getWorkingDirectory().toPath();
         assertNotEquals(path1.toAbsolutePath().toString(), path3.toAbsolutePath().toString());
         assertEquals(path1.toAbsolutePath().toString(), path4.toAbsolutePath().toString());
-        assertEquals("v26.10.0", nodeModuleProcess.getVersion());
+        assertEquals("v26.13.0", nodeModuleProcess.getVersion());
     }
 
     @Test

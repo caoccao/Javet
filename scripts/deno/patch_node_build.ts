@@ -24,7 +24,7 @@
  *    `deno run --allow-read --allow-write patch_node_build.ts -p root_path_to_node_js --os <os> [--i18n]`
  * 4. Configure and build Node.js.
  *
- *    Linux   ./configure --enable-static --without-intl --v8-enable-temporal-support
+ *    Linux   ./configure --without-intl --v8-enable-temporal-support
  *            export CFLAGS="-fPIC -ftls-model=global-dynamic -Wno-return-type"
  *            export CXXFLAGS="${CFLAGS}"
  *            export LDFLAGS="${CFLAGS}"
@@ -35,10 +35,10 @@
  *            generated make files no longer need to be patched for position
  *            independent code.
  *
- *    Mac OS  ./configure --enable-static --without-intl --v8-enable-temporal-support
+ *    Mac OS  ./configure --without-intl --v8-enable-temporal-support
  *            make -j4
  *
- *    Windows vcbuild.bat static without-intl v8temporal vs2026
+ *    Windows vcbuild.bat without-intl v8temporal vs2026
  *
  *    Android ./android-configure <ndk> <sdk_version> <arch>
  *            make -j4
@@ -111,70 +111,6 @@ interface Patch {
   readonly replacements: readonly Replacement[];
 }
 
-const ALL_OS: readonly OS[] = Object.values(OS);
-
-/*
- * V8 reads zoneinfo64.res through ICU4C's udata when it has ICU, and links a
- * baked-in copy of that resource when it doesn't. Only V8's GN build knows how
- * to produce that copy (the make_temporal_zoneinfo_cpp action), so a gyp build
- * without ICU fails to link on zoneinfo64_static_data, and configure.py turns
- * Temporal off for --with-intl=none. Port the action so Temporal survives a
- * non-i18n build. The action is inert for an i18n build.
- * @see: deps/v8/BUILD.gn (make_temporal_zoneinfo_cpp)
- */
-const V8_GYP_TEMPORAL_ZONEINFO: Patch = {
-  file: "tools/v8_gypfiles/v8.gyp",
-  reason: "Bake zoneinfo64.res in so that a non-i18n build keeps V8 Temporal",
-  os: ALL_OS,
-  replacements: [
-    {
-      from: `            ['node_shared_temporal_capi=="false"', {
-              'dependencies': [
-                '../../deps/crates/crates.gyp:temporal_capi',
-              ],
-            }],
-          ],
-`,
-      to: `            ['node_shared_temporal_capi=="false"', {
-              'dependencies': [
-                '../../deps/crates/crates.gyp:temporal_capi',
-              ],
-            }],
-            ['v8_enable_i18n_support==0', {
-              'actions': [
-                {
-                  'action_name': 'make_temporal_zoneinfo_cpp',
-                  # The first input is the file the MSBuild CustomBuild item is
-                  # attached to, and MSBuild passes a .res item on to the
-                  # librarian, which rejects it as \`not a COFF object\`. Keep the
-                  # script first so that the resource stays an extra input.
-                  'inputs': [
-                    '<(V8_ROOT)/tools/include-file-as-bytes.py',
-                    '../../deps/crates/vendor/zoneinfo64-v0_3/src/data/zoneinfo64.res',
-                  ],
-                  'outputs': [
-                    '<(SHARED_INTERMEDIATE_DIR)/src/builtins/builtins-temporal-zoneinfo64-data.cc',
-                  ],
-                  'action': [
-                    '<(python)',
-                    '<(V8_ROOT)/tools/include-file-as-bytes.py',
-                    '../../deps/crates/vendor/zoneinfo64-v0_3/src/data/zoneinfo64.res',
-                    '<@(_outputs)',
-                    'zoneinfo64_static_data',
-                  ],
-                },
-              ],
-              'sources': [
-                '<(SHARED_INTERMEDIATE_DIR)/src/builtins/builtins-temporal-zoneinfo64-data.cc',
-              ],
-            }],
-          ],
-`,
-      applied: `'action_name': 'make_temporal_zoneinfo_cpp',`,
-    },
-  ],
-};
-
 /*
  * All static Node.js libraries are <thin> libraries, which Javet cannot link.
  * The condition is written for SmartOS only, so widen it to every static
@@ -237,12 +173,11 @@ const V8_TLS_MODEL_LOCAL_HEAP: Patch = {
  * toolchain has to be pointed at the system GCC. CC_host carries a second
  * meaning: gyp's CrossCompileRequested() keys off it, and that is what splits
  * the build into a host and a target toolset. v8_target_arch has to be the
- * Node.js CPU name rather than the Android one, and Javet needs a static
- * non-i18n build.
+ * Node.js CPU name rather than the Android one.
  */
 const ANDROID_CONFIGURE_PY: Patch = {
   file: "android_configure.py",
-  reason: "Set the host toolchain, v8_target_arch and Javet's configure flags",
+  reason: "Set the host toolchain and v8_target_arch",
   os: [OS.Android],
   replacements: [
     {
@@ -503,13 +438,13 @@ function androidConfigurePyIntl(i18n: boolean): Patch {
   const intl = i18n ? "full-icu" : "none";
   return {
     file: "android_configure.py",
-    reason: `Configure a static --with-intl=${intl} build with Temporal`,
+    reason: `Configure a --with-intl=${intl} build with Temporal`,
     os: [OS.Android],
     i18n,
     replacements: [
       {
         from: `    os.system("./configure --dest-cpu=" + DEST_CPU + " --dest-os=android --openssl-no-asm --cross-compiling")`,
-        to: `    os.system("./configure --dest-cpu=" + DEST_CPU + " --dest-os=android --openssl-no-asm --cross-compiling --enable-static --with-intl=${intl} --v8-enable-temporal-support")`,
+        to: `    os.system("./configure --dest-cpu=" + DEST_CPU + " --dest-os=android --openssl-no-asm --cross-compiling --with-intl=${intl} --v8-enable-temporal-support")`,
       },
     ],
   };
@@ -636,7 +571,6 @@ const ANDROID_TRAP_HANDLER: Patch = {
 };
 
 const PATCHES: readonly Patch[] = [
-  V8_GYP_TEMPORAL_ZONEINFO,
   COMMON_GYPI_STATIC_LIBRARY,
   CONFIGURE_PY_GDBJIT,
   V8_TLS_MODEL,
