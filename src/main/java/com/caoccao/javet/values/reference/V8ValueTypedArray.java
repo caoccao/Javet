@@ -27,31 +27,41 @@ import java.util.Objects;
 
 /**
  * The type V8 value typed array.
- * The typical way of manipulating the typed array is as following.
- * 1. Get array buffer and apply try-with-resource.
- * 2. Create the value array by length.
- * 3. Fill the value array.
+ * <p>
+ * The {@code from*()} and {@code to*()} methods are the automatic data extraction with the default rules,
+ * which are also applied by the object converter. They copy the whole array buffer of the typed array,
+ * regardless of the byte offset and the byte length of the typed array.
+ * The {@code from*()} methods return false if the length of the given array
+ * doesn't match the array buffer.
  * <p>
  * E.g.:
  * <pre>
- * try (V8ValueArrayBuffer v8ValueArrayBuffer = v8ValueTypedArray.getArrayBuffer()) {
- *     long[] longs = new long[v8ValueArrayBuffer.getLength()];
- *     v8ValueArrayBuffer.toLongs(longs);
+ * try (V8ValueArrayBuffer v8ValueArrayBuffer = v8ValueTypedArray.getBuffer()) {
+ *     long[] longs = v8ValueArrayBuffer.toLongs();
  *     // ...
+ *     v8ValueArrayBuffer.fromLongs(longs);
  * }
  * </pre>
  * <p>
- * Or, play with ByteBuffer directly.
- * 1. Get array buffer and apply try-with-resource.
- * 2. Get native ByteBuffer.
- * 3. Set order of the native ByteBuffer to native order.
- * 4. Get typed buffer by type.
- * 5. Read from or write to the typed buffer.
+ * Other needs, e.g. a typed array that only covers a part of its array buffer
+ * (created by {@code subarray()} or a small Node.js {@code Buffer} in a shared pool),
+ * go to the manual data extraction via the native ByteBuffer.
+ * <ol>
+ * <li>Get array buffer and apply try-with-resource.</li>
+ * <li>Duplicate the native ByteBuffer, which covers the whole array buffer.</li>
+ * <li>Set the position and the limit of the duplicated ByteBuffer by the byte offset and the byte length.</li>
+ * <li>Slice the duplicated ByteBuffer and set its order to native order.</li>
+ * <li>Get typed buffer by type.</li>
+ * <li>Read from or write to the typed buffer.</li>
+ * </ol>
  * <p>
  * E.g:
  * <pre>
- * try (V8ValueArrayBuffer v8ValueArrayBuffer = v8ValueTypedArray.getArrayBuffer()) {
- *     LongBuffer longBuffer = v8ValueArrayBuffer.getByteBuffer().order(ByteOrder.nativeOrder()).asLongBuffer();
+ * try (V8ValueArrayBuffer v8ValueArrayBuffer = v8ValueTypedArray.getBuffer()) {
+ *     ByteBuffer byteBuffer = v8ValueArrayBuffer.getByteBuffer().duplicate();
+ *     byteBuffer.position(v8ValueTypedArray.getByteOffset());
+ *     byteBuffer.limit(v8ValueTypedArray.getByteOffset() + v8ValueTypedArray.getByteLength());
+ *     LongBuffer longBuffer = byteBuffer.slice().order(ByteOrder.nativeOrder()).asLongBuffer();
  *     // ...
  * }
  * </pre>
