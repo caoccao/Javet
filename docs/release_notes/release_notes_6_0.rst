@@ -20,6 +20,7 @@ Release Notes 6.0.x
 * Fixed the known issue that ``getNearHeapLimitCallback()``, ``setNearHeapLimitCallback()`` break in Node.js mode
 * Fixed ``JavetEnginePool`` ignoring the snapshot blob in ``JavetEngineConfig`` in Node.js mode
 * Fixed ``removeV8Modules(true)`` in ``V8Runtime`` throwing ``ConcurrentModificationException`` when more than one module is cached
+* Fixed some bugs in ``splice()`` in ``JavetProxyPluginList`` and ``toSpliced()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList``
 
 6.0.3
 -----

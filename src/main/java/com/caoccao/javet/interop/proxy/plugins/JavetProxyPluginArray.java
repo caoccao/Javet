@@ -1726,29 +1726,26 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
                         if (startIndex < 0) {
                             startIndex = 0;
                         }
-                        if (startIndex >= length) {
-                            v8Runtime.throwError(
-                                    V8ValueErrorType.RangeError,
-                                    V8ErrorTemplate.rangeErrorStartIsOutOfRange(startIndex));
+                        if (startIndex > length) {
+                            startIndex = length;
+                        }
+                        int deleteCount;
+                        // An omitted skipCount removes all from start. An explicit undefined is 0.
+                        if (v8Values.length < 2) {
+                            deleteCount = length - startIndex;
                         } else {
-                            int deleteCount;
-                            if (v8Values.length < 2 || v8Values[1] == null
-                                    || v8Values[1].isUndefined()) {
-                                deleteCount = length - startIndex;
-                            } else {
-                                deleteCount = V8ValueUtils.asInt(v8Values, 1);
+                            deleteCount = V8ValueUtils.asInt(v8Values, 1);
+                        }
+                        deleteCount = Math.min(deleteCount, length - startIndex);
+                        if (deleteCount > 0) {
+                            results.subList(startIndex, startIndex + deleteCount).clear();
+                        }
+                        if (v8Values.length > 2) {
+                            List<Object> toBeAddedList = new ArrayList<>();
+                            for (int i = 2; i < v8Values.length; ++i) {
+                                toBeAddedList.add(v8Runtime.toObject(v8Values[i]));
                             }
-                            deleteCount = Math.min(deleteCount, length - startIndex);
-                            if (deleteCount > 0) {
-                                results.subList(startIndex, startIndex + deleteCount).clear();
-                            }
-                            if (v8Values.length > 2) {
-                                List<Object> toBeAddedList = new ArrayList<>();
-                                for (int i = 2; i < v8Values.length; ++i) {
-                                    toBeAddedList.add(v8Runtime.toObject(v8Values[i]));
-                                }
-                                results.addAll(startIndex, toBeAddedList);
-                            }
+                            results.addAll(startIndex, toBeAddedList);
                         }
                     }
                     return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());

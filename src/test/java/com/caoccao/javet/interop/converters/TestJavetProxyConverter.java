@@ -627,6 +627,24 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[1][1,2]",
                     v8Runtime.getExecutor("JSON.stringify(intArray.toSpliced(1))+JSON.stringify(intArray)").executeString());
+            // toSpliced() with an explicit undefined deleteCount should remove nothing
+            assertEquals(
+                    "[1,3,2][1,2]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.toSpliced(1,undefined,3))+JSON.stringify(intArray)").executeString());
+            // toSpliced() with start at or beyond the length should append
+            assertEquals(
+                    "[1,2,3][1,2]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.toSpliced(intArray.length,0,3))+JSON.stringify(intArray)").executeString());
+            assertEquals(
+                    "[1,2,3][1,2]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.toSpliced(100,1,3))+JSON.stringify(intArray)").executeString());
+            assertArrayEquals(new int[]{1, 2}, intArray);
+            // toSpliced() should insert into an empty array
+            v8Runtime.getGlobalObject().set("emptyArray", new String[0]);
+            assertEquals(
+                    "[\"a\"][]",
+                    v8Runtime.getExecutor("JSON.stringify(emptyArray.toSpliced(0,0,'a'))+JSON.stringify(emptyArray)").executeString());
+            v8Runtime.getGlobalObject().delete("emptyArray");
             // Symbol.iterator
             assertEquals(
                     "[1,2]",
@@ -1471,6 +1489,26 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"b\",\"c\"][\"a\"]",
                     v8Runtime.getExecutor("JSON.stringify(list.splice(1))+JSON.stringify(list)").executeString());
+            // splice() with an explicit undefined deleteCount should remove nothing
+            v8Runtime.getExecutor("list.clear(); list.push('a', 'b', 'c')").executeVoid();
+            assertEquals(
+                    "[][\"a\",\"x\",\"b\",\"c\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.splice(1,undefined,'x'))+JSON.stringify(list)").executeString());
+            assertEquals(SimpleList.of("a", "x", "b", "c"), list);
+            // splice() with start at or beyond the length should append
+            assertEquals(
+                    "[][\"a\",\"x\",\"b\",\"c\",\"y\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.splice(list.length,0,'y'))+JSON.stringify(list)").executeString());
+            assertEquals(
+                    "[][\"a\",\"x\",\"b\",\"c\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.splice(100,1,'z'))+JSON.stringify(list)").executeString());
+            assertEquals(SimpleList.of("a", "x", "b", "c", "y", "z"), list);
+            // splice() should insert into an empty list
+            v8Runtime.getExecutor("list.clear()").executeVoid();
+            assertEquals(
+                    "[][\"x\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.splice(0,0,'x'))+JSON.stringify(list)").executeString());
+            assertEquals(SimpleList.of("x"), list);
             v8Runtime.getExecutor("list.clear(); list.push('x', 'y', 'z')").executeVoid();
             // sort()
             assertEquals("[]", v8Runtime.getExecutor("list.clear(); JSON.stringify(list.sort())").executeString());
@@ -1508,6 +1546,23 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"x\"][\"x\",\"y\",\"z\"]",
                     v8Runtime.getExecutor("JSON.stringify(list.toSpliced(1))+JSON.stringify(list)").executeString());
+            // toSpliced() with an explicit undefined deleteCount should remove nothing
+            assertEquals(
+                    "[\"x\",\"a\",\"y\",\"z\"][\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.toSpliced(1,undefined,'a'))+JSON.stringify(list)").executeString());
+            // toSpliced() with start at or beyond the length should append
+            assertEquals(
+                    "[\"x\",\"y\",\"z\",\"a\"][\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.toSpliced(list.length,0,'a'))+JSON.stringify(list)").executeString());
+            assertEquals(
+                    "[\"x\",\"y\",\"z\",\"a\"][\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.toSpliced(100,1,'a'))+JSON.stringify(list)").executeString());
+            // toSpliced() should insert into an empty list
+            assertEquals(
+                    "[\"a\"][]",
+                    v8Runtime.getExecutor("list.clear(); JSON.stringify(list.toSpliced(0,0,'a'))+JSON.stringify(list)").executeString());
+            assertEquals(SimpleList.of(), list);
+            v8Runtime.getExecutor("list.push('x', 'y', 'z')").executeVoid();
             // Symbol.iterator
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",
