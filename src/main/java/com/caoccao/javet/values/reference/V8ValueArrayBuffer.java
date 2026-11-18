@@ -26,6 +26,27 @@ import java.util.Objects;
 
 /**
  * The type V8 value ArrayBuffer, representing a JavaScript ArrayBuffer object.
+ * <p>
+ * The {@code from*()} and {@code to*()} methods copy the whole ArrayBuffer through the byte buffer
+ * returned by {@link #getByteBuffer()} as is. They do no extra work on the position, the limit
+ * or the byte order of the byte buffer. Managing the byte buffer is the caller's responsibility.
+ * <ul>
+ * <li>All of them start at the current position of the byte buffer. They expect the position to be 0
+ * and the limit to be the capacity.</li>
+ * <li>{@link #fromBytes(byte[])} and {@link #toBytes()} advance the position to the capacity.
+ * Rewind the byte buffer before calling any {@code from*()} or {@code to*()} method again
+ * on the same instance.</li>
+ * <li>The other {@code from*()} and {@code to*()} methods don't advance the position,
+ * but set the byte order of the byte buffer to {@link #getByteOrder()}.</li>
+ * </ul>
+ * <p>
+ * E.g.:
+ * <pre>
+ * byte[] bytes = v8ValueArrayBuffer.toBytes();
+ * // ...
+ * v8ValueArrayBuffer.getByteBuffer().rewind();
+ * v8ValueArrayBuffer.fromBytes(bytes);
+ * </pre>
  */
 public class V8ValueArrayBuffer extends V8ValueObject {
     /**
@@ -61,6 +82,9 @@ public class V8ValueArrayBuffer extends V8ValueObject {
 
     /**
      * Copies the given byte array into this ArrayBuffer.
+     * <p>
+     * It advances the position of the byte buffer to the capacity.
+     * Rewinding the byte buffer before the next copy is the caller's responsibility.
      *
      * @param bytes the byte array to copy from
      * @return true if the bytes were successfully copied, false otherwise
@@ -188,6 +212,9 @@ public class V8ValueArrayBuffer extends V8ValueObject {
 
     /**
      * Converts the ArrayBuffer contents to a byte array.
+     * <p>
+     * It advances the position of the byte buffer to the capacity.
+     * Rewinding the byte buffer before the next copy is the caller's responsibility.
      *
      * @return the byte array
      */
