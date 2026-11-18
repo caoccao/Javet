@@ -53,6 +53,78 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8Runtime extends BaseTestJavet {
     /**
+     * Assert the reset removes the GC callbacks and the microtasks completed callbacks,
+     * and the callbacks added after the reset are registered to the native isolate again.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param isolateReset true : reset the isolate, false : reset the context
+     */
+    private void assertResetRemovesCallbacks(V8Runtime v8Runtime, boolean isolateReset) throws JavetException {
+        AtomicInteger gcEpilogueCounter1 = new AtomicInteger();
+        AtomicInteger gcEpilogueCounter2 = new AtomicInteger();
+        AtomicInteger gcPrologueCounter1 = new AtomicInteger();
+        AtomicInteger gcPrologueCounter2 = new AtomicInteger();
+        AtomicInteger microtasksCompletedCounter1 = new AtomicInteger();
+        AtomicInteger microtasksCompletedCounter2 = new AtomicInteger();
+        IJavetGCCallback gcEpilogueCallback1 = (v8GCTypes, v8GCCallbackFlags) -> gcEpilogueCounter1.incrementAndGet();
+        IJavetGCCallback gcEpilogueCallback2 = (v8GCTypes, v8GCCallbackFlags) -> gcEpilogueCounter2.incrementAndGet();
+        IJavetGCCallback gcPrologueCallback1 = (v8GCTypes, v8GCCallbackFlags) -> gcPrologueCounter1.incrementAndGet();
+        IJavetGCCallback gcPrologueCallback2 = (v8GCTypes, v8GCCallbackFlags) -> gcPrologueCounter2.incrementAndGet();
+        IJavetMicrotasksCompletedCallback microtasksCompletedCallback1 = microtasksCompletedCounter1::incrementAndGet;
+        IJavetMicrotasksCompletedCallback microtasksCompletedCallback2 = microtasksCompletedCounter2::incrementAndGet;
+        // The callbacks are called before the reset.
+        v8Runtime.addGCEpilogueCallback(gcEpilogueCallback1);
+        v8Runtime.addGCPrologueCallback(gcPrologueCallback1);
+        v8Runtime.addMicrotasksCompletedCallback(microtasksCompletedCallback1);
+        v8Runtime.lowMemoryNotification();
+        v8Runtime.performMicrotaskCheckpoint();
+        assertTrue(gcEpilogueCounter1.get() > 0);
+        assertTrue(gcPrologueCounter1.get() > 0);
+        assertTrue(microtasksCompletedCounter1.get() > 0);
+        // The reset removes the callbacks.
+        if (isolateReset) {
+            v8Runtime.resetIsolate();
+        } else {
+            v8Runtime.resetContext();
+        }
+        assertTrue(v8Runtime.gcEpilogueCallbacks.isEmpty());
+        assertTrue(v8Runtime.gcPrologueCallbacks.isEmpty());
+        assertTrue(v8Runtime.microtasksCompletedCallbacks.isEmpty());
+        final int gcEpilogueCount1 = gcEpilogueCounter1.get();
+        final int gcPrologueCount1 = gcPrologueCounter1.get();
+        final int microtasksCompletedCount1 = microtasksCompletedCounter1.get();
+        v8Runtime.lowMemoryNotification();
+        v8Runtime.performMicrotaskCheckpoint();
+        assertEquals(gcEpilogueCount1, gcEpilogueCounter1.get());
+        assertEquals(gcPrologueCount1, gcPrologueCounter1.get());
+        assertEquals(microtasksCompletedCount1, microtasksCompletedCounter1.get());
+        // The callbacks added after the reset are called.
+        v8Runtime.addGCEpilogueCallback(gcEpilogueCallback2);
+        v8Runtime.addGCPrologueCallback(gcPrologueCallback2);
+        v8Runtime.addMicrotasksCompletedCallback(microtasksCompletedCallback2);
+        v8Runtime.lowMemoryNotification();
+        v8Runtime.performMicrotaskCheckpoint();
+        assertTrue(gcEpilogueCounter2.get() > 0);
+        assertTrue(gcPrologueCounter2.get() > 0);
+        assertTrue(microtasksCompletedCounter2.get() > 0);
+        assertEquals(gcEpilogueCount1, gcEpilogueCounter1.get());
+        assertEquals(gcPrologueCount1, gcPrologueCounter1.get());
+        assertEquals(microtasksCompletedCount1, microtasksCompletedCounter1.get());
+        // The callbacks added after the reset can be removed.
+        v8Runtime.removeGCEpilogueCallback(gcEpilogueCallback2);
+        v8Runtime.removeGCPrologueCallback(gcPrologueCallback2);
+        v8Runtime.removeMicrotasksCompletedCallback(microtasksCompletedCallback2);
+        final int gcEpilogueCount2 = gcEpilogueCounter2.get();
+        final int gcPrologueCount2 = gcPrologueCounter2.get();
+        final int microtasksCompletedCount2 = microtasksCompletedCounter2.get();
+        v8Runtime.lowMemoryNotification();
+        v8Runtime.performMicrotaskCheckpoint();
+        assertEquals(gcEpilogueCount2, gcEpilogueCounter2.get());
+        assertEquals(gcPrologueCount2, gcPrologueCounter2.get());
+        assertEquals(microtasksCompletedCount2, microtasksCompletedCounter2.get());
+    }
+
+    /**
      * Create Node.js snapshot blobs that Node.js rejects without aborting the process.
      *
      * @param snapshotBlob the valid snapshot blob
@@ -425,6 +497,57 @@ public class TestV8Runtime extends BaseTestJavet {
         }
     }
 
+    @Test
+    public void testNearHeapLimitCallbackWithReplacement() throws JavetException {
+        if (isV8()) {
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+                MockNearHeapLimitCallback callback1 = new MockNearHeapLimitCallback();
+                MockNearHeapLimitCallback callback2 = new MockNearHeapLimitCallback();
+                v8Runtime.setNearHeapLimitCallback(callback1);
+                // V8 aborts the process if the native callback is registered again.
+                v8Runtime.setNearHeapLimitCallback(callback2);
+                assertEquals(callback2, v8Runtime.getNearHeapLimitCallback());
+                v8Runtime.getExecutor("[[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()]]").executeVoid();
+                v8Runtime.setNearHeapLimitCallback(null);
+                assertFalse(callback1.isCallbackCalled());
+                assertFalse(callback1.isGetDefaultHeapLimitCalled());
+                assertTrue(callback2.isCallbackCalled());
+                assertTrue(callback2.isGetDefaultHeapLimitCalled());
+                assertNull(v8Runtime.getNearHeapLimitCallback());
+            }
+        }
+    }
+
+    @Test
+    public void testNearHeapLimitCallbackWithReset() throws JavetException {
+        if (isV8()) {
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+                MockNearHeapLimitCallback callback = new MockNearHeapLimitCallback();
+                // resetContext() keeps the isolate, while resetIsolate() recreates it.
+                for (boolean isolateReset : new boolean[]{false, true}) {
+                    // Setting the same callback after a reset registers the native callback again.
+                    // V8 aborts the process if the previous reset didn't unregister the native callback.
+                    v8Runtime.setNearHeapLimitCallback(callback);
+                    assertEquals(callback, v8Runtime.getNearHeapLimitCallback());
+                    callback.setGetDefaultHeapLimitCalled(false);
+                    if (isolateReset) {
+                        v8Runtime.resetIsolate();
+                    } else {
+                        v8Runtime.resetContext();
+                    }
+                    assertTrue(callback.isGetDefaultHeapLimitCalled());
+                    assertNull(v8Runtime.getNearHeapLimitCallback());
+                }
+                // The same callback is called by the new isolate.
+                v8Runtime.setNearHeapLimitCallback(callback);
+                v8Runtime.getExecutor("[[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()]]").executeVoid();
+                v8Runtime.setNearHeapLimitCallback(null);
+                assertTrue(callback.isCallbackCalled());
+                assertNull(v8Runtime.getNearHeapLimitCallback());
+            }
+        }
+    }
+
     @ParameterizedTest
     @EnumSource(V8RuntimeTerminationMode.class)
     public void testNearHeapLimitCallbackWithTerminateExecution(V8RuntimeTerminationMode mode) {
@@ -670,6 +793,24 @@ public class TestV8Runtime extends BaseTestJavet {
                 v8Runtime.resetIsolate();
                 assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
             }
+        }
+    }
+
+    @Test
+    public void testResetWithCallbacks() throws JavetException {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            assertResetRemovesCallbacks(v8Runtime, false);
+            assertResetRemovesCallbacks(v8Runtime, true);
+        }
+        if (isNode()) {
+            // resetContext() recreates the isolate of a Node.js snapshot runtime.
+            RuntimeOptions<?> options = v8Host.getJSRuntimeType().getRuntimeOptions();
+            options.setSnapshotBlob(createNodeSnapshotBlob());
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                assertResetRemovesCallbacks(v8Runtime, false);
+                assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+            }
+            options.setSnapshotBlob(null);
         }
     }
 

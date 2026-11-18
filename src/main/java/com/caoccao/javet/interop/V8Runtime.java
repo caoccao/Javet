@@ -3611,6 +3611,37 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Remove all callbacks, including the GC callbacks, the microtasks completed callbacks
+     * and the near heap limit callback.
+     * <p>
+     * The native callbacks are unregistered from the current isolate before the Java callbacks are cleared,
+     * so that the callbacks added later are registered to the native isolate again.
+     *
+     * @since 6.0.4
+     */
+    void removeAllCallbacks() {
+        synchronized (gcEpilogueCallbacks) {
+            if (!gcEpilogueCallbacks.isEmpty()) {
+                v8Native.unregisterGCEpilogueCallback(handle);
+                gcEpilogueCallbacks.clear();
+            }
+        }
+        synchronized (gcPrologueCallbacks) {
+            if (!gcPrologueCallbacks.isEmpty()) {
+                v8Native.unregisterGCPrologueCallback(handle);
+                gcPrologueCallbacks.clear();
+            }
+        }
+        synchronized (microtasksCompletedCallbacks) {
+            if (!microtasksCompletedCallbacks.isEmpty()) {
+                v8Native.unregisterMicrotasksCompletedCallback(handle);
+                microtasksCompletedCallbacks.clear();
+            }
+        }
+        setNearHeapLimitCallback(null);
+    }
+
+    /**
      * Remove all references.
      *
      * @throws JavetException the javet exception
@@ -3894,6 +3925,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * In Node.js mode, runtimes configured for snapshot creation or restored
      * from a snapshot require a full isolate reset using the current runtime options.
      * <p>
+     * All the callbacks, including the GC callbacks, the microtasks completed callbacks
+     * and the near heap limit callback, are removed. Add them again after the reset if they are still needed.
+     * <p>
      * If the replacement cannot be created, e.g. the snapshot blob in the runtime options
      * is invalid, the runtime is closed and {@link JavetError#RuntimeResetFailure} is thrown.
      *
@@ -3903,6 +3937,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public void resetContext() throws JavetException {
         if (!isClosed()) {
             removeAllReferences();
+            // The callbacks are removed even if the isolate is kept, so that every reset behaves the same.
+            removeAllCallbacks();
             if (!v8Native.resetV8Context(handle, runtimeOptions)) {
                 // The native isolate and context are disposed, so the runtime cannot be used any more.
                 close(true);
@@ -3916,6 +3952,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * <p>
      * This is a heavy reset. Please avoid using it in performance sensitive scenario.
      * <p>
+     * All the callbacks, including the GC callbacks, the microtasks completed callbacks
+     * and the near heap limit callback, are removed. Add them again after the reset if they are still needed.
+     * <p>
      * If the replacement cannot be created, e.g. the snapshot blob in the runtime options
      * is invalid, the runtime is closed and {@link JavetError#RuntimeResetFailure} is thrown.
      *
@@ -3926,6 +3965,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public void resetIsolate() throws JavetException {
         if (!isClosed()) {
             removeAllReferences();
+            // The new isolate has no native callbacks, so the Java callbacks are removed as well.
+            removeAllCallbacks();
             if (!v8Native.resetV8Isolate(handle, runtimeOptions)) {
                 // The native isolate and context are disposed, so the runtime cannot be used any more.
                 close(true);
@@ -4176,8 +4217,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 if (this.nearHeapLimitCallback == nearHeapLimitCallback) {
                     // Do nothing if the same callback is set.
                 } else if (nearHeapLimitCallback != null) {
+                    // The native callback calls whichever callback is set, so it is not registered again.
+                    // V8 aborts the process if the same native callback is registered twice.
                     this.nearHeapLimitCallback = nearHeapLimitCallback;
-                    v8Native.registerNearHeapLimitCallback(handle);
                 } else {
                     long defaultHeapLimit = this.nearHeapLimitCallback.getDefaultHeapLimit();
                     v8Native.unregisterNearHeapLimitCallback(handle, defaultHeapLimit);

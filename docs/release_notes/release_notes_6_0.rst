@@ -13,6 +13,9 @@ Release Notes 6.0.x
 * Fixed ``JavetEnginePool`` lending an engine whose runtime is closed
 * Fixed ``JavetEnginePool`` losing an engine slot permanently when the engine cannot be created
 * Enhanced ``getEngine()`` in ``JavetEnginePool`` to throw ``EngineNotAvailable`` with the last engine creation failure as its cause
+* Changed ``resetContext()``, ``resetIsolate()`` in ``V8Runtime`` to remove the GC callbacks, the microtasks completed callbacks and the near heap limit callback
+* Fixed ``V8Runtime`` not registering the callbacks added after ``resetContext()`` or ``resetIsolate()`` to the native isolate
+* Fixed the JVM crash when ``setNearHeapLimitCallback()`` replaces the near heap limit callback
 
 6.0.3
 -----

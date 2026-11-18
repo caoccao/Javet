@@ -261,6 +261,10 @@ V8 has a built-in heap limit that can be set via ``V8Flags.setMaxHeapSize(int)``
 
 Javet provides a way to set a near heap limit callback so that applications can be notified when the heap size is close to the limit. This is done via ``V8Runtime.setNearHeapLimitCallback()``. The callback will be called when the heap size is close to the limit. Applications can then take 2 options to prevent the crash.
 
+.. note::
+
+    ``resetContext()`` and ``resetIsolate()`` remove the near heap limit callback. Set it again after the reset if it is still needed.
+
 Option 1: Increase the Heap Size
 --------------------------------
 

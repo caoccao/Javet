@@ -158,6 +158,7 @@ Microtasks Completed Callback
 
     * Registering a callback makes V8 skip the fast path that bails out on an empty microtask queue, so the callback is called on every checkpoint, even the ones with nothing to run. Under ``Auto`` that is every call against the runtime that lowers the JavaScript call depth to zero. The callback is supposed to be cheap.
     * The callbacks are called in the order of registration. The native callback is registered on the first ``addMicrotasksCompletedCallback()`` and unregistered on the last ``removeMicrotasksCompletedCallback()``.
+    * ``resetContext()`` and ``resetIsolate()`` remove all the callbacks. Add them again after the reset if they are still needed.
 
 Diagnostics
 -----------
