@@ -39,15 +39,70 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8Runtime extends BaseTestJavet {
+    /**
+     * Create Node.js snapshot blobs that Node.js rejects without aborting the process.
+     *
+     * @param snapshotBlob the valid snapshot blob
+     * @return the invalid snapshot blobs by description
+     */
+    private Map<String, byte[]> createInvalidNodeSnapshotBlobs(byte[] snapshotBlob) throws JavetException {
+        String nodeVersion;
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            nodeVersion = v8Runtime.getExecutor("process.versions.node").executeString();
+        }
+        Map<String, byte[]> invalidSnapshotBlobs = new LinkedHashMap<>();
+        // An empty blob is treated as no blob by RuntimeOptions, so the shortest blob is used.
+        invalidSnapshotBlobs.put("a too short blob", new byte[]{1, 2, 3});
+        byte[] invalidMagicSnapshotBlob = snapshotBlob.clone();
+        invalidMagicSnapshotBlob[0] = (byte) ~invalidMagicSnapshotBlob[0];
+        invalidSnapshotBlobs.put("invalid magic bytes", invalidMagicSnapshotBlob);
+        invalidSnapshotBlobs.put("a truncated blob", Arrays.copyOf(snapshotBlob, snapshotBlob.length / 2));
+        // The Node.js version is stored in the metadata at the beginning of the blob.
+        byte[] nodeVersionBytes = nodeVersion.getBytes(StandardCharsets.US_ASCII);
+        final int lastSearchIndex = Math.min(64, snapshotBlob.length - nodeVersionBytes.length);
+        int nodeVersionIndex = -1;
+        for (int i = 0; i <= lastSearchIndex && nodeVersionIndex < 0; ++i) {
+            if (Arrays.equals(nodeVersionBytes, Arrays.copyOfRange(snapshotBlob, i, i + nodeVersionBytes.length))) {
+                nodeVersionIndex = i;
+            }
+        }
+        assertTrue(nodeVersionIndex >= 0, "Node.js version " + nodeVersion + " is not found in the snapshot metadata.");
+        byte[] incompatibleSnapshotBlob = snapshotBlob.clone();
+        incompatibleSnapshotBlob[nodeVersionIndex] = (byte) (incompatibleSnapshotBlob[nodeVersionIndex] == '9' ? '8' : '9');
+        invalidSnapshotBlobs.put("another Node.js version", incompatibleSnapshotBlob);
+        return invalidSnapshotBlobs;
+    }
+
+    /**
+     * Create a Node.js snapshot blob with function add.
+     *
+     * @return the snapshot blob
+     */
+    private byte[] createNodeSnapshotBlob() throws JavetException {
+        RuntimeOptions<?> options = v8Host.getJSRuntimeType().getRuntimeOptions();
+        options.setCreateSnapshotEnabled(true);
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+            v8Runtime.getExecutor("const add = (a, b) => a + b;").executeVoid();
+            byte[] snapshotBlob = v8Runtime.createSnapshot();
+            assertNotNull(snapshotBlob);
+            assertTrue(snapshotBlob.length > 0);
+            return snapshotBlob;
+        }
+    }
+
     @Test
     public void testAllowEval() throws JavetException {
         List<String> codeStrings = SimpleList.of(
@@ -415,6 +470,33 @@ public class TestV8Runtime extends BaseTestJavet {
     }
 
     @Test
+    public void testNodeSnapshotWithInvalidBlob() throws JavetException {
+        if (isNode()) {
+            byte[] snapshotBlob = createNodeSnapshotBlob();
+            RuntimeOptions<?> options = v8Host.getJSRuntimeType().getRuntimeOptions();
+            final int v8RuntimeCount = v8Host.getV8RuntimeCount();
+            for (Map.Entry<String, byte[]> entry : createInvalidNodeSnapshotBlobs(snapshotBlob).entrySet()) {
+                options.setSnapshotBlob(entry.getValue());
+                try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                    fail("Failed to report runtime create failure with " + entry.getKey() + ".");
+                } catch (JavetException e) {
+                    assertEquals(JavetError.RuntimeCreateFailure.getCode(), e.getError().getCode(), entry.getKey());
+                }
+                assertEquals(v8RuntimeCount, v8Host.getV8RuntimeCount(), entry.getKey());
+            }
+            // The failures must not affect the ordinary runtimes and the valid snapshot.
+            options.setSnapshotBlob(null);
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
+            }
+            options.setSnapshotBlob(snapshotBlob);
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+            }
+        }
+    }
+
+    @Test
     public void testOutOfMemoryException() throws JavetException {
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             // The following line triggers the OOM which will let JVM to core dump.
@@ -441,6 +523,39 @@ public class TestV8Runtime extends BaseTestJavet {
             v8Runtime.resetContext();
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             assertTrue(v8Runtime.getGlobalObject().get("a").isUndefined());
+        }
+    }
+
+    @Test
+    public void testResetContextWithInvalidNodeSnapshot() throws JavetException {
+        if (isNode()) {
+            byte[] snapshotBlob = createNodeSnapshotBlob();
+            RuntimeOptions<?> options = v8Host.getJSRuntimeType().getRuntimeOptions();
+            final int v8RuntimeCount = v8Host.getV8RuntimeCount();
+            for (Map.Entry<String, byte[]> entry : createInvalidNodeSnapshotBlobs(snapshotBlob).entrySet()) {
+                options.setSnapshotBlob(snapshotBlob);
+                try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                    assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+                    // A snapshot runtime recreates its isolate from the current runtime options.
+                    options.setSnapshotBlob(entry.getValue());
+                    try {
+                        v8Runtime.resetContext();
+                        fail("Failed to report runtime reset failure with " + entry.getKey() + ".");
+                    } catch (JavetException e) {
+                        assertEquals(JavetError.RuntimeResetFailure.getCode(), e.getError().getCode(), entry.getKey());
+                    }
+                    assertTrue(v8Runtime.isClosed(), entry.getKey());
+                    assertEquals(v8RuntimeCount, v8Host.getV8RuntimeCount(), entry.getKey());
+                    // The closed runtime ignores further resets.
+                    v8Runtime.resetContext();
+                }
+            }
+            // The failures must not affect the ordinary runtimes.
+            options.setSnapshotBlob(null);
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                v8Runtime.resetContext();
+                assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
+            }
         }
     }
 
@@ -522,6 +637,39 @@ public class TestV8Runtime extends BaseTestJavet {
             v8Runtime.resetIsolate();
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
             assertTrue(v8Runtime.getGlobalObject().get("a").isUndefined());
+        }
+    }
+
+    @Test
+    public void testResetIsolateWithInvalidNodeSnapshot() throws JavetException {
+        if (isNode()) {
+            byte[] snapshotBlob = createNodeSnapshotBlob();
+            RuntimeOptions<?> options = v8Host.getJSRuntimeType().getRuntimeOptions();
+            final int v8RuntimeCount = v8Host.getV8RuntimeCount();
+            for (Map.Entry<String, byte[]> entry : createInvalidNodeSnapshotBlobs(snapshotBlob).entrySet()) {
+                options.setSnapshotBlob(null);
+                try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                    assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
+                    // The isolate is recreated from the current runtime options.
+                    options.setSnapshotBlob(entry.getValue());
+                    try {
+                        v8Runtime.resetIsolate();
+                        fail("Failed to report runtime reset failure with " + entry.getKey() + ".");
+                    } catch (JavetException e) {
+                        assertEquals(JavetError.RuntimeResetFailure.getCode(), e.getError().getCode(), entry.getKey());
+                    }
+                    assertTrue(v8Runtime.isClosed(), entry.getKey());
+                    assertEquals(v8RuntimeCount, v8Host.getV8RuntimeCount(), entry.getKey());
+                    // The closed runtime ignores further resets.
+                    v8Runtime.resetIsolate();
+                }
+            }
+            // The failures must not affect the valid snapshot.
+            options.setSnapshotBlob(snapshotBlob);
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                v8Runtime.resetIsolate();
+                assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+            }
         }
     }
 

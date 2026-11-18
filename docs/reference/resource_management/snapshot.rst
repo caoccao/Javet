@@ -25,6 +25,7 @@ Limitations
 * **No chained snapshots in Node.js mode**: In Node.js mode, a runtime restored from a snapshot cannot create a new snapshot. In V8 mode, chained snapshots are supported (create a runtime from a snapshot, then create a new snapshot from that runtime).
 * **Dynamic code updates not possible**: Once a snapshot is created, it's static and cannot be updated with new code without creating a new snapshot.
 * **V8 version dependent**: The snapshot created from a particular version of V8 only works in that version of V8. If you want to support a new version of V8, you will have to create a new snapshot in that new version of V8.
+* **Node.js version dependent**: In Node.js mode, the snapshot only works in the Node.js version, architecture and platform that created it. ``createV8Runtime()`` throws ``RuntimeCreateFailure`` if the snapshot is malformed or incompatible. ``resetContext()`` and ``resetIsolate()`` close the runtime and throw ``RuntimeResetFailure`` in that case.
 
 How to Create a Snapshot
 ========================

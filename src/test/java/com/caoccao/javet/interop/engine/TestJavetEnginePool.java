@@ -292,6 +292,27 @@ public class TestJavetEnginePool extends BaseTestJavet {
     }
 
     @Test
+    public void testGetEngineWithClosedRuntime() throws Exception {
+        V8Runtime closedV8Runtime;
+        try (IJavetEngine<?> engine = javetEnginePool.getEngine()) {
+            closedV8Runtime = engine.getV8Runtime();
+            // A failed reset closes the runtime in the same way.
+            closedV8Runtime.close(true);
+            assertTrue(engine.isClosed());
+        }
+        runAndWait(TEST_MAX_TIMEOUT, () -> javetEnginePool.getIdleEngineCount() == 1);
+        // The engine with the closed runtime must be replaced instead of being lent.
+        try (IJavetEngine<?> engine = javetEnginePool.getEngine()) {
+            assertFalse(engine.isClosed());
+            V8Runtime v8Runtime = engine.getV8Runtime();
+            assertNotSame(closedV8Runtime, v8Runtime);
+            assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
+        }
+        runAndWait(TEST_MAX_TIMEOUT, () -> javetEnginePool.getIdleEngineCount() == 1);
+        assertEquals(0, javetEnginePool.getActiveEngineCount());
+    }
+
+    @Test
     public void testMultiThreadedExecutionBelowMaxSize() throws Exception {
         final int threadCount = javetEngineConfig.getPoolMaxSize() - javetEngineConfig.getPoolMinSize();
         Thread[] threads = new Thread[threadCount];

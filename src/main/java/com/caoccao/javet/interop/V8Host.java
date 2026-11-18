@@ -330,6 +330,10 @@ public final class V8Host {
             }
         }
         final long handle = v8Native.createV8Runtime(runtimeOptions);
+        if (handle == INVALID_HANDLE) {
+            // E.g. the snapshot blob is malformed or built by another version.
+            throw new JavetException(JavetError.RuntimeCreateFailure);
+        }
         isolateCreated = true;
         V8Runtime v8Runtime;
         if (jsRuntimeType.isNode()) {

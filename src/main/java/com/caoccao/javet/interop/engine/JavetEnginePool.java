@@ -231,8 +231,9 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                             }
                         } else {
                             engine = engines[index];
-                            if (engine == null) {
-                                // The engine is either recycled or not created.
+                            if (engine == null || engine.isClosed()) {
+                                // The engine is either recycled or not created,
+                                // or its runtime is closed, e.g. by a failed reset.
                                 engine = createEngine();
                                 engine.setIndex(index);
                                 engines[index] = engine;

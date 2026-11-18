@@ -226,7 +226,7 @@ public interface IV8Native {
      * Create a new V8 runtime with the given options.
      *
      * @param runtimeOptions the runtime options
-     * @return the V8 runtime handle
+     * @return the V8 runtime handle, or 0 if the runtime cannot be created
      */
     long createV8Runtime(Object runtimeOptions);
 
@@ -1840,19 +1840,27 @@ public interface IV8Native {
 
     /**
      * Reset the V8 context with the given options.
+     * <p>
+     * If it fails, the native isolate and context are disposed
+     * and the runtime must be closed without being used.
      *
      * @param v8RuntimeHandle the V8 runtime handle
      * @param runtimeOptions  the runtime options
+     * @return true : reset, false : failed to reset
      */
-    void resetV8Context(long v8RuntimeHandle, Object runtimeOptions);
+    boolean resetV8Context(long v8RuntimeHandle, Object runtimeOptions);
 
     /**
      * Reset the V8 isolate with the given options.
+     * <p>
+     * If it fails, the native isolate and context are disposed
+     * and the runtime must be closed without being used.
      *
      * @param v8RuntimeHandle the V8 runtime handle
      * @param runtimeOptions  the runtime options
+     * @return true : reset, false : failed to reset
      */
-    void resetV8Isolate(long v8RuntimeHandle, Object runtimeOptions);
+    boolean resetV8Isolate(long v8RuntimeHandle, Object runtimeOptions);
 
     /**
      * Check if two V8 values are the same value (Object.is semantics).

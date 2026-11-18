@@ -430,6 +430,20 @@ public class JavetError {
             "${referenceCount} reference(s), " +
             "${v8ModuleCount} module(s)");
     /**
+     * The constant RuntimeCreateFailure.
+     *
+     * @since 6.0.4
+     */
+    public static final JavetError RuntimeCreateFailure = new JavetError(
+            809, JavetErrorType.Runtime, "Failed to create the runtime");
+    /**
+     * The constant RuntimeResetFailure.
+     *
+     * @since 6.0.4
+     */
+    public static final JavetError RuntimeResetFailure = new JavetError(
+            810, JavetErrorType.Runtime, "Failed to reset the runtime and the runtime is closed");
+    /**
      * The constant EngineNotAvailable.
      *
      * @since 1.1.6

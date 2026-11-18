@@ -3893,6 +3893,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * This is a light-weight and recommended reset.
      * In Node.js mode, runtimes configured for snapshot creation or restored
      * from a snapshot require a full isolate reset using the current runtime options.
+     * <p>
+     * If the replacement cannot be created, e.g. the snapshot blob in the runtime options
+     * is invalid, the runtime is closed and {@link JavetError#RuntimeResetFailure} is thrown.
      *
      * @throws JavetException the javet exception
      * @since 0.7.0
@@ -3900,7 +3903,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public void resetContext() throws JavetException {
         if (!isClosed()) {
             removeAllReferences();
-            v8Native.resetV8Context(handle, runtimeOptions);
+            if (!v8Native.resetV8Context(handle, runtimeOptions)) {
+                // The native isolate and context are disposed, so the runtime cannot be used any more.
+                close(true);
+                throw new JavetException(JavetError.RuntimeResetFailure);
+            }
         }
     }
 
@@ -3908,6 +3915,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * Resets the V8 isolate.
      * <p>
      * This is a heavy reset. Please avoid using it in performance sensitive scenario.
+     * <p>
+     * If the replacement cannot be created, e.g. the snapshot blob in the runtime options
+     * is invalid, the runtime is closed and {@link JavetError#RuntimeResetFailure} is thrown.
      *
      * @throws JavetException the javet exception
      * @since 0.7.0
@@ -3916,7 +3926,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public void resetIsolate() throws JavetException {
         if (!isClosed()) {
             removeAllReferences();
-            v8Native.resetV8Isolate(handle, runtimeOptions);
+            if (!v8Native.resetV8Isolate(handle, runtimeOptions)) {
+                // The native isolate and context are disposed, so the runtime cannot be used any more.
+                close(true);
+                throw new JavetException(JavetError.RuntimeResetFailure);
+            }
         }
     }
 

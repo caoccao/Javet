@@ -6,6 +6,11 @@ Release Notes 6.0.x
 -----
 
 * Upgraded Node.js to ``v26.13.1`` `(2026-11-11) <https://nodejs.org/en/blog/release/v26.13.1>`_
+* Fixed the JVM crash when a Node.js runtime is created or reset with a malformed or incompatible snapshot blob
+* Added ``RuntimeCreateFailure``, ``RuntimeResetFailure`` to ``JavetError``
+* Changed ``createV8Runtime()`` in ``V8Host`` to throw ``RuntimeCreateFailure`` if the runtime cannot be created
+* Changed ``resetContext()``, ``resetIsolate()`` in ``V8Runtime`` to close the runtime and throw ``RuntimeResetFailure`` if the runtime cannot be recreated
+* Fixed ``JavetEnginePool`` lending an engine whose runtime is closed
 
 6.0.3
 -----
