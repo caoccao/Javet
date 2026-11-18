@@ -178,12 +178,10 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
     protected JavetEngine<R> createEngine() throws JavetException {
         JSRuntimeType jsRuntimeType = config.getJSRuntimeType();
         RuntimeOptions<?> runtimeOptions = jsRuntimeType.getRuntimeOptions();
+        // The snapshot blob applies to both the V8 mode and the Node.js mode.
+        runtimeOptions.setSnapshotBlob(config.getSnapshotBlob());
         if (runtimeOptions instanceof V8RuntimeOptions) {
-            V8RuntimeOptions v8RuntimeOptions = (V8RuntimeOptions) runtimeOptions;
-            v8RuntimeOptions.setGlobalName(config.getGlobalName());
-            if (config.getSnapshotBlob() != null) {
-                v8RuntimeOptions.setSnapshotBlob(config.getSnapshotBlob());
-            }
+            ((V8RuntimeOptions) runtimeOptions).setGlobalName(config.getGlobalName());
         }
         @SuppressWarnings("ConstantConditions")
         R v8Runtime = V8Host.getInstance(jsRuntimeType).createV8Runtime(true, runtimeOptions);

@@ -31,6 +31,7 @@ import com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics;
 import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
+import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.reference.V8ValueObject;
@@ -492,6 +493,39 @@ public class TestJavetEnginePool extends BaseTestJavet {
                 .map(CompletableFuture::join)
                 .map(V8HeapStatistics::toString)
                 .collect(Collectors.joining()));
+    }
+
+    @Test
+    public void testSnapshot() throws JavetException {
+        RuntimeOptions<?> runtimeOptions = v8Host.getJSRuntimeType().getRuntimeOptions();
+        runtimeOptions.setCreateSnapshotEnabled(true);
+        byte[] snapshotBlob;
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime(runtimeOptions)) {
+            v8Runtime.getExecutor("globalThis.snapshotValue = 41; const add = (a, b) => a + b;").executeVoid();
+            snapshotBlob = v8Runtime.createSnapshot();
+            assertNotNull(snapshotBlob);
+            assertTrue(snapshotBlob.length > 0);
+        }
+        javetEngineConfig.setSnapshotBlob(snapshotBlob);
+        try (IJavetEngine<?> engine1 = javetEnginePool.getEngine();
+             IJavetEngine<?> engine2 = javetEnginePool.getEngine()) {
+            // Every engine is created from the snapshot.
+            for (IJavetEngine<?> engine : new IJavetEngine<?>[]{engine1, engine2}) {
+                V8Runtime v8Runtime = engine.getV8Runtime();
+                assertEquals(41, v8Runtime.getExecutor("snapshotValue").executeInteger());
+                assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+            }
+            // The resets restore the snapshot.
+            V8Runtime v8Runtime = engine1.getV8Runtime();
+            v8Runtime.getExecutor("snapshotValue = 99;").executeVoid();
+            engine1.resetContext();
+            assertEquals(41, v8Runtime.getExecutor("snapshotValue").executeInteger());
+            assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+            v8Runtime.getExecutor("snapshotValue = 99;").executeVoid();
+            engine1.resetIsolate();
+            assertEquals(41, v8Runtime.getExecutor("snapshotValue").executeInteger());
+            assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+        }
     }
 
     @Test

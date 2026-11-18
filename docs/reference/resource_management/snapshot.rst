@@ -169,7 +169,7 @@ Let's take a try.
 Use a Snapshot with Engine Pool
 -------------------------------
 
-You can configure a ``JavetEnginePool`` to initialize every ``V8Runtime`` from a pre-existing snapshot via ``JavetEngineConfig``. This gives you the startup-time benefits of snapshots while still using the pool's lifecycle management.
+You can configure a ``JavetEnginePool`` to initialize every ``V8Runtime`` from a pre-existing snapshot via ``JavetEngineConfig``. This gives you the startup-time benefits of snapshots while still using the pool's lifecycle management. It works in both the V8 mode and the Node.js mode, and ``resetContext()`` and ``resetIsolate()`` of a pooled engine restore the snapshot.
 
 .. code-block:: java
 
@@ -183,3 +183,7 @@ You can configure a ``JavetEnginePool`` to initialize every ``V8Runtime`` from a
             assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
         }
     }
+
+.. note::
+
+    In Node.js mode, set ``JSRuntimeType.Node`` or ``JSRuntimeType.NodeI18n`` via ``config.setJSRuntimeType()``, use ``JavetEnginePool<NodeRuntime>``, and create the snapshot with the same runtime type.

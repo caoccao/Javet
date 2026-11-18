@@ -18,6 +18,7 @@ Release Notes 6.0.x
 * Fixed the JVM crash when ``setNearHeapLimitCallback()`` replaces the near heap limit callback
 * Added ``getHeapSnapshotNearHeapLimit()``, ``setHeapSnapshotNearHeapLimit()`` to ``NodeFlags``
 * Fixed the known issue that ``getNearHeapLimitCallback()``, ``setNearHeapLimitCallback()`` break in Node.js mode
+* Fixed ``JavetEnginePool`` ignoring the snapshot blob in ``JavetEngineConfig`` in Node.js mode
 
 6.0.3
 -----
