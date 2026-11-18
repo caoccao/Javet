@@ -482,92 +482,85 @@ public class TestV8Runtime extends BaseTestJavet {
 
     @Test
     public void testNearHeapLimitCallbackWithIncreasingHeapLimit() throws JavetException {
-        if (isV8()) {
-            try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-                assertNull(v8Runtime.getNearHeapLimitCallback());
-                MockNearHeapLimitCallback callback = new MockNearHeapLimitCallback();
-                v8Runtime.setNearHeapLimitCallback(callback);
-                assertEquals(callback, v8Runtime.getNearHeapLimitCallback());
-                v8Runtime.getExecutor("[[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()]]").executeVoid();
-                v8Runtime.setNearHeapLimitCallback(null);
-                assertTrue(callback.isCallbackCalled());
-                assertTrue(callback.isGetDefaultHeapLimitCalled());
-                assertNull(v8Runtime.getNearHeapLimitCallback());
-            }
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            assertNull(v8Runtime.getNearHeapLimitCallback());
+            MockNearHeapLimitCallback callback = new MockNearHeapLimitCallback();
+            v8Runtime.setNearHeapLimitCallback(callback);
+            assertEquals(callback, v8Runtime.getNearHeapLimitCallback());
+            v8Runtime.getExecutor("[[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()]]").executeVoid();
+            v8Runtime.setNearHeapLimitCallback(null);
+            assertTrue(callback.isCallbackCalled());
+            assertTrue(callback.isGetDefaultHeapLimitCalled());
+            assertNull(v8Runtime.getNearHeapLimitCallback());
         }
     }
 
     @Test
     public void testNearHeapLimitCallbackWithReplacement() throws JavetException {
-        if (isV8()) {
-            try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-                MockNearHeapLimitCallback callback1 = new MockNearHeapLimitCallback();
-                MockNearHeapLimitCallback callback2 = new MockNearHeapLimitCallback();
-                v8Runtime.setNearHeapLimitCallback(callback1);
-                // V8 aborts the process if the native callback is registered again.
-                v8Runtime.setNearHeapLimitCallback(callback2);
-                assertEquals(callback2, v8Runtime.getNearHeapLimitCallback());
-                v8Runtime.getExecutor("[[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()]]").executeVoid();
-                v8Runtime.setNearHeapLimitCallback(null);
-                assertFalse(callback1.isCallbackCalled());
-                assertFalse(callback1.isGetDefaultHeapLimitCalled());
-                assertTrue(callback2.isCallbackCalled());
-                assertTrue(callback2.isGetDefaultHeapLimitCalled());
-                assertNull(v8Runtime.getNearHeapLimitCallback());
-            }
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            MockNearHeapLimitCallback callback1 = new MockNearHeapLimitCallback();
+            MockNearHeapLimitCallback callback2 = new MockNearHeapLimitCallback();
+            v8Runtime.setNearHeapLimitCallback(callback1);
+            // V8 aborts the process if the native callback is registered again.
+            v8Runtime.setNearHeapLimitCallback(callback2);
+            assertEquals(callback2, v8Runtime.getNearHeapLimitCallback());
+            v8Runtime.getExecutor("[[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()]]").executeVoid();
+            v8Runtime.setNearHeapLimitCallback(null);
+            assertFalse(callback1.isCallbackCalled());
+            assertFalse(callback1.isGetDefaultHeapLimitCalled());
+            assertTrue(callback2.isCallbackCalled());
+            assertTrue(callback2.isGetDefaultHeapLimitCalled());
+            assertNull(v8Runtime.getNearHeapLimitCallback());
         }
     }
 
     @Test
     public void testNearHeapLimitCallbackWithReset() throws JavetException {
-        if (isV8()) {
-            try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-                MockNearHeapLimitCallback callback = new MockNearHeapLimitCallback();
-                // resetContext() keeps the isolate, while resetIsolate() recreates it.
-                for (boolean isolateReset : new boolean[]{false, true}) {
-                    // Setting the same callback after a reset registers the native callback again.
-                    // V8 aborts the process if the previous reset didn't unregister the native callback.
-                    v8Runtime.setNearHeapLimitCallback(callback);
-                    assertEquals(callback, v8Runtime.getNearHeapLimitCallback());
-                    callback.setGetDefaultHeapLimitCalled(false);
-                    if (isolateReset) {
-                        v8Runtime.resetIsolate();
-                    } else {
-                        v8Runtime.resetContext();
-                    }
-                    assertTrue(callback.isGetDefaultHeapLimitCalled());
-                    assertNull(v8Runtime.getNearHeapLimitCallback());
-                }
-                // The same callback is called by the new isolate.
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            MockNearHeapLimitCallback callback = new MockNearHeapLimitCallback();
+            // resetContext() keeps the isolate, while resetIsolate() recreates it.
+            for (boolean isolateReset : new boolean[]{false, true}) {
+                // Setting the same callback after a reset registers the native callback again.
+                // V8 aborts the process if the previous reset didn't unregister the native callback.
                 v8Runtime.setNearHeapLimitCallback(callback);
-                v8Runtime.getExecutor("[[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()]]").executeVoid();
-                v8Runtime.setNearHeapLimitCallback(null);
-                assertTrue(callback.isCallbackCalled());
+                assertEquals(callback, v8Runtime.getNearHeapLimitCallback());
+                callback.setGetDefaultHeapLimitCalled(false);
+                if (isolateReset) {
+                    v8Runtime.resetIsolate();
+                } else {
+                    v8Runtime.resetContext();
+                }
+                assertTrue(callback.isGetDefaultHeapLimitCalled());
                 assertNull(v8Runtime.getNearHeapLimitCallback());
             }
+            // The same callback is called by the new isolate.
+            v8Runtime.setNearHeapLimitCallback(callback);
+            v8Runtime.getExecutor("[[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()]]").executeVoid();
+            v8Runtime.setNearHeapLimitCallback(null);
+            assertTrue(callback.isCallbackCalled());
+            assertNull(v8Runtime.getNearHeapLimitCallback());
         }
     }
 
     @ParameterizedTest
     @EnumSource(V8RuntimeTerminationMode.class)
     public void testNearHeapLimitCallbackWithTerminateExecution(V8RuntimeTerminationMode mode) {
-        if (isV8()) {
-            AtomicBoolean callbackInvoked = new AtomicBoolean(false);
-            try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
-                v8Runtime.setNearHeapLimitCallback((currentHeapLimit, initialHeapLimit) -> {
-                    callbackInvoked.set(true);
-                    assertEquals(IJavetNearHeapLimitCallback.INITIAL_HEAP_LIMIT, initialHeapLimit);
-                    assertEquals(IJavetNearHeapLimitCallback.INITIAL_HEAP_LIMIT, currentHeapLimit);
-                    v8Runtime.terminateExecution(mode);
-                    return currentHeapLimit * 2;
-                });
-                v8Runtime.getExecutor("[[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()]]").executeVoid();
-            } catch (JavetException e) {
-                assertEquals(JavetError.ExecutionTerminated.getCode(), e.getError().getCode());
-                assertEquals("Execution is terminated and continuable is false", e.getMessage());
-            }
-            assertTrue(callbackInvoked.get(), "NearHeapLimitCallback was not invoked");
+        AtomicBoolean callbackInvoked = new AtomicBoolean(false);
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            v8Runtime.setNearHeapLimitCallback((currentHeapLimit, initialHeapLimit) -> {
+                callbackInvoked.set(true);
+                assertEquals(IJavetNearHeapLimitCallback.INITIAL_HEAP_LIMIT, initialHeapLimit);
+                // The callback is called again with the raised heap limit if the termination comes late.
+                assertTrue(currentHeapLimit >= IJavetNearHeapLimitCallback.INITIAL_HEAP_LIMIT);
+                v8Runtime.terminateExecution(mode);
+                return currentHeapLimit * 2;
+            });
+            v8Runtime.getExecutor("[[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()],[... new Array(50000000).keys()]]").executeVoid();
+        } catch (JavetException e) {
+            assertEquals(JavetError.ExecutionTerminated.getCode(), e.getError().getCode());
+            assertEquals("Execution is terminated and continuable is false", e.getMessage());
         }
+        assertTrue(callbackInvoked.get(), "NearHeapLimitCallback was not invoked");
     }
 
     @Test

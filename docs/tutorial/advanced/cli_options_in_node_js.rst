@@ -54,7 +54,7 @@ Step 2: Let's Go
 More Options
 ------------
 
-There are more options available in ``NodeFlags``, e.g. ``--allow-fs-read``, ``--allow-fs-write``, ``--no-warnings``. And ``NodeFlags`` also support custom flags.
+There are more options available in ``NodeFlags``, e.g. ``--allow-fs-read``, ``--allow-fs-write``, ``--heapsnapshot-near-heap-limit``, ``--no-warnings``. And ``NodeFlags`` also support custom flags.
 
 Arguments
 =========

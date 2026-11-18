@@ -50,6 +50,8 @@ public class TestNodeFlags {
         assertArrayEquals(new String[]{"/a", "/b"}, nodeFlags.setAllowFsWrite(new String[]{"/a", "/b"}).getAllowFsWrite());
         assertTrue(nodeFlags.isPermission());
         assertNull(nodeFlags.getCustomFlags());
+        assertEquals(0, nodeFlags.getHeapSnapshotNearHeapLimit());
+        assertEquals(2, nodeFlags.setHeapSnapshotNearHeapLimit(2).getHeapSnapshotNearHeapLimit());
         assertNull(nodeFlags.getIcuDataDir());
         assertEquals("abc", nodeFlags.setIcuDataDir("abc").getIcuDataDir());
         assertArrayEquals(new String[]{"abc", "def"}, nodeFlags.setCustomFlags(new String[]{"abc", "def"}).getCustomFlags());
@@ -57,6 +59,7 @@ public class TestNodeFlags {
         assertTrue(nodeFlags.seal().isSealed());
         assertNotNull(nodeFlags.setAllowFsRead(null).getAllowFsRead());
         assertArrayEquals(new String[]{"abc", "def"}, nodeFlags.setCustomFlags(new String[]{"123", "456"}).getCustomFlags());
+        assertEquals(2, nodeFlags.setHeapSnapshotNearHeapLimit(3).getHeapSnapshotNearHeapLimit());
         assertEquals("abc", nodeFlags.setIcuDataDir("def").getIcuDataDir());
         SWITCHES.forEach(getterAndSetter -> {
             assertTrue(getterAndSetter.getter.apply(getterAndSetter.setter.apply(nodeFlags, false)));
@@ -80,6 +83,11 @@ public class TestNodeFlags {
                 "--no-require-module",
                 nodeFlags.setNoRequireModule(true).toString());
         nodeFlags.setNoRequireModule(false);
+        assertEquals(
+                "--heapsnapshot-near-heap-limit=1",
+                nodeFlags.setHeapSnapshotNearHeapLimit(1).toString());
+        nodeFlags.setHeapSnapshotNearHeapLimit(0);
+        assertEquals("", nodeFlags.toString());
         assertEquals("--icu-data-dir=abc", nodeFlags.setIcuDataDir("abc").toString());
         nodeFlags.setIcuDataDir(null);
         assertEquals(

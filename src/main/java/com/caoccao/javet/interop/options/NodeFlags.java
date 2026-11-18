@@ -44,6 +44,12 @@ public final class NodeFlags {
      */
     public static final String ALLOW_FS_WRITE = "--allow-fs-write";
     /**
+     * The constant HEAP_SNAPSHOT_NEAR_HEAP_LIMIT.
+     *
+     * @since 6.0.4
+     */
+    public static final String HEAP_SNAPSHOT_NEAR_HEAP_LIMIT = "--heapsnapshot-near-heap-limit";
+    /**
      * The constant ICU_DATA_DIR.
      *
      * @since 4.0.0
@@ -78,6 +84,7 @@ public final class NodeFlags {
     private String[] allowFsRead;
     private String[] allowFsWrite;
     private String[] customFlags;
+    private int heapSnapshotNearHeapLimit;
     private String icuDataDir;
     private boolean jsFloat16Array;
     private boolean noRequireModule;
@@ -94,6 +101,7 @@ public final class NodeFlags {
         allowFsRead = null;
         allowFsWrite = null;
         customFlags = null;
+        heapSnapshotNearHeapLimit = 0;
         jsFloat16Array = false;
         noRequireModule = false;
         noWarnings = false;
@@ -141,6 +149,19 @@ public final class NodeFlags {
      */
     public String[] getCustomFlags() {
         return customFlags;
+    }
+
+    /**
+     * Gets the maximum number of the heap snapshots that Node.js generates
+     * when V8 is approaching the heap limit.
+     * <p>
+     * 0 means Node.js doesn't generate the heap snapshots.
+     *
+     * @return the maximum number of the heap snapshots
+     * @since 6.0.4
+     */
+    public int getHeapSnapshotNearHeapLimit() {
+        return heapSnapshotNearHeapLimit;
     }
 
     /**
@@ -284,6 +305,30 @@ public final class NodeFlags {
     }
 
     /**
+     * Sets the maximum number of the heap snapshots that Node.js generates
+     * when V8 is approaching the heap limit.
+     * <p>
+     * Node.js registers its own near heap limit callback that writes the heap snapshots
+     * to the diagnostic directory, which is the current working directory by default.
+     * V8 only calls the near heap limit callback that is registered last,
+     * so Node.js doesn't generate the heap snapshots
+     * while the near heap limit callback of the runtime is set.
+     * <p>
+     * 0 means Node.js doesn't generate the heap snapshots.
+     *
+     * @param heapSnapshotNearHeapLimit the maximum number of the heap snapshots
+     * @return the self
+     * @since 6.0.4
+     */
+    public NodeFlags setHeapSnapshotNearHeapLimit(int heapSnapshotNearHeapLimit) {
+        if (!sealed) {
+            assert heapSnapshotNearHeapLimit >= 0 : "Heap snapshot near heap limit must be no less than 0";
+            this.heapSnapshotNearHeapLimit = heapSnapshotNearHeapLimit;
+        }
+        return this;
+    }
+
+    /**
      * Sets icu data dir.
      *
      * @param icuDataDir the icu data dir
@@ -371,6 +416,9 @@ public final class NodeFlags {
                     .filter(StringUtils::isNotBlank)
                     .map(path -> ALLOW_FS_WRITE + EQUAL + path.trim())
                     .forEach(tokens::add);
+        }
+        if (heapSnapshotNearHeapLimit > 0) {
+            tokens.add(HEAP_SNAPSHOT_NEAR_HEAP_LIMIT + EQUAL + heapSnapshotNearHeapLimit);
         }
         if (StringUtils.isNotBlank(icuDataDir)) {
             tokens.add(ICU_DATA_DIR + EQUAL + icuDataDir.trim());

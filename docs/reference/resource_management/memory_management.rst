@@ -287,3 +287,22 @@ Somehow, a malicious script can use up all the heap memory no matter how large t
         v8Runtime.terminateExecution(); // We tell V8 to terminate the execution.
         return currentHeapLimit * 2; // We still need to tell V8 to double the heap limit because the termination will happen later.
     });
+
+Node.js Mode
+------------
+
+The near heap limit callback works in the same way in the Node.js mode, with a few differences.
+
+* V8 mode is built with pointer compression, but Node.js is not, so the same script takes roughly twice as much heap in the Node.js mode.
+* The callback is called again with the raised heap limit if the heap keeps growing, so the new heap limit is supposed to be computed from ``currentHeapLimit`` rather than ``initialHeapLimit``.
+* Node.js has its own near heap limit callback that writes the heap snapshots if ``--heapsnapshot-near-heap-limit`` is set. V8 only calls the near heap limit callback that is registered last, so Node.js doesn't write the heap snapshots while the near heap limit callback of the runtime is set. Once it is removed, Node.js writes the heap snapshots again.
+
+.. code-block:: java
+
+    // Node.js writes at most 1 heap snapshot when V8 is approaching the heap limit.
+    NodeRuntimeOptions.NODE_FLAGS.setHeapSnapshotNearHeapLimit(1);
+
+.. note::
+
+    * The heap snapshots are written to the current working directory by default. Set the custom flag ``--diagnostic-dir`` to write them to another directory.
+    * Node.js only raises the heap limit a little while writing a heap snapshot, and stops writing after the given number of heap snapshots. It is a diagnostic tool that doesn't prevent the crash.

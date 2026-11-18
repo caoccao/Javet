@@ -16,6 +16,8 @@ Release Notes 6.0.x
 * Changed ``resetContext()``, ``resetIsolate()`` in ``V8Runtime`` to remove the GC callbacks, the microtasks completed callbacks and the near heap limit callback
 * Fixed ``V8Runtime`` not registering the callbacks added after ``resetContext()`` or ``resetIsolate()`` to the native isolate
 * Fixed the JVM crash when ``setNearHeapLimitCallback()`` replaces the near heap limit callback
+* Added ``getHeapSnapshotNearHeapLimit()``, ``setHeapSnapshotNearHeapLimit()`` to ``NodeFlags``
+* Fixed the known issue that ``getNearHeapLimitCallback()``, ``setNearHeapLimitCallback()`` break in Node.js mode
 
 6.0.3
 -----
