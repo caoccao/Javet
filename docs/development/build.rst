@@ -65,7 +65,7 @@ Android Environment
 * Gradle 8.5+
 * Python 3.11+
 * Latest Android Studio (Optional)
-* Android NDK r27
+* Android NDK r30
 * Android SDK 30
 * Deno 2.0+
 
