@@ -207,6 +207,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
         IJavetLogger logger = config.getJavetLogger();
         logger.debug("JavetEnginePool.getEngine() begins.");
         JavetEngine<R> engine = null;
+        Throwable lastCreationFailure = null;
         long startTime = System.currentTimeMillis();
         long lastTime = startTime;
         int retryCount = 0;
@@ -219,8 +220,9 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                     break;
                 }
                 if (semaphore.tryAcquire()) {
+                    Integer index = null;
                     try {
-                        Integer index = idleEngineIndexList.poll();
+                        index = idleEngineIndexList.poll();
                         if (index == null) {
                             index = releasedEngineIndexList.poll();
                             if (index != null) {
@@ -242,6 +244,16 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                         }
                         semaphore.release();
                     } catch (Throwable t) {
+                        // Don't lend the closed engine if the pool quits before the next retry.
+                        engine = null;
+                        // Roll back the borrow, otherwise every failed creation consumes a slot and a permit.
+                        if (index != null) {
+                            // The slot has no usable engine, so it is released.
+                            engines[index] = null;
+                            releasedEngineIndexList.add(index);
+                        }
+                        semaphore.release();
+                        lastCreationFailure = t;
                         logger.logError(t, "Failed to create a new engine.");
                     }
                 }
@@ -253,7 +265,7 @@ public class JavetEnginePool<R extends V8Runtime> implements IJavetEnginePool<R>
                 logger.logError("Failed to get an engine after {0} tries in {1}ms.",
                         config.getWaitForEngineMaxRetryCount(),
                         Long.toString(System.currentTimeMillis() - startTime));
-                throw new JavetException(JavetError.EngineNotAvailable);
+                throw new JavetException(JavetError.EngineNotAvailable, lastCreationFailure);
             }
             try {
                 TimeUnit.MILLISECONDS.sleep(

@@ -11,6 +11,8 @@ Release Notes 6.0.x
 * Changed ``createV8Runtime()`` in ``V8Host`` to throw ``RuntimeCreateFailure`` if the runtime cannot be created
 * Changed ``resetContext()``, ``resetIsolate()`` in ``V8Runtime`` to close the runtime and throw ``RuntimeResetFailure`` if the runtime cannot be recreated
 * Fixed ``JavetEnginePool`` lending an engine whose runtime is closed
+* Fixed ``JavetEnginePool`` losing an engine slot permanently when the engine cannot be created
+* Enhanced ``getEngine()`` in ``JavetEnginePool`` to throw ``EngineNotAvailable`` with the last engine creation failure as its cause
 
 6.0.3
 -----

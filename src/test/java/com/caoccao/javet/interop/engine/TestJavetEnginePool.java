@@ -313,6 +313,62 @@ public class TestJavetEnginePool extends BaseTestJavet {
     }
 
     @Test
+    public void testGetEngineWithFailedCreation() throws Exception {
+        final int maxRetryCount = 3;
+        final AtomicInteger createCount = new AtomicInteger();
+        final AtomicInteger failureCount = new AtomicInteger(1);
+        JavetEngineConfig config = new JavetEngineConfig()
+                .setJSRuntimeType(v8Host.getJSRuntimeType())
+                .setPoolMinSize(1)
+                .setPoolMaxSize(1)
+                .setWaitForEngineMaxRetryCount(maxRetryCount);
+        try (JavetEnginePool<V8Runtime> pool = new JavetEnginePool<V8Runtime>(config) {
+            @Override
+            protected JavetEngine<V8Runtime> createEngine() throws JavetException {
+                createCount.incrementAndGet();
+                if (failureCount.getAndDecrement() > 0) {
+                    throw new JavetException(JavetError.RuntimeCreateFailure);
+                }
+                return super.createEngine();
+            }
+        }) {
+            // The failed creation of a new engine must return the slot and the permit for the retry.
+            for (int i = 0; i < 3; ++i) {
+                try (IJavetEngine<V8Runtime> engine = pool.getEngine()) {
+                    assertEquals(1, pool.getActiveEngineCount());
+                    assertEquals(2, engine.getV8Runtime().getExecutor("1 + 1").executeInteger());
+                }
+                assertEquals(2, createCount.get());
+                assertEquals(0, pool.getActiveEngineCount());
+                assertEquals(1, pool.getIdleEngineCount());
+                assertEquals(0, pool.getReleasedEngineCount());
+            }
+            // The failed replacement of an engine whose runtime is closed must release the slot,
+            // and the exhausted retries must keep the last creation failure.
+            try (IJavetEngine<V8Runtime> engine = pool.getEngine()) {
+                engine.getV8Runtime().close(true);
+            }
+            failureCount.set(maxRetryCount);
+            JavetException exception = assertThrows(JavetException.class, () -> pool.getEngine().close());
+            assertEquals(JavetError.EngineNotAvailable, exception.getError());
+            assertInstanceOf(JavetException.class, exception.getCause());
+            assertEquals(JavetError.RuntimeCreateFailure, ((JavetException) exception.getCause()).getError());
+            assertEquals(2 + maxRetryCount, createCount.get());
+            assertEquals(0, pool.getActiveEngineCount());
+            assertEquals(0, pool.getIdleEngineCount());
+            assertEquals(1, pool.getReleasedEngineCount());
+            try (IJavetEngine<V8Runtime> engine = pool.getEngine()) {
+                assertFalse(engine.isClosed());
+                assertEquals(2, engine.getV8Runtime().getExecutor("1 + 1").executeInteger());
+            }
+            assertEquals(3 + maxRetryCount, createCount.get());
+            assertEquals(0, pool.getActiveEngineCount());
+            assertEquals(1, pool.getIdleEngineCount());
+            assertEquals(0, pool.getReleasedEngineCount());
+        }
+    }
+
+    @Test
     public void testMultiThreadedExecutionBelowMaxSize() throws Exception {
         final int threadCount = javetEngineConfig.getPoolMaxSize() - javetEngineConfig.getPoolMinSize();
         Thread[] threads = new Thread[threadCount];
