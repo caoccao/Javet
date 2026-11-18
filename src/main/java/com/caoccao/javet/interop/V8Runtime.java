@@ -3876,16 +3876,20 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.8.3
      */
     public void removeV8Modules(boolean forceClose) throws JavetException {
+        final List<IV8Module> iV8Modules;
         synchronized (v8ModuleLock) {
-            if (!v8ModuleMap.isEmpty()) {
-                logger.logWarn("{0} V8 module(s) not recycled.", Integer.toString(v8ModuleMap.size()));
-                for (IV8Module iV8Module : v8ModuleMap.values()) {
-                    logger.logWarn("  V8 module: {0}", iV8Module.getResourceName());
-                    if (forceClose) {
-                        iV8Module.close(true);
-                    }
-                }
-                v8ModuleMap.clear();
+            if (v8ModuleMap.isEmpty()) {
+                return;
+            }
+            // Closing a module removes it from the map, so the modules are closed after the map is cleared.
+            iV8Modules = new ArrayList<>(v8ModuleMap.values());
+            v8ModuleMap.clear();
+        }
+        logger.logWarn("{0} V8 module(s) not recycled.", Integer.toString(iV8Modules.size()));
+        for (IV8Module iV8Module : iV8Modules) {
+            logger.logWarn("  V8 module: {0}", iV8Module.getResourceName());
+            if (forceClose) {
+                iV8Module.close(true);
             }
         }
     }

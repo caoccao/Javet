@@ -19,6 +19,7 @@ Release Notes 6.0.x
 * Added ``getHeapSnapshotNearHeapLimit()``, ``setHeapSnapshotNearHeapLimit()`` to ``NodeFlags``
 * Fixed the known issue that ``getNearHeapLimitCallback()``, ``setNearHeapLimitCallback()`` break in Node.js mode
 * Fixed ``JavetEnginePool`` ignoring the snapshot blob in ``JavetEngineConfig`` in Node.js mode
+* Fixed ``removeV8Modules(true)`` in ``V8Runtime`` throwing ``ConcurrentModificationException`` when more than one module is cached
 
 6.0.3
 -----

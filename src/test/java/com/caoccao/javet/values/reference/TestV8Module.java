@@ -540,6 +540,23 @@ public class TestV8Module extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testRemoveV8ModulesWithForceClose() throws JavetException {
+        final int moduleCount = 3;
+        V8Module[] v8Modules = new V8Module[moduleCount];
+        for (int i = 0; i < moduleCount; i++) {
+            v8Modules[i] = v8Runtime.getExecutor("export const a = " + i + ";")
+                    .setResourceName("./test" + i + ".js").compileV8Module();
+            assertNotNull(v8Modules[i]);
+        }
+        assertEquals(moduleCount, v8Runtime.getV8ModuleCount());
+        v8Runtime.removeV8Modules(true);
+        assertEquals(0, v8Runtime.getV8ModuleCount());
+        for (int i = 0; i < moduleCount; i++) {
+            assertTrue(v8Modules[i].isClosed(), "Module " + i + " should be closed.");
+        }
+    }
+
+    @Test
     public void testStatusConversion() throws JavetException {
         try (V8Module v8Module = v8Runtime.getExecutor(
                 "export function test() { return 1; }").setResourceName("./test.js").compileV8Module()) {
