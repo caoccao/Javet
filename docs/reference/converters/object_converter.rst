@@ -43,6 +43,7 @@ IJavetMappable           Any
     * ``Map`` converts to a plain JS ``object``, whereas ``IJavetEntityMap`` (a ``LinkedHashMap`` subclass) converts to a JS ``Map``. Use ``JavetEntityMap`` when you need a JavaScript ``Map`` instead of a plain object.
     * All ``BaseStream`` types (``Stream``, ``IntStream``, ``DoubleStream``, ``LongStream``) are supported. The stream is consumed (terminated) during conversion.
     * Large collections use batch processing (configurable via ``config.setBatchSize()``, default 100, minimum 10) for performance.
+    * A ``V8Value`` put in a Java container (``Object[]``, ``Map``, ``Set``, ``Collection``, ``Stream``, ``IJavetEntityMap``, or the context of ``IJavetEntityError``) is owned by the converter. The converter puts it in the JavaScript container and closes it, so don't use it after the conversion. If you still need it, put a clone from ``toClone()`` in the Java container instead.
 
 From JavaScript to Java
 =======================
