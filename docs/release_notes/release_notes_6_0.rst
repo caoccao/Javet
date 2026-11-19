@@ -33,6 +33,7 @@ Release Notes 6.0.x
 * Fixed the futures of ``getV8HeapSpaceStatistics()``, ``getV8HeapStatistics()``, ``getV8SharedMemoryStatistics()`` in ``V8Runtime`` never completing when the request times out after 60 seconds, by cancelling them
 * Fixed ``call()``, ``callAsConstructor()`` in ``V8ValueFunction``, ``invoke()`` in ``V8ValueObject``, and ``set()`` with multiple key-value pairs in ``V8ValueObject`` and ``V8ValueMap`` leaking the converted values when a later value cannot be converted
 * Fixed ``JavetObjectConverter`` failing to convert an object whose own ``constructor`` property is not a function, which made ``executeObject()`` return ``null``
+* Fixed ``registerCustomObject()`` in ``JavetObjectConverter`` returning ``false`` when the registration succeeds
 
 6.0.3
 -----

@@ -190,7 +190,8 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 return false;
             }
             AccessibleObject[] executables = new AccessibleObject[]{defaultConstructor, methodFromMap, methodToMap};
-            customObjectMap.put(customObjectClass.getName(), executables);
+            // Only one of the concurrent registrations of the same class succeeds.
+            return customObjectMap.putIfAbsent(customObjectClassName, executables) == null;
         } catch (Throwable t) {
             // Do nothing.
             t.printStackTrace(System.err);

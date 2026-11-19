@@ -184,7 +184,8 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
     public void testCustomObject() throws JavetException {
         IJavetConverter originalConverter = v8Runtime.getConverter();
         JavetObjectConverter converter = new JavetObjectConverter();
-        converter.registerCustomObject(CustomObject.class);
+        assertTrue(converter.registerCustomObject(CustomObject.class), "The first registration should succeed.");
+        assertFalse(converter.registerCustomObject(CustomObject.class), "The duplicate registration should fail.");
         v8Runtime.setConverter(converter);
         CustomObject[] customObjects = new CustomObject[]{
                 new CustomObject("x", 1),
