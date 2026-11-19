@@ -3785,14 +3785,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             if (referenceMap.remove(referenceHandle) != null) {
                 final int referenceType = iV8ValueReference.getType().getId();
                 if (referenceType == V8ValueType.Module.getId()) {
-                    final IV8Module iV8Module = (IV8Module) iV8ValueReference;
-                    final String resourceName = iV8Module.getResourceName();
-                    synchronized (v8ModuleLock) {
-                        // The module only removes its own entry, because another module may have replaced it.
-                        if (v8ModuleMap.get(resourceName) == iV8Module) {
-                            v8ModuleMap.remove(resourceName);
-                        }
-                    }
+                    removeV8Module((IV8Module) iV8ValueReference);
                 }
                 v8Native.removeReferenceHandle(handle, referenceHandle, referenceType);
             }
@@ -3865,6 +3858,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     /**
      * Remove a V8 module by a resource name and force close flag.
+     * <p>
+     * It removes whichever module is cached with the resource name.
      *
      * @param resourceName the resource name
      * @param forceClose   the force close
@@ -3894,6 +3889,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     /**
      * Remove a V8 module.
+     * <p>
+     * It removes the module only if the module itself is cached,
+     * so another module cached with the same resource name is kept.
      *
      * @param iV8Module the V8 module
      * @throws JavetException the javet exception
@@ -3905,6 +3903,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     /**
      * Remove a V8 module by a force close flag.
+     * <p>
+     * It removes the module only if the module itself is cached,
+     * so another module cached with the same resource name is kept.
+     * The module is force closed only if it is removed.
      *
      * @param iV8Module  the V8 module
      * @param forceClose the force close
@@ -3912,7 +3914,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.9.4
      */
     public void removeV8Module(IV8Module iV8Module, boolean forceClose) throws JavetException {
-        removeV8Module(iV8Module.getResourceName(), forceClose);
+        final String resourceName = iV8Module.getResourceName();
+        boolean removed = false;
+        synchronized (v8ModuleLock) {
+            // The module only removes its own entry, because another module may have replaced it.
+            if (v8ModuleMap.get(resourceName) == iV8Module) {
+                v8ModuleMap.remove(resourceName);
+                removed = true;
+            }
+        }
+        if (forceClose && removed) {
+            iV8Module.close(true);
+        }
     }
 
     /**

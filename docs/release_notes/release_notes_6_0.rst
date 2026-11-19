@@ -26,6 +26,7 @@ Release Notes 6.0.x
 * Fixed ``JavetEngine`` losing the eval policy in ``JavetEngineConfig`` after ``resetContext()`` or ``resetIsolate()``
 * Fixed the deadlock when ``addV8Module()`` in ``V8Runtime`` replaces a module while another module is being closed
 * Fixed closing a ``V8Module`` removing another module with the same resource name from the module cache
+* Fixed ``removeV8Module(IV8Module)`` in ``V8Runtime`` removing or force closing another module with the same resource name
 * Fixed ``bigint`` just out of the range of ``long`` (e.g. ``2n ** 63n``) silently changing value when it is converted to ``long`` instead of ``BigInteger``
 * Fixed the JVM crash when a ``V8Runtime`` with an open ``V8Inspector`` is closed or its isolate is reset
 * Changed ``close()``, ``resetIsolate()`` in ``V8Runtime``, and ``resetContext()`` for Node.js snapshot runtimes, to close the ``V8Inspector`` sessions, so that a session created before the isolate is reset no longer closes or sends requests to a session created after the reset

@@ -700,6 +700,38 @@ public class TestV8Runtime extends BaseTestJavet {
     }
 
     @Test
+    public void testRemoveDetachedV8ModuleAfterReplacement() throws JavetException {
+        final String resourceName = "./a.js";
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            // The old module is detached from the cache, then the new module is cached with the same resource name.
+            V8Module oldV8Module = v8Runtime.getExecutor("export const a = 1;")
+                    .setResourceName(resourceName).compileV8Module();
+            v8Runtime.removeV8Module(resourceName, false);
+            assertFalse(v8Runtime.containsV8Module(resourceName));
+            V8Module newV8Module = v8Runtime.getExecutor("export const a = 2;")
+                    .setResourceName(resourceName).compileV8Module();
+            assertSame(newV8Module, v8Runtime.getV8Module(resourceName, null));
+            // Removing the old module doesn't remove or close the new module.
+            v8Runtime.removeV8Module(oldV8Module);
+            assertSame(newV8Module, v8Runtime.getV8Module(resourceName, null));
+            v8Runtime.removeV8Module(oldV8Module, true);
+            assertSame(newV8Module, v8Runtime.getV8Module(resourceName, null));
+            assertFalse(newV8Module.isClosed());
+            // The old module is not force closed, because it is not removed.
+            assertFalse(oldV8Module.isClosed());
+            // Closing the old module doesn't remove the new module.
+            oldV8Module.close();
+            assertSame(newV8Module, v8Runtime.getV8Module(resourceName, null));
+            assertEquals(1, v8Runtime.getV8ModuleCount());
+            // Removing the new module removes it and force closes it.
+            v8Runtime.removeV8Module(newV8Module, true);
+            assertTrue(newV8Module.isClosed());
+            assertFalse(v8Runtime.containsV8Module(resourceName));
+            assertEquals(0, v8Runtime.getV8ModuleCount());
+        }
+    }
+
+    @Test
     public void testResetContext() throws JavetException {
         try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
