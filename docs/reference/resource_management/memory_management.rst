@@ -250,7 +250,7 @@ V8 exposes quite a few statistics for applications to analyze the memory usage, 
 
 .. note::
 
-    * The ``getV8HeapSpaceStatistics()``, ``getV8HeapStatistics()``, and ``getV8SharedMemoryStatistics()`` calls are asynchronous and not 100% guaranteed to be completed. Only when the V8 runtime is idle, 100% completion can be achieved.
+    * The ``getV8HeapSpaceStatistics()``, ``getV8HeapStatistics()``, and ``getV8SharedMemoryStatistics()`` calls are asynchronous and not 100% guaranteed to be completed. Only when the V8 runtime is idle, 100% completion can be achieved. A call that is not completed in 60 seconds is cancelled, so ``join()`` and ``get()`` throw ``CancellationException`` instead of waiting forever.
     * Since 5.0.8, V8 mode runs in multi-cage pointer compression, so each ``V8Runtime`` owns its own read-only space. ``getV8SharedMemoryStatistics()`` on ``V8Runtime`` reports that runtime's group; the process-wide variants on ``V8Host`` have been removed. Use ``JavetEnginePool.getAggregateV8SharedMemoryStatistics()`` to sum across a pool.
     * More statistics will be exposed in new releases. Please file issues if you need more of them.
 

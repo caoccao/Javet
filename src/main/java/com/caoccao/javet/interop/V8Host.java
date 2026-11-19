@@ -182,13 +182,29 @@ public final class V8Host {
         return libraryReloadable;
     }
 
-    private static void purgeV8StatisticsFuture(V8StatisticsFuture<?> v8StatisticsFuture, IV8Native iV8Native) {
+    /**
+     * Purge V8 statistics future.
+     * <p>
+     * If the purge claims the request before the interrupt does, the late interrupt doesn't complete the future,
+     * so the future is cancelled.
+     *
+     * @param v8StatisticsFuture the V8 statistics future
+     * @param iV8Native          the V8 native
+     * @since 3.1.6
+     */
+    static void purgeV8StatisticsFuture(V8StatisticsFuture<?> v8StatisticsFuture, IV8Native iV8Native) {
+        final boolean purged;
         synchronized (v8StatisticsFutureMapLock) {
-            if (v8StatisticsFutureMap.remove(v8StatisticsFuture.getHandle()) != null) {
+            purged = v8StatisticsFutureMap.remove(v8StatisticsFuture.getHandle()) != null;
+            if (purged) {
                 iV8Native.removeRawPointer(
                         v8StatisticsFuture.getHandle(),
                         v8StatisticsFuture.getRawPointerType().getId());
             }
+        }
+        if (purged) {
+            // The future is cancelled outside the lock because cancelling it runs the dependent stages.
+            v8StatisticsFuture.cancel(false);
         }
     }
 

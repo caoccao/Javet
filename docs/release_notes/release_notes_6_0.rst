@@ -29,6 +29,7 @@ Release Notes 6.0.x
 * Fixed ``bigint`` just out of the range of ``long`` (e.g. ``2n ** 63n``) silently changing value when it is converted to ``long`` instead of ``BigInteger``
 * Fixed the JVM crash when a ``V8Runtime`` with an open ``V8Inspector`` is closed or its isolate is reset
 * Changed ``close()``, ``resetIsolate()`` in ``V8Runtime``, and ``resetContext()`` for Node.js snapshot runtimes, to close the ``V8Inspector`` sessions, so that a session created before the isolate is reset no longer closes or sends requests to a session created after the reset
+* Fixed the futures of ``getV8HeapSpaceStatistics()``, ``getV8HeapStatistics()``, ``getV8SharedMemoryStatistics()`` in ``V8Runtime`` never completing when the request times out after 60 seconds, by cancelling them
 
 6.0.3
 -----

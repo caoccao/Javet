@@ -1854,6 +1854,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     /**
      * Gets V8 heap space statistics by an allocation space via completable future.
      * It is an async call that will be completed if there is no race condition.
+     * It is cancelled if it is not completed in 60 seconds.
      *
      * @param v8AllocationSpace the V8 allocation space
      * @return the V8 heap space statistics in a complete future
@@ -1874,6 +1875,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     /**
      * Gets V8 heap statistics via completable future.
      * It is an async call that will be completed if there is no race condition.
+     * It is cancelled if it is not completed in 60 seconds.
      *
      * @return the V8 heap statistics in a complete future
      * @since 1.0.0
@@ -1990,6 +1992,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     /**
      * Gets V8 shared memory statistics via completable future.
      * It is an async call that will be completed if there is no race condition.
+     * It is cancelled if it is not completed in 60 seconds.
      * In multi-cage pointer compression builds these statistics are read from
      * this runtime's IsolateGroup, so the native call enters the isolate
      * scope before invoking the underlying V8 API.
