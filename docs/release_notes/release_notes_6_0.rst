@@ -26,6 +26,7 @@ Release Notes 6.0.x
 * Fixed ``JavetEngine`` losing the eval policy in ``JavetEngineConfig`` after ``resetContext()`` or ``resetIsolate()``
 * Fixed the deadlock when ``addV8Module()`` in ``V8Runtime`` replaces a module while another module is being closed
 * Fixed closing a ``V8Module`` removing another module with the same resource name from the module cache
+* Fixed ``bigint`` just out of the range of ``long`` (e.g. ``2n ** 63n``) silently changing value when it is converted to ``long`` instead of ``BigInteger``
 
 6.0.3
 -----

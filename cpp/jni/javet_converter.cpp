@@ -1032,14 +1032,17 @@ namespace Javet {
             }
             if (v8Value->IsBigInt()) {
                 V8LocalBigInt v8LocalBigInt = v8Value->ToBigInt(v8Context).ToLocalChecked();
-                int wordCount = v8LocalBigInt->WordCount();
-                if (wordCount <= 1) {
+                // One word also holds the values out of the range of long, e.g. 2^63 and 2^64 - 1.
+                bool lossless = false;
+                int64_t int64Value = v8LocalBigInt->Int64Value(&lossless);
+                if (lossless) {
                     return jniEnv->CallObjectMethod(
                         v8Runtime->externalV8Runtime,
                         jmethodIDV8RuntimeCreateV8ValueLong,
-                        v8LocalBigInt->Int64Value());
+                        int64Value);
                 }
                 else {
+                    int wordCount = v8LocalBigInt->WordCount();
                     int signBit;
                     jlongArray mLongArray = jniEnv->NewLongArray(wordCount);
                     if (mLongArray == nullptr) {
