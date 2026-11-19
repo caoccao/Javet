@@ -2159,13 +2159,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     /**
      * Returns whether the V8 runtime is in use or not.
+     * <p>
+     * It is thread-safe. It waits while the runtime is being reset or closed by another thread.
      *
      * @return the boolean
      * @since 0.7.2
      */
     public boolean isInUse() {
-        if (!isClosed()) {
-            return v8Native.isInUse(handle);
+        // The native isolate may be disposed or replaced by a reset or a close on another thread.
+        synchronized (closeLock) {
+            if (!isClosed()) {
+                return v8Native.isInUse(handle);
+            }
         }
         return false;
     }
@@ -3939,14 +3944,17 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.7.0
      */
     public void resetContext() throws JavetException {
-        if (!isClosed()) {
-            removeAllReferences();
-            // The callbacks are removed even if the isolate is kept, so that every reset behaves the same.
-            removeAllCallbacks();
-            if (!v8Native.resetV8Context(handle, runtimeOptions)) {
-                // The native isolate and context are disposed, so the runtime cannot be used any more.
-                close(true);
-                throw new JavetException(JavetError.RuntimeResetFailure);
+        // The isolate of a Node.js snapshot runtime is replaced, so other threads must not access it till the reset is done.
+        synchronized (closeLock) {
+            if (!isClosed()) {
+                removeAllReferences();
+                // The callbacks are removed even if the isolate is kept, so that every reset behaves the same.
+                removeAllCallbacks();
+                if (!v8Native.resetV8Context(handle, runtimeOptions)) {
+                    // The native isolate and context are disposed, so the runtime cannot be used any more.
+                    close(true);
+                    throw new JavetException(JavetError.RuntimeResetFailure);
+                }
             }
         }
     }
@@ -3967,14 +3975,17 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     @SuppressWarnings("UnusedReturnValue")
     public void resetIsolate() throws JavetException {
-        if (!isClosed()) {
-            removeAllReferences();
-            // The new isolate has no native callbacks, so the Java callbacks are removed as well.
-            removeAllCallbacks();
-            if (!v8Native.resetV8Isolate(handle, runtimeOptions)) {
-                // The native isolate and context are disposed, so the runtime cannot be used any more.
-                close(true);
-                throw new JavetException(JavetError.RuntimeResetFailure);
+        // The isolate is replaced, so other threads must not access it till the reset is done.
+        synchronized (closeLock) {
+            if (!isClosed()) {
+                removeAllReferences();
+                // The new isolate has no native callbacks, so the Java callbacks are removed as well.
+                removeAllCallbacks();
+                if (!v8Native.resetV8Isolate(handle, runtimeOptions)) {
+                    // The native isolate and context are disposed, so the runtime cannot be used any more.
+                    close(true);
+                    throw new JavetException(JavetError.RuntimeResetFailure);
+                }
             }
         }
     }
@@ -4357,7 +4368,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * in the given isolate.
      * <p>
      * It can be used by any thread even if that thread has not
-     * acquired the V8 lock with a Locker object.
+     * acquired the V8 lock with a Locker object. It waits while the runtime
+     * is being reset or closed by another thread.
      *
      * @param v8RuntimeTerminationMode the V8 runtime termination type
      * @since 4.1.6
@@ -4367,11 +4379,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             switch (Objects.requireNonNull(v8RuntimeTerminationMode)) {
                 case Asynchronous:
                     Executors.newSingleThreadExecutor().execute(() -> {
-                        v8Native.terminateExecution(handle);
+                        // The runtime may have been closed before this thread runs.
+                        synchronized (closeLock) {
+                            if (!isClosed()) {
+                                v8Native.terminateExecution(handle);
+                            }
+                        }
                     });
                     break;
                 case Synchronous:
-                    v8Native.terminateExecution(handle);
+                    // The native isolate may be disposed or replaced by a reset or a close on another thread.
+                    synchronized (closeLock) {
+                        if (!isClosed()) {
+                            v8Native.terminateExecution(handle);
+                        }
+                    }
                     break;
                 default:
                     logger.logWarn("Unknown termination type: " + v8RuntimeTerminationMode.name());

@@ -22,6 +22,7 @@ Release Notes 6.0.x
 * Fixed ``JavetEnginePool`` ignoring the snapshot blob in ``JavetEngineConfig`` in Node.js mode
 * Fixed ``removeV8Modules(true)`` in ``V8Runtime`` throwing ``ConcurrentModificationException`` when more than one module is cached
 * Fixed some bugs in ``splice()`` in ``JavetProxyPluginList`` and ``toSpliced()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList``
+* Fixed the JVM crash when an expired ``V8Guard``, ``isInUse()`` or ``terminateExecution()`` accesses a ``V8Runtime`` that is being reset by ``resetIsolate()`` or ``resetContext()``, or closed
 
 6.0.3
 -----

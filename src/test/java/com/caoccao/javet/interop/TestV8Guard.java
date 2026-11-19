@@ -20,6 +20,7 @@ import com.caoccao.javet.BaseTestJavet;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetTerminatedException;
+import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.values.reference.V8ValueGlobalObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +35,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -41,6 +43,28 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestV8Guard extends BaseTestJavet {
+    private static final String CODE_STRING_BUSY_LOOP = "{ const end = Date.now() + 1000; while (Date.now() < end) {} }";
+
+    private void assertExpiredGuardAcrossResets(V8Runtime v8Runtime, boolean isolateReset) throws Exception {
+        final int resetCount = 10;
+        try (V8Guard v8Guard = v8Runtime.getGuard(1, true)) {
+            TimeUnit.MILLISECONDS.sleep(10);
+            // The expired guard is checked every millisecond, so it is checked while the isolate is replaced.
+            for (int i = 0; i < resetCount; ++i) {
+                if (isolateReset) {
+                    v8Runtime.resetIsolate();
+                } else {
+                    v8Runtime.resetContext();
+                }
+                assertFalse(v8Runtime.isClosed());
+            }
+            // The guard stays armed for the replacement.
+            assertThrows(JavetTerminatedException.class,
+                    () -> v8Runtime.getExecutor(CODE_STRING_BUSY_LOOP).executeVoid());
+        }
+        assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
+    }
+
     @BeforeEach
     public void beforeEach() {
         v8Host.setSleepIntervalMillis(1);
@@ -116,6 +140,27 @@ public class TestV8Guard extends BaseTestJavet {
             }
             assertThrows(JavetTerminatedException.class, () -> v8Runtime.getExecutor(
                     "{ const end = Date.now() + 1000; while (Date.now() < end) {} }").executeVoid());
+        }
+    }
+
+    @Test
+    public void testExpiredGuardDuringReset() throws Exception {
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            assertExpiredGuardAcrossResets(v8Runtime, true);
+            assertExpiredGuardAcrossResets(v8Runtime, false);
+        }
+        if (isNode()) {
+            // resetContext() recreates the isolate of a Node.js snapshot runtime.
+            RuntimeOptions<?> options = v8Host.getJSRuntimeType().getRuntimeOptions();
+            options.setCreateSnapshotEnabled(true);
+            byte[] snapshotBlob;
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                snapshotBlob = v8Runtime.createSnapshot();
+            }
+            options.setCreateSnapshotEnabled(false).setSnapshotBlob(snapshotBlob);
+            try (V8Runtime v8Runtime = v8Host.createV8Runtime(options)) {
+                assertExpiredGuardAcrossResets(v8Runtime, false);
+            }
         }
     }
 
@@ -220,6 +265,34 @@ public class TestV8Guard extends BaseTestJavet {
             assertTrue(count > 0, "Count should be greater than 0.");
             assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger(),
                     "V8 runtime should still be able to execute script after being terminated.");
+        }
+    }
+
+    @Test
+    public void testManualTerminateExecutionDuringReset() throws Exception {
+        final int resetCount = 10;
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            final AtomicBoolean running = new AtomicBoolean(true);
+            // Create a daemon thread accessing the V8 runtime while its isolate is replaced.
+            Thread daemonThread = new Thread(() -> {
+                while (running.get()) {
+                    v8Runtime.isInUse();
+                    v8Runtime.terminateExecution();
+                }
+            });
+            daemonThread.start();
+            try {
+                for (int i = 0; i < resetCount; ++i) {
+                    v8Runtime.resetIsolate();
+                    assertFalse(v8Runtime.isClosed());
+                }
+            } finally {
+                running.set(false);
+                daemonThread.join();
+            }
+            // The last termination may still be pending on the idle isolate.
+            v8Runtime.cancelTerminateExecution();
+            assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
         }
     }
 
