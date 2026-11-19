@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.ZonedDateTime;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -277,6 +278,31 @@ public class TestJavetObjectConverter extends BaseTestJavetRuntime {
         }
         try (V8ValueObject v8ValueObject = converter.toV8Value(v8Runtime, SimpleMap.of("x", "abc"))) {
             assertEquals("abc", v8ValueObject.getString("x"));
+        }
+    }
+
+    @Test
+    public void testObjectWithConstructorProperty() throws JavetException {
+        IJavetConverter converter = new JavetObjectConverter();
+        Map<String, Map<String, Object>> testCases = new LinkedHashMap<>();
+        // A constructor function is converted to its name.
+        testCases.put("({constructor: function A() {}, value: 1})", SimpleMap.of("constructor", "A", "value", 1));
+        testCases.put("({constructor: class B {}, value: 1})", SimpleMap.of("constructor", "B", "value", 1));
+        // Other values are converted normally.
+        testCases.put("({constructor: 42, value: 1})", SimpleMap.of("constructor", 42, "value", 1));
+        testCases.put("({constructor: 'abc', value: 1})", SimpleMap.of("constructor", "abc", "value", 1));
+        testCases.put("({constructor: null, value: 1})", SimpleMap.of("constructor", null, "value", 1));
+        testCases.put("({constructor: undefined, value: 1})", SimpleMap.of("value", 1));
+        testCases.put(
+                "({constructor: {name: 'C', x: 2}, value: 1})",
+                SimpleMap.of("constructor", SimpleMap.of("name", "C", "x", 2), "value", 1));
+        for (Map.Entry<String, Map<String, Object>> entry : testCases.entrySet()) {
+            final String codeString = entry.getKey();
+            final Map<String, Object> expectedMap = entry.getValue();
+            try (V8ValueObject v8ValueObject = v8Runtime.getExecutor(codeString).execute()) {
+                assertEquals(expectedMap, converter.toObject(v8ValueObject), codeString);
+            }
+            assertEquals(expectedMap, v8Runtime.getExecutor(codeString).executeObject(), codeString);
         }
     }
 

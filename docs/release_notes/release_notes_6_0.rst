@@ -32,6 +32,7 @@ Release Notes 6.0.x
 * Changed ``close()``, ``resetIsolate()`` in ``V8Runtime``, and ``resetContext()`` for Node.js snapshot runtimes, to close the ``V8Inspector`` sessions, so that a session created before the isolate is reset no longer closes or sends requests to a session created after the reset
 * Fixed the futures of ``getV8HeapSpaceStatistics()``, ``getV8HeapStatistics()``, ``getV8SharedMemoryStatistics()`` in ``V8Runtime`` never completing when the request times out after 60 seconds, by cancelling them
 * Fixed ``call()``, ``callAsConstructor()`` in ``V8ValueFunction``, ``invoke()`` in ``V8ValueObject``, and ``set()`` with multiple key-value pairs in ``V8ValueObject`` and ``V8ValueMap`` leaking the converted values when a later value cannot be converted
+* Fixed ``JavetObjectConverter`` failing to convert an object whose own ``constructor`` property is not a function, which made ``executeObject()`` return ``null``
 
 6.0.3
 -----
