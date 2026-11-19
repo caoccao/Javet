@@ -308,7 +308,11 @@ namespace Javet {
             CloseCallbackContextReferences();
         }
         if (v8Inspector) {
+            // The sessions that are not closed yet remove their breakpoints and disable their agents
+            // in the isolate when the inspector is destroyed.
             auto internalV8Locker = GetSharedV8Locker();
+            auto v8IsolateScope = GetV8IsolateScope();
+            V8HandleScope v8HandleScope(v8Isolate);
             v8Inspector.reset();
         }
         v8GlobalObject.Reset();

@@ -50,6 +50,7 @@ import java.text.MessageFormat;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 
@@ -231,6 +232,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     final V8Host v8Host;
     /**
+     * The V8 inspector map. The key is the session ID.
+     *
+     * @since 6.0.4
+     */
+    final Map<Integer, V8Inspector> v8InspectorMap;
+    /**
      * The V8 internal.
      *
      * @since 1.0.2
@@ -377,6 +384,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         this.v8Host = Objects.requireNonNull(v8Host);
         this.v8Native = Objects.requireNonNull(v8Native);
         this.jsRuntimeType = Objects.requireNonNull(jsRuntimeType);
+        v8InspectorMap = new ConcurrentHashMap<>();
         v8ModuleLock = new Object();
         v8ModuleMap = new HashMap<>();
         v8ModuleResolver = null;
@@ -662,6 +670,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public void close(boolean forceClose) throws JavetException {
         if (!isClosed() && forceClose) {
             removeAllReferences();
+            removeV8Inspectors();
             synchronized (closeLock) {
                 v8Host.closeV8Runtime(this);
                 handle = INVALID_HANDLE;
@@ -873,7 +882,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * <p>
      * The returned {@link V8Inspector} implements {@link IJavetClosable}. Call
      * {@link V8Inspector#close()} when the session is no longer needed. Sessions
-     * are also cleaned up automatically when the V8 runtime is closed.
+     * are also closed automatically when the V8 runtime is closed or its isolate
+     * is reset, so create new sessions after {@link #resetIsolate()}.
      *
      * @param name the session name
      * @return the V8 inspector, or null if the runtime is closed
@@ -900,7 +910,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public V8Inspector createV8Inspector(String name, boolean waitForDebugger) {
         if (!isClosed()) {
-            return new V8Inspector(this, name, v8Native, waitForDebugger);
+            V8Inspector v8Inspector = new V8Inspector(this, name, v8Native, waitForDebugger);
+            v8InspectorMap.put(v8Inspector.getSessionId(), v8Inspector);
+            return v8Inspector;
         }
         return null;
     }
@@ -3826,6 +3838,29 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Remove a V8 inspector.
+     *
+     * @param v8Inspector the V8 inspector
+     * @since 6.0.4
+     */
+    void removeV8Inspector(V8Inspector v8Inspector) {
+        v8InspectorMap.remove(v8Inspector.getSessionId(), v8Inspector);
+    }
+
+    /**
+     * Close and remove all V8 inspectors.
+     *
+     * @throws JavetException the javet exception
+     * @since 6.0.4
+     */
+    void removeV8Inspectors() throws JavetException {
+        for (V8Inspector v8Inspector : v8InspectorMap.values()) {
+            v8Inspector.close();
+        }
+        v8InspectorMap.clear();
+    }
+
+    /**
      * Remove a V8 module by a resource name and force close flag.
      *
      * @param resourceName the resource name
@@ -3962,6 +3997,11 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         synchronized (closeLock) {
             if (!isClosed()) {
                 removeAllReferences();
+                // The inspector is replaced together with the isolate of a Node.js snapshot runtime.
+                if (jsRuntimeType.isNode()
+                        && (runtimeOptions.isCreateSnapshotEnabled() || runtimeOptions.getSnapshotBlob() != null)) {
+                    removeV8Inspectors();
+                }
                 // The callbacks are removed even if the isolate is kept, so that every reset behaves the same.
                 removeAllCallbacks();
                 if (!v8Native.resetV8Context(handle, runtimeOptions)) {
@@ -3993,6 +4033,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         synchronized (closeLock) {
             if (!isClosed()) {
                 removeAllReferences();
+                // The inspector is replaced together with the isolate.
+                removeV8Inspectors();
                 // The new isolate has no native callbacks, so the Java callbacks are removed as well.
                 removeAllCallbacks();
                 if (!v8Native.resetV8Isolate(handle, runtimeOptions)) {
