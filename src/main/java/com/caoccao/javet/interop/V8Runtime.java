@@ -477,6 +477,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     /**
      * Allow eval().
+     * <p>
+     * It applies to the current context only. {@link #resetContext()} and {@link #resetIsolate()}
+     * create a new context with the default policy, so call it again after a reset if it is still needed.
      *
      * @param allow true : allow eval(), false : disallow eval()
      * @since 0.8.0

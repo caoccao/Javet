@@ -103,6 +103,22 @@ public class TestJavetEnginePool extends BaseTestJavet {
     }
 
     @Test
+    public void testAllowEvalAfterReset() throws JavetException {
+        javetEngineConfig.setAllowEval(true);
+        try (IJavetEngine<?> engine = javetEnginePool.getEngine()) {
+            V8Runtime v8Runtime = engine.getV8Runtime();
+            assertEquals(1, v8Runtime.getExecutor("eval('1');").executeInteger());
+            // The eval policy belongs to the context, so the resets must apply it to the new context.
+            engine.resetContext();
+            assertEquals(1, v8Runtime.getExecutor("eval('1');").executeInteger(),
+                    "The engine pool should allow eval() after resetContext().");
+            engine.resetIsolate();
+            assertEquals(1, v8Runtime.getExecutor("eval('1');").executeInteger(),
+                    "The engine pool should allow eval() after resetIsolate().");
+        }
+    }
+
+    @Test
     public void testCloseEngineTwice() throws JavetException {
         IJavetEngine<?> engine = javetEnginePool.getEngine();
         engine.close();
@@ -482,6 +498,26 @@ public class TestJavetEnginePool extends BaseTestJavet {
                     JavetExecutionException.class,
                     () -> v8Runtime.getExecutor("eval('1');").executeVoid(),
                     "By default, the engine pool should disallow eval().");
+            // The eval policy belongs to the context, so the resets must apply it to the new context.
+            engine.resetContext();
+            assertThrows(
+                    JavetExecutionException.class,
+                    () -> v8Runtime.getExecutor("eval('1');").executeVoid(),
+                    "The engine pool should disallow eval() after resetContext().");
+            engine.resetIsolate();
+            assertThrows(
+                    JavetExecutionException.class,
+                    () -> v8Runtime.getExecutor("eval('1');").executeVoid(),
+                    "The engine pool should disallow eval() after resetIsolate().");
+        }
+        runAndWait(TEST_MAX_TIMEOUT, () -> javetEnginePool.getIdleEngineCount() == 1);
+        // The next borrower gets the reset engine.
+        try (IJavetEngine<?> engine = javetEnginePool.getEngine()) {
+            V8Runtime v8Runtime = engine.getV8Runtime();
+            assertThrows(
+                    JavetExecutionException.class,
+                    () -> v8Runtime.getExecutor("eval('1');").executeVoid(),
+                    "The engine pool should disallow eval() for the next borrower.");
         }
         runAndWait(TEST_MAX_TIMEOUT, () -> javetEnginePool.getIdleEngineCount() == 1);
         assertEquals(1, javetEnginePool.getIdleEngineCount());

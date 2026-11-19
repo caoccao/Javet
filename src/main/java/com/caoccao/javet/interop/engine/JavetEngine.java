@@ -169,12 +169,16 @@ public class JavetEngine<R extends V8Runtime> implements IJavetEngine<R> {
     @Override
     public void resetContext() throws JavetException {
         v8Runtime.resetContext();
+        // The eval policy belongs to the context, so it is applied to the new context.
+        v8Runtime.allowEval(getConfig().isAllowEval());
         usage.reset();
     }
 
     @Override
     public void resetIsolate() throws JavetException {
         v8Runtime.resetIsolate();
+        // The eval policy belongs to the context, so it is applied to the new context.
+        v8Runtime.allowEval(getConfig().isAllowEval());
         usage.reset();
     }
 

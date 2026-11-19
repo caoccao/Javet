@@ -75,6 +75,8 @@ public interface IJavetEngine<R extends V8Runtime> extends IJavetClosable {
 
     /**
      * Reset context.
+     * <p>
+     * The eval policy in {@link JavetEngineConfig#isAllowEval()} is applied to the new context.
      *
      * @throws JavetException the javet exception
      * @since 0.7.1
@@ -83,6 +85,8 @@ public interface IJavetEngine<R extends V8Runtime> extends IJavetClosable {
 
     /**
      * Reset isolate.
+     * <p>
+     * The eval policy in {@link JavetEngineConfig#isAllowEval()} is applied to the new context.
      *
      * @throws JavetException the javet exception
      * @since 0.8.0
