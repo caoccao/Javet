@@ -23,7 +23,6 @@ import com.caoccao.javet.interfaces.IJavetEntitySymbol;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.interop.binding.ClassDescriptorStore;
-import com.caoccao.javet.interop.binding.IClassProxyPlugin;
 import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
@@ -37,7 +36,9 @@ import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueSymbol;
 
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * The type Javet reflection proxy object handler.
@@ -70,7 +71,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @throws JavetException the javet exception
      */
     protected boolean deleteFromCollection(V8Value property) throws JavetException {
-        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
         if (classProxyPlugin.isDeleteSupported(classDescriptor.getTargetClass())) {
             return classProxyPlugin.deleteByObject(targetObject, v8Runtime.toObject(property));
         }
@@ -95,7 +95,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @since 1.1.7
      */
     protected V8Value getByIndex(V8Value property) throws JavetException {
-        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
         if (classProxyPlugin.isIndexSupported(classDescriptor.getTargetClass())
                 && property instanceof V8ValueString) {
             String propertyString = ((V8ValueString) property).getValue();
@@ -125,12 +124,12 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         IClassProxyPluginFunction<E> classProxyPluginFunction = null;
         if (property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).getValue();
-            classProxyPluginFunction = classDescriptor.getClassProxyPlugin().getProxyGetByString(
+            classProxyPluginFunction = classProxyPlugin.getProxyGetByString(
                     classDescriptor.getTargetClass(), propertyName);
         } else if (property instanceof V8ValueSymbol) {
             V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
             String description = propertySymbol.getDescription();
-            classProxyPluginFunction = classDescriptor.getClassProxyPlugin().getProxyGetBySymbol(
+            classProxyPluginFunction = classProxyPlugin.getProxyGetBySymbol(
                     classDescriptor.getTargetClass(), description);
         }
         if (classProxyPluginFunction != null) {
@@ -191,7 +190,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @since 1.1.7
      */
     protected boolean hasFromCollection(V8Value property) throws JavetException {
-        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
         if (classProxyPlugin.isHasSupported(classDescriptor.getTargetClass())) {
             return classProxyPlugin.hasByObject(targetObject, v8Runtime.toObject(property));
         }
@@ -201,31 +199,18 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     @Override
     protected void initialize() {
         Class<T> targetClass = (Class<T>) targetObject.getClass();
+        classProxyPlugin = v8Runtime.getConverter().getConfig().getProxyPlugins().stream()
+                .filter(p -> p.isProxyable(targetClass))
+                .findFirst()
+                .orElse(JavetProxyPluginDefault.getInstance());
         classDescriptor = ClassDescriptorStore.getObjectMap().get(targetClass);
         if (classDescriptor == null) {
-            IClassProxyPlugin iClassProxyPlugin = v8Runtime.getConverter().getConfig().getProxyPlugins().stream()
-                    .filter(p -> p.isProxyable(targetClass))
-                    .findFirst()
-                    .orElse(JavetProxyPluginDefault.getInstance());
-            classDescriptor = new ClassDescriptor(V8ProxyMode.Object, targetClass, iClassProxyPlugin);
+            classDescriptor = new ClassDescriptor(V8ProxyMode.Object, targetClass);
             if (targetObject instanceof Class) {
                 initializeFieldsAndMethods((Class<?>) targetObject, true);
             }
-            initializeCollection();
             initializeFieldsAndMethods(targetClass, false);
             ClassDescriptorStore.getObjectMap().put(targetClass, classDescriptor);
-        }
-    }
-
-    /**
-     * Initialize collection.
-     *
-     * @since 1.1.7
-     */
-    protected void initializeCollection() {
-        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
-        if (classProxyPlugin.isUniqueKeySupported(classDescriptor.getTargetClass())) {
-            classProxyPlugin.populateUniqueKeys(classDescriptor.getUniqueKeySet(), targetObject);
         }
     }
 
@@ -284,11 +269,17 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
 
     @Override
     public V8ValueArray ownKeys(V8Value target) throws JavetException, E {
-        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
         if (classProxyPlugin.isOwnKeysSupported(classDescriptor.getTargetClass())) {
             Object[] keys = classProxyPlugin.getProxyOwnKeys(targetObject);
             if (ArrayUtils.isEmpty(keys)) {
-                keys = classDescriptor.getUniqueKeySet().toArray();
+                if (classProxyPlugin.isUniqueKeySupported(classDescriptor.getTargetClass())) {
+                    // The unique keys of the plugin come from the target object, not the shared class descriptor.
+                    Set<String> uniqueKeySet = new LinkedHashSet<>();
+                    classProxyPlugin.populateUniqueKeys(uniqueKeySet, targetObject);
+                    keys = uniqueKeySet.toArray();
+                } else {
+                    keys = classDescriptor.getUniqueKeySet().toArray();
+                }
             }
             for (int i = 0; i < keys.length; i++) {
                 Object key = keys[i];

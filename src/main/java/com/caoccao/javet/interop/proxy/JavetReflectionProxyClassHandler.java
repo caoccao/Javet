@@ -135,12 +135,10 @@ public class JavetReflectionProxyClassHandler<T extends Class<?>, E extends Exce
 
     @Override
     protected void initialize() {
+        classProxyPlugin = JavetProxyPluginClass.getInstance();
         classDescriptor = ClassDescriptorStore.getClassMap().get(targetObject);
         if (classDescriptor == null) {
-            classDescriptor = new ClassDescriptor(
-                    V8ProxyMode.Class,
-                    targetObject,
-                    JavetProxyPluginClass.getInstance());
+            classDescriptor = new ClassDescriptor(V8ProxyMode.Class, targetObject);
             Class<?> targetClass = targetObject.getClass();
             initializeFieldsAndMethods(targetObject, true);
             initializeFieldsAndMethods(targetClass, false);

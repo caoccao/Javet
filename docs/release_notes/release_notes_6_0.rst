@@ -34,6 +34,9 @@ Release Notes 6.0.x
 * Fixed ``call()``, ``callAsConstructor()`` in ``V8ValueFunction``, ``invoke()`` in ``V8ValueObject``, and ``set()`` with multiple key-value pairs in ``V8ValueObject`` and ``V8ValueMap`` leaking the converted values when a later value cannot be converted
 * Fixed ``JavetObjectConverter`` failing to convert an object whose own ``constructor`` property is not a function, which made ``executeObject()`` return ``null``
 * Fixed ``registerCustomObject()`` in ``JavetObjectConverter`` returning ``false`` when the registration succeeds
+* Fixed the reflection proxies of a Java class dispatching to the proxy plugin selected by the first converter that proxies the class, instead of the proxy plugin selected by the converter of the runtime
+* Fixed ``Reflect.ownKeys()`` on an empty proxied Java map or set returning the keys of the first proxied map or set of the same class
+* Removed the proxy plugin from ``ClassDescriptor`` because ``ClassDescriptor`` only caches the reflection metadata shared by all runtimes
 
 6.0.3
 -----

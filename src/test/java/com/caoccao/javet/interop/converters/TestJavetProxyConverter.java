@@ -33,7 +33,9 @@ import com.caoccao.javet.interfaces.IJavetUniFunction;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.interop.binding.ClassDescriptorStore;
+import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
 import com.caoccao.javet.interop.proxy.IJavetDirectProxyHandler;
+import com.caoccao.javet.interop.proxy.plugins.BaseJavetProxyPlugin;
 import com.caoccao.javet.mock.MockCallbackReceiver;
 import com.caoccao.javet.mock.MockDirectProxyFunctionHandler;
 import com.caoccao.javet.mock.MockDirectProxyListHandler;
@@ -1895,6 +1897,61 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testProxyPluginOwnKeysInMultipleRuntimes() throws JavetException {
+        JavetProxyConverter javetProxyConverterWithMap = new JavetProxyConverter();
+        javetProxyConverterWithMap.getConfig().setProxyMapEnabled(true);
+        JavetBridgeConverter javetBridgeConverterWithoutMap = new JavetBridgeConverter();
+        javetBridgeConverterWithoutMap.getConfig().setProxyMapEnabled(false);
+        v8Runtime.setConverter(javetProxyConverterWithMap);
+        try (V8Runtime v8Runtime2 = v8Host.createV8Runtime()) {
+            v8Runtime2.setConverter(javetBridgeConverterWithoutMap);
+            // The runtime with the map plugin proxies a non-empty map first.
+            TestProxyPluginMap map = new TestProxyPluginMap();
+            map.put("x", "1");
+            v8Runtime.getGlobalObject().set("a", map);
+            v8Runtime.getGlobalObject().set("b", new TestProxyPluginMap());
+            v8Runtime2.getGlobalObject().set("a", new TestProxyPluginMap());
+            assertEquals("[\"x\"]", v8Runtime.getExecutor("JSON.stringify(Reflect.ownKeys(a))").executeString());
+            // The keys of the first map are not shared with the other maps.
+            assertEquals("[]", v8Runtime.getExecutor("JSON.stringify(Reflect.ownKeys(b))").executeString());
+            // The runtime with the default plugin gets the keys from the getters.
+            assertEquals(
+                    "[\"class\",\"empty\"]",
+                    v8Runtime2.getExecutor("JSON.stringify(Reflect.ownKeys(a).sort())").executeString());
+            v8Runtime2.getGlobalObject().delete("a");
+        }
+        v8Runtime.getGlobalObject().delete("a");
+        v8Runtime.getGlobalObject().delete("b");
+    }
+
+    @Test
+    public void testProxyPluginsInMultipleRuntimes() throws JavetException {
+        JavetProxyConverter javetProxyConverter1 = new JavetProxyConverter();
+        javetProxyConverter1.getConfig().getProxyPlugins().add(new MockProxyPlugin("plugin1"));
+        JavetProxyConverter javetProxyConverter2 = new JavetProxyConverter();
+        javetProxyConverter2.getConfig().getProxyPlugins().add(new MockProxyPlugin("plugin2"));
+        v8Runtime.setConverter(javetProxyConverter1);
+        try (V8Runtime v8Runtime2 = v8Host.createV8Runtime()) {
+            v8Runtime2.setConverter(javetProxyConverter2);
+            // The runtime with plugin 1 proxies TestProxyPluginTarget1 first.
+            v8Runtime.getGlobalObject().set("a", new TestProxyPluginTarget1());
+            v8Runtime2.getGlobalObject().set("a", new TestProxyPluginTarget1());
+            // The runtime with plugin 2 proxies TestProxyPluginTarget2 first.
+            v8Runtime2.getGlobalObject().set("b", new TestProxyPluginTarget2());
+            v8Runtime.getGlobalObject().set("b", new TestProxyPluginTarget2());
+            // Each runtime dispatches to its own plugin regardless of the initialization order.
+            assertEquals("plugin1", v8Runtime.getExecutor("a.pluginName").executeString());
+            assertEquals("plugin2", v8Runtime2.getExecutor("a.pluginName").executeString());
+            assertEquals("plugin1", v8Runtime.getExecutor("b.pluginName").executeString());
+            assertEquals("plugin2", v8Runtime2.getExecutor("b.pluginName").executeString());
+            v8Runtime2.getGlobalObject().delete("a");
+            v8Runtime2.getGlobalObject().delete("b");
+        }
+        v8Runtime.getGlobalObject().delete("a");
+        v8Runtime.getGlobalObject().delete("b");
+    }
+
+    @Test
     public void testSet() throws JavetException {
         try {
             javetProxyConverter.getConfig().setProxySetEnabled(true);
@@ -2410,6 +2467,39 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         }
     }
 
+    public static class MockProxyPlugin extends BaseJavetProxyPlugin {
+        private final String name;
+
+        public MockProxyPlugin(String name) {
+            super();
+            this.name = name;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public <E extends Exception> IClassProxyPluginFunction<E> getProxyGetByString(
+                Class<?> targetClass, String propertyName) {
+            if ("pluginName".equals(propertyName)) {
+                return (v8Runtime, targetObject) -> v8Runtime.createV8ValueString(name);
+            }
+            return null;
+        }
+
+        @Override
+        public boolean isMethodProxyable(String methodName, Class<?> targetClass) {
+            return false;
+        }
+
+        @Override
+        public boolean isProxyable(Class<?> targetClass) {
+            return targetClass == TestProxyPluginTarget1.class || targetClass == TestProxyPluginTarget2.class;
+        }
+    }
+
     static class StringJoiner implements AutoCloseable {
         private IStringJoiner joiner;
 
@@ -2576,6 +2666,15 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         public String value() {
             return "method:" + value;
         }
+    }
+
+    public static class TestProxyPluginMap extends HashMap<String, String> {
+    }
+
+    public static class TestProxyPluginTarget1 {
+    }
+
+    public static class TestProxyPluginTarget2 {
     }
 
     @V8Convert(mode = V8ConversionMode.Transparent)

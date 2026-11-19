@@ -39,12 +39,6 @@ public class ClassDescriptor {
      */
     protected final List<Method> applyFunctions;
     /**
-     * The Class proxy plugin.
-     *
-     * @since 3.0.4
-     */
-    protected final IClassProxyPlugin classProxyPlugin;
-    /**
      * The Constructors.
      *
      * @since 0.9.8
@@ -119,13 +113,16 @@ public class ClassDescriptor {
 
     /**
      * Instantiates a new Class descriptor.
+     * <p>
+     * The class descriptor only caches the reflection metadata shared by all runtimes.
+     * The class proxy plugin is selected by the reflection proxy handler
+     * from the converter config of its runtime.
      *
-     * @param proxyMode        the proxy mode
-     * @param targetClass      the target class
-     * @param classProxyPlugin the class proxy plugin
+     * @param proxyMode   the proxy mode
+     * @param targetClass the target class
      * @since 1.1.7
      */
-    public ClassDescriptor(V8ProxyMode proxyMode, Class<?> targetClass, IClassProxyPlugin classProxyPlugin) {
+    public ClassDescriptor(V8ProxyMode proxyMode, Class<?> targetClass) {
         applyFunctions = new ArrayList<>();
         constructors = new ArrayList<>();
         fieldMap = new LinkedHashMap<>();
@@ -140,7 +137,6 @@ public class ClassDescriptor {
                 GetPriority.GenericGetter,
                 GetPriority.Polyfill);
         gettersMap = new LinkedHashMap<>();
-        this.classProxyPlugin = Objects.requireNonNull(classProxyPlugin);
         methodsMap = new LinkedHashMap<>();
         this.proxyMode = proxyMode;
         setPriorities = SimpleList.of(
@@ -161,16 +157,6 @@ public class ClassDescriptor {
      */
     public List<Method> getApplyFunctions() {
         return applyFunctions;
-    }
-
-    /**
-     * Gets class proxy plugin.
-     *
-     * @return the class proxy plugin
-     * @since 3.0.4
-     */
-    public IClassProxyPlugin getClassProxyPlugin() {
-        return classProxyPlugin;
     }
 
     /**

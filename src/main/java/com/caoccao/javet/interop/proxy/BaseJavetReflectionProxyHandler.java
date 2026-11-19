@@ -72,6 +72,15 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
      * @since 1.1.7
      */
     protected ClassDescriptor classDescriptor;
+    /**
+     * The Class proxy plugin.
+     * <p>
+     * It is selected per handler instead of being cached in the class descriptor shared by all runtimes,
+     * because runtimes with different converter configs may select different plugins for the same class.
+     *
+     * @since 6.0.4
+     */
+    protected IClassProxyPlugin classProxyPlugin;
 
     /**
      * Instantiates a new Base javet reflection proxy handler.
@@ -83,6 +92,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     public BaseJavetReflectionProxyHandler(V8Runtime v8Runtime, T targetObject) {
         super(v8Runtime, targetObject);
         classDescriptor = null;
+        classProxyPlugin = null;
         initialize();
     }
 
@@ -195,10 +205,10 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     protected V8Value getByBuiltInMethod(V8Value property) throws JavetException, E {
         if (property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).toPrimitive();
-            if (!classDescriptor.getClassProxyPlugin().isMethodProxyable(propertyName, classDescriptor.getTargetClass())) {
+            if (!classProxyPlugin.isMethodProxyable(propertyName, classDescriptor.getTargetClass())) {
                 if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
                     IClassProxyPluginFunction<E> classProxyPluginFunction =
-                            classDescriptor.getClassProxyPlugin().getProxySymbolToPrimitive();
+                            classProxyPlugin.getProxySymbolToPrimitive();
                     return classProxyPluginFunction.invoke(v8Runtime, targetObject);
                 }
             }
@@ -298,7 +308,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     protected V8Value getByGetMethod(V8Value target, V8Value property) throws JavetException, E {
         if (property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).toPrimitive();
-            if (!classDescriptor.getClassProxyPlugin().isMethodProxyable(propertyName, classDescriptor.getTargetClass())) {
+            if (!classProxyPlugin.isMethodProxyable(propertyName, classDescriptor.getTargetClass())) {
                 List<Method> getterMethods = classDescriptor.getGettersMap().get(propertyName);
                 if (ListUtils.isNotEmpty(getterMethods)) {
                     JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
@@ -325,7 +335,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     protected V8Value getByMethod(V8Value property) throws JavetException, E {
         if (property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).toPrimitive();
-            if (!classDescriptor.getClassProxyPlugin().isMethodProxyable(propertyName, classDescriptor.getTargetClass())) {
+            if (!classProxyPlugin.isMethodProxyable(propertyName, classDescriptor.getTargetClass())) {
                 List<Method> methods = classDescriptor.getMethodsMap().get(propertyName);
                 if (ListUtils.isNotEmpty(methods)) {
                     JavetReflectionProxyInterceptor reflectionProxyInterceptor = new JavetReflectionProxyInterceptor(
@@ -364,7 +374,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
         try {
             if (property instanceof V8ValueString) {
                 IJavetEntityPropertyDescriptor<V8Value> javetEntityPropertyDescriptor =
-                        classDescriptor.getClassProxyPlugin().getProxyOwnPropertyDescriptor(
+                        classProxyPlugin.getProxyOwnPropertyDescriptor(
                                 targetObject, ((V8ValueString) property).getValue());
                 if (javetEntityPropertyDescriptor != null) {
                     v8Value = internalGet(target, property);
@@ -536,9 +546,7 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
             }
             JavetReflectionUtils.safeSetAccessible(field);
             classDescriptor.getFieldMap().put(fieldName, field);
-            if (!classDescriptor.getClassProxyPlugin().isUniqueKeySupported(classDescriptor.getTargetClass())) {
-                classDescriptor.getUniqueKeySet().add(fieldName);
-            }
+            classDescriptor.getUniqueKeySet().add(fieldName);
         }
     }
 
@@ -574,20 +582,18 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
                 final int getterPrefixLength = getGetterPrefixLength(method);
                 if (getterPrefixLength > 0) {
                     addMethod(method, getterPrefixLength, classDescriptor.getGettersMap());
-                    if (!classDescriptor.getClassProxyPlugin().isUniqueKeySupported(classDescriptor.getTargetClass())) {
-                        String aliasMethodName = method.getName().substring(getterPrefixLength);
-                        Matcher matcher = PATTERN_CAPITALIZED_PREFIX.matcher(aliasMethodName);
-                        if (matcher.find()) {
-                            final int capitalizedPrefixLength = matcher.group().length();
-                            if (capitalizedPrefixLength == 1) {
-                                classDescriptor.getUniqueKeySet().add(
-                                        aliasMethodName.substring(0, capitalizedPrefixLength).toLowerCase(Locale.ROOT)
-                                                + aliasMethodName.substring(capitalizedPrefixLength));
-                            } else {
-                                classDescriptor.getUniqueKeySet().add(
-                                        aliasMethodName.substring(0, capitalizedPrefixLength - 1).toLowerCase(Locale.ROOT)
-                                                + aliasMethodName.substring(capitalizedPrefixLength - 1));
-                            }
+                    String aliasMethodName = method.getName().substring(getterPrefixLength);
+                    Matcher matcher = PATTERN_CAPITALIZED_PREFIX.matcher(aliasMethodName);
+                    if (matcher.find()) {
+                        final int capitalizedPrefixLength = matcher.group().length();
+                        if (capitalizedPrefixLength == 1) {
+                            classDescriptor.getUniqueKeySet().add(
+                                    aliasMethodName.substring(0, capitalizedPrefixLength).toLowerCase(Locale.ROOT)
+                                            + aliasMethodName.substring(capitalizedPrefixLength));
+                        } else {
+                            classDescriptor.getUniqueKeySet().add(
+                                    aliasMethodName.substring(0, capitalizedPrefixLength - 1).toLowerCase(Locale.ROOT)
+                                            + aliasMethodName.substring(capitalizedPrefixLength - 1));
                         }
                     }
                 } else {
@@ -795,7 +801,6 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
      * @since 1.1.7
      */
     protected boolean setByIndex(V8Value propertyKey, V8Value propertyValue) throws JavetException {
-        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
         if (classProxyPlugin.isIndexSupported(classDescriptor.getTargetClass())
                 && propertyKey instanceof V8ValueString) {
             String propertyKeyString = ((V8ValueString) propertyKey).getValue();
