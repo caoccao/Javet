@@ -33,6 +33,7 @@ import com.caoccao.javet.mock.MockNearHeapLimitCallback;
 import com.caoccao.javet.utils.SimpleList;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.reference.IV8ValuePromise;
+import com.caoccao.javet.values.reference.V8Module;
 import com.caoccao.javet.values.reference.V8ValueObject;
 import com.caoccao.javet.values.reference.V8ValuePromise;
 import org.junit.jupiter.api.Test;
@@ -46,8 +47,11 @@ import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -173,6 +177,70 @@ public class TestV8Runtime extends BaseTestJavet {
             assertTrue(snapshotBlob.length > 0);
             return snapshotBlob;
         }
+    }
+
+    @Test
+    public void testAddV8ModuleWhileClosingAnotherModule() throws Exception {
+        final long timeoutMillis = 10_000L;
+        final String resourceName = "./a.js";
+        // The V8 runtime is closed after the threads finish, because a deadlock would block closing it.
+        V8Runtime v8Runtime = v8Host.createV8Runtime();
+        // The new module is detached, so that adding it again runs no native code.
+        V8Module newV8Module = v8Runtime.getExecutor("export const a = 2;")
+                .setResourceName(resourceName).compileV8Module();
+        v8Runtime.removeV8Module(resourceName);
+        V8Module oldV8Module = v8Runtime.getExecutor("export const a = 1;")
+                .setResourceName(resourceName).compileV8Module();
+        V8Module otherV8Module = v8Runtime.getExecutor("export const b = 1;")
+                .setResourceName("./b.js").compileV8Module();
+        assertEquals(2, v8Runtime.getV8ModuleCount());
+        final AtomicReference<Throwable> error = new AtomicReference<>();
+        final AtomicBoolean replacingThreadBlocked = new AtomicBoolean(false);
+        final CountDownLatch referenceLockLatch = new CountDownLatch(1);
+        // The replacing thread closes the old module, which waits for the reference lock.
+        Thread replacingThread = new Thread(() -> {
+            try {
+                referenceLockLatch.await();
+                v8Runtime.addV8Module(newV8Module);
+            } catch (Throwable t) {
+                error.compareAndSet(null, t);
+            }
+        });
+        // The closing thread holds the reference lock as closing a module does, till the replacing thread waits for it.
+        Thread closingThread = new Thread(() -> {
+            try {
+                synchronized (v8Runtime.referenceLock) {
+                    referenceLockLatch.countDown();
+                    final long deadline = System.currentTimeMillis() + timeoutMillis;
+                    while (replacingThread.getState() != Thread.State.BLOCKED
+                            && System.currentTimeMillis() < deadline) {
+                        TimeUnit.MILLISECONDS.sleep(1);
+                    }
+                    replacingThreadBlocked.set(replacingThread.getState() == Thread.State.BLOCKED);
+                    otherV8Module.close();
+                }
+            } catch (Throwable t) {
+                error.compareAndSet(null, t);
+            }
+        });
+        replacingThread.setDaemon(true);
+        closingThread.setDaemon(true);
+        replacingThread.start();
+        closingThread.start();
+        closingThread.join(timeoutMillis);
+        replacingThread.join(timeoutMillis);
+        assertFalse(closingThread.isAlive(), "The closing thread should not be blocked.");
+        assertFalse(replacingThread.isAlive(), "The replacing thread should not be blocked.");
+        assertNull(error.get());
+        assertTrue(replacingThreadBlocked.get());
+        assertTrue(oldV8Module.isClosed());
+        assertTrue(otherV8Module.isClosed());
+        // Closing the old module doesn't remove the new module from the cache.
+        assertSame(newV8Module, v8Runtime.getV8Module(resourceName, null));
+        assertEquals(1, v8Runtime.getV8ModuleCount());
+        newV8Module.close();
+        assertEquals(0, v8Runtime.getV8ModuleCount());
+        v8Runtime.close();
     }
 
     @Test

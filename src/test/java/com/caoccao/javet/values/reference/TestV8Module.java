@@ -466,6 +466,9 @@ public class TestV8Module extends BaseTestJavetRuntime {
                     assertTrue(4 <= v8Module2.getScriptId() && v8Module2.getScriptId() <= 5);
                 }
                 assertTrue(v8Module2.instantiate());
+                // Closing the temporary referrer of the import doesn't remove the referrer from the cache.
+                assertTrue(v8Runtime.containsV8Module(v8Module2.getResourceName()));
+                assertEquals(2, v8Runtime.getV8ModuleCount());
                 try (V8ValuePromise v8ValuePromise = v8Module2.evaluate()) {
                     assertTrue(v8ValuePromise.isFulfilled());
                     assertTrue(v8ValuePromise.getResult().isUndefined());

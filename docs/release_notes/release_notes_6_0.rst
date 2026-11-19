@@ -24,6 +24,8 @@ Release Notes 6.0.x
 * Fixed some bugs in ``splice()`` in ``JavetProxyPluginList`` and ``toSpliced()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList``
 * Fixed the JVM crash when an expired ``V8Guard``, ``isInUse()`` or ``terminateExecution()`` accesses a ``V8Runtime`` that is being reset by ``resetIsolate()`` or ``resetContext()``, or closed
 * Fixed ``JavetEngine`` losing the eval policy in ``JavetEngineConfig`` after ``resetContext()`` or ``resetIsolate()``
+* Fixed the deadlock when ``addV8Module()`` in ``V8Runtime`` replaces a module while another module is being closed
+* Fixed closing a ``V8Module`` removing another module with the same resource name from the module cache
 
 6.0.3
 -----

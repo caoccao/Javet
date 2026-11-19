@@ -458,6 +458,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     /**
      * Add V8 module.
+     * <p>
+     * If another module with the same resource name is cached, it is replaced and force closed.
      *
      * @param iV8Module the V8 module
      * @throws JavetException the javet exception
@@ -466,11 +468,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public void addV8Module(IV8Module iV8Module) throws JavetException {
         String resourceName = Objects.requireNonNull(iV8Module.getResourceName());
         if (StringUtils.isNotEmpty(resourceName)) {
+            final IV8Module replacedV8Module;
             synchronized (v8ModuleLock) {
-                if (containsV8Module(resourceName)) {
-                    removeV8Module(resourceName, true);
-                }
-                v8ModuleMap.put(resourceName, iV8Module);
+                replacedV8Module = v8ModuleMap.put(resourceName, iV8Module);
+            }
+            // Closing a module takes the reference lock, so it happens after the module lock is released.
+            if (replacedV8Module != null && replacedV8Module != iV8Module) {
+                replacedV8Module.close(true);
             }
         }
     }
@@ -3766,7 +3770,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             if (referenceMap.remove(referenceHandle) != null) {
                 final int referenceType = iV8ValueReference.getType().getId();
                 if (referenceType == V8ValueType.Module.getId()) {
-                    removeV8Module((IV8Module) iV8ValueReference);
+                    final IV8Module iV8Module = (IV8Module) iV8ValueReference;
+                    final String resourceName = iV8Module.getResourceName();
+                    synchronized (v8ModuleLock) {
+                        // The module only removes its own entry, because another module may have replaced it.
+                        if (v8ModuleMap.get(resourceName) == iV8Module) {
+                            v8ModuleMap.remove(resourceName);
+                        }
+                    }
                 }
                 v8Native.removeReferenceHandle(handle, referenceHandle, referenceType);
             }
