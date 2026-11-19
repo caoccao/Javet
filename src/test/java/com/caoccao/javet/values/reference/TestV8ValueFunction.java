@@ -20,6 +20,7 @@ import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.annotations.V8Function;
 import com.caoccao.javet.enums.V8ScopeType;
 import com.caoccao.javet.enums.V8ValueSymbolType;
+import com.caoccao.javet.exceptions.JavetConverterException;
 import com.caoccao.javet.exceptions.JavetError;
 import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.exceptions.JavetExecutionException;
@@ -28,6 +29,8 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.callback.IJavetDirectCallable;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
+import com.caoccao.javet.interop.converters.IJavetConverter;
+import com.caoccao.javet.interop.converters.JavetObjectConverter;
 import com.caoccao.javet.interop.engine.IJavetEngine;
 import com.caoccao.javet.interop.engine.IJavetEnginePool;
 import com.caoccao.javet.interop.engine.JavetEnginePool;
@@ -293,6 +296,41 @@ public class TestV8ValueFunction extends BaseTestJavetRuntime {
                     new Integer[]{1, 2, 3, 4, 5, 6},
                     result.toArray(new Integer[0]),
                     "callObject() should work transparently without resource leak");
+        }
+    }
+
+    @Test
+    public void testCallWithFailedArgumentConversion() throws JavetException {
+        final Object failure = new Object();
+        IJavetConverter converter = v8Runtime.getConverter();
+        v8Runtime.setConverter(new JavetObjectConverter() {
+            @Override
+            protected <T extends V8Value> T toV8Value(V8Runtime v8Runtime, Object object, int depth)
+                    throws JavetException {
+                if (object == failure) {
+                    throw new JavetConverterException("Expected conversion failure.");
+                }
+                return super.toV8Value(v8Runtime, object, depth);
+            }
+        });
+        try (V8ValueObject v8ValueObject = v8Runtime.getExecutor("({ f: function (a, b) { this.a = a; } })").execute();
+             V8ValueFunction v8ValueFunction = v8ValueObject.get("f")) {
+            final int referenceCount = v8Runtime.getReferenceCount();
+            for (int i = 0; i < 10; i++) {
+                // The first argument is converted to a new V8 object before the second argument fails.
+                assertThrows(
+                        JavetConverterException.class,
+                        () -> v8ValueFunction.callVoid(null, new HashMap<>(), failure));
+                assertThrows(
+                        JavetConverterException.class,
+                        () -> v8ValueFunction.callAsConstructor(new HashMap<>(), failure));
+                assertThrows(
+                        JavetConverterException.class,
+                        () -> v8ValueObject.invokeVoid("f", new HashMap<>(), failure));
+                assertEquals(referenceCount, v8Runtime.getReferenceCount());
+            }
+        } finally {
+            v8Runtime.setConverter(converter);
         }
     }
 
