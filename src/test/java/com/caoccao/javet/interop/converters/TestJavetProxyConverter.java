@@ -782,6 +782,32 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testConcatWithReferences() throws JavetException {
+        try {
+            javetProxyConverter.getConfig().setProxyArrayEnabled(true);
+            javetProxyConverter.getConfig().setProxyListEnabled(true);
+            v8Runtime.getGlobalObject().set("array", new Object[]{"x"});
+            v8Runtime.getGlobalObject().set("list", SimpleList.of("y"));
+            assertEquals(
+                    "[\"x\",{\"a\":1},[2]]",
+                    v8Runtime.getExecutor("JSON.stringify(array.concat([{a: 1}, [2]]))").executeString());
+            assertEquals(
+                    "[\"y\",{\"a\":1},[2]]",
+                    v8Runtime.getExecutor("JSON.stringify(list.concat([{a: 1}, [2]]))").executeString());
+            final int referenceCount = v8Runtime.getReferenceCount();
+            v8Runtime.getExecutor(
+                    "for (let i = 0; i < 100; ++i) { array.concat([{}]); list.concat([{}]); }").executeVoid();
+            assertEquals(referenceCount, v8Runtime.getReferenceCount(),
+                    "The element references of the array arguments should be closed.");
+        } finally {
+            v8Runtime.getGlobalObject().delete("array");
+            v8Runtime.getGlobalObject().delete("list");
+            javetProxyConverter.getConfig().setProxyArrayEnabled(false);
+            javetProxyConverter.getConfig().setProxyListEnabled(false);
+        }
+    }
+
+    @Test
     public void testConstructor() throws JavetException {
         v8Runtime.getGlobalObject().set("StringBuilder", StringBuilder.class);
         assertEquals("abc def", v8Runtime.getExecutor(

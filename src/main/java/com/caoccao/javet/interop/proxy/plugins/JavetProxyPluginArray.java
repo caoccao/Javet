@@ -340,29 +340,37 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
                 CONCAT, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     List<Object> results = new ArrayList<>();
-                    ListUtils.addAll(results, targetObject);
-                    if (ArrayUtils.isNotEmpty(v8Values)) {
-                        for (V8Value v8Value : v8Values) {
-                            if (v8Value instanceof IV8ValueArray) {
-                                IV8ValueArray iV8ValueArray = (IV8ValueArray) v8Value;
-                                V8Value[] items = new V8Value[iV8ValueArray.getLength()];
-                                if (ArrayUtils.isNotEmpty(items)) {
-                                    iV8ValueArray.batchGet(items, 0, items.length);
-                                    Collections.addAll(results, items);
-                                }
-                            } else {
-                                Object object = v8Runtime.toObject(v8Value);
-                                if (object instanceof List) {
-                                    Collections.addAll(results, (List<?>) object);
-                                } else if (object != null && object.getClass().isArray()) {
-                                    ListUtils.addAll(results, object);
+                    // The items got by batchGet() are owned by this function,
+                    // so they must be closed after the result array is created.
+                    List<V8Value[]> itemsList = new ArrayList<>();
+                    try {
+                        ListUtils.addAll(results, targetObject);
+                        if (ArrayUtils.isNotEmpty(v8Values)) {
+                            for (V8Value v8Value : v8Values) {
+                                if (v8Value instanceof IV8ValueArray) {
+                                    IV8ValueArray iV8ValueArray = (IV8ValueArray) v8Value;
+                                    V8Value[] items = new V8Value[iV8ValueArray.getLength()];
+                                    if (ArrayUtils.isNotEmpty(items)) {
+                                        itemsList.add(items);
+                                        iV8ValueArray.batchGet(items, 0, items.length);
+                                        Collections.addAll(results, items);
+                                    }
                                 } else {
-                                    results.add(v8Value);
+                                    Object object = v8Runtime.toObject(v8Value);
+                                    if (object instanceof List) {
+                                        Collections.addAll(results, (List<?>) object);
+                                    } else if (object != null && object.getClass().isArray()) {
+                                        ListUtils.addAll(results, object);
+                                    } else {
+                                        results.add(v8Value);
+                                    }
                                 }
                             }
                         }
+                        return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
+                    } finally {
+                        JavetResourceUtils.safeClose(itemsList);
                     }
-                    return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
                 }));
     }
 

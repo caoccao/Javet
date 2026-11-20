@@ -37,6 +37,7 @@ Release Notes 6.0.x
 * Fixed the reflection proxies of a Java class dispatching to the proxy plugin selected by the first converter that proxies the class, instead of the proxy plugin selected by the converter of the runtime
 * Fixed ``Reflect.ownKeys()`` on an empty proxied Java map or set returning the keys of the first proxied map or set of the same class
 * Removed the proxy plugin from ``ClassDescriptor`` because ``ClassDescriptor`` only caches the reflection metadata shared by all runtimes
+* Fixed ``concat()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` leaking the references to the elements of the array arguments
 
 6.0.3
 -----
