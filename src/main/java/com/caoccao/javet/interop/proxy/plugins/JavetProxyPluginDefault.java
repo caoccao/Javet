@@ -214,6 +214,10 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
      */
     protected static final String DATE_PROTOTYPE_TO_DATE_STRING = "Date.prototype.toDateString";
     /**
+     * The JavaScript expression {@code Date.prototype.toGMTString}.
+     */
+    protected static final String DATE_PROTOTYPE_TO_GMT_STRING = "Date.prototype.toGMTString";
+    /**
      * The JavaScript expression {@code Date.prototype.toISOString}.
      */
     protected static final String DATE_PROTOTYPE_TO_ISOSTRING = "Date.prototype.toISOString";
@@ -237,6 +241,10 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
      * The JavaScript expression {@code Date.prototype.toString}.
      */
     protected static final String DATE_PROTOTYPE_TO_STRING = "Date.prototype.toString";
+    /**
+     * The JavaScript expression {@code Date.prototype.toTemporalInstant}.
+     */
+    protected static final String DATE_PROTOTYPE_TO_TEMPORAL_INSTANT = "Date.prototype.toTemporalInstant";
     /**
      * The JavaScript expression {@code Date.prototype.toTimeString}.
      */
@@ -523,6 +531,10 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
      */
     protected static final String TO_FIXED = "toFixed";
     /**
+     * The JavaScript Date method name {@code toGMTString}.
+     */
+    protected static final String TO_GMT_STRING = "toGMTString";
+    /**
      * The JavaScript Date method name {@code toISOString}.
      */
     protected static final String TO_ISO_STRING = "toISOString";
@@ -542,6 +554,10 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
      * The JavaScript Number method name {@code toPrecision}.
      */
     protected static final String TO_PRECISION = "toPrecision";
+    /**
+     * The JavaScript Date method name {@code toTemporalInstant}.
+     */
+    protected static final String TO_TEMPORAL_INSTANT = "toTemporalInstant";
     /**
      * The JavaScript Date method name {@code toTimeString}.
      */
@@ -840,6 +856,8 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
                     typeErrorFunctionIsNotSupported(DATE_PROTOTYPE_SET_YEAR, v8Runtime));
             polyfillFunctionMap.put(TO_DATE_STRING, (v8Runtime, targetObject) ->
                     callWithObjectConverter(DATE_PROTOTYPE_TO_DATE_STRING, v8Runtime, targetObject));
+            polyfillFunctionMap.put(TO_GMT_STRING, (v8Runtime, targetObject) ->
+                    callWithObjectConverter(DATE_PROTOTYPE_TO_GMT_STRING, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_ISO_STRING, (v8Runtime, targetObject) ->
                     callWithObjectConverter(DATE_PROTOTYPE_TO_ISOSTRING, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_JSON, (v8Runtime, targetObject) ->
@@ -852,6 +870,8 @@ public class JavetProxyPluginDefault extends BaseJavetProxyPluginMultiple {
                     callWithObjectConverter(DATE_PROTOTYPE_TO_LOCALE_TIME_STRING, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_STRING, (v8Runtime, targetObject) ->
                     callWithObjectConverter(DATE_PROTOTYPE_TO_STRING, v8Runtime, targetObject));
+            polyfillFunctionMap.put(TO_TEMPORAL_INSTANT, (v8Runtime, targetObject) ->
+                    callWithObjectConverter(DATE_PROTOTYPE_TO_TEMPORAL_INSTANT, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_TIME_STRING, (v8Runtime, targetObject) ->
                     callWithObjectConverter(DATE_PROTOTYPE_TO_TIME_STRING, v8Runtime, targetObject));
             polyfillFunctionMap.put(TO_UTC_STRING, (v8Runtime, targetObject) ->

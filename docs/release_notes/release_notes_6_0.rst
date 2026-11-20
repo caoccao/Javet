@@ -51,6 +51,7 @@ Release Notes 6.0.x
 * Fixed ``Object.prototype.toString()`` returning ``[object Object]`` instead of ``[object Map]`` for a proxied Java map, by adding ``Symbol.toStringTag`` to ``JavetProxyPluginMap``
 * Fixed the iterators of ``JavetProxyPluginArray``, ``JavetProxyPluginList``, ``JavetProxyPluginMap`` and ``JavetProxyPluginSet`` missing the iterator helpers (e.g. ``map()``, ``filter()``, ``toArray()``) and ``Symbol.dispose``, by making ``V8VirtualIterator`` inherit ``Iterator.prototype``
 * Fixed ``values()`` in ``JavetProxyPluginMap`` calling ``Map.values()`` in Java, which returned an array instead of an iterator
+* Fixed ``toGMTString()`` and ``toTemporalInstant()`` throwing ``TypeError`` on a bridged ``ZonedDateTime`` by calling both methods with a native ``Date`` receiver
 
 6.0.3
 -----
