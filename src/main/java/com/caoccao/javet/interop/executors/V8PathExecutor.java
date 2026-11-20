@@ -21,9 +21,9 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.SimpleMap;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
@@ -67,10 +67,10 @@ public class V8PathExecutor extends V8StringExecutor {
     @Override
     public String getScriptString() throws JavetException {
         if (scriptString == null) {
-            try (FileInputStream fileInputStream = new FileInputStream(scriptPath.toString())) {
-                byte[] buffer = new byte[fileInputStream.available()];
-                fileInputStream.read(buffer);
-                scriptString = new String(buffer, StandardCharsets.UTF_8);
+            try {
+                // The path is read through its file system provider, so that a path in a non-default
+                // file system (e.g. a ZIP file system) is not resolved against the default file system.
+                scriptString = new String(Files.readAllBytes(scriptPath), StandardCharsets.UTF_8);
             } catch (IOException e) {
                 throw new JavetException(
                         JavetError.FailedToReadPath,

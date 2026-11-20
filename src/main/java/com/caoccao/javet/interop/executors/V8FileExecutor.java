@@ -21,6 +21,7 @@ import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.utils.SimpleMap;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -33,6 +34,7 @@ import java.util.Objects;
  * @since 1.0.3
  */
 public class V8FileExecutor extends V8StringExecutor {
+    private static final int BUFFER_SIZE = 8192;
     /**
      * The Script file.
      *
@@ -67,10 +69,15 @@ public class V8FileExecutor extends V8StringExecutor {
     @Override
     public String getScriptString() throws JavetException {
         if (scriptString == null) {
-            try (FileInputStream fileInputStream = new FileInputStream(scriptFile)) {
-                byte[] buffer = new byte[fileInputStream.available()];
-                fileInputStream.read(buffer);
-                scriptString = new String(buffer, StandardCharsets.UTF_8);
+            try (FileInputStream fileInputStream = new FileInputStream(scriptFile);
+                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+                // The file is read till EOF because available() is an estimate and read() may return fewer bytes.
+                byte[] buffer = new byte[BUFFER_SIZE];
+                int length;
+                while ((length = fileInputStream.read(buffer)) != -1) {
+                    byteArrayOutputStream.write(buffer, 0, length);
+                }
+                scriptString = new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8);
             } catch (IOException e) {
                 throw new JavetException(
                         JavetError.FailedToReadPath,

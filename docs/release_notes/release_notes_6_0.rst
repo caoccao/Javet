@@ -41,6 +41,8 @@ Release Notes 6.0.x
 * Fixed ``every()``, ``filter()``, ``find()``, ``findIndex()``, ``findLast()``, ``findLastIndex()``, ``flatMap()``, ``forEach()``, ``map()``, ``reduce()``, ``reduceRight()``, ``some()`` in ``JavetProxyPluginList`` throwing ``ConcurrentModificationException`` when the callback adds or removes items, by visiting the original indices like JavaScript
 * Fixed ``lastIndexOf()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` returning ``-1`` when ``fromIndex`` is greater than or equal to the length, and searching the whole array or list when ``fromIndex`` is less than ``-length``
 * Fixed ``join()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` throwing ``NullPointerException`` when an element is ``null``, by joining it as the empty string like JavaScript
+* Fixed ``V8PathExecutor`` reading the file with the same path string on the default file system instead of the path in its own file system (e.g. a ZIP file system)
+* Fixed ``V8FileExecutor`` and ``V8PathExecutor`` truncating the script when the file reports fewer available bytes than it delivers (e.g. a named pipe)
 
 6.0.3
 -----
