@@ -69,7 +69,10 @@ public class V8FileExecutor extends V8StringExecutor {
     @Override
     public String getScriptString() throws JavetException {
         if (scriptString == null) {
-            try (FileInputStream fileInputStream = new FileInputStream(scriptFile);
+            // The file is read as an absolute file, because the Node.js runtime changes the working
+            // directory to the script directory in setResourceName(), which would resolve a relative
+            // file against the script directory again.
+            try (FileInputStream fileInputStream = new FileInputStream(scriptFile.getAbsoluteFile());
                  ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
                 // The file is read till EOF because available() is an estimate and read() may return fewer bytes.
                 byte[] buffer = new byte[BUFFER_SIZE];

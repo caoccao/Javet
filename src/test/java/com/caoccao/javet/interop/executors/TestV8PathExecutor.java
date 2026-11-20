@@ -35,8 +35,13 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 public class TestV8PathExecutor extends BaseTestJavetRuntime {
     @TempDir
@@ -57,6 +62,53 @@ public class TestV8PathExecutor extends BaseTestJavetRuntime {
         workingDirectory = isNode()
                 ? ((NodeRuntime) v8Runtime).getNodeModule(NodeModuleProcess.class).getWorkingDirectory()
                 : null;
+    }
+
+    @Test
+    public void testBareFileNameAfterAnotherDirectory() throws IOException, JavetException {
+        assumeTrue(isNode());
+        Path otherDirPath = Files.createDirectories(tempDirPath.resolve("other"));
+        Path otherScriptPath = otherDirPath.resolve("other.js");
+        Files.write(otherScriptPath, "__dirname".getBytes(StandardCharsets.UTF_8));
+        assertEquals(otherDirPath.toString(), v8Runtime.getExecutor(otherScriptPath).executeString());
+        // The bare file name replaces the globals set by the previous script, instead of keeping them.
+        v8Runtime.getExecutor(Paths.get("main.js"));
+        Path userDirPath = Paths.get("").toAbsolutePath();
+        assertEquals(
+                Arrays.asList(
+                        userDirPath.toString(),
+                        userDirPath.resolve("main.js").toString(),
+                        userDirPath.resolve("node_modules").toString()),
+                v8Runtime.getExecutor("[__dirname, __filename, require.resolve.paths('dep')[0]]").executeObject());
+    }
+
+    @Test
+    public void testRelativeAndAbsolutePathsAfterAnotherDirectory() throws IOException, JavetException {
+        assumeTrue(isNode());
+        Path otherDirPath = Files.createDirectories(tempDirPath.resolve("other"));
+        Path otherScriptPath = otherDirPath.resolve("other.js");
+        Files.write(otherDirPath.resolve("dep.js"), "module.exports = 'other';".getBytes(StandardCharsets.UTF_8));
+        Files.write(otherScriptPath, "require('./dep.js')".getBytes(StandardCharsets.UTF_8));
+        Path mainDirPath = Files.createDirectories(tempDirPath.resolve("main"));
+        Path mainScriptPath = mainDirPath.resolve("main.js");
+        Files.write(mainDirPath.resolve("dep.js"), "module.exports = 'main';".getBytes(StandardCharsets.UTF_8));
+        Files.write(
+                mainScriptPath,
+                "[require('path').resolve(__dirname), require('path').resolve(__filename), require('./dep.js')]"
+                        .getBytes(StandardCharsets.UTF_8));
+        List<Path> mainScriptPaths = new ArrayList<>();
+        mainScriptPaths.add(mainScriptPath);
+        // A relative path doesn't exist between different roots (e.g. different drives on Windows).
+        Path userDirPath = Paths.get("").toAbsolutePath();
+        if (userDirPath.getRoot().equals(mainScriptPath.getRoot())) {
+            mainScriptPaths.add(userDirPath.relativize(mainScriptPath));
+        }
+        List<String> expectedValues = Arrays.asList(mainDirPath.toString(), mainScriptPath.toString(), "main");
+        for (Path scriptPath : mainScriptPaths) {
+            // The previous script changes the working directory to another directory.
+            assertEquals("other", v8Runtime.getExecutor(otherScriptPath).executeString());
+            assertEquals(expectedValues, v8Runtime.getExecutor(scriptPath).executeObject(), scriptPath.toString());
+        }
     }
 
     @Test

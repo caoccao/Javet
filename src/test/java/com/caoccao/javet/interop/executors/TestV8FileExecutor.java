@@ -32,11 +32,16 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 public class TestV8FileExecutor extends BaseTestJavetRuntime {
     @TempDir
@@ -95,5 +100,34 @@ public class TestV8FileExecutor extends BaseTestJavetRuntime {
             writerThread.join(TimeUnit.SECONDS.toMillis(5));
         }
         assertFalse(writerThread.isAlive());
+    }
+
+    @Test
+    public void testRelativeAndAbsoluteFilesAfterAnotherDirectory() throws IOException, JavetException {
+        assumeTrue(isNode());
+        Path otherDirPath = Files.createDirectories(tempDirPath.resolve("other"));
+        File otherScriptFile = otherDirPath.resolve("other.js").toFile();
+        Files.write(otherDirPath.resolve("dep.js"), "module.exports = 'other';".getBytes(StandardCharsets.UTF_8));
+        Files.write(otherScriptFile.toPath(), "require('./dep.js')".getBytes(StandardCharsets.UTF_8));
+        Path mainDirPath = Files.createDirectories(tempDirPath.resolve("main"));
+        Path mainScriptPath = mainDirPath.resolve("main.js");
+        Files.write(mainDirPath.resolve("dep.js"), "module.exports = 'main';".getBytes(StandardCharsets.UTF_8));
+        Files.write(
+                mainScriptPath,
+                "[require('path').resolve(__dirname), require('path').resolve(__filename), require('./dep.js')]"
+                        .getBytes(StandardCharsets.UTF_8));
+        List<File> mainScriptFiles = new ArrayList<>();
+        mainScriptFiles.add(mainScriptPath.toFile());
+        // A relative path doesn't exist between different roots (e.g. different drives on Windows).
+        Path userDirPath = Paths.get("").toAbsolutePath();
+        if (userDirPath.getRoot().equals(mainScriptPath.getRoot())) {
+            mainScriptFiles.add(userDirPath.relativize(mainScriptPath).toFile());
+        }
+        List<String> expectedValues = Arrays.asList(mainDirPath.toString(), mainScriptPath.toString(), "main");
+        for (File scriptFile : mainScriptFiles) {
+            // The previous script changes the working directory to another directory.
+            assertEquals("other", v8Runtime.getExecutor(otherScriptFile).executeString());
+            assertEquals(expectedValues, v8Runtime.getExecutor(scriptFile).executeObject(), scriptFile.toString());
+        }
     }
 }

@@ -70,7 +70,10 @@ public class V8PathExecutor extends V8StringExecutor {
             try {
                 // The path is read through its file system provider, so that a path in a non-default
                 // file system (e.g. a ZIP file system) is not resolved against the default file system.
-                scriptString = new String(Files.readAllBytes(scriptPath), StandardCharsets.UTF_8);
+                // The path is read as an absolute path, because the Node.js runtime changes the working
+                // directory to the script directory in setResourceName(), which would resolve a relative
+                // path against the script directory again.
+                scriptString = new String(Files.readAllBytes(scriptPath.toAbsolutePath()), StandardCharsets.UTF_8);
             } catch (IOException e) {
                 throw new JavetException(
                         JavetError.FailedToReadPath,
