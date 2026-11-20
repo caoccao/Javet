@@ -140,7 +140,7 @@ The map plugin maps ``Map<?, ?>`` to the JS ``object``. It polyfills the JS Map 
             v8Runtime.getExecutor("JSON.stringify([...map.entries()].sort((a,b)=>a[0]-b[0]));").executeString());
     v8Runtime.getGlobalObject().delete("map");
 
-Polyfilled Map methods: ``get(key)``, ``set(key, value)`` (fluent, returns the map), ``has(key)``, ``delete(key)``, ``clear()``, ``size`` (property), ``entries()``, ``keys()``, ``values()``, ``forEach(fn)``, ``Symbol.iterator``, ``toJSON()`` (produces a plain object), ``toString()`` (returns ``"[object Map]"``), and ``valueOf()``. Java ``Map`` methods (``containsKey()``, ``get()``, ``size()``, etc.) are also accessible.
+Polyfilled Map methods: ``get(key)``, ``set(key, value)`` (fluent, returns the map), ``has(key)``, ``delete(key)``, ``clear()``, ``getOrInsert(key, value)``, ``getOrInsertComputed(key, fn)``, ``size`` (property), ``entries()``, ``keys()``, ``values()``, ``forEach(fn)``, ``Symbol.iterator``, ``Symbol.toStringTag`` (returns ``"Map"``, so ``Object.prototype.toString.call(map)`` returns ``"[object Map]"``), ``toJSON()`` (produces a plain object), ``toString()`` (returns ``"[object Map]"``), and ``valueOf()``. Java ``Map`` methods (``containsKey()``, ``get()``, ``size()``, etc.) are also accessible.
 
 JavetProxyPluginSet
 -------------------

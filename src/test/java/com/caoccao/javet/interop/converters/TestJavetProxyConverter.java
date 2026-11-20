@@ -1961,6 +1961,63 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testMapGetOrInsertAndToStringTag() throws JavetException {
+        try {
+            javetProxyConverter.getConfig().setProxyMapEnabled(true);
+            Map<String, Object> map = new LinkedHashMap<>();
+            v8Runtime.getGlobalObject().set("map", map);
+            assertEquals("function", v8Runtime.getExecutor("typeof map.getOrInsert").executeString());
+            assertEquals("function", v8Runtime.getExecutor("typeof map.getOrInsertComputed").executeString());
+            assertEquals("Map", v8Runtime.getExecutor("map[Symbol.toStringTag]").executeString());
+            assertEquals("[object Map]", v8Runtime.getExecutor("Object.prototype.toString.call(map)").executeString());
+            // The proxy behaves like a native map.
+            String codeString = String.join("\n",
+                    "const run = (m) => {",
+                    "  const results = [];",
+                    "  m.set('a', 1);",
+                    "  m.set('b', null);",
+                    "  // Present key",
+                    "  results.push(m.getOrInsert('a', 2));",
+                    "  // Present key mapped to null",
+                    "  results.push(m.getOrInsert('b', 2));",
+                    "  // Missing key",
+                    "  results.push(m.getOrInsert('c', 3));",
+                    "  // Present keys don't call the callback.",
+                    "  results.push(m.getOrInsertComputed('a', () => { throw new Error('called'); }));",
+                    "  results.push(m.getOrInsertComputed('b', () => { throw new Error('called'); }));",
+                    "  // Missing key",
+                    "  results.push(m.getOrInsertComputed('d', k => k + '!'));",
+                    "  // The callback inserts the same key before returning.",
+                    "  results.push(m.getOrInsertComputed('e', k => { m.set(k, 'inner'); m.set('f', 'f'); return 'outer'; }));",
+                    "  // The callback is called with undefined as this.",
+                    "  results.push(m.getOrInsertComputed('g', function () { 'use strict'; return this === undefined; }));",
+                    "  // The callback must be a function even if the key is present.",
+                    "  try { m.getOrInsertComputed('a', 1); results.push('no error'); } catch (e) { results.push(e instanceof TypeError); }",
+                    "  try { m.getOrInsertComputed('h'); results.push('no error'); } catch (e) { results.push(e instanceof TypeError); }",
+                    "  results.push(m.has('h'));",
+                    "  results.push([...m.entries()]);",
+                    "  results.push(Object.prototype.toString.call(m));",
+                    "  return JSON.stringify(results);",
+                    "};");
+            v8Runtime.getExecutor(codeString).executeVoid();
+            String expectedResult = v8Runtime.getExecutor("run(new Map())").executeString();
+            assertEquals(
+                    "[1,null,3,1,null,\"d!\",\"outer\",true,true,true,false," +
+                            "[[\"a\",1],[\"b\",null],[\"c\",3],[\"d\",\"d!\"],[\"e\",\"outer\"],[\"f\",\"f\"],[\"g\",true]]," +
+                            "\"[object Map]\"]",
+                    expectedResult);
+            assertEquals(expectedResult, v8Runtime.getExecutor("run(map)").executeString());
+            assertEquals(SimpleList.of("a", "b", "c", "d", "e", "f", "g"), new ArrayList<>(map.keySet()));
+            assertTrue(map.containsKey("b"));
+            assertNull(map.get("b"));
+            assertEquals("outer", map.get("e"));
+            v8Runtime.getGlobalObject().delete("map");
+        } finally {
+            javetProxyConverter.getConfig().setProxyMapEnabled(false);
+        }
+    }
+
+    @Test
     public void testMockCallbackReceiver() throws JavetException {
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
         v8Runtime.getGlobalObject().set("m", mockCallbackReceiver);

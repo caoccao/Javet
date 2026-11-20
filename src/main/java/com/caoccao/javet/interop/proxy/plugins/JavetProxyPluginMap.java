@@ -78,6 +78,18 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle<Map<Object, 
      */
     protected static final String GET = "get";
     /**
+     * The JavaScript method name 'getOrInsert'.
+     *
+     * @since 6.0.4
+     */
+    protected static final String GET_OR_INSERT = "getOrInsert";
+    /**
+     * The JavaScript method name 'getOrInsertComputed'.
+     *
+     * @since 6.0.4
+     */
+    protected static final String GET_OR_INSERT_COMPUTED = "getOrInsertComputed";
+    /**
      * The JavaScript method name 'has'.
      */
     protected static final String HAS = "has";
@@ -105,6 +117,12 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle<Map<Object, 
     protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
             CLEAR, FOR_EACH, GET, SIZE, TO_STRING};
     /**
+     * The constant STRING_TAG.
+     *
+     * @since 6.0.4
+     */
+    protected static final String STRING_TAG = "Map";
+    /**
      * The JavaScript method name 'values'.
      */
     protected static final String VALUES = "values";
@@ -127,6 +145,8 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle<Map<Object, 
         proxyGetByStringMap.put(ENTRIES, this::entries);
         proxyGetByStringMap.put(FOR_EACH, this::forEach);
         proxyGetByStringMap.put(GET, this::get);
+        proxyGetByStringMap.put(GET_OR_INSERT, this::getOrInsert);
+        proxyGetByStringMap.put(GET_OR_INSERT_COMPUTED, this::getOrInsertComputed);
         proxyGetByStringMap.put(HAS, this::has);
         proxyGetByStringMap.put(KEYS, this::keys);
         proxyGetByStringMap.put(SET, this::set);
@@ -136,6 +156,7 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle<Map<Object, 
         proxyGetByStringMap.put(VALUE_OF, this::valueOf);
         proxyGetByStringMap.put(VALUES, this::values);
         proxyGetBySymbolMap.put(V8ValueBuiltInSymbol.SYMBOL_PROPERTY_ITERATOR, this::entries);
+        proxyGetBySymbolMap.put(V8ValueBuiltInSymbol.SYMBOL_PROPERTY_TO_STRING_TAG, this::symbolToStringTag);
     }
 
     /**
@@ -287,6 +308,72 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle<Map<Object, 
         return NAME;
     }
 
+    /**
+     * Polyfill Map.prototype.getOrInsert().
+     * The getOrInsert() method of Map instances returns the value of the specified key in this map.
+     * If the key is not present, it inserts the specified default value and returns it.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 6.0.4
+     */
+    public V8Value getOrInsert(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        final Map<Object, Object> map = validateTargetObject(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                GET_OR_INSERT, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    Object key = v8Runtime.toObject(V8ValueUtils.asV8Value(v8Values, 0));
+                    // The key presence decides, because a present key may be mapped to null.
+                    final Object value;
+                    if (map.containsKey(key)) {
+                        value = map.get(key);
+                    } else {
+                        value = v8Runtime.toObject(V8ValueUtils.asV8Value(v8Values, 1));
+                        map.put(key, value);
+                    }
+                    return v8Runtime.toV8Value(value);
+                }));
+    }
+
+    /**
+     * Polyfill Map.prototype.getOrInsertComputed().
+     * The getOrInsertComputed() method of Map instances returns the value of the specified key in this map.
+     * If the key is not present, it inserts the value returned by the callback called with the key and returns it.
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 6.0.4
+     */
+    public V8Value getOrInsertComputed(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        final Map<Object, Object> map = validateTargetObject(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueFunction(new JavetCallbackContext(
+                GET_OR_INSERT_COMPUTED, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
+                (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
+                    // The callback is validated before the key is looked up, even if the key is present.
+                    V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 1);
+                    if (v8ValueFunction == null) {
+                        return v8Runtime.createV8ValueUndefined();
+                    }
+                    V8Value v8ValueKey = v8Values[0];
+                    Object key = v8Runtime.toObject(v8ValueKey);
+                    // The key presence decides, because a present key may be mapped to null.
+                    if (map.containsKey(key)) {
+                        return v8Runtime.toV8Value(map.get(key));
+                    }
+                    final Object value;
+                    try (V8Value v8ValueResult = v8ValueFunction.call(v8Runtime.createV8ValueUndefined(), v8ValueKey)) {
+                        value = v8Runtime.toObject(v8ValueResult);
+                    }
+                    // The callback may have inserted the same key. Its value is replaced in place.
+                    map.put(key, value);
+                    return v8Runtime.toV8Value(value);
+                }));
+    }
+
     @Override
     public Object[] getProxyOwnKeys(Object targetObject) {
         final Map<Object, Object> map = validateTargetObject(targetObject);
@@ -423,6 +510,22 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle<Map<Object, 
     public V8Value size(V8Runtime v8Runtime, Object targetObject) throws JavetException {
         final Map<Object, Object> map = validateTargetObject(targetObject);
         return Objects.requireNonNull(v8Runtime).createV8ValueInteger(map.size());
+    }
+
+    /**
+     * Polyfill Map.prototype[Symbol.toStringTag].
+     * The [Symbol.toStringTag] property of Map instances is the string "Map".
+     * It is used by Object.prototype.toString().
+     *
+     * @param v8Runtime    the V8 runtime
+     * @param targetObject the target object
+     * @return the V8 value
+     * @throws JavetException the javet exception
+     * @since 6.0.4
+     */
+    public V8Value symbolToStringTag(V8Runtime v8Runtime, Object targetObject) throws JavetException {
+        validateTargetObject(targetObject);
+        return Objects.requireNonNull(v8Runtime).createV8ValueString(STRING_TAG);
     }
 
     /**
