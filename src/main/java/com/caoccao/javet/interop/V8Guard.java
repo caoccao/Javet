@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * The type V8 guard.
@@ -41,6 +42,7 @@ public final class V8Guard implements IJavetClosable, Delayed {
     private volatile boolean closed;
     private volatile boolean debugModeEnabled;
     private volatile long endTimeMillis;
+    // It is the key of the guard queue, so it is only changed while the guard is not queued.
     private volatile long nextCheckTimeMillis;
     // Protected by the runtime close lock. A scheduled guard is either queued or being checked by the daemon.
     private boolean scheduled;
@@ -93,9 +95,13 @@ public final class V8Guard implements IJavetClosable, Delayed {
     public void cancel() {
         if (!isClosed()) {
             closed = true;
-            synchronized (v8Runtime.getCloseLock()) {
+            ReentrantLock closeLock = v8Runtime.getCloseLock();
+            closeLock.lock();
+            try {
                 DelayQueue<V8Guard> v8GuardQueue = v8Runtime.getV8Host().getV8GuardDaemon().getV8GuardQueue();
                 boolean ignored = v8GuardQueue.remove(this);
+            } finally {
+                closeLock.unlock();
             }
         }
     }
@@ -103,17 +109,30 @@ public final class V8Guard implements IJavetClosable, Delayed {
     /**
      * Checks the guard and terminates execution or schedules the next check.
      * <p>
-     * Called by the guard daemon after dequeuing this guard.
+     * Called by the guard daemon after dequeuing this guard. It doesn't wait for the runtime
+     * that is being reset or closed, so that the guards of the other runtimes are still checked.
      *
      * @since 6.0.2
      */
     void check() {
-        synchronized (v8Runtime.getCloseLock()) {
+        V8Host.V8GuardDaemon v8GuardDaemon = v8Runtime.getV8Host().getV8GuardDaemon();
+        ReentrantLock closeLock = v8Runtime.getCloseLock();
+        // A reset or a close holds the lock till the native teardown is done, which may take
+        // an unbounded time, e.g. while Node.js drains an event loop with an active timer.
+        if (!closeLock.tryLock()) {
+            // Check the guard again later instead of waiting for the lock. The daemon still owns the guard,
+            // so it is the only one that may change the queue key. A closed guard is dropped.
+            if (!isClosed()) {
+                nextCheckTimeMillis = System.currentTimeMillis() + v8GuardDaemon.getSleepIntervalMillis();
+                v8GuardDaemon.getV8GuardQueue().add(this);
+            }
+            return;
+        }
+        try {
             if (isClosed() || v8Runtime.isClosed()) {
                 scheduled = false;
                 return;
             }
-            V8Host.V8GuardDaemon v8GuardDaemon = v8Runtime.getV8Host().getV8GuardDaemon();
             long now = System.currentTimeMillis();
             if (now >= endTimeMillis) {
                 if ((debugModeEnabled || !v8GuardDaemon.isInDebugMode()) && v8Runtime.isInUse()) {
@@ -131,6 +150,8 @@ public final class V8Guard implements IJavetClosable, Delayed {
                 nextCheckTimeMillis = endTimeMillis;
             }
             v8GuardDaemon.getV8GuardQueue().add(this);
+        } finally {
+            closeLock.unlock();
         }
     }
 
@@ -221,20 +242,25 @@ public final class V8Guard implements IJavetClosable, Delayed {
      * @since 3.1.3
      */
     public void setTimeoutMillis(long timeoutMillis) {
-        synchronized (v8Runtime.getCloseLock()) {
+        ReentrantLock closeLock = v8Runtime.getCloseLock();
+        closeLock.lock();
+        try {
             DelayQueue<V8Guard> v8GuardQueue = v8Runtime.getV8Host().getV8GuardDaemon().getV8GuardQueue();
-            // Remove before changing the queue key. If the daemon owns this guard, it will requeue it.
+            // Remove before changing the queue key. If the daemon owns this guard, it requeues the guard
+            // and reads the new end time when it checks the guard.
             boolean removed = v8GuardQueue.remove(this);
             // Saturate a huge timeout so that the end time doesn't overflow into the past.
             endTimeMillis = timeoutMillis > Long.MAX_VALUE - startTimeMillis
                     ? Long.MAX_VALUE
                     : startTimeMillis + timeoutMillis;
-            nextCheckTimeMillis = endTimeMillis;
             terminated = false;
             if (!isClosed() && (!scheduled || removed)) {
+                nextCheckTimeMillis = endTimeMillis;
                 scheduled = true;
                 v8GuardQueue.add(this);
             }
+        } finally {
+            closeLock.unlock();
         }
     }
 }

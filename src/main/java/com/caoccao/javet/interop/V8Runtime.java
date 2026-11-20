@@ -53,6 +53,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.caoccao.javet.exceptions.JavetError.PARAMETER_FEATURE;
 
@@ -287,10 +288,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     V8ValueUndefined cachedV8ValueUndefined;
     /**
      * The Close lock.
+     * <p>
+     * It is held while the native isolate is accessed by another thread, reset or closed.
+     * It is a {@link ReentrantLock} so that the guard daemon can skip a runtime that is being reset or closed.
      *
      * @since 3.1.3
      */
-    Object closeLock;
+    ReentrantLock closeLock;
     /**
      * The Converter.
      *
@@ -367,7 +371,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         assert handle != INVALID_HANDLE : ERROR_HANDLE_MUST_BE_VALID;
         callbackContextLock = new Object();
         callbackContextMap = new HashMap<>();
-        closeLock = new Object();
+        closeLock = new ReentrantLock();
         converter = DEFAULT_CONVERTER;
         gcEpilogueCallbacks = new CopyOnWriteArrayList<>();
         gcPrologueCallbacks = new CopyOnWriteArrayList<>();
@@ -671,10 +675,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         if (!isClosed() && forceClose) {
             removeAllReferences();
             removeV8Inspectors();
-            synchronized (closeLock) {
+            closeLock.lock();
+            try {
                 v8Host.closeV8Runtime(this);
                 handle = INVALID_HANDLE;
                 v8Native = null;
+            } finally {
+                closeLock.unlock();
             }
         }
     }
@@ -1621,7 +1628,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @return the close lock
      * @since 3.1.3
      */
-    Object getCloseLock() {
+    ReentrantLock getCloseLock() {
         return closeLock;
     }
 
@@ -2189,10 +2196,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public boolean isInUse() {
         // The native isolate may be disposed or replaced by a reset or a close on another thread.
-        synchronized (closeLock) {
+        closeLock.lock();
+        try {
             if (!isClosed()) {
                 return v8Native.isInUse(handle);
             }
+        } finally {
+            closeLock.unlock();
         }
         return false;
     }
@@ -4010,7 +4020,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public void resetContext() throws JavetException {
         // The isolate of a Node.js snapshot runtime is replaced, so other threads must not access it till the reset is done.
-        synchronized (closeLock) {
+        closeLock.lock();
+        try {
             if (!isClosed()) {
                 removeAllReferences();
                 // The inspector is replaced together with the isolate of a Node.js snapshot runtime.
@@ -4026,6 +4037,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                     throw new JavetException(JavetError.RuntimeResetFailure);
                 }
             }
+        } finally {
+            closeLock.unlock();
         }
     }
 
@@ -4046,7 +4059,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     @SuppressWarnings("UnusedReturnValue")
     public void resetIsolate() throws JavetException {
         // The isolate is replaced, so other threads must not access it till the reset is done.
-        synchronized (closeLock) {
+        closeLock.lock();
+        try {
             if (!isClosed()) {
                 removeAllReferences();
                 // The inspector is replaced together with the isolate.
@@ -4059,6 +4073,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                     throw new JavetException(JavetError.RuntimeResetFailure);
                 }
             }
+        } finally {
+            closeLock.unlock();
         }
     }
 
@@ -4452,19 +4468,25 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 case Asynchronous:
                     Executors.newSingleThreadExecutor().execute(() -> {
                         // The runtime may have been closed before this thread runs.
-                        synchronized (closeLock) {
+                        closeLock.lock();
+                        try {
                             if (!isClosed()) {
                                 v8Native.terminateExecution(handle);
                             }
+                        } finally {
+                            closeLock.unlock();
                         }
                     });
                     break;
                 case Synchronous:
                     // The native isolate may be disposed or replaced by a reset or a close on another thread.
-                    synchronized (closeLock) {
+                    closeLock.lock();
+                    try {
                         if (!isClosed()) {
                             v8Native.terminateExecution(handle);
                         }
+                    } finally {
+                        closeLock.unlock();
                     }
                     break;
                 default:

@@ -46,6 +46,7 @@ Release Notes 6.0.x
 * Fixed ``setResourceName()`` in ``IV8Executor`` keeping ``__dirname``, ``__filename``, the ``require`` root directory and the working directory of the previous script in Node.js mode when the resource name is a bare file name (e.g. ``main.js``)
 * Fixed ``V8FileExecutor`` and ``V8PathExecutor`` failing to read a relative script with a directory part (e.g. ``scripts/main.js``) in Node.js mode, because the working directory is changed to the script directory before the script is read
 * Fixed ``V8Host`` failing to load the native library when the class resource stream of ``JavetLibLoader``, ``NodeNative`` or ``V8Native`` reports fewer available bytes than it delivers, because ``JavetClassLoader`` truncated the class
+* Fixed a slow ``resetContext()``, ``resetIsolate()`` or ``close()`` in ``V8Runtime`` (e.g. Node.js draining an active timer) suspending the ``V8Guard`` timeouts of the other runtimes of the same ``V8Host``
 
 6.0.3
 -----
