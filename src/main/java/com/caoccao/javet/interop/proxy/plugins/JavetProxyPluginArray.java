@@ -1049,8 +1049,9 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
                             && !v8Values[0].isUndefined()
                             ? v8Values[0].toString()
                             : ",";
+                    // The null element (null or undefined in JS) is joined as the empty string.
                     String result = Stream.of(ArrayUtils.copyOf(targetObject))
-                            .map(Object::toString)
+                            .map(o -> Objects.toString(o, StringUtils.EMPTY))
                             .collect(Collectors.joining(delimiter));
                     return v8Runtime.createV8ValueString(result);
                 }));

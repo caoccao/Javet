@@ -1277,6 +1277,32 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testJoinWithNull() throws JavetException {
+        String[] testCases = new String[]{"[null, 'a', null, 'b', undefined]", "array", "list", "pushedList"};
+        String codeString = "((a) => JSON.stringify([a.join(), a.join(undefined), a.join('-'), a.join('')]))";
+        try {
+            javetProxyConverter.getConfig().setProxyArrayEnabled(true);
+            javetProxyConverter.getConfig().setProxyListEnabled(true);
+            v8Runtime.getGlobalObject().set("array", new String[]{null, "a", null, "b", null});
+            v8Runtime.getGlobalObject().set("list", SimpleList.of(null, "a", null, "b", null));
+            v8Runtime.getGlobalObject().set("pushedList", SimpleList.of());
+            v8Runtime.getExecutor("pushedList.push(null, 'a', null, 'b', undefined)").executeVoid();
+            for (String testCase : testCases) {
+                assertEquals(
+                        "[\",a,,b,\",\",a,,b,\",\"-a--b-\",\"ab\"]",
+                        v8Runtime.getExecutor(codeString + "(" + testCase + ")").executeString(),
+                        testCase);
+            }
+        } finally {
+            v8Runtime.getGlobalObject().delete("array");
+            v8Runtime.getGlobalObject().delete("list");
+            v8Runtime.getGlobalObject().delete("pushedList");
+            javetProxyConverter.getConfig().setProxyArrayEnabled(false);
+            javetProxyConverter.getConfig().setProxyListEnabled(false);
+        }
+    }
+
+    @Test
     public void testLastIndexOf() throws JavetException {
         String[][] testCases = new String[][]{
                 {"[1, 2, 1]", "[2,2,2,2,0,0,2,0,0,-1,-1,2,-1,1,1,-1]"},

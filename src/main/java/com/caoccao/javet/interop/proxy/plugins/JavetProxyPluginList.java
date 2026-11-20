@@ -1027,7 +1027,10 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                             && !v8Values[0].isUndefined()
                             ? v8Values[0].toString()
                             : ",";
-                    String result = list.stream().map(Object::toString).collect(Collectors.joining(delimiter));
+                    // The null element (null or undefined in JS) is joined as the empty string.
+                    String result = list.stream()
+                            .map(o -> Objects.toString(o, StringUtils.EMPTY))
+                            .collect(Collectors.joining(delimiter));
                     return v8Runtime.createV8ValueString(result);
                 }));
     }
