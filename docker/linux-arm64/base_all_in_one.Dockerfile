@@ -15,92 +15,102 @@
 
 # Usage: docker build -t sjtucaocao/javet-arm64:6.0.4 -f docker/linux-arm64/base_all_in_one.Dockerfile .
 
-ARG JAVET_NODE_VERSION=18.15.0
+ARG JAVET_NODE_VERSION=26.13.1
 ARG JAVET_V8_VERSION=15.8.62.52
+ARG TEMPORAL_VERSION=0.2.3
 
-FROM ubuntu:20.04
+FROM ubuntu:24.04
+
+ARG JAVET_NODE_VERSION
+ARG JAVET_V8_VERSION
+ARG TEMPORAL_VERSION
+
 WORKDIR /
 
 # Update Ubuntu
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
-RUN apt-get install --upgrade -qq -y --no-install-recommends git curl wget build-essential software-properties-common patchelf maven sudo zip unzip execstack cmake pkg-config
-RUN apt-get install --upgrade -qq -y --no-install-recommends python3 python python3-pip python3-distutils python3-testresources
+RUN apt-get install --upgrade -qq -y --no-install-recommends build-essential ca-certificates curl execstack file git gnupg lsb-release maven patchelf pkg-config python3 python3-pip software-properties-common sudo unzip wget xz-utils zip
 RUN apt-get upgrade -y
-RUN pip3 install coloredlogs
 
 # Install CMake
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.25.1/cmake-3.25.1-linux-aarch64.sh
-RUN chmod 755 cmake-3.25.1-linux-aarch64.sh
-RUN mkdir -p /usr/lib/cmake
-RUN ./cmake-3.25.1-linux-aarch64.sh --skip-license --exclude-subdir --prefix=/usr/lib/cmake
-RUN ln -sf /usr/lib/cmake/bin/cmake /usr/bin/cmake
-RUN ln -sf /usr/lib/cmake/bin/cmake /bin/cmake
-RUN rm cmake-3.25.1-linux-aarch64.sh
+RUN wget https://github.com/Kitware/CMake/releases/download/v4.2.3/cmake-4.2.3-linux-aarch64.tar.gz
+RUN tar -xzf cmake-4.2.3-linux-aarch64.tar.gz -C /opt
+RUN rm cmake-4.2.3-linux-aarch64.tar.gz
+ENV PATH=/opt/cmake-4.2.3-linux-aarch64/bin:$PATH
+
+# Install Deno
+RUN curl -fsSL https://deno.land/install.sh | sh
+ENV PATH=/root/.deno/bin:$PATH
+
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH=/root/.cargo/bin:$PATH
 
 # Install LLVM
+# V8 only ships the clang toolchain for x86_64 Linux hosts, so V8, Node.js and Javet are built with this LLVM.
 RUN wget https://apt.llvm.org/llvm.sh
 RUN chmod +x llvm.sh
-RUN ./llvm.sh 15 all
+RUN ./llvm.sh 24 all
+RUN rm llvm.sh
+ENV CC=/usr/lib/llvm-24/bin/clang
+ENV CXX=/usr/lib/llvm-24/bin/clang++
 
 # Prepare V8
-RUN mkdir google
 WORKDIR /google
-RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-WORKDIR /google/depot_tools
-RUN git checkout remotes/origin/main
+ENV DEPOT_TOOLS_UPDATE=0
 ENV PATH=/google/depot_tools:$PATH
-WORKDIR /google
-RUN fetch v8
-WORKDIR /google/v8
-RUN git checkout ${JAVET_V8_VERSION}
-RUN sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh
-RUN ./build/install-build-deps.sh
-RUN sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh
-WORKDIR /google
-RUN gclient sync
+COPY ./scripts/shell/fetch_v8_source.sh .
+RUN bash fetch_v8_source.sh
+RUN rm fetch_v8_source.sh
 RUN echo V8 preparation is completed.
 
 # Build V8
 WORKDIR /google/v8
-RUN sed -i -e "s/target_cpu=\"x64\" v8_target_cpu=\"arm64/target_cpu=\"arm64\" v8_target_cpu=\"arm64/" infra/mb/mb_config.pyl
-RUN python3 tools/dev/v8gen.py arm64.release -- 'target_cpu="arm64"' 'v8_target_cpu="arm64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false 'clang_base_path="/usr/lib/llvm-15"' clang_use_chrome_plugins=false blink_gc_plugin=false
-COPY ./scripts/python/patch_v8_build.py .
-RUN ninja -C out.gn/arm64.release v8_monolith || python3 patch_v8_build.py -p ./
-RUN ninja -C out.gn/arm64.release v8_monolith
-RUN rm patch_v8_build.py
+COPY ./scripts/deno /Javet/scripts/deno
+COPY ./scripts/v8/gn /Javet/scripts/v8/gn
+COPY ./scripts/shell/build_v8_source.sh .
+RUN JAVET_HOME=/Javet CLANG_BASE_PATH=/usr/lib/llvm-24 bash ./build_v8_source.sh
+RUN rm build_v8_source.sh
 RUN echo V8 build is completed.
 
-# Prepare Node.js v18
+# Build Temporal CAPI
 WORKDIR /
-RUN git clone https://github.com/nodejs/node.git
-WORKDIR /node
-RUN git checkout v${JAVET_NODE_VERSION}
+RUN git clone https://github.com/boa-dev/temporal.git
+WORKDIR /temporal
+RUN git checkout v${TEMPORAL_VERSION}
+RUN deno run --allow-all /Javet/scripts/deno/patch_v8_temporal.ts -p ./
+RUN cargo build --release --package temporal_capi --features compiled_data,zoneinfo64
+RUN cp target/release/libtemporal_capi.a /google/v8/out.gn.linux.non-i18n/arm64.release/obj/
+RUN cp target/release/libtemporal_capi.a /google/v8/out.gn.linux.i18n/arm64.release/obj/
+WORKDIR /
+RUN rm -rf /temporal
+RUN echo Temporal CAPI build is completed.
+
+# Prepare Node.js
+WORKDIR /
+COPY ./scripts/shell/fetch_node_source.sh .
+RUN bash ./fetch_node_source.sh
+RUN rm fetch_node_source.sh
 RUN echo Node.js preparation is completed.
 
 # Build Node.js
 WORKDIR /node
-COPY ./scripts/python/patch_node_build.py .
-RUN python3 patch_node_build.py -p ./
-RUN ./configure --enable-static --without-intl
-RUN python3 patch_node_build.py -p ./
-RUN rm patch_node_build.py
-RUN make -j4
+COPY ./scripts/shell/build_node_source.sh .
+RUN JAVET_HOME=/Javet bash ./build_node_source.sh
+RUN rm build_node_source.sh
+RUN rm -rf /Javet
 RUN echo Node.js build is completed.
 
 # Prepare Javet Build Environment
 RUN apt-get install --upgrade -qq -y --no-install-recommends openjdk-8-jdk
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-arm64
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-ENV SDKMAN_HOME="/root/.sdkman"
-ENV GRADLE_HOME="${SDKMAN_HOME}/candidates/gradle/current"
-RUN curl -s https://get.sdkman.io | bash
-RUN source ${SDKMAN_HOME}/bin/sdkman-init.sh && sdk install gradle 7.2
-ENV PATH=$GRADLE_HOME/bin:$PATH
+RUN wget https://services.gradle.org/distributions/gradle-8.10.2-bin.zip
+RUN unzip -q gradle-8.10.2-bin.zip -d /opt
+RUN rm gradle-8.10.2-bin.zip
+ENV PATH=/opt/gradle-8.10.2/bin:$PATH
 
 # Shrink
-RUN rm -rf ${SDKMAN_HOME}/archives/*
-RUN rm -rf ${SDKMAN_HOME}/tmp/*
 RUN apt-get clean -y
 RUN rm -rf /var/lib/apt/lists/*
 WORKDIR /

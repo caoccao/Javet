@@ -21,10 +21,12 @@
 
 ARG JAVET_REPO=sjtucaocao/javet
 ARG JAVET_V8_VERSION=15.8.62.52
+ARG TEMPORAL_VERSION=0.2.3
 
 FROM ${JAVET_REPO}:arm64-base-jvm
 
 ARG JAVET_V8_VERSION
+ARG TEMPORAL_VERSION
 
 RUN if [ -z "$JAVET_V8_VERSION" ]; then echo 'Build argument JAVET_V8_VERSION must be specified. Exiting.'; exit 1; fi
 
@@ -36,11 +38,24 @@ COPY ./scripts/shell/fetch_v8_source.sh .
 RUN bash fetch_v8_source.sh
 
 # Build V8
+# The clang toolchain from V8 only runs on x86_64, so V8 is built with the LLVM from the base image.
 WORKDIR /google/v8
-RUN sed -i -e "s/target_cpu=\"x64\" v8_target_cpu=\"arm64/target_cpu=\"arm64\" v8_target_cpu=\"arm64/" infra/mb/mb_config.pyl
-RUN python3 tools/dev/v8gen.py arm64.release -- 'target_cpu="arm64"' 'v8_target_cpu="arm64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false 'clang_base_path="/usr/lib/llvm-15"' clang_use_chrome_plugins=false blink_gc_plugin=false
-COPY ./scripts/python/patch_v8_build.py .
-RUN ninja -C out.gn/arm64.release v8_monolith || python3 patch_v8_build.py -p ./
-RUN ninja -C out.gn/arm64.release v8_monolith
-RUN rm patch_v8_build.py
+COPY ./scripts/deno /Javet/scripts/deno
+COPY ./scripts/v8/gn /Javet/scripts/v8/gn
+COPY ./scripts/shell/build_v8_source.sh .
+RUN JAVET_HOME=/Javet CLANG_BASE_PATH=/usr/lib/llvm-24 bash ./build_v8_source.sh
+RUN rm build_v8_source.sh
 RUN echo V8 build is completed.
+
+# Build Temporal CAPI
+WORKDIR /
+RUN git clone https://github.com/boa-dev/temporal.git
+WORKDIR /temporal
+RUN git checkout v${TEMPORAL_VERSION} && \
+    deno run --allow-all /Javet/scripts/deno/patch_v8_temporal.ts -p ./ && \
+    cargo build --release --package temporal_capi --features compiled_data,zoneinfo64 && \
+    cp target/release/libtemporal_capi.a /google/v8/out.gn.linux.non-i18n/arm64.release/obj/ && \
+    cp target/release/libtemporal_capi.a /google/v8/out.gn.linux.i18n/arm64.release/obj/
+WORKDIR /
+RUN rm -rf /temporal /Javet
+RUN echo Temporal CAPI build is completed.

@@ -71,8 +71,16 @@ Build Javet for Windows on Windows
 Build Javet for Android on Linux or Windows
 ===========================================
 
+The Android build is split into a base image and a build image. The base image builds V8 for arm, arm64, x86 and x86_64, with and without i18n, so it has to be built first.
+
 .. code-block:: shell
 
     git clone https://github.com/caoccao/Javet.git
     cd Javet
+    docker build -t sjtucaocao/javet-android:6.0.4 -f docker/android/base.Dockerfile .
     docker build -f docker/android/build.Dockerfile .
+
+.. note::
+
+   * Both images are built for ``linux/amd64``, because V8 and Javet cross compile Android on x86_64 Linux only.
+   * It takes many hours to build the base image successfully, and the image is very large.

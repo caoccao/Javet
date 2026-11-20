@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t sjtucaocao/javet:x86_64-base-jvm-${{ env.JAVET_VERSION }} -f docker/linux-x86_64/base_jvm.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet:arm64-base-jvm -f docker/linux-arm64/base_jvm.Dockerfile .
 
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 WORKDIR /
 
 # Update Ubuntu
@@ -24,37 +24,38 @@ ENV DEBIAN_FRONTEND=noninteractive
 # the files remain in the image, just the layer marks the file as deleted and is not visible inside the OS
 RUN apt-get update --yes \
 	&& apt-get install --upgrade -qq --yes --no-install-recommends \
-	build-essential cmake curl execstack git maven openjdk-8-jdk \
-	patchelf python3 python python3-pip python3-distutils python3-testresources \
-	software-properties-common sudo unzip wget zip pkg-config \
+	build-essential ca-certificates curl execstack file git gnupg lsb-release maven openjdk-8-jdk \
+	patchelf python3 python3-pip software-properties-common sudo unzip wget xz-utils zip pkg-config \
 	&& apt-get upgrade --yes \
-	&& pip3 install --no-cache-dir coloredlogs \
 	&& apt-get clean --yes
 
 # Install CMake
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.25.1/cmake-3.25.1-linux-aarch64.sh \
-	&& chmod 755 cmake-3.25.1-linux-aarch64.sh \
-	&& mkdir -p /usr/lib/cmake \
-	&& ./cmake-3.25.1-linux-aarch64.sh --skip-license --exclude-subdir --prefix=/usr/lib/cmake \
-	&& ln -sf /usr/lib/cmake/bin/cmake /usr/bin/cmake \
-	&& ln -sf /usr/lib/cmake/bin/cmake /bin/cmake \
-	&& rm cmake-3.25.1-linux-aarch64.sh
+RUN wget https://github.com/Kitware/CMake/releases/download/v4.2.3/cmake-4.2.3-linux-aarch64.tar.gz \
+	&& tar -xzf cmake-4.2.3-linux-aarch64.tar.gz -C /opt \
+	&& rm cmake-4.2.3-linux-aarch64.tar.gz
+ENV PATH=/opt/cmake-4.2.3-linux-aarch64/bin:$PATH
+
+# Install Deno
+RUN curl -fsSL https://deno.land/install.sh | sh
+ENV PATH=/root/.deno/bin:$PATH
+
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH=/root/.cargo/bin:$PATH
+
+# Install LLVM
+# V8 only ships the clang toolchain for x86_64 Linux hosts, so V8, Node.js and Javet are built with this LLVM.
+RUN wget https://apt.llvm.org/llvm.sh \
+	&& chmod +x llvm.sh \
+	&& ./llvm.sh 24 all \
+	&& rm llvm.sh \
+	&& apt-get clean --yes
+ENV CC=/usr/lib/llvm-24/bin/clang
+ENV CXX=/usr/lib/llvm-24/bin/clang++
 
 # Prepare Javet Build Environment
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-arm64
-ENV SDKMAN_HOME="/root/.sdkman"
-ENV GRADLE_HOME="${SDKMAN_HOME}/candidates/gradle/current"
-ENV PATH=$GRADLE_HOME/bin:$PATH
-
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-# these two commands need to be on separate lines, else the symlink created above is not visible to the commands run below.
-# if the two RUN commmands are merged, we get the error "source: not found"
-RUN curl -s https://get.sdkman.io | bash \
-	&& source ${SDKMAN_HOME}/bin/sdkman-init.sh \
-	&& sdk install gradle 7.2 \
-	&& rm -rf ${SDKMAN_HOME}/archives/* \
-	&& rm -rf ${SDKMAN_HOME}/tmp/*
-
-RUN wget https://apt.llvm.org/llvm.sh
-RUN chmod +x llvm.sh
-RUN ./llvm.sh 15 all
+RUN wget https://services.gradle.org/distributions/gradle-8.10.2-bin.zip \
+	&& unzip -q gradle-8.10.2-bin.zip -d /opt \
+	&& rm gradle-8.10.2-bin.zip
+ENV PATH=/opt/gradle-8.10.2/bin:$PATH

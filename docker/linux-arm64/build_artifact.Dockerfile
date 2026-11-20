@@ -16,14 +16,14 @@
 # Usage: docker build \
 #  -t javet-local \
 #  --build-arg JAVET_REPO=sjtucaocao/javet \
-#  --build-arg JAVET_NODE_VERSION=18.12.1 \
-#  --build-arg JAVET_V8_VERSION=10.8.168.20 \
+#  --build-arg JAVET_NODE_VERSION=26.13.1 \
+#  --build-arg JAVET_V8_VERSION=15.8.62.52 \
 #  --build-arg JAVET_VERSION=6.0.4 \
 #  -f docker/linux-arm64/build_artifact.Dockerfile .
 
 ARG JAVET_REPO=sjtucaocao/javet
-ARG JAVET_NODE_VERSION=18.12.1
-ARG JAVET_V8_VERSION=10.8.168.20
+ARG JAVET_NODE_VERSION=26.13.1
+ARG JAVET_V8_VERSION=15.8.62.52
 ARG JAVET_VERSION=6.0.4
 
 FROM ${JAVET_REPO}:arm64-base-node_${JAVET_NODE_VERSION} as base-node
@@ -33,7 +33,8 @@ RUN mkdir Javet
 WORKDIR /Javet
 COPY . .
 WORKDIR /Javet/cpp
-RUN sh ./build-linux-arm64.sh -DNODE_DIR=/node
+RUN deno run build --os linux --arch arm64 --node-dir /node
+RUN deno run build --os linux --arch arm64 --node-dir /node --i18n
 
 ARG JAVET_REPO
 ARG JAVET_V8_VERSION
@@ -45,7 +46,8 @@ RUN mkdir Javet
 WORKDIR /Javet
 COPY . .
 WORKDIR /Javet/cpp
-RUN sh ./build-linux-arm64.sh -DV8_DIR=/google/v8
+RUN deno run build --os linux --arch arm64 --v8-dir /google/v8
+RUN deno run build --os linux --arch arm64 --v8-dir /google/v8 --i18n
 
 ARG JAVET_REPO
 ARG JAVET_VERSION
@@ -58,4 +60,7 @@ COPY . .
 
 COPY --from=base-node /Javet/src/main/resources /Javet/src/main/resources
 COPY --from=base-v8 /Javet/src/main/resources /Javet/src/main/resources
+# The i18n tests read the ICU data from ../node and ../google/v8.
+COPY --from=base-node /node/deps/icu-tmp/*.dat /node/deps/icu-tmp/
+COPY --from=base-v8 /google/v8/third_party/icu/common/*.dat /google/v8/third_party/icu/common/
 RUN scripts/shell/build_javet_artifacts.sh

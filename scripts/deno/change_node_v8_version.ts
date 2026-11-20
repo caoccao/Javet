@@ -134,6 +134,22 @@ class ChangeNodeVersion extends ChangeVersion {
       /JAVET_NODE_VERSION: (?<version>\d+\.\d+\.\d+)$/
     );
     this.updateFile(
+      "docker/linux-arm64/base_all_in_one.Dockerfile",
+      "\n",
+      /JAVET_NODE_VERSION=(?<version>\d+\.\d+\.\d+)$/
+    );
+    this.updateFile(
+      "docker/linux-arm64/base_node.Dockerfile",
+      "\n",
+      /node_(?<version>\d+\.\d+\.\d+)/,
+      /JAVET_NODE_VERSION=(?<version>\d+\.\d+\.\d+)/
+    );
+    this.updateFile(
+      "docker/linux-arm64/build_artifact.Dockerfile",
+      "\n",
+      /JAVET_NODE_VERSION=(?<version>\d+\.\d+\.\d+)/
+    );
+    this.updateFile(
       "docker/linux-x86_64/build.Dockerfile",
       "\n",
       /JAVET_NODE_VERSION=(?<version>\d+\.\d+\.\d+)$/
@@ -206,6 +222,11 @@ class ChangeV8Version extends ChangeVersion {
       "docker/linux-arm64/base_v8.Dockerfile",
       "\n",
       /v8_(?<version>\d+\.\d+\.\d+\.\d+)/,
+      /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)/
+    );
+    this.updateFile(
+      "docker/linux-arm64/build_artifact.Dockerfile",
+      "\n",
       /JAVET_V8_VERSION=(?<version>\d+\.\d+\.\d+\.\d+)/
     );
     this.updateFile(

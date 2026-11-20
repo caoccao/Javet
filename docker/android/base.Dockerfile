@@ -15,105 +15,175 @@
 
 # Usage: docker build -t sjtucaocao/javet-android:6.0.4 -f docker/android/base.Dockerfile .
 
-ARG JAVET_V8_VERSION=15.8.62.52
+# Base image for building Javet for Android in the V8 mode
+# Based on .github/workflows/android_v8_build.yml
 
-FROM ubuntu:20.04
+ARG ANDROID_NDK_VERSION=r30
+ARG JAVET_V8_VERSION=15.8.62.52
+ARG TEMPORAL_VERSION=0.2.3
+
+# V8 and Javet cross compile Android on x86_64 Linux only.
+FROM --platform=linux/amd64 ubuntu:24.04
+
+ARG ANDROID_NDK_VERSION
+ARG JAVET_V8_VERSION
+ARG TEMPORAL_VERSION
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV ANDROID_HOME=/android-sdk
+ENV ANDROID_NDK_HOME=/android-ndk-${ANDROID_NDK_VERSION}
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 WORKDIR /
 
 # Update Ubuntu
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update
-RUN apt-get install --upgrade -qq -y --no-install-recommends git curl wget build-essential software-properties-common patchelf maven sudo zip unzip execstack cmake
-RUN apt-get install --upgrade -qq -y --no-install-recommends python3 python python3-pip python3-distutils python3-testresources
-RUN apt-get upgrade -y
-RUN pip3 install coloredlogs
+RUN apt-get update -y && \
+    apt-get install -y \
+    build-essential \
+    curl \
+    execstack \
+    file \
+    gcc-multilib \
+    git \
+    lsb-release \
+    openjdk-17-jdk-headless \
+    python3 \
+    sudo \
+    unzip \
+    wget \
+    xz-utils \
+    zip \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install CMake
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.25.1/cmake-3.25.1-linux-x86_64.sh
-RUN chmod 755 cmake-3.25.1-linux-x86_64.sh
-RUN mkdir -p /usr/lib/cmake
-RUN ./cmake-3.25.1-linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/lib/cmake
-RUN ln -sf /usr/lib/cmake/bin/cmake /usr/bin/cmake
-RUN ln -sf /usr/lib/cmake/bin/cmake /bin/cmake
-RUN rm cmake-3.25.1-linux-x86_64.sh
+# Setup Deno
+RUN curl -fsSL https://deno.land/install.sh | sh
+ENV PATH="/root/.deno/bin:${PATH}"
+
+# Setup Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
+
+# Setup CMake
+RUN wget https://github.com/Kitware/CMake/releases/download/v4.2.3/cmake-4.2.3-linux-x86_64.tar.gz && \
+    tar -xzf cmake-4.2.3-linux-x86_64.tar.gz -C /opt && \
+    rm cmake-4.2.3-linux-x86_64.tar.gz
+ENV PATH="/opt/cmake-4.2.3-linux-x86_64/bin:${PATH}"
+
+# Setup Gradle
+RUN wget https://services.gradle.org/distributions/gradle-8.10.2-bin.zip && \
+    unzip -q gradle-8.10.2-bin.zip -d /opt && \
+    rm gradle-8.10.2-bin.zip
+ENV PATH="/opt/gradle-8.10.2/bin:${PATH}"
+
+# Setup Android NDK
+RUN wget https://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux.zip && \
+    unzip -q android-ndk-${ANDROID_NDK_VERSION}-linux.zip && \
+    rm android-ndk-${ANDROID_NDK_VERSION}-linux.zip
+
+# Setup Android SDK
+RUN wget https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip && \
+    mkdir -p ${ANDROID_HOME}/cmdline-tools && \
+    unzip -q commandlinetools-linux-13114758_latest.zip -d ${ANDROID_HOME}/cmdline-tools && \
+    mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest && \
+    rm commandlinetools-linux-13114758_latest.zip
+RUN yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses && \
+    ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager "build-tools;33.0.1" "platforms;android-30"
 
 # Prepare V8
-RUN mkdir google
 WORKDIR /google
-RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-WORKDIR /google/depot_tools
-RUN git checkout remotes/origin/main
-ENV PATH=/google/depot_tools:$PATH
-WORKDIR /google
+RUN git clone --depth=10 --branch=main https://chromium.googlesource.com/chromium/tools/depot_tools.git && \
+    cd depot_tools && \
+    git checkout remotes/origin/main && \
+    ./ensure_bootstrap
+ENV PATH="/google/depot_tools:${PATH}"
 RUN fetch v8
 WORKDIR /google/v8
 RUN git checkout ${JAVET_V8_VERSION}
-RUN sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh
-RUN ./build/install-build-deps.sh
-RUN sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh
+RUN ./build/install-build-deps.sh --no-prompt --no-chromeos-fonts
 WORKDIR /google
 RUN echo 'target_os = ["android"]' >> .gclient
-RUN gclient sync
+RUN gclient sync -D
 RUN echo V8 preparation is completed.
 
-# Prepare Android NDK
-WORKDIR /
-RUN wget https://dl.google.com/android/repository/android-ndk-r27-linux.zip
-RUN unzip android-ndk-r27-linux.zip
-RUN rm android-ndk-r27-linux.zip
-
-# Prepare Android SDK
-WORKDIR /google/v8/third_party/android_sdk/public/cmdline-tools/latest/bin
-RUN yes | ./sdkmanager --licenses
-RUN ./sdkmanager "build-tools;30.0.2" "platforms;android-30"
-ENV ANDROID_SDK_ROOT=/google/v8/third_party/android_sdk
-
-# Patch Docker
-RUN apt-get install --upgrade -qq -y --no-install-recommends gcc-multilib
+# Patch V8
+# The NDK from V8 is broken, so it is replaced by the NDK installed above.
+WORKDIR /google/v8
+RUN rm -rf third_party/android_toolchain/ndk && \
+    ln -s ${ANDROID_NDK_HOME} third_party/android_toolchain/ndk && \
+    sed -i 's/max\.value_or({})/max.value_or(uint8_t{})/' src/compiler/turboshaft/wasm-shuffle-reducer.cc && \
+    sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' src/execution/isolate.h && \
+    sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' src/heap/local-heap.h
 
 # Build V8
-WORKDIR /google/v8
-COPY ./scripts/python/patch_v8_build.py .
-RUN python3 tools/dev/v8gen.py arm.release -- 'target_os="android"' 'target_cpu="arm"' 'v8_target_cpu="arm"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-RUN ninja -C out.gn/arm.release v8_monolith || python3 patch_v8_build.py -p ./
-RUN ninja -C out.gn/arm.release v8_monolith
-RUN python3 tools/dev/v8gen.py arm64.release -- 'target_os="android"' 'target_cpu="arm64"' 'v8_target_cpu="arm64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-RUN ninja -C out.gn/arm64.release v8_monolith || python3 patch_v8_build.py -p ./
-RUN ninja -C out.gn/arm64.release v8_monolith
-RUN python3 tools/dev/v8gen.py ia32.release -- 'target_os="android"' 'target_cpu="x86"' 'v8_target_cpu="x86"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-RUN ninja -C out.gn/ia32.release v8_monolith || python3 patch_v8_build.py -p ./
-RUN ninja -C out.gn/ia32.release v8_monolith
-RUN python3 tools/dev/v8gen.py x64.release -- 'target_os="android"' 'target_cpu="x64"' 'v8_target_cpu="x64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
-RUN ninja -C out.gn/x64.release v8_monolith || python3 patch_v8_build.py -p ./
-RUN ninja -C out.gn/x64.release v8_monolith
-RUN rm patch_v8_build.py
+COPY ./scripts/v8/gn /Javet/scripts/v8/gn
+RUN mkdir -p out.gn.android.non-i18n/arm.release && \
+    cp /Javet/scripts/v8/gn/android-arm-non-i18n-args.gn out.gn.android.non-i18n/arm.release/args.gn && \
+    gn gen out.gn.android.non-i18n/arm.release && \
+    ninja -C out.gn.android.non-i18n/arm.release v8_monolith
+RUN mkdir -p out.gn.android.i18n/arm.release && \
+    cp /Javet/scripts/v8/gn/android-arm-i18n-args.gn out.gn.android.i18n/arm.release/args.gn && \
+    gn gen out.gn.android.i18n/arm.release && \
+    ninja -C out.gn.android.i18n/arm.release v8_monolith
+RUN mkdir -p out.gn.android.non-i18n/arm64.release && \
+    cp /Javet/scripts/v8/gn/android-arm64-non-i18n-args.gn out.gn.android.non-i18n/arm64.release/args.gn && \
+    gn gen out.gn.android.non-i18n/arm64.release && \
+    ninja -C out.gn.android.non-i18n/arm64.release v8_monolith
+RUN mkdir -p out.gn.android.i18n/arm64.release && \
+    cp /Javet/scripts/v8/gn/android-arm64-i18n-args.gn out.gn.android.i18n/arm64.release/args.gn && \
+    gn gen out.gn.android.i18n/arm64.release && \
+    ninja -C out.gn.android.i18n/arm64.release v8_monolith
+RUN mkdir -p out.gn.android.non-i18n/ia32.release && \
+    cp /Javet/scripts/v8/gn/android-x86-non-i18n-args.gn out.gn.android.non-i18n/ia32.release/args.gn && \
+    gn gen out.gn.android.non-i18n/ia32.release && \
+    ninja -C out.gn.android.non-i18n/ia32.release v8_monolith
+RUN mkdir -p out.gn.android.i18n/ia32.release && \
+    cp /Javet/scripts/v8/gn/android-x86-i18n-args.gn out.gn.android.i18n/ia32.release/args.gn && \
+    gn gen out.gn.android.i18n/ia32.release && \
+    ninja -C out.gn.android.i18n/ia32.release v8_monolith
+RUN mkdir -p out.gn.android.non-i18n/x64.release && \
+    cp /Javet/scripts/v8/gn/android-x86_64-non-i18n-args.gn out.gn.android.non-i18n/x64.release/args.gn && \
+    gn gen out.gn.android.non-i18n/x64.release && \
+    ninja -C out.gn.android.non-i18n/x64.release v8_monolith
+RUN mkdir -p out.gn.android.i18n/x64.release && \
+    cp /Javet/scripts/v8/gn/android-x86_64-i18n-args.gn out.gn.android.i18n/x64.release/args.gn && \
+    gn gen out.gn.android.i18n/x64.release && \
+    ninja -C out.gn.android.i18n/x64.release v8_monolith
 RUN echo V8 build is completed.
 
-# Prepare Javet Build Environment
-RUN apt-get install --upgrade -qq -y --no-install-recommends openjdk-11-jdk
-ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-ENV SDKMAN_HOME="/root/.sdkman"
-ENV GRADLE_HOME="${SDKMAN_HOME}/candidates/gradle/current"
-RUN curl -s https://get.sdkman.io | bash
-RUN source ${SDKMAN_HOME}/bin/sdkman-init.sh && sdk install gradle 7.2
-ENV PATH=$GRADLE_HOME/bin:$PATH
-
-# Shrink
-RUN rm -rf ${SDKMAN_HOME}/archives/*
-RUN rm -rf ${SDKMAN_HOME}/tmp/*
-RUN apt-get clean -y
-RUN rm -rf /var/lib/apt/lists/*
+# Build Temporal CAPI
+COPY ./scripts/deno /Javet/scripts/deno
 WORKDIR /
+RUN git clone https://github.com/boa-dev/temporal.git
+WORKDIR /temporal
+RUN git checkout v${TEMPORAL_VERSION} && \
+    deno run --allow-all /Javet/scripts/deno/patch_v8_temporal.ts -p ./
+RUN cargo build --release --target armv7-linux-androideabi --package temporal_capi --features compiled_data,zoneinfo64 && \
+    cp target/armv7-linux-androideabi/release/libtemporal_capi.a /google/v8/out.gn.android.non-i18n/arm.release/obj/ && \
+    cp target/armv7-linux-androideabi/release/libtemporal_capi.a /google/v8/out.gn.android.i18n/arm.release/obj/
+RUN cargo build --release --target aarch64-linux-android --package temporal_capi --features compiled_data,zoneinfo64 && \
+    cp target/aarch64-linux-android/release/libtemporal_capi.a /google/v8/out.gn.android.non-i18n/arm64.release/obj/ && \
+    cp target/aarch64-linux-android/release/libtemporal_capi.a /google/v8/out.gn.android.i18n/arm64.release/obj/
+RUN cargo build --release --target i686-linux-android --package temporal_capi --features compiled_data,zoneinfo64 && \
+    cp target/i686-linux-android/release/libtemporal_capi.a /google/v8/out.gn.android.non-i18n/ia32.release/obj/ && \
+    cp target/i686-linux-android/release/libtemporal_capi.a /google/v8/out.gn.android.i18n/ia32.release/obj/
+RUN cargo build --release --target x86_64-linux-android --package temporal_capi --features compiled_data,zoneinfo64 && \
+    cp target/x86_64-linux-android/release/libtemporal_capi.a /google/v8/out.gn.android.non-i18n/x64.release/obj/ && \
+    cp target/x86_64-linux-android/release/libtemporal_capi.a /google/v8/out.gn.android.i18n/x64.release/obj/
+WORKDIR /
+RUN rm -rf /temporal
+RUN echo Temporal CAPI build is completed.
 
 # Pre-cache Dependencies
-RUN mkdir Javet
 WORKDIR /Javet
 COPY . .
 WORKDIR /Javet/android
 RUN gradle dependencies
 WORKDIR /
 RUN rm -rf /Javet
+
+# Shrink
+RUN apt-get clean -y && \
+    rm -rf /var/lib/apt/lists/*
 
 # Completed
 RUN echo Javet Android build base image is completed.
