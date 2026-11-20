@@ -35,6 +35,7 @@ import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueSymbol;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
 import java.util.LinkedHashSet;
 import java.util.Objects;
@@ -50,6 +51,8 @@ import java.util.Set;
 @SuppressWarnings("unchecked")
 public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         extends BaseJavetReflectionProxyHandler<T, E> {
+    private static final String SYMBOL_PREFIX = V8ValueBuiltInSymbol.NAME + ".";
+
     /**
      * Instantiates a new Javet reflection proxy object handler.
      *
@@ -121,17 +124,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @since 3.0.3
      */
     protected V8Value getByPolyfill(V8Value property) throws JavetException, E {
-        IClassProxyPluginFunction<E> classProxyPluginFunction = null;
-        if (property instanceof V8ValueString) {
-            String propertyName = ((V8ValueString) property).getValue();
-            classProxyPluginFunction = classProxyPlugin.getProxyGetByString(
-                    classDescriptor.getTargetClass(), propertyName);
-        } else if (property instanceof V8ValueSymbol) {
-            V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
-            String description = propertySymbol.getDescription();
-            classProxyPluginFunction = classProxyPlugin.getProxyGetBySymbol(
-                    classDescriptor.getTargetClass(), description);
-        }
+        IClassProxyPluginFunction<E> classProxyPluginFunction = getPolyfillFunction(property);
         if (classProxyPluginFunction != null) {
             return classProxyPluginFunction.invoke(v8Runtime, targetObject);
         }
@@ -168,6 +161,30 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         return callbackContexts;
     }
 
+    private IClassProxyPluginFunction<E> getPolyfillFunction(V8Value property) throws JavetException {
+        IClassProxyPluginFunction<E> classProxyPluginFunction = null;
+        if (property instanceof V8ValueString) {
+            String propertyName = ((V8ValueString) property).getValue();
+            classProxyPluginFunction = classProxyPlugin.getProxyGetByString(
+                    classDescriptor.getTargetClass(), propertyName);
+        } else if (property instanceof V8ValueSymbol) {
+            V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
+            String description = propertySymbol.getDescription();
+            classProxyPluginFunction = classProxyPlugin.getProxyGetBySymbol(
+                    classDescriptor.getTargetClass(), description);
+            if (classProxyPluginFunction != null && description != null && description.startsWith(SYMBOL_PREFIX)) {
+                String symbolName = description.substring(SYMBOL_PREFIX.length());
+                try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = v8Runtime.getGlobalObject().getBuiltInSymbol();
+                     V8ValueSymbol wellKnownSymbol = v8ValueBuiltInSymbol.getBuiltInSymbol(symbolName)) {
+                    if (wellKnownSymbol != null && !propertySymbol.strictEquals(wellKnownSymbol)) {
+                        return null;
+                    }
+                }
+            }
+        }
+        return classProxyPluginFunction;
+    }
+
     @Override
     public V8ProxyMode getProxyMode() {
         return V8ProxyMode.Object;
@@ -178,6 +195,9 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         boolean isFound = hasFromCollection(property);
         isFound = isFound || hasFromRegular(property);
         isFound = isFound || hasFromGeneric(property);
+        isFound = isFound || hasFromBuiltInMethod(property);
+        isFound = isFound || hasFromPolyfill(property);
+        isFound = isFound || hasFromTarget(target, property);
         return v8Runtime.createV8ValueBoolean(isFound);
     }
 
@@ -191,7 +211,18 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      */
     protected boolean hasFromCollection(V8Value property) throws JavetException {
         if (classProxyPlugin.isHasSupported(classDescriptor.getTargetClass())) {
+            // An anonymous symbol has no description to convert to a Java collection key.
+            if (property instanceof V8ValueSymbol && ((V8ValueSymbol) property).getDescription() == null) {
+                return false;
+            }
             return classProxyPlugin.hasByObject(targetObject, v8Runtime.toObject(property));
+        }
+        return false;
+    }
+
+    private boolean hasFromPolyfill(V8Value property) throws JavetException {
+        if (classDescriptor.getGetPriorities().contains(ClassDescriptor.GetPriority.Polyfill)) {
+            return getPolyfillFunction(property) != null;
         }
         return false;
     }

@@ -30,6 +30,7 @@ import com.caoccao.javet.utils.*;
 import com.caoccao.javet.values.V8Value;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueObject;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInReflect;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;
@@ -205,12 +206,10 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     protected V8Value getByBuiltInMethod(V8Value property) throws JavetException, E {
         if (property instanceof V8ValueString) {
             String propertyName = ((V8ValueString) property).toPrimitive();
-            if (!classProxyPlugin.isMethodProxyable(propertyName, classDescriptor.getTargetClass())) {
-                if (FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)) {
-                    IClassProxyPluginFunction<E> classProxyPluginFunction =
-                            classProxyPlugin.getProxySymbolToPrimitive();
-                    return classProxyPluginFunction.invoke(v8Runtime, targetObject);
-                }
+            if (isBuiltInMethod(propertyName)) {
+                IClassProxyPluginFunction<E> classProxyPluginFunction =
+                        classProxyPlugin.getProxySymbolToPrimitive();
+                return classProxyPluginFunction.invoke(v8Runtime, targetObject);
             }
         }
         return null;
@@ -427,6 +426,22 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
     }
 
     /**
+     * Checks whether the property is an enabled built-in proxy method.
+     *
+     * @param property the property key
+     * @return whether the built-in method is available
+     * @since 6.0.4
+     */
+    protected boolean hasFromBuiltInMethod(V8Value property) {
+        if (property instanceof V8ValueString) {
+            String propertyName = ((V8ValueString) property).toPrimitive();
+            return isBuiltInMethod(propertyName)
+                    && classDescriptor.getGetPriorities().contains(ClassDescriptor.GetPriority.BuiltInMethod);
+        }
+        return false;
+    }
+
+    /**
      * Has from generic.
      *
      * @param property the property
@@ -489,6 +504,21 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
                     || classDescriptor.getSettersMap().containsKey(propertyName);
         }
         return false;
+    }
+
+    /**
+     * Checks the JavaScript target and its prototype chain for the property.
+     *
+     * @param target   the proxy target
+     * @param property the property key
+     * @return whether the target has the property
+     * @throws JavetException the javet exception
+     * @since 6.0.4
+     */
+    protected boolean hasFromTarget(V8Value target, V8Value property) throws JavetException {
+        try (V8ValueBuiltInReflect v8ValueBuiltInReflect = v8Runtime.getGlobalObject().getBuiltInReflect()) {
+            return v8ValueBuiltInReflect._has(target, property).getValue();
+        }
     }
 
     /**
@@ -647,6 +677,11 @@ public abstract class BaseJavetReflectionProxyHandler<T, E extends Exception>
      */
     protected boolean isApplyFunction(Method method) {
         return method.isAnnotationPresent(V8ProxyFunctionApply.class);
+    }
+
+    private boolean isBuiltInMethod(String propertyName) {
+        return FUNCTION_NAME_TO_V8_VALUE.equals(propertyName)
+                && !classProxyPlugin.isMethodProxyable(propertyName, classDescriptor.getTargetClass());
     }
 
     /**

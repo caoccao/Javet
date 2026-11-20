@@ -7,6 +7,7 @@ The proxy converter and its derived converters support proxy plugins that have t
 * Conversion for the particular Java types can be easily turned on or off by the plugins.
 * The plugins can extend the capabilities of the particular Java types to simulate the native JS types.
 * The public Java fields and methods are available as well.
+* The ``in`` operator recognizes registered plugin properties and properties on the JavaScript target and its prototype chain. For example, ``'length' in intArray`` and ``'toSorted' in intArray`` are both true for a proxied Java array, and ``Symbol.iterator in map`` is true for a proxied Java map.
 
 Built-in Proxy Plugins
 ======================
@@ -216,7 +217,7 @@ Key interface methods to implement:
 * ``getTargetObjectConstructor(Class<?>)`` — return a function that creates the JS proxy target.
 * ``isIndexSupported(Class<?>)`` — enable bracket indexing (``obj[0]``).
 * ``isDeleteSupported(Class<?>)`` — enable the ``delete`` operator.
-* ``isHasSupported(Class<?>)`` — enable the ``in`` operator.
+* ``isHasSupported(Class<?>)`` — let ``hasByObject()`` check the backing Java object for additional keys.
 * ``isOwnKeysSupported(Class<?>)`` — enable ``Object.keys()`` and ``Object.getOwnPropertyNames()``.
 
 It's recommended to review the source code of the built-in proxy plugins to learn how to create your own proxy plugin.

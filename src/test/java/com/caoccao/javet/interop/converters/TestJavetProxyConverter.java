@@ -292,6 +292,11 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.getExecutor("0 in intArray").executeBoolean());
             assertFalse(v8Runtime.getExecutor("2 in intArray").executeBoolean());
             assertFalse(v8Runtime.getExecutor("'x' in intArray").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("'length' in intArray").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("'toSorted' in intArray").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("'toV8Value' in intArray").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("'hasOwnProperty' in intArray").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("Symbol.unscopables in intArray").executeBoolean());
             assertTrue(v8Runtime.getExecutor("0 in stringArray").executeBoolean());
             assertFalse(v8Runtime.getExecutor("2 in stringArray").executeBoolean());
             assertFalse(v8Runtime.getExecutor("'x' in stringArray").executeBoolean());
@@ -775,6 +780,7 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     @Test
     public void testColor() throws JavetException {
         v8Runtime.getGlobalObject().set("Color", Color.class);
+        assertTrue(v8Runtime.getExecutor("'prototype' in Color").executeBoolean());
         assertEquals(
                 Color.HSBtoRGB(1, 1, 1),
                 v8Runtime.getExecutor("Color.HSBtoRGB(1, 1, 1);").executeInteger());
@@ -1846,6 +1852,10 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.getExecutor("'x' in map").executeBoolean());
             assertFalse(v8Runtime.getExecutor("1 in map").executeBoolean());
             assertFalse(v8Runtime.getExecutor("'2' in map").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("'getOrInsert' in map").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("Symbol.toStringTag in map").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("Symbol('Symbol.toStringTag') in map").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("Symbol() in map").executeBoolean());
             // []
             assertEquals(1, v8Runtime.getExecutor("map['x']").executeInteger());
             assertEquals("2", v8Runtime.getExecutor("map['y']").executeString());

@@ -113,11 +113,11 @@ public class TestV8ValueProxy extends BaseTestJavetRuntime {
                 }
                 v8Runtime.getGlobalObject().set("y", v8ValueProxy);
                 for (String methodName : ("add setStringValue getStringValue sSSStringValue ssSStringValue " +
-                        "sssStringValue stringValue").split("\\s+")) {
+                        "sssStringValue stringValue a b").split("\\s+")) {
                     assertTrue(v8ValueProxy.has(methodName),
                             MessageFormat.format("{0} should be found", methodName));
                 }
-                for (String methodName : "subtract ssStringValue sssstringValue a b".split("\\s+")) {
+                for (String methodName : "subtract ssStringValue sssstringValue".split("\\s+")) {
                     assertFalse(v8ValueProxy.has(methodName),
                             MessageFormat.format("{0} should not be found", methodName));
                 }

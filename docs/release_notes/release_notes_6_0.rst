@@ -52,6 +52,7 @@ Release Notes 6.0.x
 * Fixed the iterators of ``JavetProxyPluginArray``, ``JavetProxyPluginList``, ``JavetProxyPluginMap`` and ``JavetProxyPluginSet`` missing the iterator helpers (e.g. ``map()``, ``filter()``, ``toArray()``) and ``Symbol.dispose``, by making ``V8VirtualIterator`` inherit ``Iterator.prototype``
 * Fixed ``values()`` in ``JavetProxyPluginMap`` calling ``Map.values()`` in Java, which returned an array instead of an iterator
 * Fixed ``toGMTString()`` and ``toTemporalInstant()`` throwing ``TypeError`` on a bridged ``ZonedDateTime`` by calling both methods with a native ``Date`` receiver
+* Fixed the ``in`` operator on reflection proxies missing plugin and target properties and throwing ``TypeError`` for non-configurable properties such as ``length`` on a proxied Java array
 
 6.0.3
 -----
