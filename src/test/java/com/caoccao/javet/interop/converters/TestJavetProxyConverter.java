@@ -1657,6 +1657,89 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testListCallbacksWithModification() throws JavetException {
+        // Each test case is [code, expected [visited items, result, list]].
+        String[][] testCases = new String[][]{
+                // The appended items are not visited.
+                {"l.every((x, i, a) => { if (i === 0) a.push('d'); v.push(x); return true; })",
+                        "[[\"a\",\"b\",\"c\"],true,[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.filter((x, i, a) => { if (i === 0) a.push('d'); v.push(x); return true; })",
+                        "[[\"a\",\"b\",\"c\"],[\"a\",\"b\",\"c\"],[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.find((x, i, a) => { if (i === 0) a.push('d'); v.push(x); return false; })",
+                        "[[\"a\",\"b\",\"c\"],null,[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.findIndex((x, i, a) => { if (i === 0) a.push('d'); v.push(x); return false; })",
+                        "[[\"a\",\"b\",\"c\"],-1,[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.findLast((x, i, a) => { if (i === 2) a.push('d'); v.push(x); return false; })",
+                        "[[\"c\",\"b\",\"a\"],null,[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.findLastIndex((x, i, a) => { if (i === 2) a.push('d'); v.push(x); return false; })",
+                        "[[\"c\",\"b\",\"a\"],-1,[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.flatMap((x, i, a) => { if (i === 0) a.push('d'); v.push(x); return [x + i]; })",
+                        "[[\"a\",\"b\",\"c\"],[\"a0\",\"b1\",\"c2\"],[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.forEach((x, i, a) => { if (i === 0) a.push('d'); v.push(x); })",
+                        "[[\"a\",\"b\",\"c\"],null,[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.map((x, i, a) => { if (i === 0) a.push('d'); v.push(x); return x + i; })",
+                        "[[\"a\",\"b\",\"c\"],[\"a0\",\"b1\",\"c2\"],[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.reduce((s, x, i, a) => { if (i === 1) a.push('d'); v.push(x); return s + x; })",
+                        "[[\"b\",\"c\"],\"abc\",[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.reduce((s, x, i, a) => { if (i === 0) a.push('d'); v.push(x); return s + x; }, '')",
+                        "[[\"a\",\"b\",\"c\"],\"abc\",[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.reduceRight((s, x, i, a) => { if (i === 1) a.push('d'); v.push(x); return s + x; })",
+                        "[[\"b\",\"a\"],\"cba\",[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.reduceRight((s, x, i, a) => { if (i === 2) a.push('d'); v.push(x); return s + x; }, '')",
+                        "[[\"c\",\"b\",\"a\"],\"cba\",[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.some((x, i, a) => { if (i === 0) a.push('d'); v.push(x); return false; })",
+                        "[[\"a\",\"b\",\"c\"],false,[\"a\",\"b\",\"c\",\"d\"]]"},
+                // The removed items are skipped, or visited as undefined by find(), findIndex(),
+                // findLast() and findLastIndex().
+                {"l.every((x, i, a) => { if (i === 0) a.pop(); v.push(x); return true; })",
+                        "[[\"a\",\"b\"],true,[\"a\",\"b\"]]"},
+                {"l.filter((x, i, a) => { if (i === 0) a.shift(); v.push(x); return true; })",
+                        "[[\"a\",\"c\"],[\"a\",\"c\"],[\"b\",\"c\"]]"},
+                {"l.find((x, i, a) => { if (i === 0) a.pop(); v.push(x); return false; })",
+                        "[[\"a\",\"b\",null],null,[\"a\",\"b\"]]"},
+                {"l.findIndex((x, i, a) => { if (i === 0) a.pop(); v.push(x); return false; })",
+                        "[[\"a\",\"b\",null],-1,[\"a\",\"b\"]]"},
+                {"l.findLast((x, i, a) => { if (i === 2) a.splice(0, 2); v.push(x); return false; })",
+                        "[[\"c\",null,\"c\"],null,[\"c\"]]"},
+                {"l.findLastIndex((x, i, a) => { if (i === 2) a.splice(0, 2); v.push(x); return false; })",
+                        "[[\"c\",null,\"c\"],-1,[\"c\"]]"},
+                {"l.flatMap((x, i, a) => { if (i === 0) a.pop(); v.push(x); return [x + i]; })",
+                        "[[\"a\",\"b\"],[\"a0\",\"b1\"],[\"a\",\"b\"]]"},
+                {"l.forEach((x, i, a) => { if (i === 0) a.pop(); v.push(x); })",
+                        "[[\"a\",\"b\"],null,[\"a\",\"b\"]]"},
+                {"l.reduce((s, x, i, a) => { if (i === 1) a.pop(); v.push(x); return s + x; })",
+                        "[[\"b\"],\"ab\",[\"a\",\"b\"]]"},
+                {"l.reduce((s, x, i, a) => { if (i === 0) a.pop(); v.push(x); return s + x; }, '')",
+                        "[[\"a\",\"b\"],\"ab\",[\"a\",\"b\"]]"},
+                {"l.reduceRight((s, x, i, a) => { if (i === 1) a.shift(); v.push(x); return s + x; })",
+                        "[[\"b\",\"b\"],\"cbb\",[\"b\",\"c\"]]"},
+                {"l.reduceRight((s, x, i, a) => { if (i === 2) a.splice(1, 2); v.push(x); return s + x; }, '')",
+                        "[[\"c\",\"a\"],\"ca\",[\"a\"]]"},
+                {"l.some((x, i, a) => { if (i === 0) a.pop(); v.push(x); return false; })",
+                        "[[\"a\",\"b\"],false,[\"a\",\"b\"]]"},
+        };
+        try {
+            javetProxyConverter.getConfig().setProxyListEnabled(true);
+            for (String[] testCase : testCases) {
+                String codeString = "((l) => { const v = []; const r = " + testCase[0] +
+                        "; return JSON.stringify([v, r, l]); })";
+                // The JS array confirms the expected result.
+                assertEquals(testCase[1],
+                        v8Runtime.getExecutor(codeString + "(['a', 'b', 'c'])").executeString(),
+                        "JS array: " + testCase[0]);
+                List<Object> list = SimpleList.of("a", "b", "c");
+                v8Runtime.getGlobalObject().set("list", list);
+                assertEquals(testCase[1],
+                        v8Runtime.getExecutor(codeString + "(list)").executeString(),
+                        "Java list: " + testCase[0]);
+            }
+        } finally {
+            v8Runtime.getGlobalObject().delete("list");
+            javetProxyConverter.getConfig().setProxyListEnabled(false);
+        }
+    }
+
+    @Test
     public void testListOfStrings() throws JavetException, InterruptedException {
         v8Runtime.getGlobalObject().set("a", anonymous);
         String codeStringWithCast = "a.expectListOfStrings({\n" +

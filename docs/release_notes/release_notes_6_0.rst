@@ -38,6 +38,7 @@ Release Notes 6.0.x
 * Fixed ``Reflect.ownKeys()`` on an empty proxied Java map or set returning the keys of the first proxied map or set of the same class
 * Removed the proxy plugin from ``ClassDescriptor`` because ``ClassDescriptor`` only caches the reflection metadata shared by all runtimes
 * Fixed ``concat()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` leaking the references to the elements of the array arguments
+* Fixed ``every()``, ``filter()``, ``find()``, ``findIndex()``, ``findLast()``, ``findLastIndex()``, ``flatMap()``, ``forEach()``, ``map()``, ``reduce()``, ``reduceRight()``, ``some()`` in ``JavetProxyPluginList`` throwing ``ConcurrentModificationException`` when the callback adds or removes items, by visiting the original indices like JavaScript
 
 6.0.3
 -----
