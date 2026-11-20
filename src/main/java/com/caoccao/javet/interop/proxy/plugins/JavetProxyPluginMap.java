@@ -110,13 +110,6 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle<Map<Object, 
      */
     protected static final String SIZE = "size";
     /**
-     * The constant DEFAULT_PROXYABLE_METHODS.
-     *
-     * @since 3.0.4
-     */
-    protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
-            CLEAR, FOR_EACH, GET, SIZE, TO_STRING};
-    /**
      * The constant STRING_TAG.
      *
      * @since 6.0.4
@@ -126,6 +119,13 @@ public class JavetProxyPluginMap extends BaseJavetProxyPluginSingle<Map<Object, 
      * The JavaScript method name 'values'.
      */
     protected static final String VALUES = "values";
+    /**
+     * The constant DEFAULT_PROXYABLE_METHODS.
+     *
+     * @since 3.0.4
+     */
+    protected static final String[] DEFAULT_PROXYABLE_METHODS = new String[]{
+            CLEAR, FOR_EACH, GET, SIZE, TO_STRING, VALUES};
     private static final JavetProxyPluginMap instance = new JavetProxyPluginMap();
     /**
      * The proxyable methods.

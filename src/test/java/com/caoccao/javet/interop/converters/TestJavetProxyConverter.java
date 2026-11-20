@@ -2544,6 +2544,101 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testV8VirtualIteratorHelpers() throws JavetException {
+        try {
+            javetProxyConverter.getConfig().setProxyArrayEnabled(true);
+            javetProxyConverter.getConfig().setProxyListEnabled(true);
+            javetProxyConverter.getConfig().setProxyMapEnabled(true);
+            javetProxyConverter.getConfig().setProxySetEnabled(true);
+            Map<Integer, Integer> map = new LinkedHashMap<>();
+            map.put(1, 1);
+            map.put(2, 2);
+            map.put(3, 3);
+            map.put(4, 4);
+            v8Runtime.getGlobalObject().set("arr", new int[]{1, 2, 3, 4});
+            v8Runtime.getGlobalObject().set("list", new ArrayList<>(Arrays.asList(1, 2, 3, 4)));
+            v8Runtime.getGlobalObject().set("map", map);
+            v8Runtime.getGlobalObject().set("set", new LinkedHashSet<>(Arrays.asList(1, 2, 3, 4)));
+            // Each call of create() returns a new iterator over 1, 2, 3, 4.
+            String codeString = String.join("\n",
+                    "const run = (create) => {",
+                    "  const forEachValues = [];",
+                    "  create().forEach(x => forEachValues.push(x));",
+                    "  return JSON.stringify([",
+                    "    create() instanceof Iterator,",
+                    "    (it => Iterator.from(it) === it)(create()),",
+                    "    create().drop(1).toArray(),",
+                    "    create().every(x => x > 0),",
+                    "    create().filter(x => x % 2 === 0).toArray(),",
+                    "    create().find(x => x > 2),",
+                    "    create().flatMap(x => [x, x * 10]).toArray(),",
+                    "    forEachValues,",
+                    "    create().map(x => x * 2).toArray(),",
+                    "    create().reduce((a, x) => a + x, 0),",
+                    "    create().some(x => x > 3),",
+                    "    create().take(2).toArray(),",
+                    "    create().toArray(),",
+                    "    create().filter(x => x > 1).map(x => x + 1).take(2).toArray(),",
+                    "    typeof create()[Symbol.dispose],",
+                    "  ]);",
+                    "};");
+            v8Runtime.getExecutor(codeString).executeVoid();
+            String expectedResult =
+                    "[true,true,[2,3,4],true,[2,4],3,[1,10,2,20,3,30,4,40],[1,2,3,4],[2,4,6,8],10,true,[1,2]," +
+                            "[1,2,3,4],[3,4],\"function\"]";
+            String[][] iteratorCodeStrings = new String[][]{
+                    {"arr.values()", "[1, 2, 3, 4].values()"},
+                    {"arr[Symbol.iterator]()", "[1, 2, 3, 4][Symbol.iterator]()"},
+                    {"list.values()", "[1, 2, 3, 4].values()"},
+                    {"list[Symbol.iterator]()", "[1, 2, 3, 4][Symbol.iterator]()"},
+                    {"map.keys()", "new Map([[1, 1], [2, 2], [3, 3], [4, 4]]).keys()"},
+                    {"map.values()", "new Map([[1, 1], [2, 2], [3, 3], [4, 4]]).values()"},
+                    {"set.values()", "new Set([1, 2, 3, 4]).values()"},
+                    {"set[Symbol.iterator]()", "new Set([1, 2, 3, 4])[Symbol.iterator]()"},
+            };
+            for (String[] iteratorCodeString : iteratorCodeStrings) {
+                // The proxied iterator behaves like a native iterator.
+                assertEquals(
+                        expectedResult,
+                        v8Runtime.getExecutor("run(() => " + iteratorCodeString[1] + ")").executeString(),
+                        iteratorCodeString[1]);
+                assertEquals(
+                        expectedResult,
+                        v8Runtime.getExecutor("run(() => " + iteratorCodeString[0] + ")").executeString(),
+                        iteratorCodeString[0]);
+            }
+            // The iterator is closed by its return() when it is disposed.
+            codeString = String.join("\n",
+                    "(() => {",
+                    "  const results = [];",
+                    "  const it = list.values();",
+                    "  it.next();",
+                    "  it[Symbol.dispose]();",
+                    "  results.push(it.next().done);",
+                    "  let savedIterator;",
+                    "  {",
+                    "    using usingIterator = set.values();",
+                    "    savedIterator = usingIterator;",
+                    "    results.push(usingIterator.next().value);",
+                    "  }",
+                    "  results.push(savedIterator.next().done);",
+                    "  return JSON.stringify(results);",
+                    "})();");
+            assertEquals("[true,1,true]", v8Runtime.getExecutor(codeString).executeString());
+            v8Runtime.getGlobalObject().delete("set");
+            v8Runtime.getGlobalObject().delete("map");
+            v8Runtime.getGlobalObject().delete("list");
+            v8Runtime.getGlobalObject().delete("arr");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+            javetProxyConverter.getConfig().setProxyArrayEnabled(false);
+            javetProxyConverter.getConfig().setProxyListEnabled(false);
+            javetProxyConverter.getConfig().setProxyMapEnabled(false);
+            javetProxyConverter.getConfig().setProxySetEnabled(false);
+        }
+    }
+
+    @Test
     public void testZonedDateTime() throws JavetException {
         v8Runtime.getGlobalObject().set("a", anonymous);
         String codeString = "a.expectZonedDateTime(new Date(253402300799000), new Date(-2208988800000));";

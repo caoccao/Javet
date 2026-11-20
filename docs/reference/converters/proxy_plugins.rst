@@ -165,6 +165,10 @@ The set plugin maps ``Set<?>`` to the JS ``Set``. It polyfills the JS Set API.
 
 Polyfilled Set methods: ``add(value)``, ``has(value)``, ``delete(value)``, ``clear()``, ``size`` (property), ``entries()`` (returns ``[value, value]`` pairs), ``keys()``, ``values()``, ``forEach(fn)``, ``difference(other)``, ``intersection(other)``, ``union(other)``, ``symmetricDifference(other)``, ``isSubsetOf(other)``, ``isSupersetOf(other)``, ``isDisjointFrom(other)``, ``Symbol.iterator``, ``toJSON()``, ``toString()`` (returns ``"[object Set]"``), and ``valueOf()``. Java ``Set`` methods (``contains()``, ``add()``, ``size()``, etc.) remain accessible.
 
+.. note::
+
+    The iterators returned by ``entries()``, ``keys()``, ``values()`` and ``Symbol.iterator`` of the array, list, map and set plugins inherit ``Iterator.prototype`` of the current realm. So the iterator helpers supplied by the engine, e.g. ``drop()``, ``every()``, ``filter()``, ``find()``, ``flatMap()``, ``forEach()``, ``map()``, ``reduce()``, ``some()``, ``take()``, ``toArray()`` and ``Symbol.dispose``, work on them like on native iterators (e.g. ``list.values().map(x => x * 2).toArray()``).
+
 Add or Remove Proxy Plugins
 ===========================
 
