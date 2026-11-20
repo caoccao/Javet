@@ -1277,6 +1277,44 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testLastIndexOf() throws JavetException {
+        String[][] testCases = new String[][]{
+                {"[1, 2, 1]", "[2,2,2,2,0,0,2,0,0,-1,-1,2,-1,1,1,-1]"},
+                {"array", "[2,2,2,2,0,0,2,0,0,-1,-1,2,-1,1,1,-1]"},
+                {"list", "[2,2,2,2,0,0,2,0,0,-1,-1,2,-1,1,1,-1]"},
+                {"[]", "[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]"},
+                {"emptyArray", "[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]"},
+                {"emptyList", "[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]"},
+        };
+        String codeString = "((a) => JSON.stringify([" +
+                "a.lastIndexOf(1), a.lastIndexOf(1, 99), a.lastIndexOf(1, 3), a.lastIndexOf(1, 2), " +
+                "a.lastIndexOf(1, 1), a.lastIndexOf(1, 0), a.lastIndexOf(1, -1), a.lastIndexOf(1, -2), " +
+                "a.lastIndexOf(1, -3), a.lastIndexOf(1, -4), a.lastIndexOf(1, -99), a.lastIndexOf(1, Infinity), " +
+                "a.lastIndexOf(1, -Infinity), a.lastIndexOf(2, 99), a.lastIndexOf(2, -2), a.lastIndexOf(2, -3)]))";
+        try {
+            javetProxyConverter.getConfig().setProxyArrayEnabled(true);
+            javetProxyConverter.getConfig().setProxyListEnabled(true);
+            v8Runtime.getGlobalObject().set("array", new int[]{1, 2, 1});
+            v8Runtime.getGlobalObject().set("emptyArray", new int[0]);
+            v8Runtime.getGlobalObject().set("list", SimpleList.of(1, 2, 1));
+            v8Runtime.getGlobalObject().set("emptyList", SimpleList.of());
+            for (String[] testCase : testCases) {
+                assertEquals(
+                        testCase[1],
+                        v8Runtime.getExecutor(codeString + "(" + testCase[0] + ")").executeString(),
+                        testCase[0]);
+            }
+        } finally {
+            v8Runtime.getGlobalObject().delete("array");
+            v8Runtime.getGlobalObject().delete("emptyArray");
+            v8Runtime.getGlobalObject().delete("list");
+            v8Runtime.getGlobalObject().delete("emptyList");
+            javetProxyConverter.getConfig().setProxyArrayEnabled(false);
+            javetProxyConverter.getConfig().setProxyListEnabled(false);
+        }
+    }
+
+    @Test
     public void testList() throws JavetException {
         try {
             javetProxyConverter.getConfig().setProxyListEnabled(true);

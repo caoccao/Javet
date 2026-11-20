@@ -1105,11 +1105,11 @@ public class JavetProxyPluginArray extends BaseJavetProxyPluginSingle<Object> {
                         int fromIndex = V8ValueUtils.asInt(v8Values, 1, length - 1);
                         if (fromIndex < 0) {
                             fromIndex += length;
-                        }
-                        if (fromIndex < 0) {
+                        } else if (fromIndex >= length) {
                             fromIndex = length - 1;
                         }
-                        if (fromIndex <= length) {
+                        // The negative index that precedes the first item finds nothing.
+                        if (fromIndex >= 0) {
                             index = ArrayUtils.lastIndexOf(targetObject, object, fromIndex);
                         }
                     }

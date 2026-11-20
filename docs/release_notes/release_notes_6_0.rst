@@ -39,6 +39,7 @@ Release Notes 6.0.x
 * Removed the proxy plugin from ``ClassDescriptor`` because ``ClassDescriptor`` only caches the reflection metadata shared by all runtimes
 * Fixed ``concat()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` leaking the references to the elements of the array arguments
 * Fixed ``every()``, ``filter()``, ``find()``, ``findIndex()``, ``findLast()``, ``findLastIndex()``, ``flatMap()``, ``forEach()``, ``map()``, ``reduce()``, ``reduceRight()``, ``some()`` in ``JavetProxyPluginList`` throwing ``ConcurrentModificationException`` when the callback adds or removes items, by visiting the original indices like JavaScript
+* Fixed ``lastIndexOf()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` returning ``-1`` when ``fromIndex`` is greater than or equal to the length, and searching the whole array or list when ``fromIndex`` is less than ``-length``
 
 6.0.3
 -----
