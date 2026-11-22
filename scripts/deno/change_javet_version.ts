@@ -134,6 +134,11 @@ class ChangeJavetVersion {
       /release\s*=\s*'(?<version>\d+\.\d+\.\d+)'$/
     );
     this.updateFile(
+      "docs/development/build_javet_with_docker.rst",
+      "\n",
+      /javet-android:(?<version>\d+\.\d+\.\d+) /
+    );
+    this.updateFile(
       "docs/tutorial/basic/installation.rst",
       "\n",
       /<version>(?<version>\d+\.\d+\.\d+)<\/version>/,
@@ -247,7 +252,7 @@ class ChangeJavetVersion {
 }
 
 function main(): number {
-  const changeJavetVersion = new ChangeJavetVersion("6.0.3");
+  const changeJavetVersion = new ChangeJavetVersion("6.0.4");
   changeJavetVersion.update();
   return 0;
 }

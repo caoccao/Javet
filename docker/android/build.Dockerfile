@@ -15,7 +15,8 @@
 
 # Usage: docker build -t javet-android:local -f docker/android/build.Dockerfile .
 
-FROM sjtucaocao/javet-android:6.0.3
+# The base image is built by docker/android/base.Dockerfile.
+FROM --platform=linux/amd64 sjtucaocao/javet-android:6.0.4
 WORKDIR /
 
 # Copy Javet
@@ -25,10 +26,14 @@ COPY . .
 
 # Build JNI
 WORKDIR /Javet/cpp
-RUN sh ./build-android.sh -DV8_DIR=/google/v8 -DCMAKE_ANDROID_NDK=/android-ndk-r23b -DCMAKE_ANDROID_ARCH=arm
-RUN sh ./build-android.sh -DV8_DIR=/google/v8 -DCMAKE_ANDROID_NDK=/android-ndk-r23b -DCMAKE_ANDROID_ARCH=arm64
-RUN sh ./build-android.sh -DV8_DIR=/google/v8 -DCMAKE_ANDROID_NDK=/android-ndk-r23b -DCMAKE_ANDROID_ARCH=x86
-RUN sh ./build-android.sh -DV8_DIR=/google/v8 -DCMAKE_ANDROID_NDK=/android-ndk-r23b -DCMAKE_ANDROID_ARCH=x86_64
+RUN deno run build --os android --arch arm --v8-dir /google/v8 --android-ndk ${ANDROID_NDK_HOME}
+RUN deno run build --os android --arch arm --v8-dir /google/v8 --android-ndk ${ANDROID_NDK_HOME} --i18n
+RUN deno run build --os android --arch arm64 --v8-dir /google/v8 --android-ndk ${ANDROID_NDK_HOME}
+RUN deno run build --os android --arch arm64 --v8-dir /google/v8 --android-ndk ${ANDROID_NDK_HOME} --i18n
+RUN deno run build --os android --arch x86 --v8-dir /google/v8 --android-ndk ${ANDROID_NDK_HOME}
+RUN deno run build --os android --arch x86 --v8-dir /google/v8 --android-ndk ${ANDROID_NDK_HOME} --i18n
+RUN deno run build --os android --arch x86_64 --v8-dir /google/v8 --android-ndk ${ANDROID_NDK_HOME}
+RUN deno run build --os android --arch x86_64 --v8-dir /google/v8 --android-ndk ${ANDROID_NDK_HOME} --i18n
 
 # Build AAR
 WORKDIR /Javet/scripts/python

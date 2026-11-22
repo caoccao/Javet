@@ -25,7 +25,8 @@ import com.caoccao.javet.utils.JavetOSUtils;
 import com.caoccao.javet.utils.JavetReflectionUtils;
 import com.caoccao.javet.utils.SimpleMap;
 
-import java.io.DataInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.Objects;
@@ -36,6 +37,7 @@ import java.util.Objects;
  * @since 0.8.0
  */
 final class JavetClassLoader extends ClassLoader {
+    private static final int BUFFER_SIZE = 8192;
     private static final String JAVET_LIB_LOADER_CLASS_NAME = JavetLibLoader.class.getName();
     private static final String METHOD_LOAD = "load";
     private static final String METHOD_SET_LIB_LOADING_LISTENER = "setLibLoadingListener";
@@ -53,6 +55,30 @@ final class JavetClassLoader extends ClassLoader {
     JavetClassLoader(ClassLoader parent, JSRuntimeType jsRuntimeType) {
         super(parent);
         this.jsRuntimeType = Objects.requireNonNull(jsRuntimeType);
+    }
+
+    /**
+     * Define and resolve the class from the input stream.
+     *
+     * @param name        the class name
+     * @param inputStream the input stream of the class bytes
+     * @return the class
+     * @throws IOException the IO exception
+     * @since 6.0.4
+     */
+    Class<?> defineClass(String name, InputStream inputStream) throws IOException {
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            // The stream is read till EOF because available() is an estimate and read() may return fewer bytes.
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int length;
+            while ((length = inputStream.read(buffer)) != -1) {
+                byteArrayOutputStream.write(buffer, 0, length);
+            }
+            byte[] classBytes = byteArrayOutputStream.toByteArray();
+            Class<?> definedClass = defineClass(name, classBytes, 0, classBytes.length);
+            resolveClass(definedClass);
+            return definedClass;
+        }
     }
 
     /**
@@ -120,13 +146,7 @@ final class JavetClassLoader extends ClassLoader {
             String classPath = "/" + name.replace(".", "/") + ".class";
             try (InputStream inputStream = getClass().getResourceAsStream(classPath)) {
                 //noinspection ConstantConditions
-                byte[] buffer = new byte[inputStream.available()];
-                try (DataInputStream dataInputStream = new DataInputStream(inputStream)) {
-                    dataInputStream.readFully(buffer);
-                    Class<?> classJavetLibLoader = defineClass(name, buffer, 0, buffer.length);
-                    resolveClass(classJavetLibLoader);
-                    return classJavetLibLoader;
-                }
+                return defineClass(name, inputStream);
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
                 throw new ClassNotFoundException(name, t);

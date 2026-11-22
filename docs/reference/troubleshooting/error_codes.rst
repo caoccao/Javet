@@ -56,6 +56,8 @@ Code Type        Name                                   Format
 806  Runtime     RuntimeOutOfMemory                     Runtime is out of memory because ${message} with ${heapStatistics}                                                                                               
 807  Runtime     RuntimeCreateSnapshotDisabled          Runtime create snapshot is disabled                                                                                                                              
 808  Runtime     RuntimeCreateSnapshotBlocked           Runtime create snapshot is blocked because of ${callbackContextCount} callback context(s), ${referenceCount} reference(s), ${v8ModuleCount} module(s)            
+809  Runtime     RuntimeCreateFailure                   Failed to create the runtime                                                                                                                                     
+810  Runtime     RuntimeResetFailure                    Failed to reset the runtime and the runtime is closed                                                                                                            
 901  Engine      EngineNotAvailable                     Engine is not available.                                                                                                                                         
 ==== =========== ====================================== =================================================================================================================================================================
 

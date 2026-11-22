@@ -2,6 +2,58 @@
 Release Notes 6.0.x
 ===================
 
+6.0.4
+-----
+
+* Upgraded Node.js to ``v26.13.1`` `(2026-11-11) <https://nodejs.org/en/blog/release/v26.13.1>`_
+* Upgraded V8 to ``v15.8.62.52`` (2026-11-18)
+* Fixed the JVM crash when a Node.js runtime is created or reset with a malformed or incompatible snapshot blob
+* Added ``RuntimeCreateFailure``, ``RuntimeResetFailure`` to ``JavetError``
+* Changed ``createV8Runtime()`` in ``V8Host`` to throw ``RuntimeCreateFailure`` if the runtime cannot be created
+* Changed ``resetContext()``, ``resetIsolate()`` in ``V8Runtime`` to close the runtime and throw ``RuntimeResetFailure`` if the runtime cannot be recreated
+* Fixed ``JavetEnginePool`` lending an engine whose runtime is closed
+* Fixed ``JavetEnginePool`` losing an engine slot permanently when the engine cannot be created
+* Enhanced ``getEngine()`` in ``JavetEnginePool`` to throw ``EngineNotAvailable`` with the last engine creation failure as its cause
+* Changed ``resetContext()``, ``resetIsolate()`` in ``V8Runtime`` to remove the GC callbacks, the microtasks completed callbacks and the near heap limit callback
+* Fixed ``V8Runtime`` not registering the callbacks added after ``resetContext()`` or ``resetIsolate()`` to the native isolate
+* Fixed the JVM crash when ``setNearHeapLimitCallback()`` replaces the near heap limit callback
+* Added ``getHeapSnapshotNearHeapLimit()``, ``setHeapSnapshotNearHeapLimit()`` to ``NodeFlags``
+* Fixed the known issue that ``getNearHeapLimitCallback()``, ``setNearHeapLimitCallback()`` break in Node.js mode
+* Fixed ``JavetEnginePool`` ignoring the snapshot blob in ``JavetEngineConfig`` in Node.js mode
+* Fixed ``removeV8Modules(true)`` in ``V8Runtime`` throwing ``ConcurrentModificationException`` when more than one module is cached
+* Fixed some bugs in ``splice()`` in ``JavetProxyPluginList`` and ``toSpliced()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList``
+* Fixed the JVM crash when an expired ``V8Guard``, ``isInUse()`` or ``terminateExecution()`` accesses a ``V8Runtime`` that is being reset by ``resetIsolate()`` or ``resetContext()``, or closed
+* Fixed ``JavetEngine`` losing the eval policy in ``JavetEngineConfig`` after ``resetContext()`` or ``resetIsolate()``
+* Fixed the deadlock when ``addV8Module()`` in ``V8Runtime`` replaces a module while another module is being closed
+* Fixed closing a ``V8Module`` removing another module with the same resource name from the module cache
+* Fixed ``removeV8Module(IV8Module)`` in ``V8Runtime`` removing or force closing another module with the same resource name
+* Fixed ``bigint`` just out of the range of ``long`` (e.g. ``2n ** 63n``) silently changing value when it is converted to ``long`` instead of ``BigInteger``
+* Fixed the JVM crash when a ``V8Runtime`` with an open ``V8Inspector`` is closed or its isolate is reset
+* Changed ``close()``, ``resetIsolate()`` in ``V8Runtime``, and ``resetContext()`` for Node.js snapshot runtimes, to close the ``V8Inspector`` sessions, so that a session created before the isolate is reset no longer closes or sends requests to a session created after the reset
+* Fixed the futures of ``getV8HeapSpaceStatistics()``, ``getV8HeapStatistics()``, ``getV8SharedMemoryStatistics()`` in ``V8Runtime`` never completing when the request times out after 60 seconds, by cancelling them
+* Fixed ``call()``, ``callAsConstructor()`` in ``V8ValueFunction``, ``invoke()`` in ``V8ValueObject``, and ``set()`` with multiple key-value pairs in ``V8ValueObject`` and ``V8ValueMap`` leaking the converted values when a later value cannot be converted
+* Fixed ``JavetObjectConverter`` failing to convert an object whose own ``constructor`` property is not a function, which made ``executeObject()`` return ``null``
+* Fixed ``registerCustomObject()`` in ``JavetObjectConverter`` returning ``false`` when the registration succeeds
+* Fixed the reflection proxies of a Java class dispatching to the proxy plugin selected by the first converter that proxies the class, instead of the proxy plugin selected by the converter of the runtime
+* Fixed ``Reflect.ownKeys()`` on an empty proxied Java map or set returning the keys of the first proxied map or set of the same class
+* Removed the proxy plugin from ``ClassDescriptor`` because ``ClassDescriptor`` only caches the reflection metadata shared by all runtimes
+* Fixed ``concat()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` leaking the references to the elements of the array arguments
+* Fixed ``every()``, ``filter()``, ``find()``, ``findIndex()``, ``findLast()``, ``findLastIndex()``, ``flatMap()``, ``forEach()``, ``map()``, ``reduce()``, ``reduceRight()``, ``some()`` in ``JavetProxyPluginList`` throwing ``ConcurrentModificationException`` when the callback adds or removes items, by visiting the original indices like JavaScript
+* Fixed ``lastIndexOf()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` returning ``-1`` when ``fromIndex`` is greater than or equal to the length, and searching the whole array or list when ``fromIndex`` is less than ``-length``
+* Fixed ``join()`` in ``JavetProxyPluginArray`` and ``JavetProxyPluginList`` throwing ``NullPointerException`` when an element is ``null``, by joining it as the empty string like JavaScript
+* Fixed ``V8PathExecutor`` reading the file with the same path string on the default file system instead of the path in its own file system (e.g. a ZIP file system)
+* Fixed ``V8FileExecutor`` and ``V8PathExecutor`` truncating the script when the file reports fewer available bytes than it delivers (e.g. a named pipe)
+* Fixed ``setResourceName()`` in ``IV8Executor`` keeping ``__dirname``, ``__filename``, the ``require`` root directory and the working directory of the previous script in Node.js mode when the resource name is a bare file name (e.g. ``main.js``)
+* Fixed ``V8FileExecutor`` and ``V8PathExecutor`` failing to read a relative script with a directory part (e.g. ``scripts/main.js``) in Node.js mode, because the working directory is changed to the script directory before the script is read
+* Fixed ``V8Host`` failing to load the native library when the class resource stream of ``JavetLibLoader``, ``NodeNative`` or ``V8Native`` reports fewer available bytes than it delivers, because ``JavetClassLoader`` truncated the class
+* Fixed a slow ``resetContext()``, ``resetIsolate()`` or ``close()`` in ``V8Runtime`` (e.g. Node.js draining an active timer) suspending the ``V8Guard`` timeouts of the other runtimes of the same ``V8Host``
+* Added ``getOrInsert()``, ``getOrInsertComputed()`` to ``JavetProxyPluginMap``
+* Fixed ``Object.prototype.toString()`` returning ``[object Object]`` instead of ``[object Map]`` for a proxied Java map, by adding ``Symbol.toStringTag`` to ``JavetProxyPluginMap``
+* Fixed the iterators of ``JavetProxyPluginArray``, ``JavetProxyPluginList``, ``JavetProxyPluginMap`` and ``JavetProxyPluginSet`` missing the iterator helpers (e.g. ``map()``, ``filter()``, ``toArray()``) and ``Symbol.dispose``, by making ``V8VirtualIterator`` inherit ``Iterator.prototype``
+* Fixed ``values()`` in ``JavetProxyPluginMap`` calling ``Map.values()`` in Java, which returned an array instead of an iterator
+* Fixed ``toGMTString()`` and ``toTemporalInstant()`` throwing ``TypeError`` on a bridged ``ZonedDateTime`` by calling both methods with a native ``Date`` receiver
+* Fixed the ``in`` operator on reflection proxies missing plugin and target properties and throwing ``TypeError`` for non-configurable properties such as ``length`` on a proxied Java array
+
 6.0.3
 -----
 

@@ -49,7 +49,7 @@ public final class V8Inspector implements IJavetClosable {
     private final int sessionId;
     private final IV8Native v8Native;
     private final V8Runtime v8Runtime;
-    private boolean closed;
+    private volatile boolean closed;
     private IJavetLogger logger;
 
     V8Inspector(V8Runtime v8Runtime, String name, IV8Native v8Native) {
@@ -114,6 +114,8 @@ public final class V8Inspector implements IJavetClosable {
      * Closes this inspector session, disconnecting it from the V8 runtime.
      * After closing, calls to {@link #sendRequest(String)} are silently ignored.
      * Other sessions on the same runtime are not affected.
+     * <p>
+     * The session is also closed when the V8 runtime is closed or its isolate is reset.
      *
      * @since 5.0.5
      */
@@ -124,6 +126,7 @@ public final class V8Inspector implements IJavetClosable {
             if (!v8Runtime.isClosed()) {
                 v8Native.v8InspectorCloseSession(v8Runtime.getHandle(), sessionId);
             }
+            v8Runtime.removeV8Inspector(this);
         }
     }
 

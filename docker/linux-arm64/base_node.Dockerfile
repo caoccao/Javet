@@ -14,13 +14,13 @@
 # limitations under the License.
 
 # Usage: docker build \
-#  -t sjtucaocao/javet:arm64-base-node_18.15.0 \
+#  -t sjtucaocao/javet:arm64-base-node_26.13.1 \
 #  --build-arg JAVET_REPO=sjtucaocao/javet \
-#  --build-arg JAVET_NODE_VERSION=18.15.0 \
+#  --build-arg JAVET_NODE_VERSION=26.13.1 \
 #  -f docker/linux-arm64/base_node.Dockerfile .
 
 ARG JAVET_REPO=sjtucaocao/javet
-ARG JAVET_NODE_VERSION=18.15.0
+ARG JAVET_NODE_VERSION=26.13.1
 
 FROM ${JAVET_REPO}:arm64-base-jvm
 
@@ -28,13 +28,14 @@ ARG JAVET_NODE_VERSION
 
 RUN if [ -z "$JAVET_NODE_VERSION" ]; then echo 'Build argument JAVET_NODE_VERSION must be specified. Exiting.'; exit 1; fi
 
-# Prepare Node.js v18
+# Prepare Node.js
 WORKDIR /
 COPY ./scripts/shell/fetch_node_source.sh .
 RUN bash ./fetch_node_source.sh
 
 # Build Node.js
 WORKDIR /node
-COPY ./scripts/python/patch_node_build.py .
+COPY ./scripts/deno /Javet/scripts/deno
 COPY ./scripts/shell/build_node_source.sh .
-RUN bash ./build_node_source.sh
+RUN JAVET_HOME=/Javet bash ./build_node_source.sh
+RUN rm -rf build_node_source.sh /Javet

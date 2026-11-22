@@ -25,16 +25,16 @@
 #   3. Restart docker
 
 # set DOCKER_DEFAULT_PLATFORM=windows/amd64
-# Usage: docker build -t sjtucaocao/javet-windows-x86_64:6.0.3 -m 8G -f docker/windows-x86_64/build.Dockerfile .
+# Usage: docker build -t sjtucaocao/javet-windows-x86_64:6.0.4 -m 8G -f docker/windows-x86_64/build.Dockerfile .
 
 # Multi-stage Dockerfile for building Javet on Windows x86_64
 # Based on .github/workflows/windows_x86_64_build.yml
 
 # Build arguments
-ARG JAVET_NODE_VERSION=26.13.0
-ARG JAVET_V8_VERSION=15.7.112.19
-ARG JAVET_VERSION=6.0.3
-ARG TEMPORAL_VERSION=0.1.2
+ARG JAVET_NODE_VERSION=26.13.1
+ARG JAVET_V8_VERSION=15.8.62.52
+ARG JAVET_VERSION=6.0.4
+ARG TEMPORAL_VERSION=0.2.3
 
 ###########################################
 # Stage 1: Base with common dependencies
@@ -141,18 +141,18 @@ RUN cd google\v8 && \
 # Build V8 non-i18n
 RUN cd google\v8 && \
     mkdir out.gn\x64.release && \
-    copy C:\Javet\src\scripts\v8\gn\windows-x86_64-non-i18n-args.gn out.gn\x64.release\args.gn && \
+    copy C:\Javet\scripts\v8\gn\windows-x86_64-non-i18n-args.gn out.gn\x64.release\args.gn && \
     ..\depot_tools\gn.bat gen out.gn\x64.release && \
-    ..\depot_tools\ninja.bat -C out.gn\x64.release v8_monolith || deno --allow-all C:\Javet\src\scripts\deno\patch_v8_build.ts -p .\ && \
+    ..\depot_tools\ninja.bat -C out.gn\x64.release v8_monolith || deno --allow-all C:\Javet\scripts\deno\patch_v8_build.ts -p .\ && \
     ..\depot_tools\ninja.bat -C out.gn\x64.release v8_monolith && \
     move out.gn out.gn.windows.non-i18n
 
 # Build V8 i18n
 RUN cd google\v8 && \
     mkdir out.gn\x64.release && \
-    copy C:\Javet\src\scripts\v8\gn\windows-x86_64-i18n-args.gn out.gn\x64.release\args.gn && \
+    copy C:\Javet\scripts\v8\gn\windows-x86_64-i18n-args.gn out.gn\x64.release\args.gn && \
     ..\depot_tools\gn.bat gen out.gn\x64.release && \
-    ..\depot_tools\ninja.bat -C out.gn\x64.release v8_monolith || deno --allow-all C:\Javet\src\scripts\deno\patch_v8_build.ts -p .\ && \
+    ..\depot_tools\ninja.bat -C out.gn\x64.release v8_monolith || deno --allow-all C:\Javet\scripts\deno\patch_v8_build.ts -p .\ && \
     ..\depot_tools\ninja.bat -C out.gn\x64.release v8_monolith && \
     move out.gn out.gn.windows.i18n
 

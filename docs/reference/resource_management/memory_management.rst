@@ -250,7 +250,7 @@ V8 exposes quite a few statistics for applications to analyze the memory usage, 
 
 .. note::
 
-    * The ``getV8HeapSpaceStatistics()``, ``getV8HeapStatistics()``, and ``getV8SharedMemoryStatistics()`` calls are asynchronous and not 100% guaranteed to be completed. Only when the V8 runtime is idle, 100% completion can be achieved.
+    * The ``getV8HeapSpaceStatistics()``, ``getV8HeapStatistics()``, and ``getV8SharedMemoryStatistics()`` calls are asynchronous and not 100% guaranteed to be completed. Only when the V8 runtime is idle, 100% completion can be achieved. A call that is not completed in 60 seconds is cancelled, so ``join()`` and ``get()`` throw ``CancellationException`` instead of waiting forever.
     * Since 5.0.8, V8 mode runs in multi-cage pointer compression, so each ``V8Runtime`` owns its own read-only space. ``getV8SharedMemoryStatistics()`` on ``V8Runtime`` reports that runtime's group; the process-wide variants on ``V8Host`` have been removed. Use ``JavetEnginePool.getAggregateV8SharedMemoryStatistics()`` to sum across a pool.
     * More statistics will be exposed in new releases. Please file issues if you need more of them.
 
@@ -260,6 +260,10 @@ Heap Limit
 V8 has a built-in heap limit that can be set via ``V8Flags.setMaxHeapSize(int)``. However, that is not enough for applications to control the heap size. Especially, when V8 reaches the heap limit, it will crash the whole application which is JVM.
 
 Javet provides a way to set a near heap limit callback so that applications can be notified when the heap size is close to the limit. This is done via ``V8Runtime.setNearHeapLimitCallback()``. The callback will be called when the heap size is close to the limit. Applications can then take 2 options to prevent the crash.
+
+.. note::
+
+    ``resetContext()`` and ``resetIsolate()`` remove the near heap limit callback. Set it again after the reset if it is still needed.
 
 Option 1: Increase the Heap Size
 --------------------------------
@@ -283,3 +287,22 @@ Somehow, a malicious script can use up all the heap memory no matter how large t
         v8Runtime.terminateExecution(); // We tell V8 to terminate the execution.
         return currentHeapLimit * 2; // We still need to tell V8 to double the heap limit because the termination will happen later.
     });
+
+Node.js Mode
+------------
+
+The near heap limit callback works in the same way in the Node.js mode, with a few differences.
+
+* V8 mode is built with pointer compression, but Node.js is not, so the same script takes roughly twice as much heap in the Node.js mode.
+* The callback is called again with the raised heap limit if the heap keeps growing, so the new heap limit is supposed to be computed from ``currentHeapLimit`` rather than ``initialHeapLimit``.
+* Node.js has its own near heap limit callback that writes the heap snapshots if ``--heapsnapshot-near-heap-limit`` is set. V8 only calls the near heap limit callback that is registered last, so Node.js doesn't write the heap snapshots while the near heap limit callback of the runtime is set. Once it is removed, Node.js writes the heap snapshots again.
+
+.. code-block:: java
+
+    // Node.js writes at most 1 heap snapshot when V8 is approaching the heap limit.
+    NodeRuntimeOptions.NODE_FLAGS.setHeapSnapshotNearHeapLimit(1);
+
+.. note::
+
+    * The heap snapshots are written to the current working directory by default. Set the custom flag ``--diagnostic-dir`` to write them to another directory.
+    * Node.js only raises the heap limit a little while writing a heap snapshot, and stops writing after the given number of heap snapshots. It is a diagnostic tool that doesn't prevent the crash.

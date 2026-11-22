@@ -33,7 +33,9 @@ import com.caoccao.javet.interfaces.IJavetUniFunction;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.interop.binding.ClassDescriptorStore;
+import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
 import com.caoccao.javet.interop.proxy.IJavetDirectProxyHandler;
+import com.caoccao.javet.interop.proxy.plugins.BaseJavetProxyPlugin;
 import com.caoccao.javet.mock.MockCallbackReceiver;
 import com.caoccao.javet.mock.MockDirectProxyFunctionHandler;
 import com.caoccao.javet.mock.MockDirectProxyListHandler;
@@ -290,6 +292,11 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.getExecutor("0 in intArray").executeBoolean());
             assertFalse(v8Runtime.getExecutor("2 in intArray").executeBoolean());
             assertFalse(v8Runtime.getExecutor("'x' in intArray").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("'length' in intArray").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("'toSorted' in intArray").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("'toV8Value' in intArray").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("'hasOwnProperty' in intArray").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("Symbol.unscopables in intArray").executeBoolean());
             assertTrue(v8Runtime.getExecutor("0 in stringArray").executeBoolean());
             assertFalse(v8Runtime.getExecutor("2 in stringArray").executeBoolean());
             assertFalse(v8Runtime.getExecutor("'x' in stringArray").executeBoolean());
@@ -627,6 +634,24 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[1][1,2]",
                     v8Runtime.getExecutor("JSON.stringify(intArray.toSpliced(1))+JSON.stringify(intArray)").executeString());
+            // toSpliced() with an explicit undefined deleteCount should remove nothing
+            assertEquals(
+                    "[1,3,2][1,2]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.toSpliced(1,undefined,3))+JSON.stringify(intArray)").executeString());
+            // toSpliced() with start at or beyond the length should append
+            assertEquals(
+                    "[1,2,3][1,2]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.toSpliced(intArray.length,0,3))+JSON.stringify(intArray)").executeString());
+            assertEquals(
+                    "[1,2,3][1,2]",
+                    v8Runtime.getExecutor("JSON.stringify(intArray.toSpliced(100,1,3))+JSON.stringify(intArray)").executeString());
+            assertArrayEquals(new int[]{1, 2}, intArray);
+            // toSpliced() should insert into an empty array
+            v8Runtime.getGlobalObject().set("emptyArray", new String[0]);
+            assertEquals(
+                    "[\"a\"][]",
+                    v8Runtime.getExecutor("JSON.stringify(emptyArray.toSpliced(0,0,'a'))+JSON.stringify(emptyArray)").executeString());
+            v8Runtime.getGlobalObject().delete("emptyArray");
             // Symbol.iterator
             assertEquals(
                     "[1,2]",
@@ -755,10 +780,37 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     @Test
     public void testColor() throws JavetException {
         v8Runtime.getGlobalObject().set("Color", Color.class);
+        assertTrue(v8Runtime.getExecutor("'prototype' in Color").executeBoolean());
         assertEquals(
                 Color.HSBtoRGB(1, 1, 1),
                 v8Runtime.getExecutor("Color.HSBtoRGB(1, 1, 1);").executeInteger());
         v8Runtime.getGlobalObject().delete("Color");
+    }
+
+    @Test
+    public void testConcatWithReferences() throws JavetException {
+        try {
+            javetProxyConverter.getConfig().setProxyArrayEnabled(true);
+            javetProxyConverter.getConfig().setProxyListEnabled(true);
+            v8Runtime.getGlobalObject().set("array", new Object[]{"x"});
+            v8Runtime.getGlobalObject().set("list", SimpleList.of("y"));
+            assertEquals(
+                    "[\"x\",{\"a\":1},[2]]",
+                    v8Runtime.getExecutor("JSON.stringify(array.concat([{a: 1}, [2]]))").executeString());
+            assertEquals(
+                    "[\"y\",{\"a\":1},[2]]",
+                    v8Runtime.getExecutor("JSON.stringify(list.concat([{a: 1}, [2]]))").executeString());
+            final int referenceCount = v8Runtime.getReferenceCount();
+            v8Runtime.getExecutor(
+                    "for (let i = 0; i < 100; ++i) { array.concat([{}]); list.concat([{}]); }").executeVoid();
+            assertEquals(referenceCount, v8Runtime.getReferenceCount(),
+                    "The element references of the array arguments should be closed.");
+        } finally {
+            v8Runtime.getGlobalObject().delete("array");
+            v8Runtime.getGlobalObject().delete("list");
+            javetProxyConverter.getConfig().setProxyArrayEnabled(false);
+            javetProxyConverter.getConfig().setProxyListEnabled(false);
+        }
     }
 
     @Test
@@ -1231,6 +1283,70 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testJoinWithNull() throws JavetException {
+        String[] testCases = new String[]{"[null, 'a', null, 'b', undefined]", "array", "list", "pushedList"};
+        String codeString = "((a) => JSON.stringify([a.join(), a.join(undefined), a.join('-'), a.join('')]))";
+        try {
+            javetProxyConverter.getConfig().setProxyArrayEnabled(true);
+            javetProxyConverter.getConfig().setProxyListEnabled(true);
+            v8Runtime.getGlobalObject().set("array", new String[]{null, "a", null, "b", null});
+            v8Runtime.getGlobalObject().set("list", SimpleList.of(null, "a", null, "b", null));
+            v8Runtime.getGlobalObject().set("pushedList", SimpleList.of());
+            v8Runtime.getExecutor("pushedList.push(null, 'a', null, 'b', undefined)").executeVoid();
+            for (String testCase : testCases) {
+                assertEquals(
+                        "[\",a,,b,\",\",a,,b,\",\"-a--b-\",\"ab\"]",
+                        v8Runtime.getExecutor(codeString + "(" + testCase + ")").executeString(),
+                        testCase);
+            }
+        } finally {
+            v8Runtime.getGlobalObject().delete("array");
+            v8Runtime.getGlobalObject().delete("list");
+            v8Runtime.getGlobalObject().delete("pushedList");
+            javetProxyConverter.getConfig().setProxyArrayEnabled(false);
+            javetProxyConverter.getConfig().setProxyListEnabled(false);
+        }
+    }
+
+    @Test
+    public void testLastIndexOf() throws JavetException {
+        String[][] testCases = new String[][]{
+                {"[1, 2, 1]", "[2,2,2,2,0,0,2,0,0,-1,-1,2,-1,1,1,-1]"},
+                {"array", "[2,2,2,2,0,0,2,0,0,-1,-1,2,-1,1,1,-1]"},
+                {"list", "[2,2,2,2,0,0,2,0,0,-1,-1,2,-1,1,1,-1]"},
+                {"[]", "[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]"},
+                {"emptyArray", "[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]"},
+                {"emptyList", "[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]"},
+        };
+        String codeString = "((a) => JSON.stringify([" +
+                "a.lastIndexOf(1), a.lastIndexOf(1, 99), a.lastIndexOf(1, 3), a.lastIndexOf(1, 2), " +
+                "a.lastIndexOf(1, 1), a.lastIndexOf(1, 0), a.lastIndexOf(1, -1), a.lastIndexOf(1, -2), " +
+                "a.lastIndexOf(1, -3), a.lastIndexOf(1, -4), a.lastIndexOf(1, -99), a.lastIndexOf(1, Infinity), " +
+                "a.lastIndexOf(1, -Infinity), a.lastIndexOf(2, 99), a.lastIndexOf(2, -2), a.lastIndexOf(2, -3)]))";
+        try {
+            javetProxyConverter.getConfig().setProxyArrayEnabled(true);
+            javetProxyConverter.getConfig().setProxyListEnabled(true);
+            v8Runtime.getGlobalObject().set("array", new int[]{1, 2, 1});
+            v8Runtime.getGlobalObject().set("emptyArray", new int[0]);
+            v8Runtime.getGlobalObject().set("list", SimpleList.of(1, 2, 1));
+            v8Runtime.getGlobalObject().set("emptyList", SimpleList.of());
+            for (String[] testCase : testCases) {
+                assertEquals(
+                        testCase[1],
+                        v8Runtime.getExecutor(codeString + "(" + testCase[0] + ")").executeString(),
+                        testCase[0]);
+            }
+        } finally {
+            v8Runtime.getGlobalObject().delete("array");
+            v8Runtime.getGlobalObject().delete("emptyArray");
+            v8Runtime.getGlobalObject().delete("list");
+            v8Runtime.getGlobalObject().delete("emptyList");
+            javetProxyConverter.getConfig().setProxyArrayEnabled(false);
+            javetProxyConverter.getConfig().setProxyListEnabled(false);
+        }
+    }
+
+    @Test
     public void testList() throws JavetException {
         try {
             javetProxyConverter.getConfig().setProxyListEnabled(true);
@@ -1471,6 +1587,26 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"b\",\"c\"][\"a\"]",
                     v8Runtime.getExecutor("JSON.stringify(list.splice(1))+JSON.stringify(list)").executeString());
+            // splice() with an explicit undefined deleteCount should remove nothing
+            v8Runtime.getExecutor("list.clear(); list.push('a', 'b', 'c')").executeVoid();
+            assertEquals(
+                    "[][\"a\",\"x\",\"b\",\"c\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.splice(1,undefined,'x'))+JSON.stringify(list)").executeString());
+            assertEquals(SimpleList.of("a", "x", "b", "c"), list);
+            // splice() with start at or beyond the length should append
+            assertEquals(
+                    "[][\"a\",\"x\",\"b\",\"c\",\"y\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.splice(list.length,0,'y'))+JSON.stringify(list)").executeString());
+            assertEquals(
+                    "[][\"a\",\"x\",\"b\",\"c\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.splice(100,1,'z'))+JSON.stringify(list)").executeString());
+            assertEquals(SimpleList.of("a", "x", "b", "c", "y", "z"), list);
+            // splice() should insert into an empty list
+            v8Runtime.getExecutor("list.clear()").executeVoid();
+            assertEquals(
+                    "[][\"x\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.splice(0,0,'x'))+JSON.stringify(list)").executeString());
+            assertEquals(SimpleList.of("x"), list);
             v8Runtime.getExecutor("list.clear(); list.push('x', 'y', 'z')").executeVoid();
             // sort()
             assertEquals("[]", v8Runtime.getExecutor("list.clear(); JSON.stringify(list.sort())").executeString());
@@ -1508,6 +1644,23 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertEquals(
                     "[\"x\"][\"x\",\"y\",\"z\"]",
                     v8Runtime.getExecutor("JSON.stringify(list.toSpliced(1))+JSON.stringify(list)").executeString());
+            // toSpliced() with an explicit undefined deleteCount should remove nothing
+            assertEquals(
+                    "[\"x\",\"a\",\"y\",\"z\"][\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.toSpliced(1,undefined,'a'))+JSON.stringify(list)").executeString());
+            // toSpliced() with start at or beyond the length should append
+            assertEquals(
+                    "[\"x\",\"y\",\"z\",\"a\"][\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.toSpliced(list.length,0,'a'))+JSON.stringify(list)").executeString());
+            assertEquals(
+                    "[\"x\",\"y\",\"z\",\"a\"][\"x\",\"y\",\"z\"]",
+                    v8Runtime.getExecutor("JSON.stringify(list.toSpliced(100,1,'a'))+JSON.stringify(list)").executeString());
+            // toSpliced() should insert into an empty list
+            assertEquals(
+                    "[\"a\"][]",
+                    v8Runtime.getExecutor("list.clear(); JSON.stringify(list.toSpliced(0,0,'a'))+JSON.stringify(list)").executeString());
+            assertEquals(SimpleList.of(), list);
+            v8Runtime.getExecutor("list.push('x', 'y', 'z')").executeVoid();
             // Symbol.iterator
             assertEquals(
                     "[\"x\",\"y\",\"z\"]",
@@ -1574,6 +1727,89 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testListCallbacksWithModification() throws JavetException {
+        // Each test case is [code, expected [visited items, result, list]].
+        String[][] testCases = new String[][]{
+                // The appended items are not visited.
+                {"l.every((x, i, a) => { if (i === 0) a.push('d'); v.push(x); return true; })",
+                        "[[\"a\",\"b\",\"c\"],true,[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.filter((x, i, a) => { if (i === 0) a.push('d'); v.push(x); return true; })",
+                        "[[\"a\",\"b\",\"c\"],[\"a\",\"b\",\"c\"],[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.find((x, i, a) => { if (i === 0) a.push('d'); v.push(x); return false; })",
+                        "[[\"a\",\"b\",\"c\"],null,[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.findIndex((x, i, a) => { if (i === 0) a.push('d'); v.push(x); return false; })",
+                        "[[\"a\",\"b\",\"c\"],-1,[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.findLast((x, i, a) => { if (i === 2) a.push('d'); v.push(x); return false; })",
+                        "[[\"c\",\"b\",\"a\"],null,[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.findLastIndex((x, i, a) => { if (i === 2) a.push('d'); v.push(x); return false; })",
+                        "[[\"c\",\"b\",\"a\"],-1,[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.flatMap((x, i, a) => { if (i === 0) a.push('d'); v.push(x); return [x + i]; })",
+                        "[[\"a\",\"b\",\"c\"],[\"a0\",\"b1\",\"c2\"],[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.forEach((x, i, a) => { if (i === 0) a.push('d'); v.push(x); })",
+                        "[[\"a\",\"b\",\"c\"],null,[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.map((x, i, a) => { if (i === 0) a.push('d'); v.push(x); return x + i; })",
+                        "[[\"a\",\"b\",\"c\"],[\"a0\",\"b1\",\"c2\"],[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.reduce((s, x, i, a) => { if (i === 1) a.push('d'); v.push(x); return s + x; })",
+                        "[[\"b\",\"c\"],\"abc\",[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.reduce((s, x, i, a) => { if (i === 0) a.push('d'); v.push(x); return s + x; }, '')",
+                        "[[\"a\",\"b\",\"c\"],\"abc\",[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.reduceRight((s, x, i, a) => { if (i === 1) a.push('d'); v.push(x); return s + x; })",
+                        "[[\"b\",\"a\"],\"cba\",[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.reduceRight((s, x, i, a) => { if (i === 2) a.push('d'); v.push(x); return s + x; }, '')",
+                        "[[\"c\",\"b\",\"a\"],\"cba\",[\"a\",\"b\",\"c\",\"d\"]]"},
+                {"l.some((x, i, a) => { if (i === 0) a.push('d'); v.push(x); return false; })",
+                        "[[\"a\",\"b\",\"c\"],false,[\"a\",\"b\",\"c\",\"d\"]]"},
+                // The removed items are skipped, or visited as undefined by find(), findIndex(),
+                // findLast() and findLastIndex().
+                {"l.every((x, i, a) => { if (i === 0) a.pop(); v.push(x); return true; })",
+                        "[[\"a\",\"b\"],true,[\"a\",\"b\"]]"},
+                {"l.filter((x, i, a) => { if (i === 0) a.shift(); v.push(x); return true; })",
+                        "[[\"a\",\"c\"],[\"a\",\"c\"],[\"b\",\"c\"]]"},
+                {"l.find((x, i, a) => { if (i === 0) a.pop(); v.push(x); return false; })",
+                        "[[\"a\",\"b\",null],null,[\"a\",\"b\"]]"},
+                {"l.findIndex((x, i, a) => { if (i === 0) a.pop(); v.push(x); return false; })",
+                        "[[\"a\",\"b\",null],-1,[\"a\",\"b\"]]"},
+                {"l.findLast((x, i, a) => { if (i === 2) a.splice(0, 2); v.push(x); return false; })",
+                        "[[\"c\",null,\"c\"],null,[\"c\"]]"},
+                {"l.findLastIndex((x, i, a) => { if (i === 2) a.splice(0, 2); v.push(x); return false; })",
+                        "[[\"c\",null,\"c\"],-1,[\"c\"]]"},
+                {"l.flatMap((x, i, a) => { if (i === 0) a.pop(); v.push(x); return [x + i]; })",
+                        "[[\"a\",\"b\"],[\"a0\",\"b1\"],[\"a\",\"b\"]]"},
+                {"l.forEach((x, i, a) => { if (i === 0) a.pop(); v.push(x); })",
+                        "[[\"a\",\"b\"],null,[\"a\",\"b\"]]"},
+                {"l.reduce((s, x, i, a) => { if (i === 1) a.pop(); v.push(x); return s + x; })",
+                        "[[\"b\"],\"ab\",[\"a\",\"b\"]]"},
+                {"l.reduce((s, x, i, a) => { if (i === 0) a.pop(); v.push(x); return s + x; }, '')",
+                        "[[\"a\",\"b\"],\"ab\",[\"a\",\"b\"]]"},
+                {"l.reduceRight((s, x, i, a) => { if (i === 1) a.shift(); v.push(x); return s + x; })",
+                        "[[\"b\",\"b\"],\"cbb\",[\"b\",\"c\"]]"},
+                {"l.reduceRight((s, x, i, a) => { if (i === 2) a.splice(1, 2); v.push(x); return s + x; }, '')",
+                        "[[\"c\",\"a\"],\"ca\",[\"a\"]]"},
+                {"l.some((x, i, a) => { if (i === 0) a.pop(); v.push(x); return false; })",
+                        "[[\"a\",\"b\"],false,[\"a\",\"b\"]]"},
+        };
+        try {
+            javetProxyConverter.getConfig().setProxyListEnabled(true);
+            for (String[] testCase : testCases) {
+                String codeString = "((l) => { const v = []; const r = " + testCase[0] +
+                        "; return JSON.stringify([v, r, l]); })";
+                // The JS array confirms the expected result.
+                assertEquals(testCase[1],
+                        v8Runtime.getExecutor(codeString + "(['a', 'b', 'c'])").executeString(),
+                        "JS array: " + testCase[0]);
+                List<Object> list = SimpleList.of("a", "b", "c");
+                v8Runtime.getGlobalObject().set("list", list);
+                assertEquals(testCase[1],
+                        v8Runtime.getExecutor(codeString + "(list)").executeString(),
+                        "Java list: " + testCase[0]);
+            }
+        } finally {
+            v8Runtime.getGlobalObject().delete("list");
+            javetProxyConverter.getConfig().setProxyListEnabled(false);
+        }
+    }
+
+    @Test
     public void testListOfStrings() throws JavetException, InterruptedException {
         v8Runtime.getGlobalObject().set("a", anonymous);
         String codeStringWithCast = "a.expectListOfStrings({\n" +
@@ -1616,6 +1852,10 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
             assertTrue(v8Runtime.getExecutor("'x' in map").executeBoolean());
             assertFalse(v8Runtime.getExecutor("1 in map").executeBoolean());
             assertFalse(v8Runtime.getExecutor("'2' in map").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("'getOrInsert' in map").executeBoolean());
+            assertTrue(v8Runtime.getExecutor("Symbol.toStringTag in map").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("Symbol('Symbol.toStringTag') in map").executeBoolean());
+            assertFalse(v8Runtime.getExecutor("Symbol() in map").executeBoolean());
             // []
             assertEquals(1, v8Runtime.getExecutor("map['x']").executeInteger());
             assertEquals("2", v8Runtime.getExecutor("map['y']").executeString());
@@ -1731,6 +1971,63 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testMapGetOrInsertAndToStringTag() throws JavetException {
+        try {
+            javetProxyConverter.getConfig().setProxyMapEnabled(true);
+            Map<String, Object> map = new LinkedHashMap<>();
+            v8Runtime.getGlobalObject().set("map", map);
+            assertEquals("function", v8Runtime.getExecutor("typeof map.getOrInsert").executeString());
+            assertEquals("function", v8Runtime.getExecutor("typeof map.getOrInsertComputed").executeString());
+            assertEquals("Map", v8Runtime.getExecutor("map[Symbol.toStringTag]").executeString());
+            assertEquals("[object Map]", v8Runtime.getExecutor("Object.prototype.toString.call(map)").executeString());
+            // The proxy behaves like a native map.
+            String codeString = String.join("\n",
+                    "const run = (m) => {",
+                    "  const results = [];",
+                    "  m.set('a', 1);",
+                    "  m.set('b', null);",
+                    "  // Present key",
+                    "  results.push(m.getOrInsert('a', 2));",
+                    "  // Present key mapped to null",
+                    "  results.push(m.getOrInsert('b', 2));",
+                    "  // Missing key",
+                    "  results.push(m.getOrInsert('c', 3));",
+                    "  // Present keys don't call the callback.",
+                    "  results.push(m.getOrInsertComputed('a', () => { throw new Error('called'); }));",
+                    "  results.push(m.getOrInsertComputed('b', () => { throw new Error('called'); }));",
+                    "  // Missing key",
+                    "  results.push(m.getOrInsertComputed('d', k => k + '!'));",
+                    "  // The callback inserts the same key before returning.",
+                    "  results.push(m.getOrInsertComputed('e', k => { m.set(k, 'inner'); m.set('f', 'f'); return 'outer'; }));",
+                    "  // The callback is called with undefined as this.",
+                    "  results.push(m.getOrInsertComputed('g', function () { 'use strict'; return this === undefined; }));",
+                    "  // The callback must be a function even if the key is present.",
+                    "  try { m.getOrInsertComputed('a', 1); results.push('no error'); } catch (e) { results.push(e instanceof TypeError); }",
+                    "  try { m.getOrInsertComputed('h'); results.push('no error'); } catch (e) { results.push(e instanceof TypeError); }",
+                    "  results.push(m.has('h'));",
+                    "  results.push([...m.entries()]);",
+                    "  results.push(Object.prototype.toString.call(m));",
+                    "  return JSON.stringify(results);",
+                    "};");
+            v8Runtime.getExecutor(codeString).executeVoid();
+            String expectedResult = v8Runtime.getExecutor("run(new Map())").executeString();
+            assertEquals(
+                    "[1,null,3,1,null,\"d!\",\"outer\",true,true,true,false," +
+                            "[[\"a\",1],[\"b\",null],[\"c\",3],[\"d\",\"d!\"],[\"e\",\"outer\"],[\"f\",\"f\"],[\"g\",true]]," +
+                            "\"[object Map]\"]",
+                    expectedResult);
+            assertEquals(expectedResult, v8Runtime.getExecutor("run(map)").executeString());
+            assertEquals(SimpleList.of("a", "b", "c", "d", "e", "f", "g"), new ArrayList<>(map.keySet()));
+            assertTrue(map.containsKey("b"));
+            assertNull(map.get("b"));
+            assertEquals("outer", map.get("e"));
+            v8Runtime.getGlobalObject().delete("map");
+        } finally {
+            javetProxyConverter.getConfig().setProxyMapEnabled(false);
+        }
+    }
+
+    @Test
     public void testMockCallbackReceiver() throws JavetException {
         MockCallbackReceiver mockCallbackReceiver = new MockCallbackReceiver(v8Runtime);
         v8Runtime.getGlobalObject().set("m", mockCallbackReceiver);
@@ -1837,6 +2134,61 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         } finally {
             v8Runtime.lowMemoryNotification();
         }
+    }
+
+    @Test
+    public void testProxyPluginOwnKeysInMultipleRuntimes() throws JavetException {
+        JavetProxyConverter javetProxyConverterWithMap = new JavetProxyConverter();
+        javetProxyConverterWithMap.getConfig().setProxyMapEnabled(true);
+        JavetBridgeConverter javetBridgeConverterWithoutMap = new JavetBridgeConverter();
+        javetBridgeConverterWithoutMap.getConfig().setProxyMapEnabled(false);
+        v8Runtime.setConverter(javetProxyConverterWithMap);
+        try (V8Runtime v8Runtime2 = v8Host.createV8Runtime()) {
+            v8Runtime2.setConverter(javetBridgeConverterWithoutMap);
+            // The runtime with the map plugin proxies a non-empty map first.
+            TestProxyPluginMap map = new TestProxyPluginMap();
+            map.put("x", "1");
+            v8Runtime.getGlobalObject().set("a", map);
+            v8Runtime.getGlobalObject().set("b", new TestProxyPluginMap());
+            v8Runtime2.getGlobalObject().set("a", new TestProxyPluginMap());
+            assertEquals("[\"x\"]", v8Runtime.getExecutor("JSON.stringify(Reflect.ownKeys(a))").executeString());
+            // The keys of the first map are not shared with the other maps.
+            assertEquals("[]", v8Runtime.getExecutor("JSON.stringify(Reflect.ownKeys(b))").executeString());
+            // The runtime with the default plugin gets the keys from the getters.
+            assertEquals(
+                    "[\"class\",\"empty\"]",
+                    v8Runtime2.getExecutor("JSON.stringify(Reflect.ownKeys(a).sort())").executeString());
+            v8Runtime2.getGlobalObject().delete("a");
+        }
+        v8Runtime.getGlobalObject().delete("a");
+        v8Runtime.getGlobalObject().delete("b");
+    }
+
+    @Test
+    public void testProxyPluginsInMultipleRuntimes() throws JavetException {
+        JavetProxyConverter javetProxyConverter1 = new JavetProxyConverter();
+        javetProxyConverter1.getConfig().getProxyPlugins().add(new MockProxyPlugin("plugin1"));
+        JavetProxyConverter javetProxyConverter2 = new JavetProxyConverter();
+        javetProxyConverter2.getConfig().getProxyPlugins().add(new MockProxyPlugin("plugin2"));
+        v8Runtime.setConverter(javetProxyConverter1);
+        try (V8Runtime v8Runtime2 = v8Host.createV8Runtime()) {
+            v8Runtime2.setConverter(javetProxyConverter2);
+            // The runtime with plugin 1 proxies TestProxyPluginTarget1 first.
+            v8Runtime.getGlobalObject().set("a", new TestProxyPluginTarget1());
+            v8Runtime2.getGlobalObject().set("a", new TestProxyPluginTarget1());
+            // The runtime with plugin 2 proxies TestProxyPluginTarget2 first.
+            v8Runtime2.getGlobalObject().set("b", new TestProxyPluginTarget2());
+            v8Runtime.getGlobalObject().set("b", new TestProxyPluginTarget2());
+            // Each runtime dispatches to its own plugin regardless of the initialization order.
+            assertEquals("plugin1", v8Runtime.getExecutor("a.pluginName").executeString());
+            assertEquals("plugin2", v8Runtime2.getExecutor("a.pluginName").executeString());
+            assertEquals("plugin1", v8Runtime.getExecutor("b.pluginName").executeString());
+            assertEquals("plugin2", v8Runtime2.getExecutor("b.pluginName").executeString());
+            v8Runtime2.getGlobalObject().delete("a");
+            v8Runtime2.getGlobalObject().delete("b");
+        }
+        v8Runtime.getGlobalObject().delete("a");
+        v8Runtime.getGlobalObject().delete("b");
     }
 
     @Test
@@ -2202,6 +2554,101 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
     }
 
     @Test
+    public void testV8VirtualIteratorHelpers() throws JavetException {
+        try {
+            javetProxyConverter.getConfig().setProxyArrayEnabled(true);
+            javetProxyConverter.getConfig().setProxyListEnabled(true);
+            javetProxyConverter.getConfig().setProxyMapEnabled(true);
+            javetProxyConverter.getConfig().setProxySetEnabled(true);
+            Map<Integer, Integer> map = new LinkedHashMap<>();
+            map.put(1, 1);
+            map.put(2, 2);
+            map.put(3, 3);
+            map.put(4, 4);
+            v8Runtime.getGlobalObject().set("arr", new int[]{1, 2, 3, 4});
+            v8Runtime.getGlobalObject().set("list", new ArrayList<>(Arrays.asList(1, 2, 3, 4)));
+            v8Runtime.getGlobalObject().set("map", map);
+            v8Runtime.getGlobalObject().set("set", new LinkedHashSet<>(Arrays.asList(1, 2, 3, 4)));
+            // Each call of create() returns a new iterator over 1, 2, 3, 4.
+            String codeString = String.join("\n",
+                    "const run = (create) => {",
+                    "  const forEachValues = [];",
+                    "  create().forEach(x => forEachValues.push(x));",
+                    "  return JSON.stringify([",
+                    "    create() instanceof Iterator,",
+                    "    (it => Iterator.from(it) === it)(create()),",
+                    "    create().drop(1).toArray(),",
+                    "    create().every(x => x > 0),",
+                    "    create().filter(x => x % 2 === 0).toArray(),",
+                    "    create().find(x => x > 2),",
+                    "    create().flatMap(x => [x, x * 10]).toArray(),",
+                    "    forEachValues,",
+                    "    create().map(x => x * 2).toArray(),",
+                    "    create().reduce((a, x) => a + x, 0),",
+                    "    create().some(x => x > 3),",
+                    "    create().take(2).toArray(),",
+                    "    create().toArray(),",
+                    "    create().filter(x => x > 1).map(x => x + 1).take(2).toArray(),",
+                    "    typeof create()[Symbol.dispose],",
+                    "  ]);",
+                    "};");
+            v8Runtime.getExecutor(codeString).executeVoid();
+            String expectedResult =
+                    "[true,true,[2,3,4],true,[2,4],3,[1,10,2,20,3,30,4,40],[1,2,3,4],[2,4,6,8],10,true,[1,2]," +
+                            "[1,2,3,4],[3,4],\"function\"]";
+            String[][] iteratorCodeStrings = new String[][]{
+                    {"arr.values()", "[1, 2, 3, 4].values()"},
+                    {"arr[Symbol.iterator]()", "[1, 2, 3, 4][Symbol.iterator]()"},
+                    {"list.values()", "[1, 2, 3, 4].values()"},
+                    {"list[Symbol.iterator]()", "[1, 2, 3, 4][Symbol.iterator]()"},
+                    {"map.keys()", "new Map([[1, 1], [2, 2], [3, 3], [4, 4]]).keys()"},
+                    {"map.values()", "new Map([[1, 1], [2, 2], [3, 3], [4, 4]]).values()"},
+                    {"set.values()", "new Set([1, 2, 3, 4]).values()"},
+                    {"set[Symbol.iterator]()", "new Set([1, 2, 3, 4])[Symbol.iterator]()"},
+            };
+            for (String[] iteratorCodeString : iteratorCodeStrings) {
+                // The proxied iterator behaves like a native iterator.
+                assertEquals(
+                        expectedResult,
+                        v8Runtime.getExecutor("run(() => " + iteratorCodeString[1] + ")").executeString(),
+                        iteratorCodeString[1]);
+                assertEquals(
+                        expectedResult,
+                        v8Runtime.getExecutor("run(() => " + iteratorCodeString[0] + ")").executeString(),
+                        iteratorCodeString[0]);
+            }
+            // The iterator is closed by its return() when it is disposed.
+            codeString = String.join("\n",
+                    "(() => {",
+                    "  const results = [];",
+                    "  const it = list.values();",
+                    "  it.next();",
+                    "  it[Symbol.dispose]();",
+                    "  results.push(it.next().done);",
+                    "  let savedIterator;",
+                    "  {",
+                    "    using usingIterator = set.values();",
+                    "    savedIterator = usingIterator;",
+                    "    results.push(usingIterator.next().value);",
+                    "  }",
+                    "  results.push(savedIterator.next().done);",
+                    "  return JSON.stringify(results);",
+                    "})();");
+            assertEquals("[true,1,true]", v8Runtime.getExecutor(codeString).executeString());
+            v8Runtime.getGlobalObject().delete("set");
+            v8Runtime.getGlobalObject().delete("map");
+            v8Runtime.getGlobalObject().delete("list");
+            v8Runtime.getGlobalObject().delete("arr");
+        } finally {
+            v8Runtime.lowMemoryNotification();
+            javetProxyConverter.getConfig().setProxyArrayEnabled(false);
+            javetProxyConverter.getConfig().setProxyListEnabled(false);
+            javetProxyConverter.getConfig().setProxyMapEnabled(false);
+            javetProxyConverter.getConfig().setProxySetEnabled(false);
+        }
+    }
+
+    @Test
     public void testZonedDateTime() throws JavetException {
         v8Runtime.getGlobalObject().set("a", anonymous);
         String codeString = "a.expectZonedDateTime(new Date(253402300799000), new Date(-2208988800000));";
@@ -2352,6 +2799,39 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
 
         public String echo(String text) {
             return text;
+        }
+    }
+
+    public static class MockProxyPlugin extends BaseJavetProxyPlugin {
+        private final String name;
+
+        public MockProxyPlugin(String name) {
+            super();
+            this.name = name;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public <E extends Exception> IClassProxyPluginFunction<E> getProxyGetByString(
+                Class<?> targetClass, String propertyName) {
+            if ("pluginName".equals(propertyName)) {
+                return (v8Runtime, targetObject) -> v8Runtime.createV8ValueString(name);
+            }
+            return null;
+        }
+
+        @Override
+        public boolean isMethodProxyable(String methodName, Class<?> targetClass) {
+            return false;
+        }
+
+        @Override
+        public boolean isProxyable(Class<?> targetClass) {
+            return targetClass == TestProxyPluginTarget1.class || targetClass == TestProxyPluginTarget2.class;
         }
     }
 
@@ -2521,6 +3001,15 @@ public class TestJavetProxyConverter extends BaseTestJavetRuntime {
         public String value() {
             return "method:" + value;
         }
+    }
+
+    public static class TestProxyPluginMap extends HashMap<String, String> {
+    }
+
+    public static class TestProxyPluginTarget1 {
+    }
+
+    public static class TestProxyPluginTarget2 {
     }
 
     @V8Convert(mode = V8ConversionMode.Transparent)

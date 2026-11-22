@@ -199,6 +199,8 @@ Bridged ``ZonedDateTime`` objects expose the full JavaScript Date prototype API:
     v8Runtime.getExecutor("d.toISOString()").executeString();
     v8Runtime.getExecutor("d.toJSON()").executeString();
 
+``d.toGMTString()`` returns the same string as ``d.toUTCString()``. ``d.toTemporalInstant()`` returns a ``Temporal.Instant`` whose ``epochMilliseconds`` equals ``d.getTime()``.
+
 .. note::
 
     All Date setter methods (``setDate()``, ``setFullYear()``, ``setHours()``, etc.) throw ``TypeError`` because ``ZonedDateTime`` is immutable.

@@ -71,7 +71,7 @@ Garbage Collection
 * Enable passive GC notifications via ``V8Host.enableGCNotification()`` for automatic GC tracking.
 * Engine pool automatically sends GC notifications when engines are idle (controlled by ``autoSendGCNotification`` config).
 * After heavy proxy converter usage, call ``System.gc()`` and ``System.runFinalization()`` to help reclaim Java-side proxy objects.
-* Use GC callbacks (``addGCEpilogueCallback``, ``addGCPrologueCallback``) to monitor V8 GC behavior and detect memory issues.
+* Use GC callbacks (``addGCEpilogueCallback``, ``addGCPrologueCallback``) to monitor V8 GC behavior and detect memory issues. ``resetContext()`` and ``resetIsolate()`` remove them, so add them again after a reset.
 * For heap limit control, use ``V8Flags.setMaxHeapSize()`` and ``V8Flags.setMaxOldSpaceSize()``. Handle near-heap-limit callbacks to either increase the limit or terminate execution for malicious scripts.
 
 Type Conversion

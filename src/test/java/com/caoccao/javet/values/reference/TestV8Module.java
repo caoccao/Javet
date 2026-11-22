@@ -466,6 +466,9 @@ public class TestV8Module extends BaseTestJavetRuntime {
                     assertTrue(4 <= v8Module2.getScriptId() && v8Module2.getScriptId() <= 5);
                 }
                 assertTrue(v8Module2.instantiate());
+                // Closing the temporary referrer of the import doesn't remove the referrer from the cache.
+                assertTrue(v8Runtime.containsV8Module(v8Module2.getResourceName()));
+                assertEquals(2, v8Runtime.getV8ModuleCount());
                 try (V8ValuePromise v8ValuePromise = v8Module2.evaluate()) {
                     assertTrue(v8ValuePromise.isFulfilled());
                     assertTrue(v8ValuePromise.getResult().isUndefined());
@@ -536,6 +539,23 @@ public class TestV8Module extends BaseTestJavetRuntime {
                                     "globalThis.a = fs.existsSync('/path-not-found');")
                     .setModule(true).executeVoid();
             assertFalse(v8Runtime.getGlobalObject().getBoolean("a"));
+        }
+    }
+
+    @Test
+    public void testRemoveV8ModulesWithForceClose() throws JavetException {
+        final int moduleCount = 3;
+        V8Module[] v8Modules = new V8Module[moduleCount];
+        for (int i = 0; i < moduleCount; i++) {
+            v8Modules[i] = v8Runtime.getExecutor("export const a = " + i + ";")
+                    .setResourceName("./test" + i + ".js").compileV8Module();
+            assertNotNull(v8Modules[i]);
+        }
+        assertEquals(moduleCount, v8Runtime.getV8ModuleCount());
+        v8Runtime.removeV8Modules(true);
+        assertEquals(0, v8Runtime.getV8ModuleCount());
+        for (int i = 0; i < moduleCount; i++) {
+            assertTrue(v8Modules[i].isClosed(), "Module " + i + " should be closed.");
         }
     }
 

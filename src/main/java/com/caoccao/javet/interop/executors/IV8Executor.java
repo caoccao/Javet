@@ -222,7 +222,9 @@ public interface IV8Executor extends IV8Executable {
         if (v8Runtime.getJSRuntimeType().isNode()) {
             try {
                 NodeRuntime nodeRuntime = (NodeRuntime) v8Runtime;
-                File resourceFile = new File(resourceName);
+                // The resource name is resolved to an absolute path first, so that a bare file name
+                // (e.g. main.js) has a parent directory.
+                File resourceFile = new File(resourceName).getAbsoluteFile();
                 File parentFile = resourceFile.getParentFile();
                 nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_DIRNAME, parentFile.getAbsolutePath());
                 nodeRuntime.getGlobalObject().set(NodeRuntime.PROPERTY_FILENAME, resourceFile.getAbsolutePath());

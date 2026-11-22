@@ -136,6 +136,10 @@ public interface IJavetEnginePool<R extends V8Runtime> extends IJavetClosable {
 
     /**
      * Gets engine.
+     * <p>
+     * If a new engine cannot be created, its slot is returned to the pool and the creation is retried.
+     * If no engine is available after the retries, {@code EngineNotAvailable} is thrown
+     * with the last creation failure as its cause, e.g. {@code RuntimeCreateFailure}.
      *
      * @return the engine
      * @throws JavetException the javet exception

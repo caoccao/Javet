@@ -190,7 +190,8 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
                 return false;
             }
             AccessibleObject[] executables = new AccessibleObject[]{defaultConstructor, methodFromMap, methodToMap};
-            customObjectMap.put(customObjectClass.getName(), executables);
+            // Only one of the concurrent registrations of the same class succeeds.
+            return customObjectMap.putIfAbsent(customObjectClassName, executables) == null;
         } catch (Throwable t) {
             // Do nothing.
             t.printStackTrace(System.err);
@@ -300,8 +301,9 @@ public class JavetObjectConverter extends JavetPrimitiveConverter {
             final Map<String, Object> map = new HashMap<>();
             v8ValueObject.forEach((V8Value key, V8Value value) -> {
                 String keyString = key.toString();
-                if (PUBLIC_PROPERTY_CONSTRUCTOR.equals(keyString)) {
-                    map.put(PUBLIC_PROPERTY_CONSTRUCTOR, ((V8ValueObject) value).getString(PROPERTY_NAME));
+                if (PUBLIC_PROPERTY_CONSTRUCTOR.equals(keyString) && value instanceof V8ValueFunction) {
+                    // Only a constructor function is replaced with its name. Other values are converted normally.
+                    map.put(PUBLIC_PROPERTY_CONSTRUCTOR, ((V8ValueFunction) value).getString(PROPERTY_NAME));
                 } else if (value.isUndefined()) {
                     // Pass
                 } else if (config.isSkipFunctionInObject() && value instanceof V8ValueFunction) {

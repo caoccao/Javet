@@ -288,6 +288,27 @@ public class TestV8Inspector extends BaseTestJavet {
     }
 
     @Test
+    public void testCloseRuntimeWithInspector() throws JavetException, TimeoutException {
+        // Verify that closing the runtime closes the sessions that are still open.
+        if (isNode()) {
+            return;
+        }
+        MockV8InspectorListener listener = new MockV8InspectorListener();
+        V8Inspector v8Inspector;
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime()) {
+            v8Inspector = v8Runtime.createV8Inspector("runtime-close");
+            v8Inspector.addListeners(listener);
+            v8Inspector.sendRequest("{\"id\":1,\"method\":\"Debugger.enable\"}");
+            runAndWait(1000, () -> listener.getResponses().size() >= 1);
+            assertFalse(v8Inspector.isClosed());
+        }
+        assertTrue(v8Inspector.isClosed());
+        // Closing the closed session again is a no-op.
+        v8Inspector.close();
+        assertNull(v8Inspector.evaluate("1 + 1", false));
+    }
+
+    @Test
     public void testCloseSession() throws JavetException, InterruptedException, JsonProcessingException, TimeoutException {
         // Verify that closing one session does not affect other sessions.
         if (isNode()) {
@@ -355,6 +376,8 @@ public class TestV8Inspector extends BaseTestJavet {
             listener.getResponses().clear();
             listener.getNotifications().clear();
             v8Runtime.resetContext();
+            // The inspector is kept because the isolate is kept.
+            assertFalse(v8Inspector.isClosed());
             // After reset, old variables are gone. Define a new one and evaluate via inspector.
             v8Runtime.getExecutor("const b = 20;").executeVoid();
             v8Inspector.sendRequest("{\"id\":3,\"method\":\"Runtime.enable\"}");
@@ -494,6 +517,55 @@ public class TestV8Inspector extends BaseTestJavet {
             assertEquals("number", result.get("type").asText());
             assertEquals(42, result.get("value").asInt(),
                     "$myHelper should resolve to 42 from the command-line API");
+        }
+    }
+
+    @Test
+    public void testIsolateResetWithInspector() throws JavetException, TimeoutException, JsonProcessingException {
+        // Verify that resetIsolate() closes the sessions, and a session created before resetIsolate()
+        // does not affect a session created after it.
+        if (isNode()) {
+            return;
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        MockV8InspectorListener staleListener = new MockV8InspectorListener();
+        MockV8InspectorListener listener = new MockV8InspectorListener();
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime();
+             V8Inspector staleV8Inspector = v8Runtime.createV8Inspector("stale-session")) {
+            staleV8Inspector.addListeners(staleListener);
+            staleV8Inspector.sendRequest("{\"id\":1,\"method\":\"Runtime.enable\"}");
+            staleV8Inspector.sendRequest("{\"id\":2,\"method\":\"Debugger.enable\"}");
+            staleV8Inspector.sendRequest("{\"id\":3,\"method\":\"Debugger.setBreakpointByUrl\","
+                    + "\"params\":{\"lineNumber\":0,\"url\":\"stale.js\",\"columnNumber\":0,\"condition\":\"\"}}");
+            runAndWait(1000, () -> staleListener.getResponses().size() >= 3);
+            staleListener.getResponses().clear();
+            // The open session with its breakpoint is closed before the isolate is replaced.
+            v8Runtime.resetIsolate();
+            assertTrue(staleV8Inspector.isClosed());
+            v8Runtime.getExecutor("const a = 20;").executeVoid();
+            try (V8Inspector v8Inspector = v8Runtime.createV8Inspector("new-session")) {
+                v8Inspector.addListeners(listener);
+                v8Inspector.sendRequest("{\"id\":1,\"method\":\"Runtime.enable\"}");
+                runAndWait(1000, () -> listener.getResponses().size() >= 1);
+                listener.getResponses().clear();
+                // The request of the stale session must not be routed to the new session.
+                staleV8Inspector.sendRequest("{\"id\":4,\"method\":\"Runtime.evaluate\","
+                        + "\"params\":{\"expression\":\"1+1\"}}");
+                assertTrue(listener.getResponses().isEmpty(),
+                        "New session should not receive the response to the stale session");
+                assertTrue(staleListener.getResponses().isEmpty(),
+                        "Stale session should not receive responses");
+                // Closing the stale session must not close the new session.
+                staleV8Inspector.close();
+                v8Inspector.sendRequest("{\"id\":2,\"method\":\"Runtime.evaluate\","
+                        + "\"params\":{\"expression\":\"a\",\"replMode\":true}}");
+                runAndWait(1000, () -> listener.getResponses().size() >= 1);
+                JsonNode jsonNode = objectMapper.readTree(listener.getResponses().get(0));
+                assertEquals(2, jsonNode.get("id").asInt());
+                assertEquals(20, jsonNode.get("result").get("result").get("value").asInt(),
+                        "New session should still evaluate correctly after the stale session is closed");
+                assertNotEquals(staleV8Inspector.getSessionId(), v8Inspector.getSessionId());
+            }
         }
     }
 

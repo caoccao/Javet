@@ -338,31 +338,39 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                 CONCAT, targetObject, JavetCallbackType.DirectCallNoThisAndResult,
                 (IJavetDirectCallable.NoThisAndResult<Exception>) (v8Values) -> {
                     List<Object> results = new ArrayList<>(list.size());
-                    if (!list.isEmpty()) {
-                        results.addAll(list);
-                    }
-                    if (ArrayUtils.isNotEmpty(v8Values)) {
-                        for (V8Value v8Value : v8Values) {
-                            if (v8Value instanceof IV8ValueArray) {
-                                IV8ValueArray iV8ValueArray = (IV8ValueArray) v8Value;
-                                V8Value[] items = new V8Value[iV8ValueArray.getLength()];
-                                if (ArrayUtils.isNotEmpty(items)) {
-                                    iV8ValueArray.batchGet(items, 0, items.length);
-                                    Collections.addAll(results, items);
-                                }
-                            } else {
-                                Object object = v8Runtime.toObject(v8Value);
-                                if (object instanceof List) {
-                                    Collections.addAll(results, (List<?>) object);
-                                } else if (object != null && object.getClass().isArray()) {
-                                    ListUtils.addAll(results, object);
+                    // The items got by batchGet() are owned by this function,
+                    // so they must be closed after the result array is created.
+                    List<V8Value[]> itemsList = new ArrayList<>();
+                    try {
+                        if (!list.isEmpty()) {
+                            results.addAll(list);
+                        }
+                        if (ArrayUtils.isNotEmpty(v8Values)) {
+                            for (V8Value v8Value : v8Values) {
+                                if (v8Value instanceof IV8ValueArray) {
+                                    IV8ValueArray iV8ValueArray = (IV8ValueArray) v8Value;
+                                    V8Value[] items = new V8Value[iV8ValueArray.getLength()];
+                                    if (ArrayUtils.isNotEmpty(items)) {
+                                        itemsList.add(items);
+                                        iV8ValueArray.batchGet(items, 0, items.length);
+                                        Collections.addAll(results, items);
+                                    }
                                 } else {
-                                    results.add(v8Value);
+                                    Object object = v8Runtime.toObject(v8Value);
+                                    if (object instanceof List) {
+                                        Collections.addAll(results, (List<?>) object);
+                                    } else if (object != null && object.getClass().isArray()) {
+                                        ListUtils.addAll(results, object);
+                                    } else {
+                                        results.add(v8Value);
+                                    }
                                 }
                             }
                         }
+                        return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
+                    } finally {
+                        JavetResourceUtils.safeClose(itemsList);
                     }
-                    return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
                 }));
     }
 
@@ -492,15 +500,15 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                        int index = 0;
-                        for (Object object : list) {
+                        final int length = list.size();
+                        for (int index = 0; index < length && index < list.size(); ++index) {
+                            Object object = list.get(index);
                             try (V8Value result = v8ValueFunction.call(
                                     v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (!result.asBoolean()) {
                                     return v8Runtime.createV8ValueBoolean(false);
                                 }
                             }
-                            ++index;
                         }
                         return v8Runtime.createV8ValueBoolean(true);
                     }
@@ -580,15 +588,15 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                        int index = 0;
-                        for (Object object : list) {
+                        final int length = list.size();
+                        for (int index = 0; index < length && index < list.size(); ++index) {
+                            Object object = list.get(index);
                             try (V8Value v8ValueResult = v8ValueFunction.call(
                                     v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (v8ValueResult.asBoolean()) {
                                     results.add(object);
                                 }
                             }
-                            ++index;
                         }
                     }
                     return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
@@ -621,15 +629,16 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                        int index = 0;
-                        for (Object object : list) {
+                        final int length = list.size();
+                        for (int index = 0; index < length; ++index) {
+                            // The removed items are visited as undefined.
+                            Object object = index < list.size() ? list.get(index) : v8Runtime.createV8ValueUndefined();
                             try (V8Value result = v8ValueFunction.call(
                                     v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (result.asBoolean()) {
                                     return v8Runtime.toV8Value(object);
                                 }
                             }
-                            ++index;
                         }
                     }
                     return v8Runtime.createV8ValueUndefined();
@@ -658,15 +667,16 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                        int index = 0;
-                        for (Object object : list) {
+                        final int length = list.size();
+                        for (int index = 0; index < length; ++index) {
+                            // The removed items are visited as undefined.
+                            Object object = index < list.size() ? list.get(index) : v8Runtime.createV8ValueUndefined();
                             try (V8Value result = v8ValueFunction.call(
                                     v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (result.asBoolean()) {
                                     return v8Runtime.createV8ValueInteger(index);
                                 }
                             }
-                            ++index;
                         }
                     }
                     return v8Runtime.createV8ValueInteger(-1);
@@ -703,17 +713,15 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                        int index = list.size() - 1;
-                        ListIterator<?> listIterator = list.listIterator(list.size());
-                        while (listIterator.hasPrevious()) {
-                            Object object = listIterator.previous();
+                        for (int index = list.size() - 1; index >= 0; --index) {
+                            // The removed items are visited as undefined.
+                            Object object = index < list.size() ? list.get(index) : v8Runtime.createV8ValueUndefined();
                             try (V8Value result = v8ValueFunction.call(
                                     v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (result.asBoolean()) {
                                     return v8Runtime.toV8Value(object);
                                 }
                             }
-                            --index;
                         }
                     }
                     return v8Runtime.createV8ValueUndefined();
@@ -743,19 +751,15 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                        int index = list.size() - 1;
-                        ListIterator<?> listIterator = list.listIterator(list.size());
-                        while (listIterator.hasPrevious()) {
+                        for (int index = list.size() - 1; index >= 0; --index) {
+                            // The removed items are visited as undefined.
+                            Object object = index < list.size() ? list.get(index) : v8Runtime.createV8ValueUndefined();
                             try (V8Value result = v8ValueFunction.call(
-                                    v8ValueObject,
-                                    listIterator.previous(),
-                                    v8Runtime.createV8ValueInteger(index),
-                                    thisObject)) {
+                                    v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (result.asBoolean()) {
                                     return v8Runtime.createV8ValueInteger(index);
                                 }
                             }
-                            --index;
                         }
                     }
                     return v8Runtime.createV8ValueInteger(-1);
@@ -808,11 +812,11 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                         V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                         if (v8ValueFunction != null) {
                             V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                            int index = 0;
-                            for (Object object : list) {
+                            final int length = list.size();
+                            for (int index = 0; index < length && index < list.size(); ++index) {
+                                Object object = list.get(index);
                                 results.add(v8ValueFunction.call(
                                         v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject));
-                                ++index;
                             }
                         }
                         try (V8ValueArray v8ValueArray = V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray())) {
@@ -842,12 +846,12 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                        int index = 0;
-                        for (Object object : list) {
+                        final int length = list.size();
+                        for (int index = 0; index < length && index < list.size(); ++index) {
+                            Object object = list.get(index);
                             try (V8Value v8ValueResult = v8ValueFunction.call(
                                     v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                             }
-                            ++index;
                         }
                     }
                     return v8Runtime.createV8ValueUndefined();
@@ -1023,7 +1027,10 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                             && !v8Values[0].isUndefined()
                             ? v8Values[0].toString()
                             : ",";
-                    String result = list.stream().map(Object::toString).collect(Collectors.joining(delimiter));
+                    // The null element (null or undefined in JS) is joined as the empty string.
+                    String result = list.stream()
+                            .map(o -> Objects.toString(o, StringUtils.EMPTY))
+                            .collect(Collectors.joining(delimiter));
                     return v8Runtime.createV8ValueString(result);
                 }));
     }
@@ -1077,11 +1084,11 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                         int fromIndex = V8ValueUtils.asInt(v8Values, 1, length - 1);
                         if (fromIndex < 0) {
                             fromIndex += length;
-                        }
-                        if (fromIndex < 0) {
+                        } else if (fromIndex >= length) {
                             fromIndex = length - 1;
                         }
-                        if (fromIndex < length) {
+                        // The negative index that precedes the first item finds nothing.
+                        if (fromIndex >= 0) {
                             index = ListUtils.lastIndexOf(list, object, fromIndex);
                         }
                     }
@@ -1126,11 +1133,11 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                         V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                         if (v8ValueFunction != null) {
                             V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                            int index = 0;
-                            for (Object object : list) {
+                            final int length = list.size();
+                            for (int index = 0; index < length && index < list.size(); ++index) {
+                                Object object = list.get(index);
                                 results.add(v8ValueFunction.call(
                                         v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject));
-                                ++index;
                             }
                         }
                         return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
@@ -1222,14 +1229,9 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                                  * with the second value in the array as currentValue.
                                  */
                                 V8Value accumulator = v8Runtime.toV8Value(list.get(0));
-                                int index = 0;
-                                for (Object object : list) {
-                                    if (index == 0) {
-                                        ++index;
-                                        continue;
-                                    }
+                                for (int index = 1; index < length && index < list.size(); ++index) {
                                     V8Value result;
-                                    try (V8Value currentValue = v8Runtime.toV8Value(object)) {
+                                    try (V8Value currentValue = v8Runtime.toV8Value(list.get(index))) {
                                         result = v8ValueFunction.call(
                                                 null,
                                                 accumulator,
@@ -1240,7 +1242,6 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                                         JavetResourceUtils.safeClose(accumulator);
                                     }
                                     accumulator = result;
-                                    ++index;
                                 }
                                 return accumulator;
                             }
@@ -1249,10 +1250,9 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                                 return initialValue;
                             } else {
                                 V8Value accumulator = initialValue.toClone();
-                                int index = 0;
-                                for (Object object : list) {
+                                for (int index = 0; index < length && index < list.size(); ++index) {
                                     V8Value result;
-                                    try (V8Value currentValue = v8Runtime.toV8Value(object)) {
+                                    try (V8Value currentValue = v8Runtime.toV8Value(list.get(index))) {
                                         result = v8ValueFunction.call(
                                                 null,
                                                 accumulator,
@@ -1263,7 +1263,6 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                                         JavetResourceUtils.safeClose(accumulator);
                                     }
                                     accumulator = result;
-                                    ++index;
                                 }
                                 return accumulator;
                             }
@@ -1309,16 +1308,13 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                                  * with the second value in the array as currentValue.
                                  */
                                 V8Value accumulator = v8Runtime.toV8Value(list.get(length - 1));
-                                int index = length - 1;
-                                ListIterator<?> listIterator = list.listIterator(length);
-                                while (listIterator.hasPrevious()) {
-                                    if (index == length - 1) {
-                                        listIterator.previous();
-                                        --index;
+                                for (int index = length - 2; index >= 0; --index) {
+                                    // The removed items are skipped.
+                                    if (index >= list.size()) {
                                         continue;
                                     }
                                     V8Value result;
-                                    try (V8Value currentValue = v8Runtime.toV8Value(listIterator.previous())) {
+                                    try (V8Value currentValue = v8Runtime.toV8Value(list.get(index))) {
                                         result = v8ValueFunction.call(
                                                 null,
                                                 accumulator,
@@ -1329,7 +1325,6 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                                         JavetResourceUtils.safeClose(accumulator);
                                     }
                                     accumulator = result;
-                                    --index;
                                 }
                                 return accumulator;
                             }
@@ -1338,11 +1333,13 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                                 return initialValue;
                             } else {
                                 V8Value accumulator = initialValue.toClone();
-                                int index = length - 1;
-                                ListIterator<?> listIterator = list.listIterator(length);
-                                while (listIterator.hasPrevious()) {
+                                for (int index = length - 1; index >= 0; --index) {
+                                    // The removed items are skipped.
+                                    if (index >= list.size()) {
+                                        continue;
+                                    }
                                     V8Value result;
-                                    try (V8Value currentValue = v8Runtime.toV8Value(listIterator.previous())) {
+                                    try (V8Value currentValue = v8Runtime.toV8Value(list.get(index))) {
                                         result = v8ValueFunction.call(
                                                 null,
                                                 accumulator,
@@ -1353,7 +1350,6 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                                         JavetResourceUtils.safeClose(accumulator);
                                     }
                                     accumulator = result;
-                                    --index;
                                 }
                                 return accumulator;
                             }
@@ -1486,15 +1482,15 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                     V8ValueFunction v8ValueFunction = V8ValueUtils.asV8ValueFunctionWithError(v8Runtime, v8Values, 0);
                     if (v8ValueFunction != null) {
                         V8ValueObject v8ValueObject = V8ValueUtils.asV8ValueObject(v8Values, 1);
-                        int index = 0;
-                        for (Object object : list) {
+                        final int length = list.size();
+                        for (int index = 0; index < length && index < list.size(); ++index) {
+                            Object object = list.get(index);
                             try (V8Value result = v8ValueFunction.call(
                                     v8ValueObject, object, v8Runtime.createV8ValueInteger(index), thisObject)) {
                                 if (result.asBoolean()) {
                                     return v8Runtime.createV8ValueBoolean(true);
                                 }
                             }
-                            ++index;
                         }
                     }
                     return v8Runtime.createV8ValueBoolean(false);
@@ -1576,31 +1572,28 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                         if (startIndex < 0) {
                             startIndex = 0;
                         }
-                        if (startIndex >= length) {
-                            v8Runtime.throwError(
-                                    V8ValueErrorType.RangeError,
-                                    V8ErrorTemplate.rangeErrorStartIsOutOfRange(startIndex));
+                        if (startIndex > length) {
+                            startIndex = length;
+                        }
+                        int deleteCount;
+                        // An omitted deleteCount removes all from start. An explicit undefined is 0.
+                        if (v8Values.length < 2) {
+                            deleteCount = length - startIndex;
                         } else {
-                            int deleteCount;
-                            if (v8Values.length < 2 || v8Values[1] == null
-                                    || v8Values[1].isUndefined()) {
-                                deleteCount = length - startIndex;
-                            } else {
-                                deleteCount = V8ValueUtils.asInt(v8Values, 1);
+                            deleteCount = V8ValueUtils.asInt(v8Values, 1);
+                        }
+                        deleteCount = Math.min(deleteCount, length - startIndex);
+                        if (deleteCount > 0) {
+                            List<?> subList = list.subList(startIndex, startIndex + deleteCount);
+                            results.addAll(subList);
+                            subList.clear();
+                        }
+                        if (v8Values.length > 2) {
+                            List<Object> toBeAddedList = new ArrayList<>();
+                            for (int i = 2; i < v8Values.length; ++i) {
+                                toBeAddedList.add(v8Runtime.toObject(v8Values[i]));
                             }
-                            deleteCount = Math.min(deleteCount, length - startIndex);
-                            if (deleteCount > 0) {
-                                List<?> subList = list.subList(startIndex, startIndex + deleteCount);
-                                results.addAll(subList);
-                                subList.clear();
-                            }
-                            if (v8Values.length > 2) {
-                                List<Object> toBeAddedList = new ArrayList<>();
-                                for (int i = 2; i < v8Values.length; ++i) {
-                                    toBeAddedList.add(v8Runtime.toObject(v8Values[i]));
-                                }
-                                list.addAll(startIndex, toBeAddedList);
-                            }
+                            list.addAll(startIndex, toBeAddedList);
                         }
                     }
                     return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());
@@ -1742,29 +1735,26 @@ public class JavetProxyPluginList extends BaseJavetProxyPluginSingle<List<Object
                         if (startIndex < 0) {
                             startIndex = 0;
                         }
-                        if (startIndex >= length) {
-                            v8Runtime.throwError(
-                                    V8ValueErrorType.RangeError,
-                                    V8ErrorTemplate.rangeErrorStartIsOutOfRange(startIndex));
+                        if (startIndex > length) {
+                            startIndex = length;
+                        }
+                        int deleteCount;
+                        // An omitted skipCount removes all from start. An explicit undefined is 0.
+                        if (v8Values.length < 2) {
+                            deleteCount = length - startIndex;
                         } else {
-                            int deleteCount;
-                            if (v8Values.length < 2 || v8Values[1] == null
-                                    || v8Values[1].isUndefined()) {
-                                deleteCount = length - startIndex;
-                            } else {
-                                deleteCount = V8ValueUtils.asInt(v8Values, 1);
+                            deleteCount = V8ValueUtils.asInt(v8Values, 1);
+                        }
+                        deleteCount = Math.min(deleteCount, length - startIndex);
+                        if (deleteCount > 0) {
+                            results.subList(startIndex, startIndex + deleteCount).clear();
+                        }
+                        if (v8Values.length > 2) {
+                            List<Object> toBeAddedList = new ArrayList<>();
+                            for (int i = 2; i < v8Values.length; ++i) {
+                                toBeAddedList.add(v8Runtime.toObject(v8Values[i]));
                             }
-                            deleteCount = Math.min(deleteCount, length - startIndex);
-                            if (deleteCount > 0) {
-                                results.subList(startIndex, startIndex + deleteCount).clear();
-                            }
-                            if (v8Values.length > 2) {
-                                List<Object> toBeAddedList = new ArrayList<>();
-                                for (int i = 2; i < v8Values.length; ++i) {
-                                    toBeAddedList.add(v8Runtime.toObject(v8Values[i]));
-                                }
-                                results.addAll(startIndex, toBeAddedList);
-                            }
+                            results.addAll(startIndex, toBeAddedList);
                         }
                     }
                     return V8ValueUtils.createV8ValueArray(v8Runtime, results.toArray());

@@ -431,6 +431,8 @@ A single ``V8Runtime`` can host multiple inspector sessions simultaneously, allo
 
 Every call to ``V8Runtime.createV8Inspector()`` creates a new independent session. Each returned ``V8Inspector`` has a unique ``sessionId``. Sessions implement ``IJavetClosable`` and can be closed individually without affecting other sessions.
 
+Closing the ``V8Runtime`` closes all its sessions. ``resetIsolate()`` closes all the sessions as well, because the inspector is replaced together with the isolate, so create new sessions after the reset. ``resetContext()`` keeps the sessions, except for Node.js snapshot runtimes whose isolate is replaced as well.
+
 .. code-block:: java
 
     try (V8Runtime v8Runtime = v8Host.createV8Runtime();

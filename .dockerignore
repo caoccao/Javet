@@ -61,5 +61,11 @@ hs_err_pid*
 **/node_modules
 
 # ------------------------------------------------------------------------------
+# CMake
+
+# The local CMake caches point to the host checkout and break the JNI build in the image.
+cpp/build*
+
+# ------------------------------------------------------------------------------
 # Misc
 **/*.Dockerfile

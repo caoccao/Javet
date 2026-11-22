@@ -649,7 +649,7 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
                 v8Runtime.getExecutor("JSON.stringify(d)").executeString(),
                 v8Runtime.getExecutor("JSON.stringify(z)").executeString());
         SimpleList.of(
-                "toDateString", "toISOString", "toLocaleDateString", "toLocaleString", "toLocaleTimeString",
+                "toDateString", "toGMTString", "toISOString", "toLocaleDateString", "toLocaleString", "toLocaleTimeString",
                 "toTimeString", "toUTCString", "toString").forEach(functionName -> {
             try {
                 assertEquals(
@@ -660,6 +660,7 @@ public class TestJavetBridgeConverter extends BaseTestJavetRuntime {
                 fail(e);
             }
         });
+        assertTrue(v8Runtime.getExecutor("z.toTemporalInstant().epochMilliseconds === z.getTime()").executeBoolean());
         // valueOf()
         assertEquals(946782245000L, v8Runtime.getExecutor("z.valueOf()").executeLong());
         assertTrue(v8Runtime.getExecutor("d.valueOf() === z.valueOf()").executeBoolean());

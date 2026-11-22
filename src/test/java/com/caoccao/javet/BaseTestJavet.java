@@ -120,6 +120,9 @@ public abstract class BaseTestJavet {
             if (icuDataDir.exists() && icuDataDir.isDirectory()) {
                 NodeRuntimeOptions.NODE_FLAGS.setIcuDataDir(icuDataDir.getAbsolutePath());
             }
+            // Node.js registers its own near heap limit callback, so that the tests cover
+            // the near heap limit callback of the runtime coexisting with the one of Node.js.
+            NodeRuntimeOptions.NODE_FLAGS.setHeapSnapshotNearHeapLimit(1);
             NodeRuntimeOptions.NODE_FLAGS.setJsFloat16Array(true);
         }
     }

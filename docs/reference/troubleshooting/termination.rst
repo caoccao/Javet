@@ -58,6 +58,7 @@ How does ``V8Guard`` work internally? It adds itself to a delay queue held by ``
 * Wait until the earliest guard in the queue is due.
 * If the end time of that guard is before now and its ``V8Runtime`` is in use, terminate that ``V8Runtime``.
 * Keep an expired guard in the queue and check it again every ``sleepIntervalMillis`` until it is closed, so that scripts running in its scope afterwards are terminated as well.
+* If the ``V8Runtime`` of that guard is being reset or closed, check that guard again after ``sleepIntervalMillis`` instead of waiting, so that a slow reset or close (e.g. Node.js draining an active timer) doesn't delay the guards of other ``V8Runtime`` instances.
 
 There is only one daemon thread managing all the V8 runtime instances so that the overhead is fixed and the process is non-blocking.
 

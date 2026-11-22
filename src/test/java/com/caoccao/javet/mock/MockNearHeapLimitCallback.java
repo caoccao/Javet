@@ -19,6 +19,7 @@ package com.caoccao.javet.mock;
 import com.caoccao.javet.interop.callback.IJavetNearHeapLimitCallback;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class MockNearHeapLimitCallback implements IJavetNearHeapLimitCallback {
     private boolean callbackCalled;
@@ -33,7 +34,8 @@ public final class MockNearHeapLimitCallback implements IJavetNearHeapLimitCallb
     public long callback(long currentHeapLimit, long initialHeapLimit) {
         callbackCalled = true;
         assertEquals(INITIAL_HEAP_LIMIT, initialHeapLimit);
-        assertEquals(INITIAL_HEAP_LIMIT, currentHeapLimit);
+        // The callback is called again with the raised heap limit if the heap is still close to it.
+        assertTrue(currentHeapLimit >= INITIAL_HEAP_LIMIT);
         return currentHeapLimit * 2;
     }
 

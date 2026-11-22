@@ -114,8 +114,13 @@ namespace Javet {
 
         jbyteArray CreateSnapshot(JNIEnv* jniEnv) noexcept;
 
-        void CreateV8Context(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept;
-        void CreateV8Isolate(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept;
+        /*
+         * The following methods return false if the isolate or the context cannot be created.
+         * The caller must not use the runtime afterwards except for closing it.
+         */
+        [[nodiscard]] bool CreateV8Context(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept;
+        [[nodiscard]] bool CreateV8Isolate(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept;
+        [[nodiscard]] bool CreateV8IsolateAndContext(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept;
 
         static inline V8Runtime* FromHandle(jlong handle) noexcept {
             return reinterpret_cast<V8Runtime*>(handle);
@@ -192,7 +197,13 @@ namespace Javet {
             v8Context->SetEmbedderData(EMBEDDER_DATA_INDEX_V8_RUNTIME, v8::BigInt::New(v8Isolate, TO_NATIVE_INT_64(this)));
         }
 
-        void ResetV8Context(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept;
+        /*
+         * The following methods return false if the replacement cannot be created.
+         * In that case the isolate and the context are disposed,
+         * and the runtime must not be used afterwards except for closing it.
+         */
+        [[nodiscard]] bool ResetV8Context(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept;
+        [[nodiscard]] bool ResetV8Isolate(JNIEnv* jniEnv, const jobject mRuntimeOptions) noexcept;
 
         jobject SafeToExternalV8Value(
             JNIEnv* jniEnv,

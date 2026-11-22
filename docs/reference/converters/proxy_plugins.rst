@@ -7,6 +7,7 @@ The proxy converter and its derived converters support proxy plugins that have t
 * Conversion for the particular Java types can be easily turned on or off by the plugins.
 * The plugins can extend the capabilities of the particular Java types to simulate the native JS types.
 * The public Java fields and methods are available as well.
+* The ``in`` operator recognizes registered plugin properties and properties on the JavaScript target and its prototype chain. For example, ``'length' in intArray`` and ``'toSorted' in intArray`` are both true for a proxied Java array, and ``Symbol.iterator in map`` is true for a proxied Java map.
 
 Built-in Proxy Plugins
 ======================
@@ -140,7 +141,7 @@ The map plugin maps ``Map<?, ?>`` to the JS ``object``. It polyfills the JS Map 
             v8Runtime.getExecutor("JSON.stringify([...map.entries()].sort((a,b)=>a[0]-b[0]));").executeString());
     v8Runtime.getGlobalObject().delete("map");
 
-Polyfilled Map methods: ``get(key)``, ``set(key, value)`` (fluent, returns the map), ``has(key)``, ``delete(key)``, ``clear()``, ``size`` (property), ``entries()``, ``keys()``, ``values()``, ``forEach(fn)``, ``Symbol.iterator``, ``toJSON()`` (produces a plain object), ``toString()`` (returns ``"[object Map]"``), and ``valueOf()``. Java ``Map`` methods (``containsKey()``, ``get()``, ``size()``, etc.) are also accessible.
+Polyfilled Map methods: ``get(key)``, ``set(key, value)`` (fluent, returns the map), ``has(key)``, ``delete(key)``, ``clear()``, ``getOrInsert(key, value)``, ``getOrInsertComputed(key, fn)``, ``size`` (property), ``entries()``, ``keys()``, ``values()``, ``forEach(fn)``, ``Symbol.iterator``, ``Symbol.toStringTag`` (returns ``"Map"``, so ``Object.prototype.toString.call(map)`` returns ``"[object Map]"``), ``toJSON()`` (produces a plain object), ``toString()`` (returns ``"[object Map]"``), and ``valueOf()``. Java ``Map`` methods (``containsKey()``, ``get()``, ``size()``, etc.) are also accessible.
 
 JavetProxyPluginSet
 -------------------
@@ -164,6 +165,10 @@ The set plugin maps ``Set<?>`` to the JS ``Set``. It polyfills the JS Set API.
     v8Runtime.getGlobalObject().delete("set");
 
 Polyfilled Set methods: ``add(value)``, ``has(value)``, ``delete(value)``, ``clear()``, ``size`` (property), ``entries()`` (returns ``[value, value]`` pairs), ``keys()``, ``values()``, ``forEach(fn)``, ``difference(other)``, ``intersection(other)``, ``union(other)``, ``symmetricDifference(other)``, ``isSubsetOf(other)``, ``isSupersetOf(other)``, ``isDisjointFrom(other)``, ``Symbol.iterator``, ``toJSON()``, ``toString()`` (returns ``"[object Set]"``), and ``valueOf()``. Java ``Set`` methods (``contains()``, ``add()``, ``size()``, etc.) remain accessible.
+
+.. note::
+
+    The iterators returned by ``entries()``, ``keys()``, ``values()`` and ``Symbol.iterator`` of the array, list, map and set plugins inherit ``Iterator.prototype`` of the current realm. So the iterator helpers supplied by the engine, e.g. ``drop()``, ``every()``, ``filter()``, ``find()``, ``flatMap()``, ``forEach()``, ``map()``, ``reduce()``, ``some()``, ``take()``, ``toArray()`` and ``Symbol.dispose``, work on them like on native iterators (e.g. ``list.values().map(x => x * 2).toArray()``).
 
 Add or Remove Proxy Plugins
 ===========================
@@ -212,7 +217,7 @@ Key interface methods to implement:
 * ``getTargetObjectConstructor(Class<?>)`` — return a function that creates the JS proxy target.
 * ``isIndexSupported(Class<?>)`` — enable bracket indexing (``obj[0]``).
 * ``isDeleteSupported(Class<?>)`` — enable the ``delete`` operator.
-* ``isHasSupported(Class<?>)`` — enable the ``in`` operator.
+* ``isHasSupported(Class<?>)`` — let ``hasByObject()`` check the backing Java object for additional keys.
 * ``isOwnKeysSupported(Class<?>)`` — enable ``Object.keys()`` and ``Object.getOwnPropertyNames()``.
 
 It's recommended to review the source code of the built-in proxy plugins to learn how to create your own proxy plugin.

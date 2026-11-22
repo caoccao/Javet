@@ -25,9 +25,7 @@ fetch_v8_source() {
   gclient runhooks
 
   pushd v8
-  sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh
-  ./build/install-build-deps.sh
-  sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh
+  ./build/install-build-deps.sh --no-prompt --no-chromeos-fonts
   popd
 
   gclient sync --no-history

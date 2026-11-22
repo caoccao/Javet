@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: docker build -t javet:local -f docker/linux-x86_64/build_all_in_one.Dockerfile .
+# Usage: docker build -t javet:local -f docker/linux-arm64/build_all_in_one.Dockerfile .
 
-FROM sjtucaocao/javet:2.1.1
+# The base image is built by docker/linux-arm64/base_all_in_one.Dockerfile.
+FROM sjtucaocao/javet-arm64:6.0.4
 WORKDIR /
 
 # Copy Javet
@@ -25,15 +26,14 @@ COPY . .
 
 # Build JNI
 WORKDIR /Javet/cpp
-RUN sh ./build-linux-arm64.sh -DV8_DIR=/google/v8
-RUN sh ./build-linux-arm64.sh -DNODE_DIR=/node
+RUN deno run build --os linux --arch arm64 --v8-dir /google/v8
+RUN deno run build --os linux --arch arm64 --v8-dir /google/v8 --i18n
+RUN deno run build --os linux --arch arm64 --node-dir /node
+RUN deno run build --os linux --arch arm64 --node-dir /node --i18n
 
 # Build Jar
 WORKDIR /Javet
-RUN touch src/main/resources/libjavet-v8*
-RUN gradle build test --rerun-tasks --debug
-RUN touch src/main/resources/libjavet-node*
-RUN gradle test --rerun-tasks --debug
+RUN bash scripts/shell/build_javet_artifacts.sh
 
 VOLUME /output
 

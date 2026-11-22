@@ -25,6 +25,7 @@ Limitations
 * **No chained snapshots in Node.js mode**: In Node.js mode, a runtime restored from a snapshot cannot create a new snapshot. In V8 mode, chained snapshots are supported (create a runtime from a snapshot, then create a new snapshot from that runtime).
 * **Dynamic code updates not possible**: Once a snapshot is created, it's static and cannot be updated with new code without creating a new snapshot.
 * **V8 version dependent**: The snapshot created from a particular version of V8 only works in that version of V8. If you want to support a new version of V8, you will have to create a new snapshot in that new version of V8.
+* **Node.js version dependent**: In Node.js mode, the snapshot only works in the Node.js version, architecture and platform that created it. ``createV8Runtime()`` throws ``RuntimeCreateFailure`` if the snapshot is malformed or incompatible. ``resetContext()`` and ``resetIsolate()`` close the runtime and throw ``RuntimeResetFailure`` in that case.
 
 How to Create a Snapshot
 ========================
@@ -168,7 +169,7 @@ Let's take a try.
 Use a Snapshot with Engine Pool
 -------------------------------
 
-You can configure a ``JavetEnginePool`` to initialize every ``V8Runtime`` from a pre-existing snapshot via ``JavetEngineConfig``. This gives you the startup-time benefits of snapshots while still using the pool's lifecycle management.
+You can configure a ``JavetEnginePool`` to initialize every ``V8Runtime`` from a pre-existing snapshot via ``JavetEngineConfig``. This gives you the startup-time benefits of snapshots while still using the pool's lifecycle management. It works in both the V8 mode and the Node.js mode, and ``resetContext()`` and ``resetIsolate()`` of a pooled engine restore the snapshot.
 
 .. code-block:: java
 
@@ -182,3 +183,7 @@ You can configure a ``JavetEnginePool`` to initialize every ``V8Runtime`` from a
             assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
         }
     }
+
+.. note::
+
+    In Node.js mode, set ``JSRuntimeType.Node`` or ``JSRuntimeType.NodeI18n`` via ``config.setJSRuntimeType()``, use ``JavetEnginePool<NodeRuntime>``, and create the snapshot with the same runtime type.

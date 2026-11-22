@@ -129,8 +129,13 @@ JNIEXPORT jlong JNICALL Java_com_caoccao_javet_interop_V8Native_createV8Runtime
         Javet::V8Native::GlobalV8ArrayBufferAllocator);
 #endif
     INCREASE_COUNTER(Javet::Monitor::CounterType::NewV8Runtime);
-    v8Runtime->CreateV8Isolate(jniEnv, mRuntimeOptions);
-    v8Runtime->CreateV8Context(jniEnv, mRuntimeOptions);
+    if (!v8Runtime->CreateV8IsolateAndContext(jniEnv, mRuntimeOptions)) {
+        // The partially initialized resources are already disposed.
+        // An invalid handle tells Java that the runtime cannot be created.
+        delete v8Runtime;
+        INCREASE_COUNTER(Javet::Monitor::CounterType::DeleteV8Runtime);
+        return 0;
+    }
     return TO_JAVA_LONG(v8Runtime);
 }
 
@@ -439,19 +444,16 @@ JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_requestGarbageCol
         : v8::Isolate::GarbageCollectionType::kMinorGarbageCollection);
 }
 
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Context
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Context
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mRuntimeOptions) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
-    v8Runtime->ResetV8Context(jniEnv, mRuntimeOptions);
+    return (jboolean)v8Runtime->ResetV8Context(jniEnv, mRuntimeOptions);
 }
 
-JNIEXPORT void JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Isolate
+JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_resetV8Isolate
 (JNIEnv* jniEnv, jobject caller, jlong v8RuntimeHandle, jobject mRuntimeOptions) {
     auto v8Runtime = Javet::V8Runtime::FromHandle(v8RuntimeHandle);
-    v8Runtime->CloseV8Context();
-    v8Runtime->CloseV8Isolate();
-    v8Runtime->CreateV8Isolate(jniEnv, mRuntimeOptions);
-    v8Runtime->CreateV8Context(jniEnv, mRuntimeOptions);
+    return (jboolean)v8Runtime->ResetV8Isolate(jniEnv, mRuntimeOptions);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_caoccao_javet_interop_V8Native_sameValue

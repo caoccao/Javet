@@ -65,14 +65,22 @@ public class V8VirtualValueList implements IJavetClosable {
         } else {
             toBeClosedValues = new ArrayList<>(objects.length);
             values = new ArrayList<>(objects.length);
-            for (Object object : objects) {
-                if (object instanceof V8Value) {
-                    values.add((V8Value) object);
-                } else {
-                    V8Value value = converter == null ? v8Runtime.toV8Value(object) : converter.toV8Value(v8Runtime, object);
-                    values.add(value);
-                    toBeClosedValues.add(value);
+            try {
+                for (Object object : objects) {
+                    if (object instanceof V8Value) {
+                        values.add((V8Value) object);
+                    } else {
+                        V8Value value = converter == null ? v8Runtime.toV8Value(object) : converter.toV8Value(v8Runtime, object);
+                        values.add(value);
+                        toBeClosedValues.add(value);
+                    }
                 }
+            } catch (Throwable t) {
+                // The caller cannot close a list that fails to be constructed.
+                JavetResourceUtils.safeClose(toBeClosedValues);
+                toBeClosedValues = null;
+                values = null;
+                throw t;
             }
         }
     }

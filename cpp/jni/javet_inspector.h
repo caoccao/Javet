@@ -105,7 +105,7 @@ namespace Javet {
             void schedulePauseOnNextStatement(int sessionId, const std::u16string& breakReason, const std::u16string& breakDetails) noexcept;
             void setSkipAllPauses(int sessionId, bool skip) noexcept;
             void waitForDebuggerLoop() noexcept;
-            virtual ~JavetInspectorClient() = default;
+            virtual ~JavetInspectorClient();
         private:
             V8Runtime* v8Runtime;
             bool activateMessageLoop;
@@ -115,7 +115,6 @@ namespace Javet {
             std::condition_variable messageCondition;
             std::mutex messageMutex;
             std::map<int, std::shared_ptr<JavetInspectorSession>> sessionMap;
-            int nextSessionId;
             std::unique_ptr<v8_inspector::V8Inspector> v8Inspector;
             V8LocalContext ensureDefaultContextInGroup(int contextGroupId) override;
             bool hasQueuedMessages() const noexcept;

@@ -79,6 +79,16 @@ public class V8VirtualIterator<T, E extends Exception>
      */
     protected static final String STRING_TAG = "Iterator";
     /**
+     * The constant TARGET_OBJECT_STRING contains a JS code snippet
+     * which creates an ordinary object inheriting the iterator prototype of the current realm.
+     * The prototype is resolved from a native array iterator instead of the global Iterator,
+     * because the global Iterator may be shadowed or absent.
+     *
+     * @since 6.0.4
+     */
+    protected static final String TARGET_OBJECT_STRING =
+            "Object.create(Object.getPrototypeOf(Object.getPrototypeOf([][Symbol.iterator]())));";
+    /**
      * The Iterable.
      *
      * @since 2.2.1
@@ -107,6 +117,25 @@ public class V8VirtualIterator<T, E extends Exception>
         this.iterator = Objects.requireNonNull(iterator);
         value = null;
         v8Runtime = null;
+    }
+
+    /**
+     * Create target object for the proxy target.
+     * The target inherits the iterator prototype of the current realm, so that the iterator helpers
+     * supplied by the engine (e.g. map(), filter(), take(), toArray(), [Symbol.dispose]()) work
+     * on this iterator like on a native iterator. It falls back to an ordinary object
+     * if the iterator prototype cannot be resolved.
+     *
+     * @return the V8 value
+     * @since 6.0.4
+     */
+    @Override
+    public V8Value createTargetObject() {
+        try {
+            return v8Runtime.getExecutor(TARGET_OBJECT_STRING).execute();
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     @Override

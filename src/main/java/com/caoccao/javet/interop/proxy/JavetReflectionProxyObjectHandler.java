@@ -23,7 +23,6 @@ import com.caoccao.javet.interfaces.IJavetEntitySymbol;
 import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.binding.ClassDescriptor;
 import com.caoccao.javet.interop.binding.ClassDescriptorStore;
-import com.caoccao.javet.interop.binding.IClassProxyPlugin;
 import com.caoccao.javet.interop.binding.IClassProxyPluginFunction;
 import com.caoccao.javet.interop.callback.JavetCallbackContext;
 import com.caoccao.javet.interop.callback.JavetCallbackType;
@@ -36,8 +35,11 @@ import com.caoccao.javet.values.primitive.V8ValueBoolean;
 import com.caoccao.javet.values.primitive.V8ValueString;
 import com.caoccao.javet.values.reference.V8ValueArray;
 import com.caoccao.javet.values.reference.V8ValueSymbol;
+import com.caoccao.javet.values.reference.builtin.V8ValueBuiltInSymbol;
 
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * The type Javet reflection proxy object handler.
@@ -49,6 +51,8 @@ import java.util.Objects;
 @SuppressWarnings("unchecked")
 public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         extends BaseJavetReflectionProxyHandler<T, E> {
+    private static final String SYMBOL_PREFIX = V8ValueBuiltInSymbol.NAME + ".";
+
     /**
      * Instantiates a new Javet reflection proxy object handler.
      *
@@ -70,7 +74,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @throws JavetException the javet exception
      */
     protected boolean deleteFromCollection(V8Value property) throws JavetException {
-        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
         if (classProxyPlugin.isDeleteSupported(classDescriptor.getTargetClass())) {
             return classProxyPlugin.deleteByObject(targetObject, v8Runtime.toObject(property));
         }
@@ -95,7 +98,6 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @since 1.1.7
      */
     protected V8Value getByIndex(V8Value property) throws JavetException {
-        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
         if (classProxyPlugin.isIndexSupported(classDescriptor.getTargetClass())
                 && property instanceof V8ValueString) {
             String propertyString = ((V8ValueString) property).getValue();
@@ -122,17 +124,7 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @since 3.0.3
      */
     protected V8Value getByPolyfill(V8Value property) throws JavetException, E {
-        IClassProxyPluginFunction<E> classProxyPluginFunction = null;
-        if (property instanceof V8ValueString) {
-            String propertyName = ((V8ValueString) property).getValue();
-            classProxyPluginFunction = classDescriptor.getClassProxyPlugin().getProxyGetByString(
-                    classDescriptor.getTargetClass(), propertyName);
-        } else if (property instanceof V8ValueSymbol) {
-            V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
-            String description = propertySymbol.getDescription();
-            classProxyPluginFunction = classDescriptor.getClassProxyPlugin().getProxyGetBySymbol(
-                    classDescriptor.getTargetClass(), description);
-        }
+        IClassProxyPluginFunction<E> classProxyPluginFunction = getPolyfillFunction(property);
         if (classProxyPluginFunction != null) {
             return classProxyPluginFunction.invoke(v8Runtime, targetObject);
         }
@@ -169,6 +161,30 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         return callbackContexts;
     }
 
+    private IClassProxyPluginFunction<E> getPolyfillFunction(V8Value property) throws JavetException {
+        IClassProxyPluginFunction<E> classProxyPluginFunction = null;
+        if (property instanceof V8ValueString) {
+            String propertyName = ((V8ValueString) property).getValue();
+            classProxyPluginFunction = classProxyPlugin.getProxyGetByString(
+                    classDescriptor.getTargetClass(), propertyName);
+        } else if (property instanceof V8ValueSymbol) {
+            V8ValueSymbol propertySymbol = (V8ValueSymbol) property;
+            String description = propertySymbol.getDescription();
+            classProxyPluginFunction = classProxyPlugin.getProxyGetBySymbol(
+                    classDescriptor.getTargetClass(), description);
+            if (classProxyPluginFunction != null && description != null && description.startsWith(SYMBOL_PREFIX)) {
+                String symbolName = description.substring(SYMBOL_PREFIX.length());
+                try (V8ValueBuiltInSymbol v8ValueBuiltInSymbol = v8Runtime.getGlobalObject().getBuiltInSymbol();
+                     V8ValueSymbol wellKnownSymbol = v8ValueBuiltInSymbol.getBuiltInSymbol(symbolName)) {
+                    if (wellKnownSymbol != null && !propertySymbol.strictEquals(wellKnownSymbol)) {
+                        return null;
+                    }
+                }
+            }
+        }
+        return classProxyPluginFunction;
+    }
+
     @Override
     public V8ProxyMode getProxyMode() {
         return V8ProxyMode.Object;
@@ -179,6 +195,9 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
         boolean isFound = hasFromCollection(property);
         isFound = isFound || hasFromRegular(property);
         isFound = isFound || hasFromGeneric(property);
+        isFound = isFound || hasFromBuiltInMethod(property);
+        isFound = isFound || hasFromPolyfill(property);
+        isFound = isFound || hasFromTarget(target, property);
         return v8Runtime.createV8ValueBoolean(isFound);
     }
 
@@ -191,9 +210,19 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
      * @since 1.1.7
      */
     protected boolean hasFromCollection(V8Value property) throws JavetException {
-        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
         if (classProxyPlugin.isHasSupported(classDescriptor.getTargetClass())) {
+            // An anonymous symbol has no description to convert to a Java collection key.
+            if (property instanceof V8ValueSymbol && ((V8ValueSymbol) property).getDescription() == null) {
+                return false;
+            }
             return classProxyPlugin.hasByObject(targetObject, v8Runtime.toObject(property));
+        }
+        return false;
+    }
+
+    private boolean hasFromPolyfill(V8Value property) throws JavetException {
+        if (classDescriptor.getGetPriorities().contains(ClassDescriptor.GetPriority.Polyfill)) {
+            return getPolyfillFunction(property) != null;
         }
         return false;
     }
@@ -201,31 +230,18 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
     @Override
     protected void initialize() {
         Class<T> targetClass = (Class<T>) targetObject.getClass();
+        classProxyPlugin = v8Runtime.getConverter().getConfig().getProxyPlugins().stream()
+                .filter(p -> p.isProxyable(targetClass))
+                .findFirst()
+                .orElse(JavetProxyPluginDefault.getInstance());
         classDescriptor = ClassDescriptorStore.getObjectMap().get(targetClass);
         if (classDescriptor == null) {
-            IClassProxyPlugin iClassProxyPlugin = v8Runtime.getConverter().getConfig().getProxyPlugins().stream()
-                    .filter(p -> p.isProxyable(targetClass))
-                    .findFirst()
-                    .orElse(JavetProxyPluginDefault.getInstance());
-            classDescriptor = new ClassDescriptor(V8ProxyMode.Object, targetClass, iClassProxyPlugin);
+            classDescriptor = new ClassDescriptor(V8ProxyMode.Object, targetClass);
             if (targetObject instanceof Class) {
                 initializeFieldsAndMethods((Class<?>) targetObject, true);
             }
-            initializeCollection();
             initializeFieldsAndMethods(targetClass, false);
             ClassDescriptorStore.getObjectMap().put(targetClass, classDescriptor);
-        }
-    }
-
-    /**
-     * Initialize collection.
-     *
-     * @since 1.1.7
-     */
-    protected void initializeCollection() {
-        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
-        if (classProxyPlugin.isUniqueKeySupported(classDescriptor.getTargetClass())) {
-            classProxyPlugin.populateUniqueKeys(classDescriptor.getUniqueKeySet(), targetObject);
         }
     }
 
@@ -284,11 +300,17 @@ public class JavetReflectionProxyObjectHandler<T, E extends Exception>
 
     @Override
     public V8ValueArray ownKeys(V8Value target) throws JavetException, E {
-        IClassProxyPlugin classProxyPlugin = classDescriptor.getClassProxyPlugin();
         if (classProxyPlugin.isOwnKeysSupported(classDescriptor.getTargetClass())) {
             Object[] keys = classProxyPlugin.getProxyOwnKeys(targetObject);
             if (ArrayUtils.isEmpty(keys)) {
-                keys = classDescriptor.getUniqueKeySet().toArray();
+                if (classProxyPlugin.isUniqueKeySupported(classDescriptor.getTargetClass())) {
+                    // The unique keys of the plugin come from the target object, not the shared class descriptor.
+                    Set<String> uniqueKeySet = new LinkedHashSet<>();
+                    classProxyPlugin.populateUniqueKeys(uniqueKeySet, targetObject);
+                    keys = uniqueKeySet.toArray();
+                } else {
+                    keys = classDescriptor.getUniqueKeySet().toArray();
+                }
             }
             for (int i = 0; i < keys.length; i++) {
                 Object key = keys[i];

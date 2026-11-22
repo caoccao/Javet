@@ -50,8 +50,10 @@ import java.text.MessageFormat;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.caoccao.javet.exceptions.JavetError.PARAMETER_FEATURE;
 
@@ -231,6 +233,12 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     final V8Host v8Host;
     /**
+     * The V8 inspector map. The key is the session ID.
+     *
+     * @since 6.0.4
+     */
+    final Map<Integer, V8Inspector> v8InspectorMap;
+    /**
      * The V8 internal.
      *
      * @since 1.0.2
@@ -280,10 +288,13 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     V8ValueUndefined cachedV8ValueUndefined;
     /**
      * The Close lock.
+     * <p>
+     * It is held while the native isolate is accessed by another thread, reset or closed.
+     * It is a {@link ReentrantLock} so that the guard daemon can skip a runtime that is being reset or closed.
      *
      * @since 3.1.3
      */
-    Object closeLock;
+    ReentrantLock closeLock;
     /**
      * The Converter.
      *
@@ -360,7 +371,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         assert handle != INVALID_HANDLE : ERROR_HANDLE_MUST_BE_VALID;
         callbackContextLock = new Object();
         callbackContextMap = new HashMap<>();
-        closeLock = new Object();
+        closeLock = new ReentrantLock();
         converter = DEFAULT_CONVERTER;
         gcEpilogueCallbacks = new CopyOnWriteArrayList<>();
         gcPrologueCallbacks = new CopyOnWriteArrayList<>();
@@ -377,6 +388,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
         this.v8Host = Objects.requireNonNull(v8Host);
         this.v8Native = Objects.requireNonNull(v8Native);
         this.jsRuntimeType = Objects.requireNonNull(jsRuntimeType);
+        v8InspectorMap = new ConcurrentHashMap<>();
         v8ModuleLock = new Object();
         v8ModuleMap = new HashMap<>();
         v8ModuleResolver = null;
@@ -458,6 +470,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     /**
      * Add V8 module.
+     * <p>
+     * If another module with the same resource name is cached, it is replaced and force closed.
      *
      * @param iV8Module the V8 module
      * @throws JavetException the javet exception
@@ -466,17 +480,22 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public void addV8Module(IV8Module iV8Module) throws JavetException {
         String resourceName = Objects.requireNonNull(iV8Module.getResourceName());
         if (StringUtils.isNotEmpty(resourceName)) {
+            final IV8Module replacedV8Module;
             synchronized (v8ModuleLock) {
-                if (containsV8Module(resourceName)) {
-                    removeV8Module(resourceName, true);
-                }
-                v8ModuleMap.put(resourceName, iV8Module);
+                replacedV8Module = v8ModuleMap.put(resourceName, iV8Module);
+            }
+            // Closing a module takes the reference lock, so it happens after the module lock is released.
+            if (replacedV8Module != null && replacedV8Module != iV8Module) {
+                replacedV8Module.close(true);
             }
         }
     }
 
     /**
      * Allow eval().
+     * <p>
+     * It applies to the current context only. {@link #resetContext()} and {@link #resetIsolate()}
+     * create a new context with the default policy, so call it again after a reset if it is still needed.
      *
      * @param allow true : allow eval(), false : disallow eval()
      * @since 0.8.0
@@ -655,10 +674,14 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     public void close(boolean forceClose) throws JavetException {
         if (!isClosed() && forceClose) {
             removeAllReferences();
-            synchronized (closeLock) {
+            removeV8Inspectors();
+            closeLock.lock();
+            try {
                 v8Host.closeV8Runtime(this);
                 handle = INVALID_HANDLE;
                 v8Native = null;
+            } finally {
+                closeLock.unlock();
             }
         }
     }
@@ -866,7 +889,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * <p>
      * The returned {@link V8Inspector} implements {@link IJavetClosable}. Call
      * {@link V8Inspector#close()} when the session is no longer needed. Sessions
-     * are also cleaned up automatically when the V8 runtime is closed.
+     * are also closed automatically when the V8 runtime is closed or its isolate
+     * is reset, so create new sessions after {@link #resetIsolate()}.
      *
      * @param name the session name
      * @return the V8 inspector, or null if the runtime is closed
@@ -893,7 +917,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      */
     public V8Inspector createV8Inspector(String name, boolean waitForDebugger) {
         if (!isClosed()) {
-            return new V8Inspector(this, name, v8Native, waitForDebugger);
+            V8Inspector v8Inspector = new V8Inspector(this, name, v8Native, waitForDebugger);
+            v8InspectorMap.put(v8Inspector.getSessionId(), v8Inspector);
+            return v8Inspector;
         }
         return null;
     }
@@ -1602,7 +1628,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @return the close lock
      * @since 3.1.3
      */
-    Object getCloseLock() {
+    ReentrantLock getCloseLock() {
         return closeLock;
     }
 
@@ -1835,6 +1861,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     /**
      * Gets V8 heap space statistics by an allocation space via completable future.
      * It is an async call that will be completed if there is no race condition.
+     * It is cancelled if it is not completed in 60 seconds.
      *
      * @param v8AllocationSpace the V8 allocation space
      * @return the V8 heap space statistics in a complete future
@@ -1855,6 +1882,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     /**
      * Gets V8 heap statistics via completable future.
      * It is an async call that will be completed if there is no race condition.
+     * It is cancelled if it is not completed in 60 seconds.
      *
      * @return the V8 heap statistics in a complete future
      * @since 1.0.0
@@ -1971,6 +1999,7 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     /**
      * Gets V8 shared memory statistics via completable future.
      * It is an async call that will be completed if there is no race condition.
+     * It is cancelled if it is not completed in 60 seconds.
      * In multi-cage pointer compression builds these statistics are read from
      * this runtime's IsolateGroup, so the native call enters the isolate
      * scope before invoking the underlying V8 API.
@@ -2159,13 +2188,21 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     /**
      * Returns whether the V8 runtime is in use or not.
+     * <p>
+     * It is thread-safe. It waits while the runtime is being reset or closed by another thread.
      *
      * @return the boolean
      * @since 0.7.2
      */
     public boolean isInUse() {
-        if (!isClosed()) {
-            return v8Native.isInUse(handle);
+        // The native isolate may be disposed or replaced by a reset or a close on another thread.
+        closeLock.lock();
+        try {
+            if (!isClosed()) {
+                return v8Native.isInUse(handle);
+            }
+        } finally {
+            closeLock.unlock();
         }
         return false;
     }
@@ -3611,6 +3648,37 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Remove all callbacks, including the GC callbacks, the microtasks completed callbacks
+     * and the near heap limit callback.
+     * <p>
+     * The native callbacks are unregistered from the current isolate before the Java callbacks are cleared,
+     * so that the callbacks added later are registered to the native isolate again.
+     *
+     * @since 6.0.4
+     */
+    void removeAllCallbacks() {
+        synchronized (gcEpilogueCallbacks) {
+            if (!gcEpilogueCallbacks.isEmpty()) {
+                v8Native.unregisterGCEpilogueCallback(handle);
+                gcEpilogueCallbacks.clear();
+            }
+        }
+        synchronized (gcPrologueCallbacks) {
+            if (!gcPrologueCallbacks.isEmpty()) {
+                v8Native.unregisterGCPrologueCallback(handle);
+                gcPrologueCallbacks.clear();
+            }
+        }
+        synchronized (microtasksCompletedCallbacks) {
+            if (!microtasksCompletedCallbacks.isEmpty()) {
+                v8Native.unregisterMicrotasksCompletedCallback(handle);
+                microtasksCompletedCallbacks.clear();
+            }
+        }
+        setNearHeapLimitCallback(null);
+    }
+
+    /**
      * Remove all references.
      *
      * @throws JavetException the javet exception
@@ -3776,7 +3844,32 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
     }
 
     /**
+     * Remove a V8 inspector.
+     *
+     * @param v8Inspector the V8 inspector
+     * @since 6.0.4
+     */
+    void removeV8Inspector(V8Inspector v8Inspector) {
+        v8InspectorMap.remove(v8Inspector.getSessionId(), v8Inspector);
+    }
+
+    /**
+     * Close and remove all V8 inspectors.
+     *
+     * @throws JavetException the javet exception
+     * @since 6.0.4
+     */
+    void removeV8Inspectors() throws JavetException {
+        for (V8Inspector v8Inspector : v8InspectorMap.values()) {
+            v8Inspector.close();
+        }
+        v8InspectorMap.clear();
+    }
+
+    /**
      * Remove a V8 module by a resource name and force close flag.
+     * <p>
+     * It removes whichever module is cached with the resource name.
      *
      * @param resourceName the resource name
      * @param forceClose   the force close
@@ -3806,6 +3899,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     /**
      * Remove a V8 module.
+     * <p>
+     * It removes the module only if the module itself is cached,
+     * so another module cached with the same resource name is kept.
      *
      * @param iV8Module the V8 module
      * @throws JavetException the javet exception
@@ -3817,6 +3913,10 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
 
     /**
      * Remove a V8 module by a force close flag.
+     * <p>
+     * It removes the module only if the module itself is cached,
+     * so another module cached with the same resource name is kept.
+     * The module is force closed only if it is removed.
      *
      * @param iV8Module  the V8 module
      * @param forceClose the force close
@@ -3824,7 +3924,18 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.9.4
      */
     public void removeV8Module(IV8Module iV8Module, boolean forceClose) throws JavetException {
-        removeV8Module(iV8Module.getResourceName(), forceClose);
+        final String resourceName = iV8Module.getResourceName();
+        boolean removed = false;
+        synchronized (v8ModuleLock) {
+            // The module only removes its own entry, because another module may have replaced it.
+            if (v8ModuleMap.get(resourceName) == iV8Module) {
+                v8ModuleMap.remove(resourceName);
+                removed = true;
+            }
+        }
+        if (forceClose && removed) {
+            iV8Module.close(true);
+        }
     }
 
     /**
@@ -3845,16 +3956,20 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * @since 0.8.3
      */
     public void removeV8Modules(boolean forceClose) throws JavetException {
+        final List<IV8Module> iV8Modules;
         synchronized (v8ModuleLock) {
-            if (!v8ModuleMap.isEmpty()) {
-                logger.logWarn("{0} V8 module(s) not recycled.", Integer.toString(v8ModuleMap.size()));
-                for (IV8Module iV8Module : v8ModuleMap.values()) {
-                    logger.logWarn("  V8 module: {0}", iV8Module.getResourceName());
-                    if (forceClose) {
-                        iV8Module.close(true);
-                    }
-                }
-                v8ModuleMap.clear();
+            if (v8ModuleMap.isEmpty()) {
+                return;
+            }
+            // Closing a module removes it from the map, so the modules are closed after the map is cleared.
+            iV8Modules = new ArrayList<>(v8ModuleMap.values());
+            v8ModuleMap.clear();
+        }
+        logger.logWarn("{0} V8 module(s) not recycled.", Integer.toString(iV8Modules.size()));
+        for (IV8Module iV8Module : iV8Modules) {
+            logger.logWarn("  V8 module: {0}", iV8Module.getResourceName());
+            if (forceClose) {
+                iV8Module.close(true);
             }
         }
     }
@@ -3893,14 +4008,37 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * This is a light-weight and recommended reset.
      * In Node.js mode, runtimes configured for snapshot creation or restored
      * from a snapshot require a full isolate reset using the current runtime options.
+     * <p>
+     * All the callbacks, including the GC callbacks, the microtasks completed callbacks
+     * and the near heap limit callback, are removed. Add them again after the reset if they are still needed.
+     * <p>
+     * If the replacement cannot be created, e.g. the snapshot blob in the runtime options
+     * is invalid, the runtime is closed and {@link JavetError#RuntimeResetFailure} is thrown.
      *
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
     public void resetContext() throws JavetException {
-        if (!isClosed()) {
-            removeAllReferences();
-            v8Native.resetV8Context(handle, runtimeOptions);
+        // The isolate of a Node.js snapshot runtime is replaced, so other threads must not access it till the reset is done.
+        closeLock.lock();
+        try {
+            if (!isClosed()) {
+                removeAllReferences();
+                // The inspector is replaced together with the isolate of a Node.js snapshot runtime.
+                if (jsRuntimeType.isNode()
+                        && (runtimeOptions.isCreateSnapshotEnabled() || runtimeOptions.getSnapshotBlob() != null)) {
+                    removeV8Inspectors();
+                }
+                // The callbacks are removed even if the isolate is kept, so that every reset behaves the same.
+                removeAllCallbacks();
+                if (!v8Native.resetV8Context(handle, runtimeOptions)) {
+                    // The native isolate and context are disposed, so the runtime cannot be used any more.
+                    close(true);
+                    throw new JavetException(JavetError.RuntimeResetFailure);
+                }
+            }
+        } finally {
+            closeLock.unlock();
         }
     }
 
@@ -3908,15 +4046,35 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * Resets the V8 isolate.
      * <p>
      * This is a heavy reset. Please avoid using it in performance sensitive scenario.
+     * <p>
+     * All the callbacks, including the GC callbacks, the microtasks completed callbacks
+     * and the near heap limit callback, are removed. Add them again after the reset if they are still needed.
+     * <p>
+     * If the replacement cannot be created, e.g. the snapshot blob in the runtime options
+     * is invalid, the runtime is closed and {@link JavetError#RuntimeResetFailure} is thrown.
      *
      * @throws JavetException the javet exception
      * @since 0.7.0
      */
     @SuppressWarnings("UnusedReturnValue")
     public void resetIsolate() throws JavetException {
-        if (!isClosed()) {
-            removeAllReferences();
-            v8Native.resetV8Isolate(handle, runtimeOptions);
+        // The isolate is replaced, so other threads must not access it till the reset is done.
+        closeLock.lock();
+        try {
+            if (!isClosed()) {
+                removeAllReferences();
+                // The inspector is replaced together with the isolate.
+                removeV8Inspectors();
+                // The new isolate has no native callbacks, so the Java callbacks are removed as well.
+                removeAllCallbacks();
+                if (!v8Native.resetV8Isolate(handle, runtimeOptions)) {
+                    // The native isolate and context are disposed, so the runtime cannot be used any more.
+                    close(true);
+                    throw new JavetException(JavetError.RuntimeResetFailure);
+                }
+            }
+        } finally {
+            closeLock.unlock();
         }
     }
 
@@ -4162,8 +4320,9 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
                 if (this.nearHeapLimitCallback == nearHeapLimitCallback) {
                     // Do nothing if the same callback is set.
                 } else if (nearHeapLimitCallback != null) {
+                    // The native callback calls whichever callback is set, so it is not registered again.
+                    // V8 aborts the process if the same native callback is registered twice.
                     this.nearHeapLimitCallback = nearHeapLimitCallback;
-                    v8Native.registerNearHeapLimitCallback(handle);
                 } else {
                     long defaultHeapLimit = this.nearHeapLimitCallback.getDefaultHeapLimit();
                     v8Native.unregisterNearHeapLimitCallback(handle, defaultHeapLimit);
@@ -4297,7 +4456,8 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
      * in the given isolate.
      * <p>
      * It can be used by any thread even if that thread has not
-     * acquired the V8 lock with a Locker object.
+     * acquired the V8 lock with a Locker object. It waits while the runtime
+     * is being reset or closed by another thread.
      *
      * @param v8RuntimeTerminationMode the V8 runtime termination type
      * @since 4.1.6
@@ -4307,11 +4467,27 @@ public class V8Runtime implements IJavetClosable, IV8Creatable, IV8Convertible {
             switch (Objects.requireNonNull(v8RuntimeTerminationMode)) {
                 case Asynchronous:
                     Executors.newSingleThreadExecutor().execute(() -> {
-                        v8Native.terminateExecution(handle);
+                        // The runtime may have been closed before this thread runs.
+                        closeLock.lock();
+                        try {
+                            if (!isClosed()) {
+                                v8Native.terminateExecution(handle);
+                            }
+                        } finally {
+                            closeLock.unlock();
+                        }
                     });
                     break;
                 case Synchronous:
-                    v8Native.terminateExecution(handle);
+                    // The native isolate may be disposed or replaced by a reset or a close on another thread.
+                    closeLock.lock();
+                    try {
+                        if (!isClosed()) {
+                            v8Native.terminateExecution(handle);
+                        }
+                    } finally {
+                        closeLock.unlock();
+                    }
                     break;
                 default:
                     logger.logWarn("Unknown termination type: " + v8RuntimeTerminationMode.name());

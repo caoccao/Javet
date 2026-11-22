@@ -25,6 +25,11 @@
 
 namespace Javet {
     namespace Inspector {
+        // The session IDs are unique in the process instead of in the inspector, because the inspector
+        // is replaced with the isolate, and a session ID held by a stale V8Inspector in Java must not
+        // address a session of the replacement inspector.
+        static std::atomic<int> nextSessionId(1);
+
         static inline v8_inspector::StringView ConvertFromAsciiStringToStringView(
             const std::string& asciiString) {
             return v8_inspector::StringView(
@@ -181,7 +186,6 @@ namespace Javet {
             activateMessageLoop = false;
             runningMessageLoop.store(false);
             waitingForDebugger.store(false);
-            nextSessionId = 1;
             this->v8Runtime = v8Runtime;
             this->name = name;
             auto v8Context = v8Runtime->GetV8LocalContext();
@@ -197,7 +201,7 @@ namespace Javet {
         }
 
         int JavetInspectorClient::addSession(JNIEnv* jniEnv, const jobject mV8Inspector, bool waitForDebugger) noexcept {
-            int sessionId = nextSessionId++;
+            int sessionId = nextSessionId.fetch_add(1);
             auto sessionPointer = std::make_shared<JavetInspectorSession>(
                 jniEnv, sessionId, v8Runtime, mV8Inspector, v8Inspector.get(),
                 waitForDebugger, messageMutex);
@@ -503,6 +507,13 @@ namespace Javet {
                     return !waitingForDebugger.load() || hasQueuedMessages();
                 });
             }
+        }
+
+        JavetInspectorClient::~JavetInspectorClient() {
+            // The sessions disconnect from the V8 inspector when they are destroyed,
+            // so they must be destroyed before the V8 inspector.
+            sessionMap.clear();
+            v8Inspector.reset();
         }
 
         JavetInspectorSession::JavetInspectorSession(

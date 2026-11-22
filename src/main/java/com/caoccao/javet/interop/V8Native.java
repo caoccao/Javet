@@ -625,10 +625,10 @@ class V8Native implements IV8Native {
     public native void requestGarbageCollectionForTesting(long v8RuntimeHandle, boolean fullGC);
 
     @Override
-    public native void resetV8Context(long v8RuntimeHandle, Object runtimeOptions);
+    public native boolean resetV8Context(long v8RuntimeHandle, Object runtimeOptions);
 
     @Override
-    public native void resetV8Isolate(long v8RuntimeHandle, Object runtimeOptions);
+    public native boolean resetV8Isolate(long v8RuntimeHandle, Object runtimeOptions);
 
     @Override
     public native boolean sameValue(long v8RuntimeHandle, long v8ValueHandle1, long v8ValueHandle2);

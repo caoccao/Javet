@@ -18,6 +18,7 @@ package com.caoccao.javet.values.primitive;
 
 import com.caoccao.javet.BaseTestJavetRuntime;
 import com.caoccao.javet.exceptions.JavetException;
+import com.caoccao.javet.values.V8Value;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -95,6 +96,39 @@ public class TestV8ValueBigInteger extends BaseTestJavetRuntime {
             assertEquals(BigInteger.valueOf(l).toString(), v8ValueBigInteger.getValue().toString());
             v8Runtime.getGlobalObject().set("a", v8ValueBigInteger);
             assertEquals(l, v8Runtime.getGlobalObject().getLong("a"));
+        }
+    }
+
+    @Test
+    public void testLongBoundaries() throws JavetException {
+        final BigInteger maxLong = BigInteger.valueOf(Long.MAX_VALUE);
+        final BigInteger minLong = BigInteger.valueOf(Long.MIN_VALUE);
+        final BigInteger maxWord = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);
+        // The bigint in the range of long is converted to long.
+        for (BigInteger bigInteger : new BigInteger[]{maxLong, minLong}) {
+            final String codeString = bigInteger + "n";
+            try (V8Value v8Value = v8Runtime.getExecutor(codeString).execute()) {
+                assertInstanceOf(V8ValueLong.class, v8Value);
+                assertEquals(bigInteger.longValue(), ((V8ValueLong) v8Value).getValue());
+            }
+            Object object = v8Runtime.getExecutor(codeString).executeObject();
+            assertInstanceOf(Long.class, object);
+            assertEquals(bigInteger.longValue(), object);
+        }
+        // The bigint out of the range of long is converted to BigInteger, even if it fits in 1 word.
+        for (BigInteger bigInteger : new BigInteger[]{
+                maxLong.add(BigInteger.ONE),
+                minLong.subtract(BigInteger.ONE),
+                maxWord,
+                maxWord.negate()}) {
+            final String codeString = bigInteger + "n";
+            try (V8Value v8Value = v8Runtime.getExecutor(codeString).execute()) {
+                assertInstanceOf(V8ValueBigInteger.class, v8Value);
+                assertEquals(bigInteger, ((V8ValueBigInteger) v8Value).getValue());
+            }
+            Object object = v8Runtime.getExecutor(codeString).executeObject();
+            assertInstanceOf(BigInteger.class, object);
+            assertEquals(bigInteger, object);
         }
     }
 

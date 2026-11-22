@@ -31,6 +31,7 @@ import com.caoccao.javet.interop.engine.observers.IV8RuntimeObserver;
 import com.caoccao.javet.interop.executors.IV8Executor;
 import com.caoccao.javet.interop.monitoring.V8HeapSpaceStatistics;
 import com.caoccao.javet.interop.monitoring.V8HeapStatistics;
+import com.caoccao.javet.interop.options.RuntimeOptions;
 import com.caoccao.javet.utils.JavetDateTimeUtils;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.reference.V8ValueObject;
@@ -99,6 +100,22 @@ public class TestJavetEnginePool extends BaseTestJavet {
         assertEquals(0, javetEnginePool.getAverageCallbackContextCount());
         assertEquals(0, javetEnginePool.getAverageReferenceCount());
         assertEquals(0, javetEnginePool.getAverageV8ModuleCount());
+    }
+
+    @Test
+    public void testAllowEvalAfterReset() throws JavetException {
+        javetEngineConfig.setAllowEval(true);
+        try (IJavetEngine<?> engine = javetEnginePool.getEngine()) {
+            V8Runtime v8Runtime = engine.getV8Runtime();
+            assertEquals(1, v8Runtime.getExecutor("eval('1');").executeInteger());
+            // The eval policy belongs to the context, so the resets must apply it to the new context.
+            engine.resetContext();
+            assertEquals(1, v8Runtime.getExecutor("eval('1');").executeInteger(),
+                    "The engine pool should allow eval() after resetContext().");
+            engine.resetIsolate();
+            assertEquals(1, v8Runtime.getExecutor("eval('1');").executeInteger(),
+                    "The engine pool should allow eval() after resetIsolate().");
+        }
     }
 
     @Test
@@ -292,6 +309,83 @@ public class TestJavetEnginePool extends BaseTestJavet {
     }
 
     @Test
+    public void testGetEngineWithClosedRuntime() throws Exception {
+        V8Runtime closedV8Runtime;
+        try (IJavetEngine<?> engine = javetEnginePool.getEngine()) {
+            closedV8Runtime = engine.getV8Runtime();
+            // A failed reset closes the runtime in the same way.
+            closedV8Runtime.close(true);
+            assertTrue(engine.isClosed());
+        }
+        runAndWait(TEST_MAX_TIMEOUT, () -> javetEnginePool.getIdleEngineCount() == 1);
+        // The engine with the closed runtime must be replaced instead of being lent.
+        try (IJavetEngine<?> engine = javetEnginePool.getEngine()) {
+            assertFalse(engine.isClosed());
+            V8Runtime v8Runtime = engine.getV8Runtime();
+            assertNotSame(closedV8Runtime, v8Runtime);
+            assertEquals(2, v8Runtime.getExecutor("1 + 1").executeInteger());
+        }
+        runAndWait(TEST_MAX_TIMEOUT, () -> javetEnginePool.getIdleEngineCount() == 1);
+        assertEquals(0, javetEnginePool.getActiveEngineCount());
+    }
+
+    @Test
+    public void testGetEngineWithFailedCreation() throws Exception {
+        final int maxRetryCount = 3;
+        final AtomicInteger createCount = new AtomicInteger();
+        final AtomicInteger failureCount = new AtomicInteger(1);
+        JavetEngineConfig config = new JavetEngineConfig()
+                .setJSRuntimeType(v8Host.getJSRuntimeType())
+                .setPoolMinSize(1)
+                .setPoolMaxSize(1)
+                .setWaitForEngineMaxRetryCount(maxRetryCount);
+        try (JavetEnginePool<V8Runtime> pool = new JavetEnginePool<V8Runtime>(config) {
+            @Override
+            protected JavetEngine<V8Runtime> createEngine() throws JavetException {
+                createCount.incrementAndGet();
+                if (failureCount.getAndDecrement() > 0) {
+                    throw new JavetException(JavetError.RuntimeCreateFailure);
+                }
+                return super.createEngine();
+            }
+        }) {
+            // The failed creation of a new engine must return the slot and the permit for the retry.
+            for (int i = 0; i < 3; ++i) {
+                try (IJavetEngine<V8Runtime> engine = pool.getEngine()) {
+                    assertEquals(1, pool.getActiveEngineCount());
+                    assertEquals(2, engine.getV8Runtime().getExecutor("1 + 1").executeInteger());
+                }
+                assertEquals(2, createCount.get());
+                assertEquals(0, pool.getActiveEngineCount());
+                assertEquals(1, pool.getIdleEngineCount());
+                assertEquals(0, pool.getReleasedEngineCount());
+            }
+            // The failed replacement of an engine whose runtime is closed must release the slot,
+            // and the exhausted retries must keep the last creation failure.
+            try (IJavetEngine<V8Runtime> engine = pool.getEngine()) {
+                engine.getV8Runtime().close(true);
+            }
+            failureCount.set(maxRetryCount);
+            JavetException exception = assertThrows(JavetException.class, () -> pool.getEngine().close());
+            assertEquals(JavetError.EngineNotAvailable, exception.getError());
+            assertInstanceOf(JavetException.class, exception.getCause());
+            assertEquals(JavetError.RuntimeCreateFailure, ((JavetException) exception.getCause()).getError());
+            assertEquals(2 + maxRetryCount, createCount.get());
+            assertEquals(0, pool.getActiveEngineCount());
+            assertEquals(0, pool.getIdleEngineCount());
+            assertEquals(1, pool.getReleasedEngineCount());
+            try (IJavetEngine<V8Runtime> engine = pool.getEngine()) {
+                assertFalse(engine.isClosed());
+                assertEquals(2, engine.getV8Runtime().getExecutor("1 + 1").executeInteger());
+            }
+            assertEquals(3 + maxRetryCount, createCount.get());
+            assertEquals(0, pool.getActiveEngineCount());
+            assertEquals(1, pool.getIdleEngineCount());
+            assertEquals(0, pool.getReleasedEngineCount());
+        }
+    }
+
+    @Test
     public void testMultiThreadedExecutionBelowMaxSize() throws Exception {
         final int threadCount = javetEngineConfig.getPoolMaxSize() - javetEngineConfig.getPoolMinSize();
         Thread[] threads = new Thread[threadCount];
@@ -404,6 +498,26 @@ public class TestJavetEnginePool extends BaseTestJavet {
                     JavetExecutionException.class,
                     () -> v8Runtime.getExecutor("eval('1');").executeVoid(),
                     "By default, the engine pool should disallow eval().");
+            // The eval policy belongs to the context, so the resets must apply it to the new context.
+            engine.resetContext();
+            assertThrows(
+                    JavetExecutionException.class,
+                    () -> v8Runtime.getExecutor("eval('1');").executeVoid(),
+                    "The engine pool should disallow eval() after resetContext().");
+            engine.resetIsolate();
+            assertThrows(
+                    JavetExecutionException.class,
+                    () -> v8Runtime.getExecutor("eval('1');").executeVoid(),
+                    "The engine pool should disallow eval() after resetIsolate().");
+        }
+        runAndWait(TEST_MAX_TIMEOUT, () -> javetEnginePool.getIdleEngineCount() == 1);
+        // The next borrower gets the reset engine.
+        try (IJavetEngine<?> engine = javetEnginePool.getEngine()) {
+            V8Runtime v8Runtime = engine.getV8Runtime();
+            assertThrows(
+                    JavetExecutionException.class,
+                    () -> v8Runtime.getExecutor("eval('1');").executeVoid(),
+                    "The engine pool should disallow eval() for the next borrower.");
         }
         runAndWait(TEST_MAX_TIMEOUT, () -> javetEnginePool.getIdleEngineCount() == 1);
         assertEquals(1, javetEnginePool.getIdleEngineCount());
@@ -415,6 +529,39 @@ public class TestJavetEnginePool extends BaseTestJavet {
                 .map(CompletableFuture::join)
                 .map(V8HeapStatistics::toString)
                 .collect(Collectors.joining()));
+    }
+
+    @Test
+    public void testSnapshot() throws JavetException {
+        RuntimeOptions<?> runtimeOptions = v8Host.getJSRuntimeType().getRuntimeOptions();
+        runtimeOptions.setCreateSnapshotEnabled(true);
+        byte[] snapshotBlob;
+        try (V8Runtime v8Runtime = v8Host.createV8Runtime(runtimeOptions)) {
+            v8Runtime.getExecutor("globalThis.snapshotValue = 41; const add = (a, b) => a + b;").executeVoid();
+            snapshotBlob = v8Runtime.createSnapshot();
+            assertNotNull(snapshotBlob);
+            assertTrue(snapshotBlob.length > 0);
+        }
+        javetEngineConfig.setSnapshotBlob(snapshotBlob);
+        try (IJavetEngine<?> engine1 = javetEnginePool.getEngine();
+             IJavetEngine<?> engine2 = javetEnginePool.getEngine()) {
+            // Every engine is created from the snapshot.
+            for (IJavetEngine<?> engine : new IJavetEngine<?>[]{engine1, engine2}) {
+                V8Runtime v8Runtime = engine.getV8Runtime();
+                assertEquals(41, v8Runtime.getExecutor("snapshotValue").executeInteger());
+                assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+            }
+            // The resets restore the snapshot.
+            V8Runtime v8Runtime = engine1.getV8Runtime();
+            v8Runtime.getExecutor("snapshotValue = 99;").executeVoid();
+            engine1.resetContext();
+            assertEquals(41, v8Runtime.getExecutor("snapshotValue").executeInteger());
+            assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+            v8Runtime.getExecutor("snapshotValue = 99;").executeVoid();
+            engine1.resetIsolate();
+            assertEquals(41, v8Runtime.getExecutor("snapshotValue").executeInteger());
+            assertEquals(3, v8Runtime.getExecutor("add(1, 2)").executeInteger());
+        }
     }
 
     @Test
